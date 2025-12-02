@@ -12,6 +12,7 @@ from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Htparam, Guest, Debitor, Artikel, Bill, Bediener, Waehrung
+from functions import log_program
 
 
 def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: int, from_date: date, to_date: date, from_art: int, to_art: int, mi_payment: bool, mi_transfer: bool, show_inv: bool, bill_name: string, bill_nr: int):
@@ -100,7 +101,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
         nonlocal s_list, t_list, output_list, t_ar_paylist, bguest, bdebitor, tbuff, bq
         nonlocal s_list_data, t_list_data, output_list_data, t_ar_paylist_data
-        
+                
         return {
             "r_no": r_no,
             "s-list": s_list_data,
@@ -109,11 +110,9 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         }
 
     def create_list():
-
         nonlocal r_no, s_list_data, t_list_data, t_ar_paylist_data, long_digit, htparam, guest, debitor, artikel, bill, bediener, waehrung
         nonlocal comment, cledger, ccard, last_sort, from_date, to_date, from_art, to_art, mi_payment, mi_transfer, show_inv, bill_name, bill_nr
         nonlocal bguest, bdebitor
-
         nonlocal s_list, t_list, output_list, t_ar_paylist, bguest, bdebitor, tbuff, bq
         nonlocal s_list_data, t_list_data, output_list_data, t_ar_paylist_data
 
@@ -126,105 +125,75 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         bill_name = bill_name.strip()
 
         if comment == "":
-
             if cledger and ccard:
-
                 if last_sort == 1:
                     create_list1()
-
                 elif last_sort == 2:
                     create_list1a()
-
                 elif last_sort == 3:
                     create_list1b()
-
                 elif last_sort == 4:
                     create_list1c()
-
                 elif last_sort == 5:
                     create_list1d()
-
                 elif last_sort == 6:
                     create_list1e()
-
                 elif last_sort == 7:
-
                     if bill_nr != None:
                         create_list1f()
                     else:
                         create_list1fs()
 
             elif cledger and not ccard:
-
                 if last_sort == 1:
                     create_list2()
-
                 elif last_sort == 2:
                     create_list2a()
-
                 elif last_sort == 3:
                     create_list2b()
-
                 elif last_sort == 4:
                     create_list2c()
-
                 elif last_sort == 5:
                     create_list2d()
-
                 elif last_sort == 6:
                     create_list2e()
-
                 elif last_sort == 7:
-
                     if bill_nr != None:
                         create_list2f()
                     else:
                         create_list2fs()
 
             elif ccard and not cledger:
-
                 if last_sort == 1:
                     create_list3()
-
                 elif last_sort == 2:
                     create_list3a()
-
                 elif last_sort == 3:
                     create_list3b()
-
                 elif last_sort == 4:
                     create_list3c()
-
                 elif last_sort == 5:
                     create_list3d()
-
                 elif last_sort == 6:
                     create_list3e()
-
                 elif last_sort == 7:
-
                     if bill_nr != None:
                         create_list3f()
                     else:
                         create_list3fs()
 
         elif comment != "":
-
             if cledger and ccard:
                 create_list11()
-
             elif cledger and not ccard:
                 create_list21()
-
             elif ccard and not cledger:
                 create_list31()
 
     def create_tot_payment():
-
         nonlocal r_no, s_list_data, t_list_data, t_ar_paylist_data, long_digit, htparam, guest, debitor, artikel, bill, bediener, waehrung
         nonlocal comment, cledger, ccard, last_sort, from_date, to_date, from_art, to_art, mi_payment, mi_transfer, show_inv, bill_name, bill_nr
         nonlocal bguest, bdebitor
-
         nonlocal s_list, t_list, output_list, t_ar_paylist, bguest, bdebitor, tbuff, bq
         nonlocal s_list_data, t_list_data, output_list_data, t_ar_paylist_data
 
@@ -239,18 +208,14 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         bq = query(bq_data, filters=(lambda bq: bq.pay_count != 0), first=True)
 
         if not bq:
-
             return
 
         for bq in query(bq_data, filters=(lambda bq: bq.flag == 1 and bq.pay_count != 0), sort_by=[("pay_count", False)]):
-
             if curr_count == 0:
                 curr_count = bq.pay_count
 
             if (curr_count != bq.pay_count):
-
                 for tbuff in query(tbuff_data, filters=(lambda tbuff: tbuff.pay_count == curr_count)):
-
                     if not long_digit:
                         tbuff.sbetrag = to_string(tbetrag, "->,>>>,>>>,>>9.99")
                     else:
@@ -269,11 +234,9 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
             tbuff.dbetrag = to_decimal(tbetrag)
 
     def create_list1():
-
         nonlocal r_no, s_list_data, t_list_data, t_ar_paylist_data, long_digit, htparam, guest, debitor, artikel, bill, bediener, waehrung
         nonlocal comment, cledger, ccard, last_sort, from_date, to_date, from_art, to_art, mi_payment, mi_transfer, show_inv, bill_name, bill_nr
         nonlocal bguest, bdebitor
-
         nonlocal s_list, t_list, output_list, t_ar_paylist, bguest, bdebitor, tbuff, bq
         nonlocal s_list_data, t_list_data, output_list_data, t_ar_paylist_data
 
@@ -312,11 +275,9 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                 continue
             else:
                 debitor_obj_list[debitor._recid] = True
-
             do_it = True
 
             if mi_payment:
-
                 if artikel.artart == 2 and art.artart != 4 and art.artart != 7:
                     do_it = False
 
@@ -352,7 +313,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list_data.append(output_list)
 
                     for i in range(1, 58 + 1):
-                        output_list.str = output_list.str + " "
+                        output_list.str = output_list.str + "   "
                     output_list.pay_amt = to_decimal(tot_saldo)
                     output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -386,7 +347,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                             output_list_data.append(output_list)
 
                             for i in range(1, 58 + 1):
-                                output_list.str = output_list.str + " "
+                                output_list.str = output_list.str + "   "
                             output_list.pay_amt = to_decimal(tot_saldo)
                             output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -411,7 +372,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         output_list_data.append(output_list)
 
                         for i in range(1, 58 + 1):
-                            output_list.str = output_list.str + " "
+                            output_list.str = output_list.str + "   "
                         output_list.pay_amt = to_decimal(t_credit)
                         output_list.pay_famt = to_decimal(t_famt)
 
@@ -466,8 +427,8 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 else:
                     temp_anrede1 = ""
-                receiver = temp_name + ", " + temp_vorname1 + \
-                    " " + temp_anredefirma + temp_anrede1
+                receiver = temp_name + ", " + temp_vorname1 + " " + temp_anredefirma + \
+                    temp_anrede1
                 output_list = Output_list()
                 output_list_data.append(output_list)
 
@@ -543,8 +504,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                 t_famt = to_decimal(t_famt) + to_decimal(debitor.vesrdep)
                 tot_credit = to_decimal(tot_credit) + to_decimal(debitor.saldo)
                 tot_saldo = to_decimal(tot_saldo) + to_decimal(debitor.saldo)
-                tot_foreign = to_decimal(
-                    tot_foreign) + to_decimal(debitor.vesrdep)
+                tot_foreign = to_decimal(tot_foreign) + to_decimal(debitor.vesrdep)
                 tot_famt = to_decimal(tot_famt) + to_decimal(debitor.vesrdep)
 
                 s_list = query(s_list_data, filters=(
@@ -586,7 +546,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list_data.append(output_list)
 
         for i in range(1, 58 + 1):
-            output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "   "
         output_list.pay_amt = to_decimal(tot_saldo)
         output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -607,7 +567,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list_data.append(output_list)
 
         for i in range(1, 58 + 1):
-            output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "   "
         output_list.pay_amt = to_decimal(t_credit)
         output_list.pay_famt = to_decimal(t_famt)
 
@@ -728,7 +688,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list_data.append(output_list)
 
                     for i in range(1, 58 + 1):
-                        output_list.str = output_list.str + " "
+                        output_list.str = output_list.str + "   "
                     output_list.pay_amt = to_decimal(tot_saldo)
                     output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -760,7 +720,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         output_list_data.append(output_list)
 
                         for i in range(1, 58 + 1):
-                            output_list.str = output_list.str + " "
+                            output_list.str = output_list.str + "   "
                         output_list.pay_amt = to_decimal(t_credit)
                         output_list.pay_famt = to_decimal(t_famt)
 
@@ -923,7 +883,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list_data.append(output_list)
 
         for i in range(1, 58 + 1):
-            output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "   "
         output_list.pay_amt = to_decimal(tot_saldo)
         output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -944,7 +904,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list_data.append(output_list)
 
         for i in range(1, 58 + 1):
-            output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "   "
         output_list.pay_amt = to_decimal(t_credit)
         output_list.pay_famt = to_decimal(t_famt)
 
@@ -981,11 +941,9 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                 to_string(tot_famt, "->>,>>>,>>>,>>9.99")
 
     def create_list1b():
-
         nonlocal r_no, s_list_data, t_list_data, t_ar_paylist_data, long_digit, htparam, guest, debitor, artikel, bill, bediener, waehrung
         nonlocal comment, cledger, ccard, last_sort, from_date, to_date, from_art, to_art, mi_payment, mi_transfer, show_inv, bill_name, bill_nr
         nonlocal bguest, bdebitor
-
         nonlocal s_list, t_list, output_list, t_ar_paylist, bguest, bdebitor, tbuff, bq
         nonlocal s_list_data, t_list_data, output_list_data, t_ar_paylist_data
 
@@ -1064,7 +1022,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list_data.append(output_list)
 
                     for i in range(1, 58 + 1):
-                        output_list.str = output_list.str + " "
+                        output_list.str = output_list.str + "   "
                     output_list.pay_amt = to_decimal(tot_saldo)
                     output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -1096,7 +1054,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         output_list_data.append(output_list)
 
                         for i in range(1, 58 + 1):
-                            output_list.str = output_list.str + " "
+                            output_list.str = output_list.str + "   "
                         output_list.pay_amt = to_decimal(t_credit)
                         output_list.pay_famt = to_decimal(t_famt)
 
@@ -1275,7 +1233,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list_data.append(output_list)
 
         for i in range(1, 58 + 1):
-            output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "   "
         output_list.pay_amt = to_decimal(tot_saldo)
         output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -1296,7 +1254,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list_data.append(output_list)
 
         for i in range(1, 58 + 1):
-            output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "   "
         output_list.pay_amt = to_decimal(t_credit)
         output_list.pay_famt = to_decimal(t_famt)
 
@@ -1417,7 +1375,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list_data.append(output_list)
 
                     for i in range(1, 58 + 1):
-                        output_list.str = output_list.str + " "
+                        output_list.str = output_list.str + "   "
                     output_list.pay_amt = to_decimal(tot_saldo)
                     output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -1449,7 +1407,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         output_list_data.append(output_list)
 
                         for i in range(1, 58 + 1):
-                            output_list.str = output_list.str + " "
+                            output_list.str = output_list.str + "   "
                         output_list.pay_amt = to_decimal(t_credit)
                         output_list.pay_famt = to_decimal(t_famt)
 
@@ -1628,7 +1586,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list_data.append(output_list)
 
         for i in range(1, 58 + 1):
-            output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "   "
         output_list.pay_amt = to_decimal(tot_saldo)
         output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -1649,7 +1607,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list_data.append(output_list)
 
         for i in range(1, 58 + 1):
-            output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "   "
         output_list.pay_amt = to_decimal(t_credit)
         output_list.pay_famt = to_decimal(t_famt)
 
@@ -1770,7 +1728,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list_data.append(output_list)
 
                     for i in range(1, 58 + 1):
-                        output_list.str = output_list.str + " "
+                        output_list.str = output_list.str + "   "
                     output_list.pay_amt = to_decimal(tot_saldo)
                     output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -1802,7 +1760,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         output_list_data.append(output_list)
 
                         for i in range(1, 58 + 1):
-                            output_list.str = output_list.str + " "
+                            output_list.str = output_list.str + "   "
                         output_list.pay_amt = to_decimal(t_credit)
                         output_list.pay_famt = to_decimal(t_famt)
 
@@ -1966,14 +1924,10 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                 else:
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
-                output_list.str = output_list.str + \
-                    to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
-                output_list.str = output_list.str + \
-                    to_string(debitor.zahlkonto, ">>>>9")
-                output_list.str = output_list.str + \
-                    to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
-                output_list.str = output_list.str + \
-                    to_string(artikel.bezeich, "x(40)")
+                output_list.str = output_list.str + to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                output_list.str = output_list.str + to_string(debitor.zahlkonto, ">>>>9")
+                output_list.str = output_list.str + to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                output_list.str = output_list.str + to_string(artikel.bezeich, "x(40)")
 
                 s_list.betrag = to_decimal(
                     s_list.betrag) + to_decimal(debitor.saldo)
@@ -1981,7 +1935,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list_data.append(output_list)
 
         for i in range(1, 58 + 1):
-            output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "   "
         output_list.pay_amt = to_decimal(tot_saldo)
         output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -2002,7 +1956,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list_data.append(output_list)
 
         for i in range(1, 58 + 1):
-            output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "   "
         output_list.pay_amt = to_decimal(t_credit)
         output_list.pay_famt = to_decimal(t_famt)
 
@@ -2123,7 +2077,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list_data.append(output_list)
 
                     for i in range(1, 58 + 1):
-                        output_list.str = output_list.str + " "
+                        output_list.str = output_list.str + "   "
                     output_list.pay_amt = to_decimal(tot_saldo)
                     output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -2155,7 +2109,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         output_list_data.append(output_list)
 
                         for i in range(1, 58 + 1):
-                            output_list.str = output_list.str + " "
+                            output_list.str = output_list.str + "   "
                         output_list.pay_amt = to_decimal(t_credit)
                         output_list.pay_famt = to_decimal(t_famt)
 
@@ -2309,7 +2263,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list.str = output_list.str + \
                         to_string(waehrung.wabkurz, "x(4)")
                 else:
-                    output_list.str = output_list.str + "   "
+                    output_list.str = output_list.str + "    "
 
                 t_guest = get_cache(
                     Guest, {"gastnr": [(eq, debt.gastnrmember)]})
@@ -2319,14 +2273,10 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                 else:
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
-                output_list.str = output_list.str + \
-                    to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
-                output_list.str = output_list.str + \
-                    to_string(debitor.zahlkonto, ">>>>9")
-                output_list.str = output_list.str + \
-                    to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
-                output_list.str = output_list.str + \
-                    to_string(artikel.bezeich, "x(40)")
+                output_list.str = output_list.str + to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                output_list.str = output_list.str + to_string(debitor.zahlkonto, ">>>>9")
+                output_list.str = output_list.str + to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                output_list.str = output_list.str + to_string(artikel.bezeich, "x(40)")
 
                 s_list.betrag = to_decimal(
                     s_list.betrag) + to_decimal(debitor.saldo)
@@ -2334,7 +2284,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list_data.append(output_list)
 
         for i in range(1, 58 + 1):
-            output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "   "
         output_list.pay_amt = to_decimal(tot_saldo)
         output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -2355,7 +2305,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list_data.append(output_list)
 
         for i in range(1, 58 + 1):
-            output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "   "
         output_list.pay_amt = to_decimal(t_credit)
         output_list.pay_famt = to_decimal(t_famt)
 
@@ -2476,7 +2426,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list_data.append(output_list)
 
                     for i in range(1, 58 + 1):
-                        output_list.str = output_list.str + " "
+                        output_list.str = output_list.str + "   "
                     output_list.pay_amt = to_decimal(tot_saldo)
                     output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -2510,7 +2460,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                             output_list_data.append(output_list)
 
                             for i in range(1, 58 + 1):
-                                output_list.str = output_list.str + " "
+                                output_list.str = output_list.str + "   "
                             output_list.pay_amt = to_decimal(tot_saldo)
                             output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -2533,7 +2483,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         output_list_data.append(output_list)
 
                         for i in range(1, 58 + 1):
-                            output_list.str = output_list.str + " "
+                            output_list.str = output_list.str + "   "
                         output_list.pay_amt = to_decimal(t_credit)
                         output_list.pay_famt = to_decimal(t_famt)
 
@@ -2688,7 +2638,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list.str = output_list.str + \
                         to_string(waehrung.wabkurz, "x(4)")
                 else:
-                    output_list.str = output_list.str + "   "
+                    output_list.str = output_list.str + "    "
 
                 t_guest = get_cache(
                     Guest, {"gastnr": [(eq, debt.gastnrmember)]})
@@ -2713,7 +2663,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list_data.append(output_list)
 
         for i in range(1, 58 + 1):
-            output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "   "
         output_list.pay_amt = to_decimal(tot_saldo)
         output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -2734,7 +2684,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list_data.append(output_list)
 
         for i in range(1, 58 + 1):
-            output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "   "
         output_list.pay_amt = to_decimal(t_credit)
         output_list.pay_famt = to_decimal(t_famt)
 
@@ -2772,11 +2722,9 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         create_tot_payment()
 
     def create_list1fs():
-
         nonlocal r_no, s_list_data, t_list_data, t_ar_paylist_data, long_digit, htparam, guest, debitor, artikel, bill, bediener, waehrung
         nonlocal comment, cledger, ccard, last_sort, from_date, to_date, from_art, to_art, mi_payment, mi_transfer, show_inv, bill_name, bill_nr
         nonlocal bguest, bdebitor
-
         nonlocal s_list, t_list, output_list, t_ar_paylist, bguest, bdebitor, tbuff, bq
         nonlocal s_list_data, t_list_data, output_list_data, t_ar_paylist_data
 
@@ -2855,7 +2803,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list_data.append(output_list)
 
                     for i in range(1, 58 + 1):
-                        output_list.str = output_list.str + " "
+                        output_list.str = output_list.str + "   "
                     output_list.pay_amt = to_decimal(tot_saldo)
                     output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -2889,7 +2837,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                             output_list_data.append(output_list)
 
                             for i in range(1, 58 + 1):
-                                output_list.str = output_list.str + " "
+                                output_list.str = output_list.str + "   "
                             output_list.pay_amt = to_decimal(tot_saldo)
                             output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -2912,7 +2860,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         output_list_data.append(output_list)
 
                         for i in range(1, 58 + 1):
-                            output_list.str = output_list.str + " "
+                            output_list.str = output_list.str + "   "
                         output_list.pay_amt = to_decimal(t_credit)
                         output_list.pay_famt = to_decimal(t_famt)
 
@@ -3067,7 +3015,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list.str = output_list.str + \
                         to_string(waehrung.wabkurz, "x(4)")
                 else:
-                    output_list.str = output_list.str + "   "
+                    output_list.str = output_list.str + "    "
 
                 t_guest = get_cache(
                     Guest, {"gastnr": [(eq, debt.gastnrmember)]})
@@ -3092,7 +3040,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list_data.append(output_list)
 
         for i in range(1, 58 + 1):
-            output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "   "
         output_list.pay_amt = to_decimal(tot_saldo)
         output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -3113,7 +3061,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list_data.append(output_list)
 
         for i in range(1, 58 + 1):
-            output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "   "
         output_list.pay_amt = to_decimal(t_credit)
         output_list.pay_famt = to_decimal(t_famt)
 
@@ -3234,7 +3182,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list_data.append(output_list)
 
                     for i in range(1, 58 + 1):
-                        output_list.str = output_list.str + " "
+                        output_list.str = output_list.str + "   "
                     output_list.pay_amt = to_decimal(tot_saldo)
                     output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -3266,7 +3214,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         output_list_data.append(output_list)
 
                         for i in range(1, 58 + 1):
-                            output_list.str = output_list.str + " "
+                            output_list.str = output_list.str + "   "
                         output_list.pay_amt = to_decimal(t_credit)
                         output_list.pay_famt = to_decimal(t_famt)
 
@@ -3433,7 +3381,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list_data.append(output_list)
 
         for i in range(1, 58 + 1):
-            output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "   "
         output_list.pay_amt = to_decimal(tot_saldo)
         output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -3454,7 +3402,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list_data.append(output_list)
 
         for i in range(1, 58 + 1):
-            output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "   "
         output_list.pay_amt = to_decimal(t_credit)
         output_list.pay_famt = to_decimal(t_famt)
 
@@ -3575,7 +3523,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list_data.append(output_list)
 
                     for i in range(1, 58 + 1):
-                        output_list.str = output_list.str + " "
+                        output_list.str = output_list.str + "   "
                     output_list.pay_amt = to_decimal(tot_saldo)
                     output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -3607,7 +3555,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         output_list_data.append(output_list)
 
                         for i in range(1, 58 + 1):
-                            output_list.str = output_list.str + " "
+                            output_list.str = output_list.str + "   "
                         output_list.pay_amt = to_decimal(t_credit)
                         output_list.pay_famt = to_decimal(t_famt)
 
@@ -3774,7 +3722,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list_data.append(output_list)
 
         for i in range(1, 58 + 1):
-            output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "   "
         output_list.pay_amt = to_decimal(tot_saldo)
         output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -3795,7 +3743,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list_data.append(output_list)
 
         for i in range(1, 58 + 1):
-            output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "   "
         output_list.pay_amt = to_decimal(t_credit)
         output_list.pay_famt = to_decimal(t_famt)
 
@@ -3905,7 +3853,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list_data.append(output_list)
 
                     for i in range(1, 58 + 1):
-                        output_list.str = output_list.str + " "
+                        output_list.str = output_list.str + "   "
                     output_list.pay_amt = to_decimal(tot_saldo)
                     output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -3939,7 +3887,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                             output_list_data.append(output_list)
 
                             for i in range(1, 58 + 1):
-                                output_list.str = output_list.str + " "
+                                output_list.str = output_list.str + "   "
                             output_list.pay_amt = to_decimal(tot_saldo)
                             output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -3962,7 +3910,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         output_list_data.append(output_list)
 
                         for i in range(1, 58 + 1):
-                            output_list.str = output_list.str + " "
+                            output_list.str = output_list.str + "   "
                         output_list.pay_amt = to_decimal(t_credit)
                         output_list.pay_famt = to_decimal(t_famt)
 
@@ -4130,7 +4078,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list_data.append(output_list)
 
         for i in range(1, 58 + 1):
-            output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "   "
         output_list.pay_amt = to_decimal(tot_saldo)
         output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -4151,7 +4099,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list_data.append(output_list)
 
         for i in range(1, 58 + 1):
-            output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "   "
         output_list.pay_amt = to_decimal(t_credit)
         output_list.pay_famt = to_decimal(t_famt)
 
@@ -4272,7 +4220,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list_data.append(output_list)
 
                     for i in range(1, 58 + 1):
-                        output_list.str = output_list.str + " "
+                        output_list.str = output_list.str + "   "
                     output_list.pay_amt = to_decimal(tot_saldo)
                     output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -4303,7 +4251,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         output_list_data.append(output_list)
 
                         for i in range(1, 58 + 1):
-                            output_list.str = output_list.str + " "
+                            output_list.str = output_list.str + "   "
                         output_list.pay_amt = to_decimal(t_credit)
                         output_list.pay_famt = to_decimal(t_famt)
 
@@ -4468,7 +4416,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list_data.append(output_list)
 
         for i in range(1, 58 + 1):
-            output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "   "
         output_list.pay_amt = to_decimal(tot_saldo)
         output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -4489,7 +4437,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list_data.append(output_list)
 
         for i in range(1, 58 + 1):
-            output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "   "
         output_list.pay_amt = to_decimal(t_credit)
         output_list.pay_famt = to_decimal(t_famt)
 
@@ -4609,7 +4557,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list_data.append(output_list)
 
                     for i in range(1, 58 + 1):
-                        output_list.str = output_list.str + " "
+                        output_list.str = output_list.str + "   "
                     output_list.pay_amt = to_decimal(tot_saldo)
                     output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -4641,7 +4589,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         output_list_data.append(output_list)
 
                         for i in range(1, 58 + 1):
-                            output_list.str = output_list.str + " "
+                            output_list.str = output_list.str + "   "
                         output_list.pay_amt = to_decimal(t_credit)
                         output_list.pay_famt = to_decimal(t_famt)
 
@@ -4808,7 +4756,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list_data.append(output_list)
 
         for i in range(1, 58 + 1):
-            output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "   "
         output_list.pay_amt = to_decimal(tot_saldo)
         output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -4829,7 +4777,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list_data.append(output_list)
 
         for i in range(1, 58 + 1):
-            output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "   "
         output_list.pay_amt = to_decimal(t_credit)
         output_list.pay_famt = to_decimal(t_famt)
 
@@ -4949,7 +4897,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list_data.append(output_list)
 
                     for i in range(1, 58 + 1):
-                        output_list.str = output_list.str + " "
+                        output_list.str = output_list.str + "   "
                     output_list.pay_amt = to_decimal(tot_saldo)
                     output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -4981,7 +4929,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         output_list_data.append(output_list)
 
                         for i in range(1, 58 + 1):
-                            output_list.str = output_list.str + " "
+                            output_list.str = output_list.str + "   "
                         output_list.pay_amt = to_decimal(t_credit)
                         output_list.pay_famt = to_decimal(t_famt)
 
@@ -5143,7 +5091,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list_data.append(output_list)
 
         for i in range(1, 58 + 1):
-            output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "   "
         output_list.pay_amt = to_decimal(tot_saldo)
         output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -5164,7 +5112,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list_data.append(output_list)
 
         for i in range(1, 58 + 1):
-            output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "   "
         output_list.pay_amt = to_decimal(t_credit)
         output_list.pay_famt = to_decimal(t_famt)
 
@@ -5284,7 +5232,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list_data.append(output_list)
 
                     for i in range(1, 58 + 1):
-                        output_list.str = output_list.str + " "
+                        output_list.str = output_list.str + "   "
                     output_list.pay_amt = to_decimal(tot_saldo)
                     output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -5316,7 +5264,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         output_list_data.append(output_list)
 
                         for i in range(1, 58 + 1):
-                            output_list.str = output_list.str + " "
+                            output_list.str = output_list.str + "   "
                         output_list.pay_amt = to_decimal(t_credit)
                         output_list.pay_famt = to_decimal(t_famt)
 
@@ -5483,7 +5431,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list_data.append(output_list)
 
         for i in range(1, 58 + 1):
-            output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "   "
         output_list.pay_amt = to_decimal(tot_saldo)
         output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -5504,7 +5452,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list_data.append(output_list)
 
         for i in range(1, 58 + 1):
-            output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "   "
         output_list.pay_amt = to_decimal(t_credit)
         output_list.pay_famt = to_decimal(t_famt)
 
@@ -5624,7 +5572,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list_data.append(output_list)
 
                     for i in range(1, 58 + 1):
-                        output_list.str = output_list.str + " "
+                        output_list.str = output_list.str + "   "
                     output_list.pay_amt = to_decimal(tot_saldo)
                     output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -5656,7 +5604,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         output_list_data.append(output_list)
 
                         for i in range(1, 58 + 1):
-                            output_list.str = output_list.str + " "
+                            output_list.str = output_list.str + "   "
                         output_list.pay_amt = to_decimal(t_credit)
                         output_list.pay_famt = to_decimal(t_famt)
 
@@ -5823,7 +5771,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list_data.append(output_list)
 
         for i in range(1, 58 + 1):
-            output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "   "
         output_list.pay_amt = to_decimal(tot_saldo)
         output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -5844,7 +5792,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list_data.append(output_list)
 
         for i in range(1, 58 + 1):
-            output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "   "
         output_list.pay_amt = to_decimal(t_credit)
         output_list.pay_famt = to_decimal(t_famt)
 
@@ -5965,7 +5913,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list_data.append(output_list)
 
                     for i in range(1, 58 + 1):
-                        output_list.str = output_list.str + " "
+                        output_list.str = output_list.str + "   "
                     output_list.pay_amt = to_decimal(tot_saldo)
                     output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -5997,7 +5945,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         output_list_data.append(output_list)
 
                         for i in range(1, 58 + 1):
-                            output_list.str = output_list.str + " "
+                            output_list.str = output_list.str + "   "
                         output_list.pay_amt = to_decimal(t_credit)
                         output_list.pay_famt = to_decimal(t_famt)
 
@@ -6164,7 +6112,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list_data.append(output_list)
 
         for i in range(1, 58 + 1):
-            output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "   "
         output_list.pay_amt = to_decimal(tot_saldo)
         output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -6185,7 +6133,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list_data.append(output_list)
 
         for i in range(1, 58 + 1):
-            output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "   "
         output_list.pay_amt = to_decimal(t_credit)
         output_list.pay_famt = to_decimal(t_famt)
 
@@ -6306,7 +6254,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list_data.append(output_list)
 
                     for i in range(1, 58 + 1):
-                        output_list.str = output_list.str + " "
+                        output_list.str = output_list.str + "   "
                     output_list.pay_amt = to_decimal(tot_saldo)
                     output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -6338,7 +6286,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         output_list_data.append(output_list)
 
                         for i in range(1, 58 + 1):
-                            output_list.str = output_list.str + " "
+                            output_list.str = output_list.str + "   "
                         output_list.pay_amt = to_decimal(t_credit)
                         output_list.pay_famt = to_decimal(t_famt)
 
@@ -6505,7 +6453,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list_data.append(output_list)
 
         for i in range(1, 58 + 1):
-            output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "   "
         output_list.pay_amt = to_decimal(tot_saldo)
         output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -6526,7 +6474,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list_data.append(output_list)
 
         for i in range(1, 58 + 1):
-            output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "   "
         output_list.pay_amt = to_decimal(t_credit)
         output_list.pay_famt = to_decimal(t_famt)
 
@@ -6647,7 +6595,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list_data.append(output_list)
 
                     for i in range(1, 58 + 1):
-                        output_list.str = output_list.str + " "
+                        output_list.str = output_list.str + "   "
                     output_list.pay_amt = to_decimal(tot_saldo)
                     output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -6679,7 +6627,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         output_list_data.append(output_list)
 
                         for i in range(1, 58 + 1):
-                            output_list.str = output_list.str + " "
+                            output_list.str = output_list.str + "   "
                         output_list.pay_amt = to_decimal(tot_saldo)
                         output_list.pay_famt = to_decimal(t_famt)
 
@@ -6846,7 +6794,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list_data.append(output_list)
 
         for i in range(1, 58 + 1):
-            output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "   "
         output_list.pay_amt = to_decimal(tot_saldo)
         output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -6867,7 +6815,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list_data.append(output_list)
 
         for i in range(1, 58 + 1):
-            output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "   "
         output_list.pay_amt = to_decimal(t_credit)
         output_list.pay_famt = to_decimal(t_famt)
 
@@ -6988,7 +6936,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list_data.append(output_list)
 
                     for i in range(1, 58 + 1):
-                        output_list.str = output_list.str + " "
+                        output_list.str = output_list.str + "   "
                     output_list.pay_amt = to_decimal(tot_saldo)
                     output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -7020,7 +6968,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         output_list_data.append(output_list)
 
                         for i in range(1, 58 + 1):
-                            output_list.str = output_list.str + " "
+                            output_list.str = output_list.str + "   "
                         output_list.pay_amt = to_decimal(t_credit)
                         output_list.pay_famt = to_decimal(t_famt)
 
@@ -7187,7 +7135,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list_data.append(output_list)
 
         for i in range(1, 58 + 1):
-            output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "   "
         output_list.pay_amt = to_decimal(tot_saldo)
         output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -7208,7 +7156,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list_data.append(output_list)
 
         for i in range(1, 58 + 1):
-            output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "   "
         output_list.pay_amt = to_decimal(t_credit)
         output_list.pay_famt = to_decimal(t_famt)
 
@@ -7329,7 +7277,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list_data.append(output_list)
 
                     for i in range(1, 58 + 1):
-                        output_list.str = output_list.str + " "
+                        output_list.str = output_list.str + "   "
                     output_list.pay_amt = to_decimal(tot_saldo)
                     output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -7361,7 +7309,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         output_list_data.append(output_list)
 
                         for i in range(1, 58 + 1):
-                            output_list.str = output_list.str + " "
+                            output_list.str = output_list.str + "   "
                         output_list.pay_amt = to_decimal(t_credit)
                         output_list.pay_famt = to_decimal(t_famt)
 
@@ -7528,7 +7476,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list_data.append(output_list)
 
         for i in range(1, 58 + 1):
-            output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "   "
         output_list.pay_amt = to_decimal(tot_saldo)
         output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -7549,7 +7497,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list_data.append(output_list)
 
         for i in range(1, 58 + 1):
-            output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "   "
         output_list.pay_amt = to_decimal(t_credit)
         output_list.pay_famt = to_decimal(t_famt)
 
@@ -7670,7 +7618,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list_data.append(output_list)
 
                     for i in range(1, 58 + 1):
-                        output_list.str = output_list.str + " "
+                        output_list.str = output_list.str + "   "
                     output_list.pay_amt = to_decimal(tot_saldo)
                     output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -7702,7 +7650,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         output_list_data.append(output_list)
 
                         for i in range(1, 58 + 1):
-                            output_list.str = output_list.str + " "
+                            output_list.str = output_list.str + "   "
                         output_list.pay_amt = to_decimal(t_credit)
                         output_list.pay_famt = to_decimal(t_famt)
 
@@ -7763,8 +7711,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 output_list.bill_art = artikel.artnr
                 output_list.debt_counter = debitor.counter
-                output_list.famt = to_string(
-                    debt.vesrdep, "->>,>>>,>>>,>>9.99")
+                output_list.famt = to_string(debt.vesrdep, "->>,>>>,>>>,>>9.99")
 
                 if show_inv:
 
@@ -7869,7 +7816,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list_data.append(output_list)
 
         for i in range(1, 58 + 1):
-            output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "   "
         output_list.pay_amt = to_decimal(tot_saldo)
         output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -7890,7 +7837,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list_data.append(output_list)
 
         for i in range(1, 58 + 1):
-            output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "   "
         output_list.pay_amt = to_decimal(t_credit)
         output_list.pay_famt = to_decimal(t_famt)
 
@@ -8011,7 +7958,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list_data.append(output_list)
 
                     for i in range(1, 58 + 1):
-                        output_list.str = output_list.str + " "
+                        output_list.str = output_list.str + "   "
                     output_list.pay_amt = to_decimal(tot_saldo)
                     output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -8043,7 +7990,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         output_list_data.append(output_list)
 
                         for i in range(1, 58 + 1):
-                            output_list.str = output_list.str + " "
+                            output_list.str = output_list.str + "   "
                         output_list.pay_amt = to_decimal(t_credit)
                         output_list.pay_famt = to_decimal(t_famt)
 
@@ -8210,7 +8157,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list_data.append(output_list)
 
         for i in range(1, 58 + 1):
-            output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "   "
         output_list.pay_amt = to_decimal(tot_saldo)
         output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -8231,7 +8178,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list_data.append(output_list)
 
         for i in range(1, 58 + 1):
-            output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "   "
         output_list.pay_amt = to_decimal(t_credit)
         output_list.pay_famt = to_decimal(t_famt)
 
@@ -8352,7 +8299,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list_data.append(output_list)
 
                     for i in range(1, 58 + 1):
-                        output_list.str = output_list.str + " "
+                        output_list.str = output_list.str + "   "
                     output_list.pay_amt = to_decimal(tot_saldo)
                     output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -8384,7 +8331,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         output_list_data.append(output_list)
 
                         for i in range(1, 58 + 1):
-                            output_list.str = output_list.str + " "
+                            output_list.str = output_list.str + "   "
                         output_list.pay_amt = to_decimal(tot_saldo)
                         output_list.pay_famt = to_decimal(t_famt)
 
@@ -8551,7 +8498,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list_data.append(output_list)
 
         for i in range(1, 58 + 1):
-            output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "   "
         output_list.pay_amt = to_decimal(tot_saldo)
         output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -8572,7 +8519,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list_data.append(output_list)
 
         for i in range(1, 58 + 1):
-            output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "   "
         output_list.pay_amt = to_decimal(t_credit)
         output_list.pay_famt = to_decimal(t_famt)
 
@@ -8693,7 +8640,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list_data.append(output_list)
 
                     for i in range(1, 58 + 1):
-                        output_list.str = output_list.str + " "
+                        output_list.str = output_list.str + "   "
                     output_list.pay_amt = to_decimal(tot_saldo)
                     output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -8725,7 +8672,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         output_list_data.append(output_list)
 
                         for i in range(1, 58 + 1):
-                            output_list.str = output_list.str + " "
+                            output_list.str = output_list.str + "   "
                         output_list.pay_amt = to_decimal(t_credit)
                         output_list.pay_famt = to_decimal(t_famt)
 
@@ -8892,7 +8839,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list_data.append(output_list)
 
         for i in range(1, 58 + 1):
-            output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "   "
         output_list.pay_amt = to_decimal(tot_saldo)
         output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -8913,7 +8860,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list_data.append(output_list)
 
         for i in range(1, 58 + 1):
-            output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "   "
         output_list.pay_amt = to_decimal(t_credit)
         output_list.pay_famt = to_decimal(t_famt)
 
@@ -9024,7 +8971,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list_data.append(output_list)
 
                     for i in range(1, 58 + 1):
-                        output_list.str = output_list.str + " "
+                        output_list.str = output_list.str + "   "
                     output_list.pay_amt = to_decimal(tot_saldo)
                     output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -9058,7 +9005,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                             output_list_data.append(output_list)
 
                             for i in range(1, 58 + 1):
-                                output_list.str = output_list.str + " "
+                                output_list.str = output_list.str + "   "
                             output_list.pay_amt = to_decimal(tot_saldo)
                             output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -9081,7 +9028,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         output_list_data.append(output_list)
 
                         for i in range(1, 58 + 1):
-                            output_list.str = output_list.str + " "
+                            output_list.str = output_list.str + "   "
                         output_list.pay_amt = to_decimal(t_credit)
                         output_list.pay_famt = to_decimal(t_famt)
 
@@ -9249,7 +9196,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list_data.append(output_list)
 
         for i in range(1, 58 + 1):
-            output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "   "
         output_list.pay_amt = to_decimal(tot_saldo)
         output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -9270,7 +9217,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list_data.append(output_list)
 
         for i in range(1, 58 + 1):
-            output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "   "
         output_list.pay_amt = to_decimal(t_credit)
         output_list.pay_famt = to_decimal(t_famt)
 
@@ -9381,7 +9328,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list_data.append(output_list)
 
                     for i in range(1, 58 + 1):
-                        output_list.str = output_list.str + " "
+                        output_list.str = output_list.str + "   "
                     output_list.pay_amt = to_decimal(tot_saldo)
                     output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -9415,7 +9362,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                             output_list_data.append(output_list)
 
                             for i in range(1, 58 + 1):
-                                output_list.str = output_list.str + " "
+                                output_list.str = output_list.str + "   "
                             output_list.pay_amt = to_decimal(tot_saldo)
                             output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -9438,7 +9385,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         output_list_data.append(output_list)
 
                         for i in range(1, 58 + 1):
-                            output_list.str = output_list.str + " "
+                            output_list.str = output_list.str + "   "
                         output_list.pay_amt = to_decimal(t_credit)
                         output_list.pay_famt = to_decimal(t_famt)
 
@@ -9606,7 +9553,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list_data.append(output_list)
 
         for i in range(1, 58 + 1):
-            output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "   "
         output_list.pay_amt = to_decimal(tot_saldo)
         output_list.pay_famt = to_decimal(tot_foreign)
 
@@ -9627,7 +9574,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list_data.append(output_list)
 
         for i in range(1, 58 + 1):
-            output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "   "
         output_list.pay_amt = to_decimal(t_credit)
         output_list.pay_famt = to_decimal(t_famt)
 
@@ -9672,17 +9619,20 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
     for output_list in query(output_list_data):
         t_ar_paylist = T_ar_paylist()
         t_ar_paylist_data.append(t_ar_paylist)
+        
+        log_program.write_log("LOG", f"output_str: {output_list.str}")
 
         t_ar_paylist.bill_date = substring(output_list.str, 0, 8)
         t_ar_paylist.bill_num = substring(output_list.str, 8, 11)
         t_ar_paylist.inv_num = output_list.inv_no
-        t_ar_paylist.bill_rcv = substring(output_list.str, 19, 32)
+        t_ar_paylist.bill_rcv = substring(output_list.str, 19, 34)
         t_ar_paylist.debt_amt = substring(output_list.str, 51, 17)
-        t_ar_paylist.curr = substring(output_list.str, 182, 4)
-        t_ar_paylist.pay_art = substring(output_list.str, 85, 34)
-        t_ar_paylist.pay_date = substring(output_list.str, 119, 8)
-        t_ar_paylist.uid = substring(output_list.str, 127, 3)
-        t_ar_paylist.pay_comment = substring(output_list.str, 130, 34)
+        t_ar_paylist.curr = substring(output_list.str, 300, 3)
+        # t_ar_paylist.curr =  ""
+        t_ar_paylist.pay_art = substring(output_list.str, 83, 34)
+        t_ar_paylist.pay_date = substring(output_list.str, 117, 8)
+        t_ar_paylist.uid = substring(output_list.str, 125, 3)
+        t_ar_paylist.pay_comment = substring(output_list.str, 128, 34)
         t_ar_paylist.tot_pay = output_list.sbetrag
         t_ar_paylist.artno = to_string(output_list.bill_art)
         t_ar_paylist.debt_counter = to_string(output_list.debt_counter)
