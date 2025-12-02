@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 3/12/2025, Locking Test
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Bill
@@ -30,7 +32,8 @@ def fo_invoice_disp_totbalancebl(bil_recid:int):
 
     tot_balance =  to_decimal("0")
 
-    bill = get_cache (Bill, {"_recid": [(eq, bil_recid)]})
+    # bill = get_cache (Bill, {"_recid": [(eq, bil_recid)]})
+    bill = db_session.query(Bill).filter(Bill._recid == bil_recid).first()
 
     for bill1 in db_session.query(Bill1).filter(
              (Bill1.resnr == bill.resnr) & (Bill1.parent_nr == bill.parent_nr) & (Bill1.flag == 0) & (Bill1.zinr == bill.zinr)).order_by(Bill1._recid).all():

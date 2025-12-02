@@ -94,14 +94,20 @@ def cancel_dpurchasebl(lief_nr:int, docu_nr:string, user_init:string):
 
         if not l_kredit:
 
-            l_kredit = get_cache (L_kredit, {"lief_nr": [(eq, lief_nr)],"lscheinnr": [(eq, lscheinnr)],"rgdatum": [(eq, billdate)]})
+            # l_kredit = get_cache (L_kredit, {"lief_nr": [(eq, lief_nr)],"lscheinnr": [(eq, lscheinnr)],"rgdatum": [(eq, billdate)]})
+            l_kredit = db_session.query(L_kredit).filter(
+                     (L_kredit.lief_nr == lief_nr) & (L_kredit.lscheinnr == lscheinnr) &
+                     (L_kredit.rgdatum == billdate)).with_for_update().first()
 
         if l_kredit:
             pass
             db_session.delete(l_kredit)
             pass
 
-            ap_journal = get_cache (Ap_journal, {"lief_nr": [(eq, lief_nr)],"docu_nr": [(eq, doc_nr)],"lscheinnr": [(eq, lscheinnr)]})
+            # ap_journal = get_cache (Ap_journal, {"lief_nr": [(eq, lief_nr)],"docu_nr": [(eq, doc_nr)],"lscheinnr": [(eq, lscheinnr)]})
+            ap_journal = db_session.query(Ap_journal).filter(
+                     (Ap_journal.lief_nr == lief_nr) & (Ap_journal.docu_nr == doc_nr) &
+                     (Ap_journal.lscheinnr == lscheinnr)).with_for_update().first()
 
             if ap_journal:
                 pass

@@ -62,11 +62,10 @@ def mastbill_createbl(resnr:int, curr_segm:int):
     bill_receiver = guest.name + ", " + guest.vorname1 + " " + guest.anrede1 + guest.anredefirma
 
     # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
-    # counters.counter = counters.counter + 1
-    last_count, error_lock = get_output(next_counter_for_update(3))
-
-    pass
-    master.rechnr = last_count
+    counters = db_session.query(Counters).filter(
+             (Counters.counter_no == 3)).with_for_update().first()
+    counters.counter = counters.counter + 1
+    master.rechnr = counters.counter
     
 
     bill = get_cache (Bill, {"resnr": [(eq, resnr)],"reslinnr": [(eq, 0)]})
@@ -79,8 +78,7 @@ def mastbill_createbl(resnr:int, curr_segm:int):
     bill.reslinnr = 0
     bill.rgdruck = 1
     bill.billtyp = 2
-    # bill.rechnr = counters.counter
-    bill.rechnr = last_count
+    bill.rechnr = counters.counter
 
     bill.gastnr = master.gastnrpay
     bill.name = bill_receiver

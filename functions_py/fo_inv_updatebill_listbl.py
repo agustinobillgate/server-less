@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 3/12/2025, Locking Test
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -13,7 +15,11 @@ from functions.fo_invoice_disp_totbalancebl import fo_invoice_disp_totbalancebl
 from functions.fo_invoice_disp_bill_linebl import fo_invoice_disp_bill_linebl
 from models import Bill, Bill_line, Bediener, Res_line, Artikel
 
-def fo_inv_updatebill_listbl(bil_recid:int, curr_rechnr:int, tbill_flag:int, change_date:bool, resnr:int, reslinnr:int, pvilanguage:int, bil_flag:int, transdate:date, billart:int, curr_department:int, amount:Decimal, amount_foreign:Decimal, description:string, qty:int, curr_room:string, user_init:string, artnr:int, price:Decimal, exchg_rate:Decimal, price_decimal:int, double_currency:bool, p_83:bool, kreditlimit:Decimal, foreign_rate:bool, bill_date:date, voucher_nr:string, cancel_str:string):
+def fo_inv_updatebill_listbl(bil_recid:int, curr_rechnr:int, tbill_flag:int, change_date:bool, resnr:int, 
+                             reslinnr:int, pvilanguage:int, bil_flag:int, transdate:date, billart:int, curr_department:int, 
+                             amount:Decimal, amount_foreign:Decimal, description:string, qty:int, curr_room:string, user_init:string, 
+                             artnr:int, price:Decimal, exchg_rate:Decimal, price_decimal:int, double_currency:bool, p_83:bool, 
+                             kreditlimit:Decimal, foreign_rate:bool, bill_date:date, voucher_nr:string, cancel_str:string):
 
     prepare_cache ([Res_line, Artikel])
 
@@ -54,8 +60,18 @@ def fo_inv_updatebill_listbl(bil_recid:int, curr_rechnr:int, tbill_flag:int, cha
     spbill_list_data, Spbill_list = create_model("Spbill_list", {"selected":bool, "bl_recid":int}, {"selected": True})
     t_bill_line_data, T_bill_line = create_model_like(Bill_line, {"rec_id":int})
     tp_bediener_data, Tp_bediener = create_model_like(Bediener)
-
+    """
+    def fo_inv_updatebill_listbl(bil_recid:int, curr_rechnr:int, tbill_flag:int, change_date:bool, resnr:int, 
+                             reslinnr:int, pvilanguage:int, bil_flag:int, transdate:date, billart:int, curr_department:int, 
+                             amount:Decimal, amount_foreign:Decimal, description:string, qty:int, curr_room:string, user_init:string, 
+                             artnr:int, price:Decimal, exchg_rate:Decimal, price_decimal:int, double_currency:bool, p_83:bool, 
+                             kreditlimit:Decimal, foreign_rate:bool, bill_date:date, voucher_nr:string, cancel_str:string):"""
     db_session = local_storage.db_session
+    description = description.strip()
+    curr_room = curr_room.strip()
+    voucher_nr = voucher_nr.strip()
+    cancel_str = cancel_str.strip()
+    
 
     def generate_output():
         nonlocal msgstr, master_str, master_rechnr, balance, balance_foreign, void_approve, flag2, flag3, tot_balance, t_bill_data, t_bill_line_data, spbill_list_data, lvcarea, room, gname, billdatum, skip_it, buff_rechnr, master_flag, currzeit, ex_rate, mess_str, msg_str, flag1, rechnr, cancel_flag, p_253, zugriff, err_str, bill, bill_line, bediener, res_line, artikel

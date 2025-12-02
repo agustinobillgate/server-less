@@ -57,7 +57,7 @@ def close_inventory_step1bl(pvilanguage:int, closedate:date, inv_type:int, m_end
             l_besthis.anf_best_dat = startdate
 
             l_onhand = db_session.query(L_onhand).filter(
-                     (L_onhand._recid == l_bestand._recid)).first()
+                     (L_onhand._recid == l_bestand._recid)).with_for_update().first()
             db_session.delete(l_onhand)
             pass
 

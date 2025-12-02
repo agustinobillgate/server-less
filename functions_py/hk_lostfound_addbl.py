@@ -58,18 +58,18 @@ def hk_lostfound_addbl(zinr:string, from_date:date, zeit:string, dept:int,
                 to_int(substring(zeit, 2, 2)) * 60 + to_int(substring(zeit, 4, 2))
 
         # counters = get_cache (Counters, {"counter_no": [(eq, 11)]})
+        counters = db_session.query(Counters).filter(
+            (Counters.counter_no == 11)).with_for_update().first()
 
-        # if not counters:
-        #     counters = Counters()
-        #     db_session.add(counters)
+        if not counters:
+            counters = Counters()
+            db_session.add(counters)
 
-        #     counters.counter_no = 11
-        #     counters.counter_bez = "Lost+Found Counter"
+            counters.counter_no = 11
+            counters.counter_bez = "Lost+Found Counter"
 
 
-        # counters.counter = counters.counter + 1
-        last_count, error_lock = get_output(next_counter_for_update(11))
-        pass
+        counters.counter = counters.counter + 1
 
         if claim_date == None:
             claim_date_str = ""
@@ -85,8 +85,7 @@ def hk_lostfound_addbl(zinr:string, from_date:date, zeit:string, dept:int,
         queasy.number2 = bediener.nr
         queasy.char2 = reason
         queasy.betriebsnr = dept
-        # queasy.number3 = counters.counter
-        queasy.number3 = last_count
+        queasy.number3 = counters.counter
         
         foundby = replace_str(foundby, "|", "")
         submitted = replace_str(submitted, "|", "")

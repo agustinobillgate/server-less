@@ -81,30 +81,28 @@ def ap_debtpay_get_voucherbl(age_list_data: [Age_list], pvilanguage: int):
 
     # Rd, 24/11/2025, Update last counter dengan next_counter_for_update
     # counters = get_cache (Counters, {"counter_no": [(eq, 40)]})
-    # if not counters:
-    #     counters = Counters()
-    #     db_session.add(counters)
+    counters = db_session.query(Counters).filter(Counters.counter_no == 40).with_for_update().first()
+    if not counters:
+        counters = Counters()
+        db_session.add(counters)
 
-    #     counters.counter_no = 40
-    #     counters.counter_bez = "Counter for AP Payment Voucher No."
+        counters.counter_no = 40
+        counters.counter_bez = "Counter for AP Payment Voucher No."
 
-    # counters.counter = counters.counter + 1
+    counters.counter = counters.counter + 1
 
-    last_count, error_lock = get_output(next_counter_for_update(40))
 
     pass
     # msg_str = msg_str + chr_unicode(2) + translateExtended ("DONE. A/P Payment Voucher Number", lvcarea, "") + " = " + to_string(counters.counter, "9999999")
     msg_str = f"{msg_str}{chr_unicode(2)}{translateExtended('DONE. A/P Payment Voucher Number', lvcarea, '')} = {to_string(last_count, '9999999')}"  # yusufwijasena: changed counters.counter to last_count
 
     for abuff in query(abuff_data, filters=(lambda abuff: abuff.selected)):
-        # abuff.rechnr = counters.counter
-        abuff.rechnr = last_count
+        abuff.rechnr = counters.counter
 
         l_kredit = db_session.query(L_kredit).filter(
             L_kredit._recid == abuff.ap_recid).with_for_update().first()
         if l_kredit:
-            # l_kredit.rechnr = counters.counter
-            l_kredit.rechnr = last_count
+            l_kredit.rechnr = counters.counter
 
     if trim(p_786) != "":
         queasy = Queasy()

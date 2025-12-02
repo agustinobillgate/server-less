@@ -31,7 +31,7 @@ def bookengine_ratecodepull_btn_exitbl(t_push_list_data:[T_push_list], bookengid
         return {}
 
     for queasy in db_session.query(Queasy).filter(
-             (Queasy.key == 163) & (Queasy.number1 == bookengid)).order_by(Queasy._recid).all():
+             (Queasy.key == 163) & (Queasy.number1 == bookengid)).order_by(Queasy._recid).with_for_update().all():
         db_session.delete(queasy)
 
     for t_push_list in query(t_push_list_data):

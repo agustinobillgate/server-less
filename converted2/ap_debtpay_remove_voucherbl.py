@@ -34,7 +34,9 @@ def ap_debtpay_remove_voucherbl(age_list_data:[Age_list]):
 
     for age_list in query(age_list_data, filters=(lambda age_list: age_list.selected)):
 
-        queasy = get_cache (Queasy, {"key": [(eq, 173)],"number1": [(eq, age_list.lief_nr)],"number2": [(eq, age_list.rechnr)]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 173)],"number1": [(eq, age_list.lief_nr)],"number2": [(eq, age_list.rechnr)]})
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 173) & (Queasy.number1 == age_list.lief_nr) & (Queasy.number2 == age_list.rechnr)).with_for_update().first()
 
         if queasy:
             pass
@@ -43,7 +45,9 @@ def ap_debtpay_remove_voucherbl(age_list_data:[Age_list]):
         age_list.rechnr = 0
         age_list.selected = False
 
-        l_kredit = get_cache (L_kredit, {"_recid": [(eq, age_list.ap_recid)]})
+        # l_kredit = get_cache (L_kredit, {"_recid": [(eq, age_list.ap_recid)]})
+        l_kredit = db_session.query(L_kredit).filter(
+                 (L_kredit._recid == age_list.ap_recid)).with_for_update().first()
         l_kredit.rechnr = 0
 
 

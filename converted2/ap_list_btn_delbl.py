@@ -32,7 +32,9 @@ def ap_list_btn_delbl(pvilanguage:int, ap_recid:int, user_init:string):
         return {"msg_str": msg_str}
 
 
-    l_kredit = get_cache (L_kredit, {"_recid": [(eq, ap_recid)]})
+    # l_kredit = get_cache (L_kredit, {"_recid": [(eq, ap_recid)]})
+    l_kredit = db_session.query(Apbuff).filter(
+             (Apbuff._recid == ap_recid)).with_for_update().first()
 
     if l_kredit:
 
@@ -46,7 +48,9 @@ def ap_list_btn_delbl(pvilanguage:int, ap_recid:int, user_init:string):
 
                 return generate_output()
 
-        gl_jouhdr = get_cache (Gl_jouhdr, {"refno": [(eq, l_kredit.name)],"datum": [(eq, l_kredit.rgdatum)]})
+        # gl_jouhdr = get_cache (Gl_jouhdr, {"refno": [(eq, l_kredit.name)],"datum": [(eq, l_kredit.rgdatum)]})
+        gl_jouhdr = db_session.query(Gl_jouhdr).filter(
+                 (Gl_jouhdr.refno == l_kredit.name) & (Gl_jouhdr.datum == l_kredit.rgdatum)).with_for_update().first()
 
         if gl_jouhdr and gl_jouhdr.activeflag == 1:
             msg_str = msg_str + chr_unicode(2) + translateExtended ("The related journals are no longer active.", lvcarea, "")
@@ -56,7 +60,7 @@ def ap_list_btn_delbl(pvilanguage:int, ap_recid:int, user_init:string):
         if gl_jouhdr:
 
             for gl_journal in db_session.query(Gl_journal).filter(
-                         (Gl_journal.jnr == gl_jouhdr.jnr)).order_by(Gl_journal._recid).all():
+                         (Gl_journal.jnr == gl_jouhdr.jnr)).order_by(Gl_journal._recid).with_for_update().all():
                 db_session.delete(gl_journal)
             pass
             pass

@@ -96,7 +96,8 @@ def deposit2billbl(resno:int, reslinno:int):
 
         if mbill.rechnr == 0:
 
-            counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
+            # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
+            counters = db_session.query(Counters).filter(Counters.counter_no == 3).with_for_update().first()
 
             if not counters:
                 counters = Counters()
@@ -106,9 +107,8 @@ def deposit2billbl(resno:int, reslinno:int):
                 counters.counter_bez = "Counter for Bill No"
 
 
-            # counters.counter = counters.counter + 1
-            last_count, error_lock = get_output(next_counter_for_update(3))
-            mbill.rechnr = last_count
+            counters.counter = counters.counter + 1
+            mbill.rechnr = counters.counter
 
             
             pass
@@ -210,7 +210,8 @@ def deposit2billbl(resno:int, reslinno:int):
         inv_nr = update_mastbill()
     else:
 
-        counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
+        # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
+        counters = db_session.query(Counters).filter(Counters.counter_no == 3).with_for_update().first()
 
         if not counters:
             counters = Counters()

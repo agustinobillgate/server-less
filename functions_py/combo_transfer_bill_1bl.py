@@ -7,7 +7,7 @@ from decimal import Decimal
 from datetime import date
 from functions.htpdate import htpdate
 from models import Bill, Htparam, Artikel, Counters, Umsatz, Bill_line, Billjournal, Res_line
-from functions.next_counter_for_update import next_counter_for_update
+from sqlalchemy.orm import flag_modified
 
 def combo_transfer_bill_1bl(pvilanguage:int, dept_type:int, dept:int, dept_bezeich:string, h_bill_rechnr:int, transdate:date, double_currency:bool, exchg_rate:Decimal, bilrecid:int, foreign_rate:bool, user_init:string, amount:Decimal, amount_foreign:Decimal):
 
@@ -83,19 +83,16 @@ def combo_transfer_bill_1bl(pvilanguage:int, dept_type:int, dept:int, dept_bezei
     if bill.rechnr == 0:
 
         # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
-        # counters.counter = counters.counter + 1
-        # pass
-        # bill.rechnr = counters.counter
-        last_count, error_lock = get_output(next_counter_for_update(3))
-        bill.rechnr = last_count
-
+        counters = db_session.query(Counters).filter(Counters.counter_no == 3).with_for_update().first()
+        counters.counter = counters.counter + 1
+        bill.rechnr = counters.counter
 
     if bill.datum < bill_date:
         bill.datum = bill_date
     bill.saldo =  to_decimal(bill.saldo) + to_decimal(amount)
     bill.mwst[98] = bill.mwst[98] + amount_foreign
     bill.rgdruck = 0
-
+    flag_modified(bill, "mwst")
 
     pass
 

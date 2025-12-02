@@ -35,7 +35,7 @@ def create_gcfbl(gnat:string, gland:string, def_natcode:string, gastid:string, n
         curr_gastnr = 0
 
         guest = db_session.query(Guest).filter(
-                 (Guest.gastnr < 0)).first()
+                 (Guest.gastnr < 0)).with_for_update().first()
 
         if guest:
             curr_gastnr = - guest.gastnr

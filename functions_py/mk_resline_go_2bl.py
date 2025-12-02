@@ -996,15 +996,13 @@ def mk_resline_go_2bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
                     else:
 
                         # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
-                        # counters.counter = counters.counter + 1
-                        # bill.rechnr = counters.counter
-                        # pass
-                        # pass
-                        # master.rechnr = bill.rechnr
-                        last_count, error_lock = get_output(next_counter_for_update(3))
-                        bill.rechnr = last_count
+                        counters = db_session.query(Counters).filter(
+                                 (Counters.counter_no == 3)).with_for_update().first()
+                        counters.counter = counters.counter + 1
+                        bill.rechnr = counters.counter
+                        
                         master.rechnr = bill.rechnr
-                        pass
+                        
                 bill.gastnr = reslin_list.gastnr
                 bill.name = rgast.name
                 bill.segmentcode = reservation.segmentcode

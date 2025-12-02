@@ -77,7 +77,7 @@ def arl_list_cancelcibl(recid_resline:int, user_init:string, t_ankunft:date):
     billnumber = ""
 
     for bill in db_session.query(Bill).filter(
-             (Bill.resnr == res_line.resnr) & (Bill.parent_nr == res_line.reslinnr)).order_by(Bill._recid).all():
+             (Bill.resnr == res_line.resnr) & (Bill.parent_nr == res_line.reslinnr)).order_by(Bill._recid).with_for_update().all():
 
         if bill.rechnr == 0:
             db_session.delete(bill)
@@ -191,7 +191,8 @@ def arl_list_cancelcibl(recid_resline:int, user_init:string, t_ankunft:date):
             pass
 
         for zimplan in db_session.query(Zimplan).filter(
-                 (Zimplan.zinr == res_line.zinr) & (Zimplan.gastnrmember == res_line.gastnrmember) & (Zimplan.datum >= res_line.ankunft) & (Zimplan.datum <= (res_line.abreise - 1))).order_by(Zimplan._recid).all():
+                 (Zimplan.zinr == res_line.zinr) & (Zimplan.gastnrmember == res_line.gastnrmember) & 
+                 (Zimplan.datum >= res_line.ankunft) & (Zimplan.datum <= (res_line.abreise - 1))).order_by(Zimplan._recid).with_for_update().all():
             db_session.delete(zimplan)
             pass
 

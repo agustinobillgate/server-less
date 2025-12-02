@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 3/12/2025, Locking Test
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Bill_line, Bill
@@ -30,7 +32,8 @@ def fo_invoice_disp_bill_linebl(bil_recid:int, double_currency:bool):
         return {"t-bill-line": t_bill_line_data, "t-spbill-list": t_spbill_list_data}
 
 
-    bill = get_cache (Bill, {"_recid": [(eq, bil_recid)]})
+    # bill = get_cache (Bill, {"_recid": [(eq, bil_recid)]})
+    bill = db_session.query(Bill).filter(Bill._recid == bil_recid).first()
 
     if bill:
 

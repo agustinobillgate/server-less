@@ -438,17 +438,16 @@ def allot_overbookbl(pvilanguage:int, res_mode:string, curr_resnr:int, curr_resl
                 changed = True
 
                 # counters = get_cache (Counters, {"counter_no": [(eq, 10)]})
-                # counters.counter = counters.counter + 1
-                last_count, error_lock = get_output(next_counter_for_update(24))
-
+                counters = db_session.query(Counters).filter(Counters.counter_no == 10).with_for_update().first()
+                counters.counter = counters.counter + 1
+ 
                 pass
                 kline = Kontline()
                 db_session.add(kline)
 
                 kline.betriebsnr = to_int(kontignr < 0)
                 
-                # kline.kontignr = counters.counter
-                kline.kontignr = last_count
+                kline.kontignr = counters.counter
 
                 kline.gastnr = kontline.gastnr
                 kline.useridanlage = ""

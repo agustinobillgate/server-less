@@ -50,10 +50,13 @@ def close_inventory_step4bl(inv_type:int, m_endkum:int, closedate:date, todate:d
             if del_it:
 
                 for l_op in db_session.query(L_op).filter(
-                         (L_op.op_art >= 13) & (L_op.op_art <= 14) & (L_op.datum == l_ophdr.datum) & (L_op.lscheinnr == l_ophdr.lscheinnr)).order_by(L_op._recid).all():
+                         (L_op.op_art >= 13) & (L_op.op_art <= 14) & (L_op.datum == l_ophdr.datum) & 
+                         (L_op.lscheinnr == l_ophdr.lscheinnr)).order_by(L_op._recid).with_for_update().all():
                     db_session.delete(l_op)
 
-                ophbuff = get_cache (L_ophdr, {"_recid": [(eq, l_ophdr._recid)]})
+                # ophbuff = get_cache (L_ophdr, {"_recid": [(eq, l_ophdr._recid)]})
+                ophbuff = db_session.query(Ophbuff).filter(
+                         (Ophbuff._recid == l_ophdr._recid)).with_for_update().first()
                 db_session.delete(ophbuff)
                 pass
 
@@ -141,7 +144,9 @@ def close_inventory_step4bl(inv_type:int, m_endkum:int, closedate:date, todate:d
                  (L_bestand.lager_nr == l_lager.lager_nr) & ((L_bestand.anf_best_dat <= closedate) | (L_bestand.anf_best_dat == None))).first()
         while None != l_bestand:
 
-            l_artikel = get_cache (L_artikel, {"artnr": [(eq, l_bestand.artnr)]})
+            # l_artikel = get_cache (L_artikel, {"artnr": [(eq, l_bestand.artnr)]})
+            l_artikel = db_session.query(L_artikel).filter(
+                         (L_artikel.artnr == l_bestand.artnr)).with_for_update().first()
 
             if not l_artikel:
                 pass
@@ -161,7 +166,9 @@ def close_inventory_step4bl(inv_type:int, m_endkum:int, closedate:date, todate:d
                  (L_bestand.lager_nr == 0) & ((L_bestand.anf_best_dat <= closedate) | (L_bestand.anf_best_dat == None))).first()
     while None != l_bestand:
 
-        l_artikel = get_cache (L_artikel, {"artnr": [(eq, l_bestand.artnr)]})
+        # l_artikel = get_cache (L_artikel, {"artnr": [(eq, l_bestand.artnr)]})
+        l_artikel = db_session.query(L_artikel).filter(
+                     (L_artikel.artnr == l_bestand.artnr)).with_for_update().first()
 
         if not l_artikel:
             pass
@@ -183,7 +190,9 @@ def close_inventory_step4bl(inv_type:int, m_endkum:int, closedate:date, todate:d
                  (L_bestand.lager_nr == l_lager.lager_nr) & ((L_bestand.anf_best_dat <= closedate) | (L_bestand.anf_best_dat == None))).first()
         while None != l_bestand:
 
-            l_artikel = get_cache (L_artikel, {"artnr": [(eq, l_bestand.artnr)]})
+            # l_artikel = get_cache (L_artikel, {"artnr": [(eq, l_bestand.artnr)]})
+            l_artikel = db_session.query(L_artikel).filter(
+                         (L_artikel.artnr == l_bestand.artnr)).with_for_update().first()
 
             if not l_artikel:
                 pass

@@ -68,7 +68,8 @@ def eg_mainschedule_btn_go_webbl(maintain_data:[Maintain], action_data:[Action],
         tdate = a + timedelta(days=360)
         while a <= tdate:
 
-            counters = get_cache (Counters, {"counter_no": [(eq, 38)]})
+            # counters = get_cache (Counters, {"counter_no": [(eq, 38)]})
+            counters = db_session.query(Counters).filter(Counters.counter_no == 38).with_for_update().first()
 
             if not counters:
                 counters = Counters()
@@ -79,10 +80,8 @@ def eg_mainschedule_btn_go_webbl(maintain_data:[Maintain], action_data:[Action],
                 counters.counter = 0
 
 
-            # counters.counter = counters.counter + 1
-            last_count, error_lock = get_output(next_counter_for_update(38))
-            pass
-            nr = last_count
+            counters.counter = counters.counter + 1
+            nr = counters.counter
             eg_maintain = Eg_maintain()
             db_session.add(eg_maintain)
 
@@ -111,7 +110,8 @@ def eg_mainschedule_btn_go_webbl(maintain_data:[Maintain], action_data:[Action],
         tdate = a + timedelta(days=365)
         while a <= tdate:
 
-            counters = get_cache (Counters, {"counter_no": [(eq, 38)]})
+            # counters = get_cache (Counters, {"counter_no": [(eq, 38)]})
+            counters = db_session.query(Counters).filter(Counters.counter_no == 38).with_for_update().first()
 
             if not counters:
                 counters = Counters()
@@ -122,12 +122,8 @@ def eg_mainschedule_btn_go_webbl(maintain_data:[Maintain], action_data:[Action],
                 counters.counter = 0
 
 
-            # counters.counter = counters.counter + 1
-            last_count, error_lock = get_output(next_counter_for_update(38))
-
-            pass
-            # nr = counters.counter
-            nr = last_count
+            counters.counter = counters.counter + 1
+            nr = counters.counter
 
             eg_maintain = Eg_maintain()
             db_session.add(eg_maintain)
@@ -157,7 +153,8 @@ def eg_mainschedule_btn_go_webbl(maintain_data:[Maintain], action_data:[Action],
         tdate = a + timedelta(days=365)
         while a <= tdate:
 
-            counters = get_cache (Counters, {"counter_no": [(eq, 38)]})
+            # counters = get_cache (Counters, {"counter_no": [(eq, 38)]})
+            counters = db_session.query(Counters).filter(Counters.counter_no == 38).with_for_update().first()
 
             if not counters:
                 counters = Counters()
@@ -168,12 +165,8 @@ def eg_mainschedule_btn_go_webbl(maintain_data:[Maintain], action_data:[Action],
                 counters.counter = 0
 
 
-            # counters.counter = counters.counter + 1
-            last_count, error_lock = get_output(next_counter_for_update(38))
-
-            pass
-            # nr = counters.counter
-            nr = last_count
+            counters.counter = counters.counter + 1
+            nr = counters.counter
 
             eg_maintain = Eg_maintain()
             db_session.add(eg_maintain)
@@ -203,7 +196,8 @@ def eg_mainschedule_btn_go_webbl(maintain_data:[Maintain], action_data:[Action],
         tdate = a + timedelta(days=365)
         while a <= tdate:
 
-            counters = get_cache (Counters, {"counter_no": [(eq, 38)]})
+            # counters = get_cache (Counters, {"counter_no": [(eq, 38)]})
+            counters = db_session.query(Counters).filter(Counters.counter_no == 38).with_for_update().first()
 
             if not counters:
                 counters = Counters()
@@ -214,12 +208,8 @@ def eg_mainschedule_btn_go_webbl(maintain_data:[Maintain], action_data:[Action],
                 counters.counter = 0
 
 
-            # counters.counter = counters.counter + 1
-            last_count, error_lock = get_output(next_counter_for_update(38))
-
-            pass
-            # nr = counters.counter
-            nr = last_count
+            counters.counter = counters.counter + 1
+            nr = counters.counter
 
             eg_maintain = Eg_maintain()
             db_session.add(eg_maintain)
@@ -249,7 +239,8 @@ def eg_mainschedule_btn_go_webbl(maintain_data:[Maintain], action_data:[Action],
         tdate = a + timedelta(days=365)
         while a <= tdate:
 
-            counters = get_cache (Counters, {"counter_no": [(eq, 38)]})
+            # counters = get_cache (Counters, {"counter_no": [(eq, 38)]})
+            counters = db_session.query(Counters).filter(Counters.counter_no == 38).with_for_update().first()
 
             if not counters:
                 counters = Counters()
@@ -260,12 +251,8 @@ def eg_mainschedule_btn_go_webbl(maintain_data:[Maintain], action_data:[Action],
                 counters.counter = 0
 
 
-            # counters.counter = counters.counter + 1
-            last_count, error_lock = get_output(next_counter_for_update(38))
-
-            pass
-            # nr = counters.counter
-            nr = last_count
+            counters.counter = counters.counter + 1
+            nr = counters.counter
 
             eg_maintain = Eg_maintain()
             db_session.add(eg_maintain)
@@ -295,7 +282,8 @@ def eg_mainschedule_btn_go_webbl(maintain_data:[Maintain], action_data:[Action],
         tdate = a + timedelta(days=365)
         while a <= tdate:
 
-            counters = get_cache (Counters, {"counter_no": [(eq, 38)]})
+            # counters = get_cache (Counters, {"counter_no": [(eq, 38)]})
+            counters = db_session.query(Counters).filter(Counters.counter_no == 38).with_for_update().first()
 
             if not counters:
                 counters = Counters()
@@ -306,12 +294,8 @@ def eg_mainschedule_btn_go_webbl(maintain_data:[Maintain], action_data:[Action],
                 counters.counter = 0
 
 
-            # counters.counter = counters.counter + 1
-            last_count, error_lock = get_output(next_counter_for_update(38))
-
-            pass
-            # nr = counters.counter
-            nr = last_count
+            counters.counter = counters.counter + 1
+            nr = counters.counter
             
             eg_maintain = Eg_maintain()
             db_session.add(eg_maintain)
