@@ -3,6 +3,10 @@
 # ==========================================
 # Rulita, 26-11-2025
 # - Added with_for_update all query 
+
+# yusufwijasena, 02/12/2025
+# - cannot save create & update guest profile
+# - Removed & moved some db_session.refresh
 # ==========================================
 
 from functions.additional_functions import *
@@ -102,7 +106,7 @@ def gcf_btn_go_2bl(icase:int, pvilanguage:int, user_init:string, refno4:string, 
                 queasy = db_session.query(Queasy).filter((Queasy.key == 231) & (Queasy.number1 == gastno)).with_for_update().first()
 
                 if queasy:
-                    pass
+                    db_session.refresh(queasy,with_for_update=True)
                     queasy.char1 = refno4
 
 
@@ -114,12 +118,10 @@ def gcf_btn_go_2bl(icase:int, pvilanguage:int, user_init:string, refno4:string, 
                     queasy.key = 231
                     queasy.number1 = gastno
                     queasy.char1 = refno4
-                db_session.refresh(queasy,with_for_update=True)
 
-            pass
+            db_session.refresh(guest,with_for_update=True)
             buffer_copy(t_guest, guest)
             pass
-            db_session.refresh(guest,with_for_update=True)
 
 
     def new_record():
@@ -149,7 +151,8 @@ def gcf_btn_go_2bl(icase:int, pvilanguage:int, user_init:string, refno4:string, 
             queasy = db_session.query(Queasy).filter((Queasy.key == 231) & (Queasy.number1 == gastno)).with_for_update().first()
 
             if queasy:
-                pass
+                db_session.refresh(queasy,with_for_update=True)
+                
                 queasy.char1 = refno4
                 # pass
             else:
@@ -160,7 +163,6 @@ def gcf_btn_go_2bl(icase:int, pvilanguage:int, user_init:string, refno4:string, 
                 queasy.number1 = gastno
                 queasy.char1 = refno4
 
-            db_session.refresh(queasy,with_for_update=True)
 
     if refno4 == None:
         refno4 = ""
@@ -242,7 +244,7 @@ def gcf_btn_go_2bl(icase:int, pvilanguage:int, user_init:string, refno4:string, 
             if guestseg and guestseg.segment == 0:
                 pass
                 db_session.delete(guestseg)
-                db_session.refresh(guestseg,with_for_update=True)
+                # db_session.refresh(guestseg,with_for_update=True)
 
             if t_guest.karteityp > 0:
                 msg_str = translateExtended ("Guest segment not yet defined.", lvcarea, "")
@@ -317,7 +319,7 @@ def gcf_btn_go_2bl(icase:int, pvilanguage:int, user_init:string, refno4:string, 
                     akt_cust.c_init = user_init
                     akt_cust.userinit = t_guest.phonetik3
 
-                    db_session.refresh(akt_cust,with_for_update=True)
+                    # db_session.refresh(akt_cust,with_for_update=True)
                     pass
     else:
 
@@ -328,6 +330,6 @@ def gcf_btn_go_2bl(icase:int, pvilanguage:int, user_init:string, refno4:string, 
         if akt_cust:
             db_session.delete(akt_cust)
             pass
-            db_session.refresh(akt_cust,with_for_update=True)
+            # db_session.refresh(akt_cust,with_for_update=True)
 
     return generate_output()
