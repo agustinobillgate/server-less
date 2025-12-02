@@ -3,6 +3,7 @@
 # Rd, 8/9/2025
 # isi kolom tidak sama
 # Rd, 3/12/2025, Locking Test
+# update get_index -> Bill.zinr.collate("C").ilike("%" + trim(zinr) + "%")
 #------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
