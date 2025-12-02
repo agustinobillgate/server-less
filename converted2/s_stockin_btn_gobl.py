@@ -1,5 +1,10 @@
 #using conversion tools version: 1.0.0.117
 
+# ==============================================
+# Rulita, 02-12-2025
+# - Added with_for_update all query 
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -69,14 +74,18 @@ def s_stockin_btn_gobl(s_artnr:int, qty:Decimal, op_list_data:[Op_list], f_endku
         tot_wert:Decimal = to_decimal("0.0")
         avrg_price:Decimal = to_decimal("0.0")
 
-        l_artikel = get_cache (L_artikel, {"artnr": [(eq, s_artnr)]})
+        # l_artikel = get_cache (L_artikel, {"artnr": [(eq, s_artnr)]})
+        l_artikel = db_session.query(L_artikel).filter(
+                 (L_artikel.artnr == s_artnr)).with_for_update().first()
         anzahl =  to_decimal(qty)
         wert =  to_decimal(qty) * to_decimal(price)
         wert =  to_decimal(round (wert , 2) )
 
         if ((l_artikel.endkum == f_endkum or l_artikel.endkum == b_endkum) and billdate <= fb_closedate) or (l_artikel.endkum >= m_endkum and billdate <= m_closedate):
 
-            l_bestand = get_cache (L_bestand, {"lager_nr": [(eq, 0)],"artnr": [(eq, s_artnr)]})
+            # l_bestand = get_cache (L_bestand, {"lager_nr": [(eq, 0)],"artnr": [(eq, s_artnr)]})
+            l_bestand = db_session.query(L_bestand).filter(
+                (L_bestand.lager_nr == 0) & (L_bestand.artnr == s_artnr)).with_for_update().first()
 
             if not l_bestand:
                 l_bestand = L_bestand()
@@ -92,11 +101,13 @@ def s_stockin_btn_gobl(s_artnr:int, qty:Decimal, op_list_data:[Op_list], f_endku
 
             if tot_anz != 0:
                 avrg_price =  to_decimal(tot_wert) / to_decimal(tot_anz)
-                pass
+                # pass
                 l_artikel.vk_preis =  to_decimal(avrg_price)
-                pass
+                # pass
 
-            l_bestand = get_cache (L_bestand, {"lager_nr": [(eq, op_list.lager_nr)],"artnr": [(eq, s_artnr)]})
+            # l_bestand = get_cache (L_bestand, {"lager_nr": [(eq, op_list.lager_nr)],"artnr": [(eq, s_artnr)]})
+            l_bestand = db_session.query(L_bestand).filter(
+                (L_bestand.lager_nr == op_list.lager_nr) & (L_bestand.artnr == s_artnr)).with_for_update().first()
 
             if not l_bestand:
                 l_bestand = L_bestand()
@@ -117,7 +128,9 @@ def s_stockin_btn_gobl(s_artnr:int, qty:Decimal, op_list_data:[Op_list], f_endku
 
         if l_lieferant:
 
-            l_liefumsatz = get_cache (L_liefumsatz, {"lief_nr": [(eq, lief_nr)],"datum": [(eq, billdate)]})
+            # l_liefumsatz = get_cache (L_liefumsatz, {"lief_nr": [(eq, lief_nr)],"datum": [(eq, billdate)]})
+            l_liefumsatz = db_session.query(L_liefumsatz).filter(
+                (L_liefumsatz.lief_nr == lief_nr) & (L_liefumsatz.datum == billdate)).with_for_update().first()
 
             if not l_liefumsatz:
                 l_liefumsatz = L_liefumsatz()
@@ -139,10 +152,12 @@ def s_stockin_btn_gobl(s_artnr:int, qty:Decimal, op_list_data:[Op_list], f_endku
         create_purchase_book(s_artnr, price, anzahl, billdate, lief_nr)
 
         if (l_artikel.ek_aktuell != price) and price != 0:
-            pass
+            # pass
             l_artikel.ek_letzter =  to_decimal(l_artikel.ek_aktuell)
             l_artikel.ek_aktuell =  to_decimal(price)
-            pass
+            # pass
+        
+        db_session.refresh(l_artikel, with_for_update=True)
 
         return
         err_flag2 = 1
@@ -229,12 +244,16 @@ def s_stockin_btn_gobl(s_artnr:int, qty:Decimal, op_list_data:[Op_list], f_endku
         if max_anz == 0:
             max_anz = 1
 
-        l_art = get_cache (L_artikel, {"artnr": [(eq, s_artnr)]})
+        # l_art = get_cache (L_artikel, {"artnr": [(eq, s_artnr)]})
+        l_art = db_session.query(L_artikel).filter(
+                 (L_artikel.artnr == s_artnr)).with_for_update().first()
         curr_anz = l_art.lieferfrist
 
         if curr_anz >= max_anz:
 
-            l_price1 = get_cache (L_pprice, {"artnr": [(eq, s_artnr)],"counter": [(eq, 1)]})
+            # l_price1 = get_cache (L_pprice, {"artnr": [(eq, s_artnr)],"counter": [(eq, 1)]})
+            l_price1 = db_session.query(L_pprice).filter(
+                     (L_pprice.artnr == s_artnr) & (L_pprice.counter == 1)).with_for_update().first()
 
             if l_price1:
                 l_price1.docu_nr = lscheinnr
@@ -248,12 +267,14 @@ def s_stockin_btn_gobl(s_artnr:int, qty:Decimal, op_list_data:[Op_list], f_endku
                 created = True
             for i in range(2,curr_anz + 1) :
 
-                l_pprice = get_cache (L_pprice, {"artnr": [(eq, s_artnr)],"counter": [(eq, i)]})
+                # l_pprice = get_cache (L_pprice, {"artnr": [(eq, s_artnr)],"counter": [(eq, i)]})
+                l_pprice = db_session.query(L_pprice).filter(
+                         (L_pprice.artnr == s_artnr) & (L_pprice.counter == i)).with_for_update().first()
 
                 if l_pprice:
-                    pass
+                    # pass
                     l_pprice.counter = l_pprice.counter - 1
-                    pass
+                    # pass
 
             if created:
                 l_price1.counter = curr_anz
