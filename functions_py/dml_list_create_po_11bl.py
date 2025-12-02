@@ -1,14 +1,20 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 01/12/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import L_orderhdr, L_lieferant, L_order, L_artikel, Dml_art, Reslin_queasy, Dml_artdep
+from sqlalchemy.orm import flag_modified
+
+
 
 s_list_data, S_list = create_model("S_list", {"s_flag":string, "selected":bool, "artnr":int, "bezeich":string, "qty":Decimal, "qty0":Decimal, "price":Decimal, "qty2":Decimal})
 c_list_data, C_list = create_model("C_list", {"zwkum":int, "grp":string, "artnr":int, "bezeich":string, "qty":Decimal, "a_qty":Decimal, "price":Decimal, "l_price":Decimal, "unit":string, "content":Decimal, "amount":Decimal, "deliver":Decimal, "dept":int, "supplier":string, "id":string, "cid":string, "price1":Decimal, "qty1":Decimal, "lief_nr":int, "approved":bool, "remark":string, "soh":Decimal, "dml_nr":string, "qty2":Decimal})
 
-def dml_list_create_po_11bl(s_list_data:[S_list], c_list_data:[C_list], l_orderhdr_recid:int, l_lieferant_recid:int, lief_nr:int, currdate:date, selected_date:date, bediener_username:string, crterm:int, local_nr:int, curr_dept:int, dunit_price:bool):
+def dml_list_create_po_11bl(s_list_data:[S_list], c_list_data:[C_list], l_orderhdr_recid:int, l_lieferant_recid:int, 
+                            lief_nr:int, currdate:date, selected_date:date, bediener_username:string, crterm:int, local_nr:int, curr_dept:int, dunit_price:bool):
 
     prepare_cache ([L_lieferant, L_order, L_artikel, Dml_art, Reslin_queasy, Dml_artdep])
 
@@ -23,6 +29,7 @@ def dml_list_create_po_11bl(s_list_data:[S_list], c_list_data:[C_list], l_orderh
     t_l_orderhdr_data, T_l_orderhdr = create_model_like(L_orderhdr, {"rec_id":int})
 
     db_session = local_storage.db_session
+    bediener_username = bediener_username.strip()
 
     def generate_output():
         nonlocal t_l_orderhdr_data, docu_nr, t_qty, counter, l_orderhdr, l_lieferant, l_order, l_artikel, dml_art, reslin_queasy, dml_artdep
@@ -61,7 +68,7 @@ def dml_list_create_po_11bl(s_list_data:[S_list], c_list_data:[C_list], l_orderh
             l_orderhdr.angebot_lief[2] = local_nr
             l_orderhdr.gedruckt = None
             l_orderhdr.txtnr = curr_dept
-
+            
 
             pass
             l_order = L_order()
@@ -74,7 +81,8 @@ def dml_list_create_po_11bl(s_list_data:[S_list], c_list_data:[C_list], l_orderh
             l_order.lief_fax[0] = docu_nr
             l_order.op_art = 2
             l_order.lief_fax[2] = "DML"
-
+            flag_modified(l_orderhdr, "lief_fax")
+            flag_modified(l_orderhdr, "angebot_lief")
             for s1_list in query(s1_list_data, filters=(lambda s1_list: s1_list.selected)):
 
                 l_artikel = get_cache (L_artikel, {"artnr": [(eq, s1_list.artnr)]})
@@ -218,9 +226,13 @@ def dml_list_create_po_11bl(s_list_data:[S_list], c_list_data:[C_list], l_orderh
                                         dml_artdep.chginit = dml_artdep.chginit + ";" + docu_nr + ";" + to_string(s1_list.qty2)
                                 pass
                 pass
+            flag_modified(l_orderhdr, "lief_fax")
+            flag_modified(l_orderhdr, "angebot_lief")
 
 
-    l_orderhdr = get_cache (L_orderhdr, {"_recid": [(eq, l_orderhdr_recid)]})
+    # l_orderhdr = get_cache (L_orderhdr, {"_recid": [(eq, l_orderhdr_recid)]})
+    l_orderhdr = db_session.query(L_orderhdr).filter(
+             (L_orderhdr._recid == l_orderhdr_recid)).with_for_update().first()
 
     l_lieferant = get_cache (L_lieferant, {"_recid": [(eq, l_lieferant_recid)]})
 
