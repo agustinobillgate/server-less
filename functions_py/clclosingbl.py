@@ -8,6 +8,14 @@
 # - fixing integer to to_int
 # ==============================================
 
+# =============================================
+# Rulita, 28-11-2025
+# - Added with_for_update all query 
+
+# Rulita, 01-12-2025
+# Fixing procedure delete_history not convert
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -55,7 +63,9 @@ def clclosingbl():
 
             if cl_memtype.tdate < get_current_date() and cl_memtype.activeflag :
 
-                memtype = get_cache (Cl_memtype, {"_recid": [(eq, cl_memtype._recid)]})
+                # memtype = get_cache (Cl_memtype, {"_recid": [(eq, cl_memtype._recid)]})
+                memtype = db_session.query(Cl_memtype).filter(
+                         (Cl_memtype._recid == cl_memtype._recid)).with_for_update().first()
 
                 if memtype:
                     memtype.activeflag = False
@@ -63,7 +73,9 @@ def clclosingbl():
 
             elif cl_memtype.activeflag == False and cl_memtype.tdate > get_current_date():
 
-                memtype = get_cache (Cl_memtype, {"_recid": [(eq, cl_memtype._recid)]})
+                # memtype = get_cache (Cl_memtype, {"_recid": [(eq, cl_memtype._recid)]})
+                memtype = db_session.query(Cl_memtype).filter(
+                         (Cl_memtype._recid == cl_memtype._recid)).with_for_update().first()
 
                 if memtype:
                     memtype.activeflag = True
@@ -259,7 +271,9 @@ def clclosingbl():
                          (Mc_fee.key == 2) & (Mc_fee.gastnr == mbuff.gastnr) & (Mc_fee.activeflag == 1)).order_by(Mc_fee._recid).all():
                 mc_fee.activeflag = 2
 
-            mc_fee = get_cache (Mc_fee, {"key": [(eq, 2)],"nr": [(eq, mbuff.membertype)],"gastnr": [(eq, mbuff.gastnr)],"bis_datum": [(eq, exp_date)]})
+            # mc_fee = get_cache (Mc_fee, {"key": [(eq, 2)],"nr": [(eq, mbuff.membertype)],"gastnr": [(eq, mbuff.gastnr)],"bis_datum": [(eq, exp_date)]})
+            mc_fee = db_session.query(Mc_fee).filter(
+                     (Mc_fee.key == 2) & (Mc_fee.nr == mbuff.membertype) & (Mc_fee.gastnr == mbuff.gastnr) & (Mc_fee.bis_datum == exp_date)).with_for_update().first()
 
             if not mc_fee:
                 mc_fee = Mc_fee()
@@ -340,46 +354,61 @@ def clclosingbl():
                          (Cl_enroll.codenum == cl_member.codenum)).order_by(Cl_enroll._recid).all():
                 db_session.delete(cl_enroll)
 
+    # Rulita, 01-12-2025
+    # Fixing procedure delete_history not convertion
+    def delete_history():
+
+        nonlocal billdate, htparam, cl_memtype, cl_class, cl_member, cl_histci, cl_locker, queasy, cl_histvisit, guest, mc_fee, cl_log, cl_histstatus, cl_enroll, cl_checkin
+
+        visit = None
+        checkin = None
+        clhist = None
+        store_dur:int = 360
+        Visit =  create_buffer("Visit",Cl_histvisit)
+        Checkin =  create_buffer("Checkin",Cl_checkin)
+        Clhist =  create_buffer("Clhist",Cl_histci)
+
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 1057)]})
+
+        if htparam:
+            store_dur = htparam.finteger
+
+        for cl_checkin in db_session.query(Cl_checkin).filter(
+                 ((Cl_checkin.datum - get_current_date()) > store_dur)).order_by(Cl_checkin._recid).all():
+
+            checkin = db_session.query(Checkin).filter(
+                     (Checkin._recid == cl_checkin._recid)).first()
+            db_session.delete(checkin)
+            pass
+
+        for cl_histci in db_session.query(Cl_histci).filter(
+                 ((Cl_histci.datum - get_current_date()) > store_dur)).order_by(Cl_histci._recid).all():
+
+            clhist = db_session.query(Clhist).filter(
+                     (Clhist._recid == cl_histci._recid)).first()
+            db_session.delete(clhist)
+            pass
+
+        for cl_histvisit in db_session.query(Cl_histvisit).filter(
+                 ((Cl_histvisit.datum - get_current_date()) > store_dur)).order_by(Cl_histvisit._recid).all():
+
+            visit = db_session.query(Visit).filter(
+                     (Visit._recid == cl_histvisit._recid)).first()
+            db_session.delete(visit)
+            pass
+
     htparam = get_cache (Htparam, {"paramnr": [(eq, 110)]})
 
     if htparam:
         billdate = htparam.fdate
+
     check_class()
     check_inhouse()
     check_locker()
     check_visit()
     create_renewal()
     check_expired()
-    # delete_history()
+    delete_history()
     check_others()
-
-    htparam = get_cache (Htparam, {"paramnr": [(eq, 1057)]})
-
-    if htparam:
-        store_dur = htparam.finteger
-
-    for cl_checkin in db_session.query(Cl_checkin).filter(
-             ((Cl_checkin.datum - get_current_date()) > store_dur)).order_by(Cl_checkin._recid).all():
-
-        checkin = db_session.query(Checkin).filter(
-                 (Checkin._recid == cl_checkin._recid)).first()
-        db_session.delete(checkin)
-        pass
-
-    for cl_histci in db_session.query(Cl_histci).filter(
-             ((Cl_histci.datum - get_current_date()) > store_dur)).order_by(Cl_histci._recid).all():
-
-        clhist = db_session.query(Clhist).filter(
-                 (Clhist._recid == cl_histci._recid)).first()
-        db_session.delete(clhist)
-        pass
-
-    for cl_histvisit in db_session.query(Cl_histvisit).filter(
-             ((Cl_histvisit.datum - get_current_date()) > store_dur)).order_by(Cl_histvisit._recid).all():
-
-        visit = db_session.query(Visit).filter(
-                 (Visit._recid == cl_histvisit._recid)).first()
-        db_session.delete(visit)
-        pass
 
     return generate_output()

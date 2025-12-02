@@ -51,7 +51,7 @@ def load_ratecode1bl(case_type:int, markno:int, prcode:string, argtno:int, zikat
     elif case_type == 2:
 
         for ratecode in db_session.query(Ratecode).filter(
-                 (Ratecode.code == (prcode).lower())).order_by(Ratecode._recid).all():
+                 (Ratecode.code == (prcode))).order_by(Ratecode._recid).all():
             cr_t_ratecode()
 
     elif case_type == 3:

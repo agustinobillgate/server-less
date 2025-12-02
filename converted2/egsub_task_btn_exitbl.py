@@ -48,7 +48,7 @@ def egsub_task_btn_exitbl(subtask_data:[Subtask], case_type:int, user_init:strin
 
         subbuff = get_cache (Eg_subtask, {"main_nr": [(eq, subtask.main_nr)],"bezeich": [(eq, subtask.bezeich)],"sub_code": [(ne, subtask.sub_code)]})
 
-        if subBuff:
+        if subbuff:
             fl_code = 1
         else:
 

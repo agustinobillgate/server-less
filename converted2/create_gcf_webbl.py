@@ -75,7 +75,10 @@ def create_gcf_webbl(gnat:string, gland:string, def_natcode:string, gastid:strin
 
         pass
 
-        guestseg = get_cache (Guestseg, {"gastnr": [(eq, guest.gastnr)],"reihenfolge": [(eq, 1)]})
+        # guestseg = get_cache (Guestseg, {"gastnr": [(eq, guest.gastnr)],"reihenfolge": [(eq, 1)]})
+        guestseg = db_session.query(Guestseg).filter(
+                 (Guestseg.gastnr == guest.gastnr) &
+                 (Guestseg.reihenfolge == 1)).with_for_update().first()
 
         if not guestseg:
             guestseg = Guestseg()

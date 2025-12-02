@@ -8,6 +8,11 @@
 # find first arrangement add .strip()
 # ===========================================================
 
+# ==================================
+# Rulita, 01-12-2025
+# - Added with_for_update all query 
+# ==================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -167,14 +172,14 @@ def nt_rmstat():
 
         if not kontline:
 
-            kontline = get_cache (Kontline, {"gastnr": [(eq, res_line.gastnr)],"ankunft": [(le, res_line.ankunft)],"abreise": [(ge, res_line.ankunft)],"kontstatus": [(eq, 6)],"code": [(eq, prmarket.bezeich)]})
+            # kontline = get_cache (Kontline, {"gastnr": [(eq, res_line.gastnr)],"ankunft": [(le, res_line.ankunft)],"abreise": [(ge, res_line.ankunft)],"kontstatus": [(eq, 6)],"code": [(eq, prmarket.bezeich)]})
+            kontline = db_session.query(Kontline).filter((Kontline.gastnr == res_line.gastnr) & (Kontline.ankunft <= res_line.ankunft) & (Kontline.abreise >= res_line.ankunft) & (Kontline.kontstatus == 6) & (Kontline.code == prmarket.bezeich)).with_for_update().first()
 
         if kontline:
-            pass
+            # pass
             kontline.overbooking = kontline.overbooking + 1
-
-
-            pass
+            # pass
+            db_session.refresh(kontline, with_for_update=True)
 
 
     def check_bonus():
@@ -707,7 +712,8 @@ def nt_rmstat():
 
             zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, res_line.zikatnr)]})
 
-            guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
+            # guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
+            guest = db_session.query(Guest).filter((Guest.gastnr == res_line.gastnrmember)).with_for_update().first()
 
             if guest:
                 guest.logiernachte = guest.logiernachte + 1
@@ -715,7 +721,8 @@ def nt_rmstat():
 
             if res_line.gastnr != res_line.gastnrmember:
 
-                guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnr)]})
+                # guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnr)]})
+                guest = db_session.query(Guest).filter((Guest.gastnr == res_line.gastnr)).with_for_update().first()
 
                 if guest:
                     guest.logiernachte = guest.logiernachte + 1
@@ -1101,7 +1108,8 @@ def nt_rmstat():
 
                 if ((res_line.resstatus == 6) or (dayuse and not res_line.zimmerfix)):
 
-                    guestat = get_cache (Guestat, {"gastnr": [(eq, res_line.gastnr)],"monat": [(eq, get_month(bill_date))],"jahr": [(eq, get_year(bill_date))],"betriebsnr": [(eq, 0)]})
+                    # guestat = get_cache (Guestat, {"gastnr": [(eq, res_line.gastnr)],"monat": [(eq, get_month(bill_date))],"jahr": [(eq, get_year(bill_date))],"betriebsnr": [(eq, 0)]})
+                    guestat = db_session.query(Guestat).filter((Guestat.gastnr == res_line.gastnr) & (Guestat.monat == get_month(bill_date)) & (Guestat.jahr == get_year(bill_date)) & (Guestat.betriebsnr == 0)).with_for_update().first()
 
                     if not guestat:
                         guestat = Guestat()
@@ -1119,7 +1127,8 @@ def nt_rmstat():
 
                     if nation and guest.karteityp == 2:
 
-                        guestat = get_cache (Guestat, {"gastnr": [(eq, res_line.gastnr)],"monat": [(eq, get_month(bill_date))],"jahr": [(eq, get_year(bill_date))],"betriebsnr": [(eq, nation.nationnr)]})
+                        # guestat = get_cache (Guestat, {"gastnr": [(eq, res_line.gastnr)],"monat": [(eq, get_month(bill_date))],"jahr": [(eq, get_year(bill_date))],"betriebsnr": [(eq, nation.nationnr)]})
+                        guestat = db_session.query(Guestat).filter((Guestat.gastnr == res_line.gastnr) & (Guestat.monat == get_month(bill_date)) & (Guestat.jahr == get_year(bill_date)) & (Guestat.betriebsnr == nation.nationnr)).with_for_update().first()
 
                         if not guestat:
                             guestat = Guestat()
@@ -1495,7 +1504,8 @@ def nt_rmstat():
                 segment = get_cache (Segment, {"betriebsnr": [(eq, 0)]})
                 curr_segm = segment.segmentcode
 
-        zinrstat = get_cache (Zinrstat, {"datum": [(eq, curr_billdate)],"zinr": [(eq, "segm")],"betriebsnr": [(eq, curr_segm)]})
+        # zinrstat = get_cache (Zinrstat, {"datum": [(eq, curr_billdate)],"zinr": [(eq, "segm")],"betriebsnr": [(eq, curr_segm)]})
+        zinrstat = db_session.query(Zinrstat).filter((Zinrstat.datum == curr_billdate) & (Zinrstat.zinr == "SEGM") & (Zinrstat.betriebsnr == curr_segm)).with_for_update().first()
 
         if not zinrstat:
             zinrstat = Zinrstat()

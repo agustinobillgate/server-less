@@ -72,7 +72,9 @@ def egsource_btn_exitbl(source_data:[Source], case_type:int, rec_id:int):
 
     elif case_type == 2:
 
-        queasy = get_cache (Queasy, {"_recid": [(eq, rec_id)]})
+        # queasy = get_cache (Queasy, {"_recid": [(eq, rec_id)]})
+        queasy = db_session.query(Queasy).filter(
+             (Queasy._recid == rec_id)).with_for_update().first()
 
         queri = get_cache (Queasy, {"number1": [(eq, source.number1)],"number2": [(eq, 0)],"deci2": [(eq, 0)],"key": [(eq, 130)],"_recid": [(ne, queasy._recid)]})
 
@@ -89,10 +91,11 @@ def egsource_btn_exitbl(source_data:[Source], case_type:int, rec_id:int):
 
                 return generate_output()
             else:
-                pass
+                # pass
                 queasy.number1 = source.number1
                 queasy.char1 = source.char1
-                pass
+                # pass
+                db_session.refresh(queasy,with_for_update=True)
                 fl_code = 3
 
     return generate_output()

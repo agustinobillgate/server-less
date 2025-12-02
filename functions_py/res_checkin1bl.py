@@ -67,20 +67,22 @@ def res_checkin1bl(pvilanguage:int, resnr:int, reslinnr:int, silenzio:bool):
 
         return generate_output()
 
-    reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+    # reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+    reservation = db_session.query(Reservation).filter(
+             (Reservation.resnr == res_line.resnr)).first()
 
     if (reservation.depositgef - reservation.depositbez - reservation.depositbez2) > 0:
         msg_str = translateExtended ("Deposit not yet settled, check-in not possible", lvcarea, "")
 
         return generate_output()
 
-    print("res_line.gastnrmember = " + to_string(res_line.gastnrmember))
+    # print("res_line.gastnrmember = " + to_string(res_line.gastnrmember))
     
     # gast = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
     gast = db_session.query(Guest).filter(
              (Guest.gastnr == res_line.gastnrmember)).with_for_update().first()
     
-    print("gast.karteityp = " + to_string(gast.karteityp))
+    # print("gast.karteityp = " + to_string(gast.karteityp))
     
     if gast.karteityp != 0:
         msg_str = translateExtended ("Guest Type must be individual guest.", lvcarea, "")
@@ -95,18 +97,24 @@ def res_checkin1bl(pvilanguage:int, resnr:int, reslinnr:int, silenzio:bool):
 
         return generate_output()
 
-    b_reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)],"gastnr": [(eq, res_line.gastnr)]})
+    # b_reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)],"gastnr": [(eq, res_line.gastnr)]})
+    b_reservation = db_session.query(B_reservation).filter(
+             (B_reservation.resnr == res_line.resnr) & (B_reservation.gastnr == res_line.gastnr)).first()
 
     if not b_reservation:
         msg_str = translateExtended ("Guest number mismatch detected. Refresh the reservation records now?", lvcarea, "")
 
         return generate_output()
 
-    res_line1 = get_cache (Res_line, {"resstatus": [(eq, 6)],"zinr": [(eq, res_line.zinr)],"_recid": [(ne, res_line._recid)]})
+    # res_line1 = get_cache (Res_line, {"resstatus": [(eq, 6)],"zinr": [(eq, res_line.zinr)],"_recid": [(ne, res_line._recid)]})
+    res_line1 = db_session.query(Res_line).filter(
+             (Res_line.resstatus == 6) & (Res_line.zinr == res_line.zinr) & (Res_line._recid != res_line._recid)).first()
 
     if not res_line1:
 
-        res_line1 = get_cache (Res_line, {"resstatus": [(eq, 13)],"zinr": [(eq, res_line.zinr)],"l_zuordnung[2]": [(eq, 0)],"_recid": [(ne, res_line._recid)]})
+        # res_line1 = get_cache (Res_line, {"resstatus": [(eq, 13)],"zinr": [(eq, res_line.zinr)],"l_zuordnung[2]": [(eq, 0)],"_recid": [(ne, res_line._recid)]})
+        res_line1 = db_session.query(Res_line).filter(
+                 (Res_line.resstatus == 13) & (Res_line.zinr == res_line.zinr) & (Res_line.l_zuordnung[2] == 0) & (Res_line._recid != res_line._recid)).first()
 
     if res_line1:
 
@@ -131,7 +139,9 @@ def res_checkin1bl(pvilanguage:int, resnr:int, reslinnr:int, silenzio:bool):
 
     if res_line.zinr != "":
 
-        zimmer = get_cache (Zimmer, {"zinr": [(eq, res_line.zinr)]})
+        # zimmer = get_cache (Zimmer, {"zinr": [(eq, res_line.zinr)]})
+        zimmer = db_session.query(Zimmer).filter(
+                 (Zimmer.zinr == res_line.zinr)).first()
 
         if zimmer.zistatus == 1:
             msg_str = translateExtended ("Room ", lvcarea, "") + zimmer.zinr + " " + translateExtended ("Status: Clean not Checked", lvcarea, "") + chr_unicode(10) + translateExtended ("Check-in not possible - Contact House Keeping.", lvcarea, "")
@@ -150,7 +160,9 @@ def res_checkin1bl(pvilanguage:int, resnr:int, reslinnr:int, silenzio:bool):
 
         if res_line.resstatus == 11:
 
-            res_member = get_cache (Res_line, {"resnr": [(eq, res_line.resnr)],"resstatus": [(le, 6)],"zinr": [(eq, res_line.zinr)]})
+            # res_member = get_cache (Res_line, {"resnr": [(eq, res_line.resnr)],"resstatus": [(le, 6)],"zinr": [(eq, res_line.zinr)]})
+            res_member = db_session.query(Res_line).filter(
+                     (Res_line.resnr == res_line.resnr) & (Res_line.resstatus <= 6) & (Res_line.zinr == res_line.zinr)).first()
 
             if not res_member:
                 msg_str = translateExtended ("Room", lvcarea, "") + " " + zimmer.zinr + ": " + translateExtended ("No main guest found.", lvcarea, "")
@@ -161,16 +173,22 @@ def res_checkin1bl(pvilanguage:int, resnr:int, reslinnr:int, silenzio:bool):
                 warn_flag = True
                 msg_str = "&W" + translateExtended ("Room", lvcarea, "") + " " + zimmer.zinr + chr_unicode(10) + translateExtended ("The main guest", lvcarea, "") + " " + res_member.name + " " + translateExtended ("not yet checked-in.", lvcarea, "")
 
-    reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "flag")],"resnr": [(eq, res_line.resnr)],"reslinnr": [(eq, res_line.reslinnr)],"betriebsnr": [(eq, 0)]})
+    # reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "flag")],"resnr": [(eq, res_line.resnr)],"reslinnr": [(eq, res_line.reslinnr)],"betriebsnr": [(eq, 0)]})
+    reslin_queasy = db_session.query(Reslin_queasy).filter(
+             (Reslin_queasy.key == "flag") & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.betriebsnr == 0)).first()
     flag_report = None != reslin_queasy
 
-    nation = get_cache (Nation, {"kurzbez": [(eq, gast.land)]})
+    # nation = get_cache (Nation, {"kurzbez": [(eq, gast.land)]})
+    nation = db_session.query(Nation).filter(
+             (Nation.kurzbez == gast.land)).first()
 
     if not nation:
         msg_str1 = translateExtended ("Guest COUNTRY not defined:", lvcarea, "") + " " + gast.land
         err_number1 = 1
 
-    nation = get_cache (Nation, {"kurzbez": [(eq, gast.nation1)]})
+    # nation = get_cache (Nation, {"kurzbez": [(eq, gast.nation1)]})
+    nation = db_session.query(Nation).filter(
+             (Nation.kurzbez == gast.nation1)).first()
 
     if not nation:
         msg_str2 = translateExtended ("Guest NATIONALITY not defined:", lvcarea, "") + " " + gast.nation1
@@ -179,14 +197,18 @@ def res_checkin1bl(pvilanguage:int, resnr:int, reslinnr:int, silenzio:bool):
 
     if gast.email_adr == "":
 
-        htparam = get_cache (Htparam, {"paramnr": [(eq, 249)]})
+        # htparam = get_cache (Htparam, {"paramnr": [(eq, 249)]})
+        htparam = db_session.query(Htparam).filter(
+                 (Htparam.paramnr == 249)).first()
 
         if htparam.paramgruppe == 6 and htparam.flogical:
             fill_gcfemail = True
 
     if trim(gast.telefon) == "" and trim(gast.mobil_telefon) == "":
 
-        htparam = get_cache (Htparam, {"paramnr": [(eq, 279)]})
+        # htparam = get_cache (Htparam, {"paramnr": [(eq, 279)]})
+        htparam = db_session.query(Htparam).filter(
+                 (Htparam.paramnr == 279)).first()
 
         if htparam.paramgruppe == 6 and htparam.flogical:
             msg_str = msg_str + chr_unicode(3) + "YES"
@@ -194,7 +216,9 @@ def res_checkin1bl(pvilanguage:int, resnr:int, reslinnr:int, silenzio:bool):
     if not matches(res_line.zimmer_wunsch,r"*SEGM_PUR*"):
         msg_str3 = translateExtended ("Purpose of Stay not assigned.", lvcarea, "")
 
-        queasy = get_cache (Queasy, {"key": [(eq, 143)]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 143)]})
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 143)).first()
 
         if queasy:
             q_143 = True

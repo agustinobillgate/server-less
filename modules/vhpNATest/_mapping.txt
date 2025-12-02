@@ -1,5 +1,5 @@
 service,function
-rmcharge,rmcharge
+rmcharge,rmchargebl
 newbdate,newbdatebl
 ntrmrate,nt_rmratebl
 ntrmstat,nt_rmstat
@@ -30,7 +30,7 @@ ntaskhistory,nt_askhistory
 ntdisthistory,nt_disthistory
 ntdistmember,nt_distmember
 ntaiirevenue,nt_aiirevenue
-ntfina,nt_finabl
+ntfina,nt_fina
 clclosing,clclosing
 clcountexpiredbl,clcount_expiredbl
 ntropentable,nt_ropentable
@@ -44,3 +44,6 @@ ntresumsz,nt_resumsz
 ntbapostbill,nt_bapostbill
 ntshiftcover1,nt_shiftcover_1
 ntrevinatesurvey,nt_revinatesurvey
+testgeneratefile,test_generate_file
+mnfixbilldatum,mn_fix_bill_datumbl
+mndeloldrjournal,mn_del_old_rjournalbl

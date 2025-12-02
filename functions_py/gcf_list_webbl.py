@@ -697,6 +697,7 @@ def gcf_list_webbl(case_type: int, sorttype: int, lname: string, fname: string, 
             t_guest_data.append(t_guest)
 
             buffer_copy(guest, t_guest)
+
             t_guest.gname = guest.name + ", " + guest.vorname1 + guest.anredefirma +\
                 " " + guest.anrede1
             t_guest.adresse = guest.adresse1 + " " + guest.adresse2

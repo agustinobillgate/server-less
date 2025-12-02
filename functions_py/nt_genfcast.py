@@ -7,6 +7,11 @@
 # - guest_pr.code hardcoded as '?'
 # ======================================================================
 
+# =============================================
+# Rulita, 01-12-2025
+# Fixing procedure delete_history not convert
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -128,7 +133,9 @@ def nt_genfcast():
             created = res_line.ankunft
         genfcast_ratecode()
 
-        genfcast = get_cache (Genfcast, {"datum": [(eq, created)],"resnr": [(eq, res_line.resnr)],"reslinnr": [(eq, res_line.reslinnr)]})
+        # genfcast = get_cache (Genfcast, {"datum": [(eq, created)],"resnr": [(eq, res_line.resnr)],"reslinnr": [(eq, res_line.reslinnr)]})
+        genfcast = db_session.query(Genfcast).filter(
+                 (Genfcast.datum == created) & (Genfcast.resnr == res_line.resnr) & (Genfcast.reslinnr == res_line.reslinnr)).with_for_update().first()
 
         if not genfcast:
             genfcast = Genfcast()
