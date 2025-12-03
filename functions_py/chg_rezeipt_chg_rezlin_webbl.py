@@ -1,4 +1,4 @@
-#using conversion tools version: 1.0.0.117
+#using conversion tools version: 1.0.0.119
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -21,11 +21,11 @@ def chg_rezeipt_chg_rezlin_webbl(s_rezlin_h_recid:int, h_rezept_recid:int, qty:D
         return {"artnrlager": artnrlager}
 
 
-    h_rezept = get_cache (H_rezept, {"_recid": [(eq, h_rezept_recid)]})
+    h_rezept = db_session.query(H_rezept).filter(H_rezept._recid == h_rezept_recid).first()
     if h_rezept is None:
         return generate_output()
 
-    h_rezlin = get_cache (H_rezlin, {"_recid": [(eq, s_rezlin_h_recid)]})
+    h_rezlin = db_session.query(H_rezlin).filter(H_rezlin._recid == s_rezlin_h_recid).first()
     if h_rezlin is None:
         return generate_output()
 
@@ -50,15 +50,16 @@ def chg_rezeipt_chg_rezlin_webbl(s_rezlin_h_recid:int, h_rezept_recid:int, qty:D
 
         elif h_rezlin.lostfact != lostfact:
             res_history.aenderung = res_history.aenderung + "Loss Factor " + to_string(h_rezlin.lostfact) + " to " + to_string(lostfact) + ";"
-    pass
+    
+    db_session.refresh(h_rezlin, with_for_update=True)
     h_rezlin.menge =  to_decimal(qty)
     h_rezlin.lostfact =  to_decimal(lostfact)
+    db_session.flush()
 
-
-    pass
-    pass
+    db_session.refresh(h_rezept, with_for_update=True)
     h_rezept.datummod = get_current_date()
-    pass
+    db_session.flush()
+    
     artnrlager = h_rezlin.artnrlager
 
     return generate_output()

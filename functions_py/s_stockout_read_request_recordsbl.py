@@ -56,6 +56,7 @@ def s_stockout_read_request_recordsbl(rec_id:int, out_type:int, t_lschein:string
 
         if out_type == 1:
             op_num = 14
+
         lscheinnr = t_lschein
 
         for l_op in db_session.query(L_op).filter(
@@ -66,8 +67,8 @@ def s_stockout_read_request_recordsbl(rec_id:int, out_type:int, t_lschein:string
             gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, l_op.stornogrund)]})
 
             if not gl_acct:
-
                 gl_acct = get_cache (Gl_acct, {"bezeich": [(eq, l_op.stornogrund)]})
+
             op_list = Op_list()
             op_list_data.append(op_list)
 
@@ -106,6 +107,7 @@ def s_stockout_read_request_recordsbl(rec_id:int, out_type:int, t_lschein:string
 
         if out_type == 2:
             to_stock = 0
+
         out_list = Out_list()
         out_list_data.append(out_list)
 
@@ -122,19 +124,22 @@ def s_stockout_read_request_recordsbl(rec_id:int, out_type:int, t_lschein:string
 
             if l_lager:
                 lager_bez1 = l_lager.bezeich
+
             to_stock_ro = True
-        pass
+        
+        db_session.refresh(l_ophdr, with_for_update=True)
+
         l_ophdr.docu_nr = t_lschein
         l_ophdr.lscheinnr = t_lschein
         l_ophdr.op_typ = "STT"
 
-
-        pass
+        db_session.flush()
 
         queasy = get_cache (Queasy, {"key": [(eq, 343)],"char1": [(eq, t_lschein)]})
 
         if queasy:
             sr_remark = queasy.char2
+            
         t_l_ophdr = T_l_ophdr()
         t_l_ophdr_data.append(t_l_ophdr)
 
@@ -145,8 +150,7 @@ def s_stockout_read_request_recordsbl(rec_id:int, out_type:int, t_lschein:string
 
     bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})
 
-    l_ophdr = get_cache (L_ophdr, {"_recid": [(eq, rec_id)]})
-    if l_ophdr:
-        read_request_records()
+    l_ophdr = db_session.query(L_ophdr).filter(L_ophdr._recid == rec_id).first()
+    read_request_records()
 
     return generate_output()

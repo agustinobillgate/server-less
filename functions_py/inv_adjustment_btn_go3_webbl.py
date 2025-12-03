@@ -1,4 +1,4 @@
-#using conversion tools version: 1.0.0.117
+#using conversion tools version: 1.0.0.119
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -233,15 +233,22 @@ def inv_adjustment_btn_go3_webbl(from_grp:int, transdate:date, curr_lager:int, s
             avrg_price =  to_decimal(val_oh) / to_decimal(anz_oh)
         else:
             avrg_price =  to_decimal(l_artikel.vk_preis)
+
         anzahl =  to_decimal(to_decimal(c_list.qty)) - to_decimal(to_decimal(c_list.qty1))
         wert =  to_decimal(anzahl) * to_decimal(avrg_price)
 
-        l_bestand = get_cache (L_bestand, {"lager_nr": [(eq, curr_lager)],"artnr": [(eq, to_int(c_list.artnr))]})
+        l_bestand = db_session.query(L_bestand).filter(
+            (L_bestand.lager_nr == curr_lager) &
+            (L_bestand.artnr == to_int(c_list.artnr))
+        ).with_for_update().first()
         l_bestand.anz_ausgang =  to_decimal(l_bestand.anz_ausgang) + to_decimal(anzahl)
         l_bestand.wert_ausgang =  to_decimal(l_bestand.wert_ausgang) + to_decimal(wert)
         pass
 
-        l_bestand = get_cache (L_bestand, {"lager_nr": [(eq, 0)],"artnr": [(eq, to_int(c_list.artnr))]})
+        l_bestand = db_session.query(L_bestand).filter(
+            (L_bestand.lager_nr == 0) &
+            (L_bestand.artnr == to_int(c_list.artnr))
+        ).with_for_update().first()
         l_bestand.anz_ausgang =  to_decimal(l_bestand.anz_ausgang) + to_decimal(anzahl)
         l_bestand.wert_ausgang =  to_decimal(l_bestand.wert_ausgang) + to_decimal(wert)
         pass
@@ -263,7 +270,9 @@ def inv_adjustment_btn_go3_webbl(from_grp:int, transdate:date, curr_lager:int, s
         l_op.fuellflag = bediener.nr
         l_op.stornogrund = fibukonto
 
-        l_verbrauch = get_cache (L_verbrauch, {"artnr": [(eq, to_int(c_list.artnr))],"datum": [(eq, transdate)]})
+        l_verbrauch = db_session.query(L_verbrauch).filter(
+            (L_verbrauch.artnr == to_int(c_list.artnr)) & (L_verbrauch.datum == transdate)
+        ).with_for_update().first()
 
         if not l_verbrauch:
             l_verbrauch = L_verbrauch()
@@ -271,10 +280,9 @@ def inv_adjustment_btn_go3_webbl(from_grp:int, transdate:date, curr_lager:int, s
 
             l_verbrauch.artnr = to_int(c_list.artnr)
             l_verbrauch.datum = transdate
+
         l_verbrauch.anz_verbrau =  to_decimal(l_verbrauch.anz_verbrau) + to_decimal(anzahl)
         l_verbrauch.wert_verbrau =  to_decimal(l_verbrauch.wert_verbrau) + to_decimal(wert)
-        pass
-
 
     for c_list in query(c_list_data, filters=(lambda c_list: c_list.fibukonto != "" and c_list.fibukonto != None)):
 

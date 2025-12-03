@@ -100,9 +100,7 @@ def gl_linkstock2bl(pvilanguage:int, link_in:bool, to_date:date, remains:Decimal
             gl_journal = Gl_journal()
             db_session.add(gl_journal)
 
-            # gl_journal.jnr = counters.counter
-            gl_journal.jnr = last_count
-
+            gl_journal.jnr = counters.counter
             gl_journal.fibukonto = g_list.fibukonto
             gl_journal.debit =  to_decimal(g_list.debit)
             gl_journal.credit =  to_decimal(g_list.credit)
@@ -112,22 +110,22 @@ def gl_linkstock2bl(pvilanguage:int, link_in:bool, to_date:date, remains:Decimal
 
         if remains == 0.01 or remains == - 0.01:
             remains =  to_decimal("0")
-        pass
+        
+        db_session.refresh(gl_jouhdr, with_for_update=True)
+
         gl_jouhdr.credit =  to_decimal(credits)
         gl_jouhdr.debit =  to_decimal(debits)
         gl_jouhdr.remain =  to_decimal(remains)
-        pass
-        pass
+
+        db_session.flush()
 
     create_header()
     create_journals()
 
     if link_in:
-
-        htparam = get_cache (Htparam, {"paramnr": [(eq, 269)]})
+        htparam = db_session.query(Htparam).filter(Htparam.paramnr == 269).with_for_update().first()
     else:
-
-        htparam = get_cache (Htparam, {"paramnr": [(eq, 1035)]})
+        htparam = db_session.query(Htparam).filter(Htparam.paramnr == 1035).with_for_update().first()
 
     if htparam.fdate < to_date:
         htparam.fdate = to_date

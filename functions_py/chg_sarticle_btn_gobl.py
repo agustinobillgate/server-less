@@ -1,9 +1,9 @@
-#using conversion tools version: 1.0.0.117
+#using conversion tools version: 1.0.0.119
 
 from functions.additional_functions import *
 from decimal import Decimal
 from models import L_artikel, Gl_acct, L_untergrup, Queasy, Bediener, Res_history, L_op, L_ophis, L_order, L_bestand, L_lager, L_besthis, L_verbrauch, L_pprice, H_rezlin, Dml_art, Dml_artdep
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 tt_artnr_data, Tt_artnr = create_model("Tt_artnr", {"curr_i":int, "ss_artnr":int})
 tt_content_data, Tt_content = create_model("Tt_content", {"curr_i":int, "ss_content":int})
@@ -50,12 +50,11 @@ def chg_sarticle_btn_gobl(pvilanguage:int, tt_artnr_data:[Tt_artnr], tt_content_
 
         nonlocal l_art, tt_artnr, tt_content, l_art1, l_art2
 
-        # l_artikel = get_cache (L_artikel, {"_recid": [(eq, t_recid)]})
-        l_artikel = db_session.query(L_artikel).filter(
-                 (L_artikel._recid == t_recid)).with_for_update().first()
+        l_artikel = db_session.query(L_artikel).filter(L_artikel._recid == t_recid).first()
 
         if l_artikel:
-            pass
+            db_session.refresh(l_artikel, with_for_update=True)
+
             old_lastpc_price =  to_decimal(l_artikel.ek_letzter)
             l_artikel.artnr = artnr
             l_artikel.fibukonto = fibukonto
@@ -82,14 +81,10 @@ def chg_sarticle_btn_gobl(pvilanguage:int, tt_artnr_data:[Tt_artnr], tt_content_
             l_artikel.ek_aktuell =  to_decimal(l_art.ek_aktuell)
             l_artikel.ek_letzter =  to_decimal(l_art.ek_letzter)
             l_artikel.vk_preis =  to_decimal(l_art.vk_preis)
-            flag_modified(l_artikel, "lief_artnr")
-            
 
-            pass
+            db_session.flush()
 
-            # queasy = get_cache (Queasy, {"key": [(eq, 20)],"number1": [(eq, artnr)]})
-            queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 20) & (Queasy.number1 == artnr)).with_for_update().first()
+            queasy = db_session.query(Queasy).filter((Queasy.key == 20) & (Queasy.number1 == artnr)).with_for_update().first()
 
             if ss_artnr[0] != 0 or ss_artnr[1] != 0 or ss_artnr[2] != 0 or picture_file != "":
 
@@ -172,14 +167,16 @@ def chg_sarticle_btn_gobl(pvilanguage:int, tt_artnr_data:[Tt_artnr], tt_content_
         L_od1 =  create_buffer("L_od1",L_order)
         L_art1 =  create_buffer("L_art1",L_artikel)
 
-        l_bestand = get_cache (L_bestand, {"artnr": [(eq, original_art)],"lager_nr": [(eq, 0)]})
+        l_bestand = db_session.query(L_bestand).filter(
+                 (L_bestand.artnr == original_art) & (L_bestand.lager_nr == 0)).with_for_update().first()
 
         if l_bestand:
             l_bestand.artnr = artnr
 
         for l_lager in db_session.query(L_lager).order_by(L_lager._recid).all():
 
-            l_bestand = get_cache (L_bestand, {"artnr": [(eq, original_art)],"lager_nr": [(eq, l_lager.lager_nr)]})
+            l_bestand = db_session.query(L_bestand).filter(
+                     (L_bestand.artnr == original_art) & (L_bestand.lager_nr == l_lager.lager_nr)).with_for_update().first()
 
             if l_bestand:
                 l_bestand.artnr = artnr
@@ -187,16 +184,12 @@ def chg_sarticle_btn_gobl(pvilanguage:int, tt_artnr_data:[Tt_artnr], tt_content_
             for l_op in db_session.query(L_op).filter(
                      (L_op.artnr == original_art) & (L_op.lager_nr == l_lager.lager_nr)).order_by(L_op._recid).all():
 
-                l_op1 = get_cache (L_op, {"_recid": [(eq, l_op._recid)]})
+                l_op1 = db_session.query(L_op1).filter(L_op1._recid == l_op._recid).with_for_update().first()
                 l_op1.artnr = artnr
-                pass
 
         l_besthis = get_cache (L_besthis, {"artnr": [(eq, original_art)]})
         while None != l_besthis:
             l_besthis.artnr = artnr
-
-
-            pass
 
             curr_recid = l_besthis._recid
             l_besthis = db_session.query(L_besthis).filter(
@@ -205,9 +198,8 @@ def chg_sarticle_btn_gobl(pvilanguage:int, tt_artnr_data:[Tt_artnr], tt_content_
         for l_ophis in db_session.query(L_ophis).filter(
                  (L_ophis.artnr == original_art)).order_by(L_ophis._recid).all():
 
-            l_ophis1 = get_cache (L_ophis, {"_recid": [(eq, l_ophis._recid)]})
+            l_ophis1 = db_session.query(L_ophis1).filter(L_ophis1._recid == l_ophis._recid).with_for_update().first()
             l_ophis1.artnr = artnr
-            pass
 
         for l_verbrauch in db_session.query(L_verbrauch).filter(
                  (L_verbrauch.artnr == original_art)).order_by(L_verbrauch._recid).all():
@@ -216,24 +208,22 @@ def chg_sarticle_btn_gobl(pvilanguage:int, tt_artnr_data:[Tt_artnr], tt_content_
         for l_order in db_session.query(L_order).filter(
                  (L_order.artnr == original_art)).order_by(L_order._recid).all():
 
-            l_od1 = get_cache (L_order, {"_recid": [(eq, l_order._recid)]})
+            l_od1 = db_session.query(L_od1).filter(L_od1._recid == l_order._recid).with_for_update().first()
             l_od1.artnr = artnr
-            pass
 
         for l_pprice in db_session.query(L_pprice).filter(
-                 (L_pprice.artnr == original_art)).order_by(L_pprice._recid).all():
+                 (L_pprice.artnr == original_art)).with_for_update().order_by(L_pprice._recid).all():
             l_pprice.artnr = artnr
 
         for h_rezlin in db_session.query(H_rezlin).filter(
-                 (H_rezlin.artnrlager == original_art)).order_by(H_rezlin._recid).all():
+                 (H_rezlin.artnrlager == original_art)).with_for_update().order_by(H_rezlin._recid).all():
             h_rezlin.artnrlager = artnr
 
-        queasy = get_cache (Queasy, {"key": [(eq, 20)],"number1": [(eq, original_art)]})
+        queasy = db_session.query(Queasy).filter((Queasy.key == 20) & 
+                                                 (Queasy.number1 == original_art)).with_for_update().first()
 
         if queasy:
             queasy.number1 = artnr
-            pass
-            pass
 
         dml_art = get_cache (Dml_art, {"artnr": [(eq, original_art)]})
         while None != dml_art:

@@ -29,21 +29,27 @@ def close_inventory1_step2bl(inv_type:int, m_endkum:int, closedate:date):
         nonlocal l_lager, l_op, l_artikel, l_ophhis, l_ophis, queasy
         nonlocal inv_type, m_endkum, closedate
 
-        l_op = get_cache (L_op, {"lager_nr": [(eq, lager_nr)],"datum": [(le, closedate)],"op_art": [(le, 5)]})
+        l_op = db_session.query(L_op).filter(
+                 (L_op.lager_nr == lager_nr) & (L_op.datum <= closedate) & (L_op.op_art <= 5)).order_by(L_op._recid).first()
+        
         while None != l_op:
 
             l_artikel = get_cache (L_artikel, {"artnr": [(eq, l_op.artnr)]})
 
             if not l_artikel:
-                pass
+                db_session.refresh(l_op, with_for_update=True)
                 db_session.delete(l_op)
+                db_session.flush()
 
             elif l_artikel and ((inv_type == 1 and l_artikel.endkum < m_endkum) or (inv_type == 2 and l_artikel.endkum >= m_endkum) or inv_type == 3):
-                pass
+                db_session.refresh(l_op, with_for_update=True)
 
                 if (l_op.op_art >= 1 and l_op.op_art <= 4) and l_op.lager_nr != 0:
                     create_ophis()
+
                 db_session.delete(l_op)
+
+                db_session.flush()
 
             curr_recid = l_op._recid
             l_op = db_session.query(L_op).filter(
@@ -101,14 +107,12 @@ def close_inventory1_step2bl(inv_type:int, m_endkum:int, closedate:date):
 
         pass
 
-        queasy = get_cache (Queasy, {"key": [(eq, 363)],"char1": [(eq, l_op.docu_nr)],"char2": [(eq, l_op.lscheinnr)],"number1": [(eq, l_op.artnr)]})
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 363) & (Queasy.char1 == l_op.docu_nr) & (Queasy.char2 == l_op.lscheinnr) & (Queasy.number1 == l_op.artnr)).with_for_update().first()
 
         if queasy:
             queasy.deci1 =  to_decimal(l_op.deci1[0])
             queasy.number2 = l_op.fuellflag
-
-
-            pass
         else:
             queasy = Queasy()
             db_session.add(queasy)
@@ -120,11 +124,9 @@ def close_inventory1_step2bl(inv_type:int, m_endkum:int, closedate:date):
             queasy.number2 = l_op.fuellflag
             queasy.deci1 =  to_decimal(l_op.deci1[0])
 
-
-            pass
-
     for l_lager in db_session.query(L_lager).order_by(L_lager._recid).all():
         close_op(l_lager.lager_nr)
+        
     close_op(0)
 
     return generate_output()

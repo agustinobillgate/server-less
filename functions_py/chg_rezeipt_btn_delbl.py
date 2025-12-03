@@ -1,9 +1,4 @@
-#using conversion tools version: 1.0.0.117
-#------------------------------------------------
-# Rulita, 10-09-2025 
-# Recompile
-# ticket: 5BE11A
-#------------------------------------------------
+#using conversion tools version: 1.0.0.119
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -20,11 +15,11 @@ def chg_rezeipt_btn_delbl(h_recid:int):
 
         return {}
 
-
-    h_rezlin = get_cache (H_rezlin, {"_recid": [(eq, h_recid)]})
+    h_rezlin = db_session.query(H_rezlin).filter(H_rezlin._recid == h_recid).first()
 
     if h_rezlin:
-        pass
+        db_session.refresh(h_rezlin, with_for_update=True)
         db_session.delete(h_rezlin)
+        db_session.flush()
 
     return generate_output()

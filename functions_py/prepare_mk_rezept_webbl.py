@@ -166,11 +166,9 @@ def prepare_mk_rezept_webbl(t_artikel_data:[T_artikel]):
     price_type = htparam.finteger
 
     for l_artikel in db_session.query(L_artikel).filter(
-             (L_artikel.herkunft == "")).order_by(L_artikel._recid).all():
+             (L_artikel.herkunft == "")).with_for_update().order_by(L_artikel._recid).all():
+        
         l_artikel.herkunft = ";;"
-
-
-    pass
 
     # Rulita 150825 | Add find first t_artikel
     t_artikel = query(t_artikel_data, first=True)

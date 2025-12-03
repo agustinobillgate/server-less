@@ -1,4 +1,4 @@
-#using conversion tools version: 1.0.0.117
+#using conversion tools version: 1.0.0.119
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -54,13 +54,13 @@ def cancel_dissuebl(lief_nr:int, docu_nr:string, user_init:string):
 
             return
 
-        # l_kredit = get_cache (L_kredit, {"name": [(eq, docu_nr)],"saldo": [(eq, - t_amount)],"lief_nr": [(eq, lief_nr)],"rgdatum": [(eq, billdate)]})
         l_kredit = db_session.query(L_kredit).filter(
-                 (L_kredit.name == docu_nr) & (L_kredit.saldo == ( - t_amount)) & (L_kredit.lief_nr == lief_nr) &
-                 (L_kredit.rgdatum == billdate)).with_for_update().first()
+                 (L_kredit.name == docu_nr) & (L_kredit.saldo == ( - to_decimal(t_amount))) & (L_kredit.lief_nr == lief_nr) & (L_kredit.rgdatum == billdate)).first()
+
         if l_kredit:
-            pass
+            db_session.refresh(l_kredit, with_for_update=True)
             db_session.delete(l_kredit)
+            db_session.flush()
         else:
             l_kredit = L_kredit()
             db_session.add(l_kredit)
@@ -73,6 +73,7 @@ def cancel_dissuebl(lief_nr:int, docu_nr:string, user_init:string):
             l_kredit.ziel = 0
             l_kredit.netto =  to_decimal(t_amount)
             l_kredit.bediener_nr = bediener.nr
+
         ap_journal = Ap_journal()
         db_session.add(ap_journal)
 
@@ -106,7 +107,8 @@ def cancel_dissuebl(lief_nr:int, docu_nr:string, user_init:string):
         if l_op.op_art == 1:
             t_amount =  to_decimal(t_amount) + to_decimal(wert)
 
-            l_bestand = get_cache (L_bestand, {"lager_nr": [(eq, l_op.lager_nr)],"artnr": [(eq, l_op.artnr)]})
+            l_bestand = db_session.query(L_bestand).filter(
+                     (L_bestand.lager_nr == l_op.lager_nr) & (L_bestand.artnr == l_op.artnr)).with_for_update().first()
 
             if l_bestand:
                 l_bestand.anz_eingang =  to_decimal(l_bestand.anz_eingang) - to_decimal(l_op.anzahl)
@@ -115,7 +117,8 @@ def cancel_dissuebl(lief_nr:int, docu_nr:string, user_init:string):
                 l_bestand.wert_ausgang =  to_decimal(l_bestand.wert_ausgang) - to_decimal(l_op.warenwert)
                 pass
 
-            l_bestand = get_cache (L_bestand, {"lager_nr": [(eq, 0)],"artnr": [(eq, l_op.artnr)]})
+            l_bestand = db_session.query(L_bestand).filter(
+                     (L_bestand.lager_nr == 0) & (L_bestand.artnr == l_op.artnr)).with_for_update().first()
 
             if l_bestand:
                 l_bestand.anz_eingang =  to_decimal(l_bestand.anz_eingang) - to_decimal(l_op.anzahl)
@@ -123,6 +126,7 @@ def cancel_dissuebl(lief_nr:int, docu_nr:string, user_init:string):
                 l_bestand.anz_ausgang =  to_decimal(l_bestand.anz_ausgang) - to_decimal(l_op.anzahl)
                 l_bestand.wert_ausgang =  to_decimal(l_bestand.wert_ausgang) - to_decimal(l_op.warenwert)
                 pass
+
     update_ap()
 
     return generate_output()

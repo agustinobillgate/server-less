@@ -76,10 +76,13 @@ def s_stockout_btn_go_webbl(op_list_data:[Op_list], pvilanguage:int, out_type:in
         t_amount =  to_decimal(t_amount) + to_decimal(wert)
 
         if not transfered:
-            pass
+            db_session.refresh(l_bestand, with_for_update=True)
+
             l_bestand.anz_ausgang =  to_decimal(l_bestand.anz_ausgang) + to_decimal(anzahl)
             l_bestand.wert_ausgang =  to_decimal(l_bestand.wert_ausgang) + to_decimal(wert)
-            pass
+
+            db_session.flush()
+            
         to_stock = get_to_stock(op_list.lscheinnr, op_list.artnr)
 
         l_bestand = get_cache (L_bestand, {"artnr": [(eq, op_list.artnr)],"lager_nr": [(eq, op_list.lager_nr)]})
@@ -95,15 +98,16 @@ def s_stockout_btn_go_webbl(op_list_data:[Op_list], pvilanguage:int, out_type:in
             stock_oh =  to_decimal(l_bestand.anz_anf_best) + to_decimal(l_bestand.anz_eingang) - to_decimal(l_bestand.anz_ausgang)
 
         if stock_oh > 0:
-
-            l_bestand = get_cache (L_bestand, {"lager_nr": [(eq, curr_lager)],"artnr": [(eq, s_artnr)]})
+            l_bestand = db_session.query(L_bestand).filter(
+                     (L_bestand.lager_nr == curr_lager) & (L_bestand.artnr == s_artnr)).with_for_update().first()
+            
             l_bestand.anz_ausgang =  to_decimal(l_bestand.anz_ausgang) + to_decimal(anzahl)
             l_bestand.wert_ausgang =  to_decimal(l_bestand.wert_ausgang) + to_decimal(wert)
             pass
 
             if transfered:
-
-                l_bestand = get_cache (L_bestand, {"lager_nr": [(eq, to_stock)],"artnr": [(eq, s_artnr)]})
+                l_bestand = db_session.query(L_bestand).filter(
+                         (L_bestand.lager_nr == to_stock) & (L_bestand.artnr == s_artnr)).with_for_update().first()
 
                 if not l_bestand:
                     l_bestand = L_bestand()
@@ -112,9 +116,11 @@ def s_stockout_btn_go_webbl(op_list_data:[Op_list], pvilanguage:int, out_type:in
                     l_bestand.anf_best_dat = transdate
                     l_bestand.artnr = s_artnr
                     l_bestand.lager_nr = to_stock
+
                 l_bestand.anz_eingang =  to_decimal(l_bestand.anz_eingang) + to_decimal(anzahl)
                 l_bestand.wert_eingang =  to_decimal(l_bestand.wert_eingang) + to_decimal(wert)
                 pass
+
             l_op = L_op()
             db_session.add(l_op)
 
@@ -130,6 +136,7 @@ def s_stockout_btn_go_webbl(op_list_data:[Op_list], pvilanguage:int, out_type:in
                 l_op.op_art = 3
             else:
                 l_op.op_art = 4
+
             l_op.herkunftflag = 1
             l_op.lscheinnr = lscheinnr
 
@@ -142,8 +149,9 @@ def s_stockout_btn_go_webbl(op_list_data:[Op_list], pvilanguage:int, out_type:in
                     l_op.stornogrund = cost_acct
             else:
                 l_op.pos = to_stock
+
             l_op.fuellflag = bediener_nr
-            pass
+            
 
             if transfered:
                 l_op = L_op()
@@ -165,7 +173,8 @@ def s_stockout_btn_go_webbl(op_list_data:[Op_list], pvilanguage:int, out_type:in
 
             if not transfered:
 
-                l_verbrauch = get_cache (L_verbrauch, {"artnr": [(eq, s_artnr)],"datum": [(eq, transdate)]})
+                l_verbrauch = db_session.query(L_verbrauch).filter(
+                         (L_verbrauch.artnr == s_artnr) & (L_verbrauch.datum == transdate)).with_for_update().first()
 
                 if not l_verbrauch:
                     l_verbrauch = L_verbrauch()
@@ -173,11 +182,10 @@ def s_stockout_btn_go_webbl(op_list_data:[Op_list], pvilanguage:int, out_type:in
 
                     l_verbrauch.artnr = s_artnr
                     l_verbrauch.datum = transdate
+
                 l_verbrauch.anz_verbrau =  to_decimal(l_verbrauch.anz_verbrau) + to_decimal(anzahl)
                 l_verbrauch.wert_verbrau =  to_decimal(l_verbrauch.wert_verbrau) + to_decimal(wert)
-                pass
-
-
+               
     def l_op_pos():
 
         nonlocal s_artnr, err_flag, price, amount, msg_str2, msg_str3, req_created, lvcarea, curr_pos, zeit, gl_notfound, its_ok, l_op, gl_acct, l_ophdr, l_bestand, l_verbrauch, l_artikel
@@ -280,6 +288,7 @@ def s_stockout_btn_go_webbl(op_list_data:[Op_list], pvilanguage:int, out_type:in
 
         if out_type == 1:
             op_num = 14
+
         req_created = True
 
         l_op = get_cache (L_op, {"datum": [(eq, t_datum)],"op_art": [(eq, op_num)],"lscheinnr": [(eq, t_lschein)]})
@@ -287,7 +296,9 @@ def s_stockout_btn_go_webbl(op_list_data:[Op_list], pvilanguage:int, out_type:in
 
             op_list = query(op_list_data, filters=(lambda op_list: op_list.artnr == l_op.artnr), first=True)
 
-            lbuff = get_cache (L_op, {"_recid": [(eq, l_op._recid)]})
+            lbuff = db_session.query(Lbuff).filter(
+                     (Lbuff._recid == l_op._recid)).with_for_update().first()
+
             lbuff.herkunftflag = 2
 
             if op_list:
@@ -328,7 +339,7 @@ def s_stockout_btn_go_webbl(op_list_data:[Op_list], pvilanguage:int, out_type:in
 
         Buffer_l_op =  create_buffer("Buffer_l_op",L_op)
 
-        buffer_l_op = get_cache (L_op, {"lscheinnr": [(eq, lscheinnr)],"artnr": [(eq, artnr)],"op_art": [(eq, 14)]})    #Rulita TiketID 5BE11A
+        buffer_l_op = get_cache (L_op, {"lscheinnr": [(eq, lscheinnr)],"artnr": [(eq, artnr)],"op_art": [(eq, 14)]})
 
         if buffer_l_op:
             to_stock = buffer_l_op.pos
@@ -367,16 +378,19 @@ def s_stockout_btn_go_webbl(op_list_data:[Op_list], pvilanguage:int, out_type:in
     its_ok = check_qty()
 
     if not its_ok:
-
         return generate_output()
-    pass
+    
+    db_session.refresh(l_ophdr, with_for_update=True)
+
     l_ophdr.datum = transdate
     l_ophdr.lager_nr = curr_lager
 
     if not transfered:
         l_ophdr.fibukonto = cost_acct
         l_ophdr.betriebsnr = jobnr
-    pass
+    
+    db_session.flush()
+    
     curr_pos = l_op_pos()
     curr_pos = curr_pos - 1
     zeit = get_current_time_in_seconds()
