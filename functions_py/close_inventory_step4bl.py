@@ -1,4 +1,4 @@
-#using conversion tools version: 1.0.0.117
+#using conversion tools version: 1.0.0.119
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -50,16 +50,11 @@ def close_inventory_step4bl(inv_type:int, m_endkum:int, closedate:date, todate:d
             if del_it:
 
                 for l_op in db_session.query(L_op).filter(
-                         (L_op.op_art >= 13) & (L_op.op_art <= 14) & (L_op.datum == l_ophdr.datum) & 
-                         (L_op.lscheinnr == l_ophdr.lscheinnr)).order_by(L_op._recid).with_for_update().all():
+                         (L_op.op_art >= 13) & (L_op.op_art <= 14) & (L_op.datum == l_ophdr.datum) & (L_op.lscheinnr == l_ophdr.lscheinnr)).order_by(L_op._recid).all():
                     db_session.delete(l_op)
 
-                # ophbuff = get_cache (L_ophdr, {"_recid": [(eq, l_ophdr._recid)]})
-                ophbuff = db_session.query(Ophbuff).filter(
-                         (Ophbuff._recid == l_ophdr._recid)).with_for_update().first()
+                ophbuff = db_session.query(L_ophdr).filter(L_ophdr._recid == l_ophdr._recid).with_for_update().first()
                 db_session.delete(ophbuff)
-                pass
-
 
     def update_onhand():
 
@@ -80,7 +75,8 @@ def close_inventory_step4bl(inv_type:int, m_endkum:int, closedate:date, todate:d
         transdate = l_op.datum
         curr_lager = l_op.lager_nr
 
-        l_bestand = get_cache (L_bestand, {"lager_nr": [(eq, 0)],"artnr": [(eq, s_artnr)]})
+        l_bestand = db_session.query(L_bestand).filter(
+                     (L_bestand.lager_nr == 0) & (L_bestand.artnr == s_artnr)).with_for_update().first()
 
         if not l_bestand:
             l_bestand = L_bestand()
@@ -95,6 +91,7 @@ def close_inventory_step4bl(inv_type:int, m_endkum:int, closedate:date, todate:d
         else:
             l_bestand.anz_ausgang =  to_decimal(l_bestand.anz_ausgang) + to_decimal(anzahl)
             l_bestand.wert_ausgang =  to_decimal(l_bestand.wert_ausgang) + to_decimal(wert)
+
         pass
 
         if l_op.herkunftflag != 2:
@@ -102,12 +99,15 @@ def close_inventory_step4bl(inv_type:int, m_endkum:int, closedate:date, todate:d
             tot_wert =  to_decimal(l_bestand.val_anf_best) + to_decimal(l_bestand.wert_eingang) - to_decimal(l_bestand.wert_ausgang)
 
             if tot_anz != 0:
-                avrg_price =  to_decimal(tot_wert) / to_decimal(tot_anz)
-                pass
-                l_artikel.vk_preis =  to_decimal(avrg_price)
-                pass
+                db_session.refresh(l_artikel, with_for_update=True)
 
-        l_bestand = get_cache (L_bestand, {"lager_nr": [(eq, curr_lager)],"artnr": [(eq, s_artnr)]})
+                avrg_price =  to_decimal(tot_wert) / to_decimal(tot_anz)
+                l_artikel.vk_preis =  to_decimal(avrg_price)
+                
+                db_session.flush()
+
+        l_bestand = db_session.query(L_bestand).filter(
+                     (L_bestand.lager_nr == curr_lager) & (L_bestand.artnr == s_artnr)).with_for_update().first()
 
         if not l_bestand:
             l_bestand = L_bestand()
@@ -123,6 +123,7 @@ def close_inventory_step4bl(inv_type:int, m_endkum:int, closedate:date, todate:d
         else:
             l_bestand.anz_ausgang =  to_decimal(l_bestand.anz_ausgang) + to_decimal(anzahl)
             l_bestand.wert_ausgang =  to_decimal(l_bestand.wert_ausgang) + to_decimal(wert)
+
         pass
 
 
@@ -133,7 +134,9 @@ def close_inventory_step4bl(inv_type:int, m_endkum:int, closedate:date, todate:d
 
         if l_op.op_art == 1 or (l_op.op_art == 2 and l_op.herkunftflag == 3) or l_op.op_art == 3:
 
-            l_artikel = get_cache (L_artikel, {"artnr": [(eq, l_op.artnr)]})
+            l_artikel = db_session.query(L_artikel).filter(
+                L_artikel.artnr == l_op.artnr
+            ).first()
 
             if l_artikel and ((inv_type == 1 and l_artikel.endkum < m_endkum) or (inv_type == 2 and l_artikel.endkum >= m_endkum) or inv_type == 3):
                 update_onhand()
@@ -142,21 +145,22 @@ def close_inventory_step4bl(inv_type:int, m_endkum:int, closedate:date, todate:d
 
         l_bestand = db_session.query(L_bestand).filter(
                  (L_bestand.lager_nr == l_lager.lager_nr) & ((L_bestand.anf_best_dat <= closedate) | (L_bestand.anf_best_dat == None))).first()
+        
         while None != l_bestand:
 
-            # l_artikel = get_cache (L_artikel, {"artnr": [(eq, l_bestand.artnr)]})
-            l_artikel = db_session.query(L_artikel).filter(
-                         (L_artikel.artnr == l_bestand.artnr)).with_for_update().first()
+            l_artikel = get_cache (L_artikel, {"artnr": [(eq, l_bestand.artnr)]})
 
             if not l_artikel:
-                pass
+                db_session.refresh(l_bestand, with_for_update=True)
                 db_session.delete(l_bestand)
+                db_session.flush()
 
             elif l_artikel and ((inv_type == 1 and l_artikel.endkum < m_endkum) or (inv_type == 2 and l_artikel.endkum >= m_endkum) or inv_type == 3):
 
                 if (l_bestand.anz_anf_best + l_bestand.anz_eingang - l_bestand.anz_ausgang) == 0:
-                    pass
+                    db_session.refresh(l_bestand, with_for_update=True)
                     db_session.delete(l_bestand)
+                    db_session.flush()
 
             curr_recid = l_bestand._recid
             l_bestand = db_session.query(L_bestand).filter(
@@ -164,21 +168,22 @@ def close_inventory_step4bl(inv_type:int, m_endkum:int, closedate:date, todate:d
 
     l_bestand = db_session.query(L_bestand).filter(
                  (L_bestand.lager_nr == 0) & ((L_bestand.anf_best_dat <= closedate) | (L_bestand.anf_best_dat == None))).first()
+    
     while None != l_bestand:
 
-        # l_artikel = get_cache (L_artikel, {"artnr": [(eq, l_bestand.artnr)]})
-        l_artikel = db_session.query(L_artikel).filter(
-                     (L_artikel.artnr == l_bestand.artnr)).with_for_update().first()
+        l_artikel = get_cache (L_artikel, {"artnr": [(eq, l_bestand.artnr)]})
 
         if not l_artikel:
-            pass
+            db_session.refresh(l_bestand, with_for_update=True)
             db_session.delete(l_bestand)
+            db_session.flush()
 
         elif l_artikel and ((inv_type == 1 and l_artikel.endkum < m_endkum) or (inv_type == 2 and l_artikel.endkum >= m_endkum) or inv_type == 3):
 
             if l_bestand.anz_anf_best == 0 and l_bestand.anz_eingang == 0 and l_bestand.anz_ausgang == 0:
-                pass
+                db_session.refresh(l_bestand, with_for_update=True)
                 db_session.delete(l_bestand)
+                db_session.flush()
 
         curr_recid = l_bestand._recid
         l_bestand = db_session.query(L_bestand).filter(
@@ -190,19 +195,19 @@ def close_inventory_step4bl(inv_type:int, m_endkum:int, closedate:date, todate:d
                  (L_bestand.lager_nr == l_lager.lager_nr) & ((L_bestand.anf_best_dat <= closedate) | (L_bestand.anf_best_dat == None))).first()
         while None != l_bestand:
 
-            # l_artikel = get_cache (L_artikel, {"artnr": [(eq, l_bestand.artnr)]})
-            l_artikel = db_session.query(L_artikel).filter(
-                         (L_artikel.artnr == l_bestand.artnr)).with_for_update().first()
+            l_artikel = get_cache (L_artikel, {"artnr": [(eq, l_bestand.artnr)]})
 
             if not l_artikel:
-                pass
+                db_session.refresh(l_bestand, with_for_update=True)
                 db_session.delete(l_bestand)
+                db_session.flush()
 
             elif l_artikel and ((inv_type == 1 and l_artikel.endkum < m_endkum) or (inv_type == 2 and l_artikel.endkum >= m_endkum) or inv_type == 3):
 
                 if l_bestand.anz_anf_best == 0 and l_bestand.anz_eingang == 0 and l_bestand.anz_ausgang == 0:
-                    pass
+                    db_session.refresh(l_bestand, with_for_update=True) 
                     db_session.delete(l_bestand)
+                    db_session.flush()
 
             curr_recid = l_bestand._recid
             l_bestand = db_session.query(L_bestand).filter(
@@ -210,30 +215,26 @@ def close_inventory_step4bl(inv_type:int, m_endkum:int, closedate:date, todate:d
 
     if inv_type == 1:
 
-        htparam = get_cache (Htparam, {"paramnr": [(eq, 224)]})
+        htparam = db_session.query(Htparam).filter(Htparam.paramnr == 224).with_for_update().first()
         htparam.fdate = todate
         htparam.lupdate = get_current_date()
         htparam.fdefault = user_init + " - " + to_string(get_current_time_in_seconds(), "HH:MM:SS")
-        pass
 
     elif inv_type == 2:
 
-        htparam = get_cache (Htparam, {"paramnr": [(eq, 221)]})
+        htparam = db_session.query(Htparam).filter(Htparam.paramnr == 221).with_for_update().first()
         htparam.fdate = todate
         htparam.lupdate = get_current_date()
         htparam.fdefault = user_init + " - " + to_string(get_current_time_in_seconds(), "HH:MM:SS")
-        pass
 
     elif inv_type == 3:
 
-        htparam = get_cache (Htparam, {"paramnr": [(eq, 221)]})
+        htparam = db_session.query(Htparam).filter(Htparam.paramnr == 221).with_for_update().first()
         htparam.fdate = todate
-        pass
 
-        htparam = get_cache (Htparam, {"paramnr": [(eq, 224)]})
+        htparam = db_session.query(Htparam).filter(Htparam.paramnr == 224).with_for_update().first()
         htparam.fdate = todate
         htparam.lupdate = get_current_date()
         htparam.fdefault = user_init + " - " + to_string(get_current_time_in_seconds(), "HH:MM:SS")
-        pass
 
     return generate_output()

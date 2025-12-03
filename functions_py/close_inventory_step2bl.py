@@ -1,9 +1,4 @@
-#using conversion tools version: 1.0.0.117
-
-# =======================================
-# Rulita, 17-10-2025 
-# Tiket ID : 6526C2 | New compile program
-# =======================================
+#using conversion tools version: 1.0.0.119
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -69,13 +64,12 @@ def close_inventory_step2bl(inv_type:int, m_endkum:int, closedate:date):
                     l_ophis.lief_nr = l_op.pos
                 pass
 
-                queasy = get_cache (Queasy, {"key": [(eq, 363)],"char1": [(eq, l_op.docu_nr)],"char2": [(eq, l_op.lscheinnr)],"number1": [(eq, l_op.artnr)]})
+                queasy = db_session.query(Queasy).filter(
+                          (Queasy.key == 363) & (Queasy.char1 == l_op.docu_nr) & (Queasy.char2 == l_op.lscheinnr) & (Queasy.number1 == l_op.artnr)).with_for_update().first()
 
                 if queasy:
                     queasy.deci1 =  to_decimal(l_op.deci1[0])
                     queasy.number2 = l_op.fuellflag
-
-
                     pass
                 else:
                     queasy = Queasy()
