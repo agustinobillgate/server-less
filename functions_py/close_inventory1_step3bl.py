@@ -1,4 +1,4 @@
-#using conversion tools version: 1.0.0.117
+#using conversion tools version: 1.0.0.119
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -38,16 +38,16 @@ def close_inventory1_step3bl(closedate:date):
         pass
 
     l_ophdr = db_session.query(L_ophdr).filter(
-             ((L_ophdr.op_typ == ("STI").lower()) | (L_ophdr.op_typ == ("STT").lower()) | (L_ophdr.op_typ == ("WIP").lower())) & 
-             (L_ophdr.datum <= closedate)).with_for_update().first()
+             ((L_ophdr.op_typ == ("STI").lower()) | (L_ophdr.op_typ == ("STT").lower()) | (L_ophdr.op_typ == ("WIP").lower())) & (L_ophdr.datum <= closedate)).first()
+    
     while None != l_ophdr:
-        pass
+        db_session.refresh(l_ophdr, with_for_update=True)
         create_ophhis()
         db_session.delete(l_ophdr)
+        db_session.flush()
 
         curr_recid = l_ophdr._recid
         l_ophdr = db_session.query(L_ophdr).filter(
-                 ((L_ophdr.op_typ == ("STI").lower()) | (L_ophdr.op_typ == ("STT").lower()) | (L_ophdr.op_typ == ("WIP").lower())) & 
-                 (L_ophdr.datum <= closedate) & (L_ophdr._recid > curr_recid)).with_for_update().first()
+                 ((L_ophdr.op_typ == ("STI").lower()) | (L_ophdr.op_typ == ("STT").lower()) | (L_ophdr.op_typ == ("WIP").lower())) & (L_ophdr.datum <= closedate) & (L_ophdr._recid > curr_recid)).first()
 
     return generate_output()
