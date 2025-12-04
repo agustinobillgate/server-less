@@ -8,14 +8,14 @@
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
-from functions.htpint import htpint
-from models import L_op, L_ophdr, L_artikel, L_bestand, L_lieferant, L_liefumsatz, Htparam, Gl_acct, L_kredit, Ap_journal, L_pprice
+from functions_py.htpint import htpint
+from models import L_op, Queasy, L_ophis, L_ophdr, L_artikel, L_bestand, L_lieferant, L_liefumsatz, Htparam, Gl_acct, L_kredit, Ap_journal, L_pprice
 
-op_list_data, Op_list = create_model_like(L_op, {"a_bezeich":string})
+op_list_data, Op_list = create_model_like(L_op, {"a_bezeich":string, "mess_unit":Decimal, "d_unit":Decimal, "vat_no":int, "vat_value":Decimal, "disc_amount":Decimal, "disc_amount2":Decimal, "tax_percent":Decimal, "discamt_flag":bool, "addvat_amount":Decimal})
 
-def s_stockin_btn_gobl(s_artnr:int, qty:Decimal, op_list_data:[Op_list], f_endkum:int, b_endkum:int, m_endkum:int, lief_nr:int, lscheinnr:string, billdate:date, curr_lager:int, fb_closedate:date, m_closedate:date, bediener_nr:int, bediener_userinit:string):
+def s_stockin_btn_go_2bl(s_artnr:int, qty:Decimal, op_list_data, f_endkum:int, b_endkum:int, m_endkum:int, lief_nr:int, lscheinnr:string, billdate:date, curr_lager:int, fb_closedate:date, m_closedate:date, bediener_nr:int, bediener_userinit:string):
 
-    prepare_cache ([L_op, L_ophdr, L_artikel, L_bestand, L_liefumsatz, Htparam, L_kredit, Ap_journal, L_pprice])
+    prepare_cache ([L_op, Queasy, L_ophdr, L_artikel, L_bestand, L_liefumsatz, Htparam, L_kredit, Ap_journal, L_pprice])
 
     err_flag = 0
     err_flag2 = 0
@@ -25,28 +25,33 @@ def s_stockin_btn_gobl(s_artnr:int, qty:Decimal, op_list_data:[Op_list], f_endku
     curr_pos:int = 0
     t_amount:Decimal = to_decimal("0.0")
     pos:int = 0
-    l_op = l_ophdr = l_artikel = l_bestand = l_lieferant = l_liefumsatz = htparam = gl_acct = l_kredit = ap_journal = l_pprice = None
+    l_op = queasy = l_ophis = l_ophdr = l_artikel = l_bestand = l_lieferant = l_liefumsatz = htparam = gl_acct = l_kredit = ap_journal = l_pprice = None
 
-    op_list = None
+    op_list = queasy336 = None
+
+    Queasy336 = create_buffer("Queasy336",Queasy)
+
 
     db_session = local_storage.db_session
 
     def generate_output():
-        nonlocal err_flag, err_flag2, price, created, printer_nr, curr_pos, t_amount, pos, l_op, l_ophdr, l_artikel, l_bestand, l_lieferant, l_liefumsatz, htparam, gl_acct, l_kredit, ap_journal, l_pprice
+        nonlocal err_flag, err_flag2, price, created, printer_nr, curr_pos, t_amount, pos, l_op, queasy, l_ophis, l_ophdr, l_artikel, l_bestand, l_lieferant, l_liefumsatz, htparam, gl_acct, l_kredit, ap_journal, l_pprice
         nonlocal s_artnr, qty, f_endkum, b_endkum, m_endkum, lief_nr, lscheinnr, billdate, curr_lager, fb_closedate, m_closedate, bediener_nr, bediener_userinit
+        nonlocal queasy336
 
 
-        nonlocal op_list
+        nonlocal op_list, queasy336
 
         return {"s_artnr": s_artnr, "qty": qty, "err_flag": err_flag, "err_flag2": err_flag2, "price": price, "created": created, "printer_nr": printer_nr}
 
     def l_op_pos():
 
-        nonlocal err_flag, err_flag2, price, created, printer_nr, curr_pos, t_amount, pos, l_op, l_ophdr, l_artikel, l_bestand, l_lieferant, l_liefumsatz, htparam, gl_acct, l_kredit, ap_journal, l_pprice
+        nonlocal err_flag, err_flag2, price, created, printer_nr, curr_pos, t_amount, pos, l_op, queasy, l_ophis, l_ophdr, l_artikel, l_bestand, l_lieferant, l_liefumsatz, htparam, gl_acct, l_kredit, ap_journal, l_pprice
         nonlocal s_artnr, qty, f_endkum, b_endkum, m_endkum, lief_nr, lscheinnr, billdate, curr_lager, fb_closedate, m_closedate, bediener_nr, bediener_userinit
+        nonlocal queasy336
 
 
-        nonlocal op_list
+        nonlocal op_list, queasy336
 
         pos = 0
         l_op1 = None
@@ -62,11 +67,12 @@ def s_stockin_btn_gobl(s_artnr:int, qty:Decimal, op_list_data:[Op_list], f_endku
 
     def create_l_op():
 
-        nonlocal err_flag, err_flag2, price, created, printer_nr, curr_pos, t_amount, pos, l_op, l_ophdr, l_artikel, l_bestand, l_lieferant, l_liefumsatz, htparam, gl_acct, l_kredit, ap_journal, l_pprice
+        nonlocal err_flag, err_flag2, price, created, printer_nr, curr_pos, t_amount, pos, l_op, queasy, l_ophis, l_ophdr, l_artikel, l_bestand, l_lieferant, l_liefumsatz, htparam, gl_acct, l_kredit, ap_journal, l_pprice
         nonlocal s_artnr, qty, f_endkum, b_endkum, m_endkum, lief_nr, lscheinnr, billdate, curr_lager, fb_closedate, m_closedate, bediener_nr, bediener_userinit
+        nonlocal queasy336
 
 
-        nonlocal op_list
+        nonlocal op_list, queasy336
 
         anzahl:Decimal = to_decimal("0.0")
         wert:Decimal = to_decimal("0.0")
@@ -85,7 +91,7 @@ def s_stockin_btn_gobl(s_artnr:int, qty:Decimal, op_list_data:[Op_list], f_endku
 
             # l_bestand = get_cache (L_bestand, {"lager_nr": [(eq, 0)],"artnr": [(eq, s_artnr)]})
             l_bestand = db_session.query(L_bestand).filter(
-                (L_bestand.lager_nr == 0) & (L_bestand.artnr == s_artnr)).with_for_update().first()
+                     (L_bestand.lager_nr == 0) & (L_bestand.artnr == s_artnr)).with_for_update().first()
 
             if not l_bestand:
                 l_bestand = L_bestand()
@@ -102,12 +108,13 @@ def s_stockin_btn_gobl(s_artnr:int, qty:Decimal, op_list_data:[Op_list], f_endku
             if tot_anz != 0:
                 avrg_price =  to_decimal(tot_wert) / to_decimal(tot_anz)
                 # pass
+                db_session.refresh(l_artikel, with_for_update=True)
                 l_artikel.vk_preis =  to_decimal(avrg_price)
                 # pass
 
             # l_bestand = get_cache (L_bestand, {"lager_nr": [(eq, op_list.lager_nr)],"artnr": [(eq, s_artnr)]})
             l_bestand = db_session.query(L_bestand).filter(
-                (L_bestand.lager_nr == op_list.lager_nr) & (L_bestand.artnr == s_artnr)).with_for_update().first()
+                     (L_bestand.lager_nr == op_list.lager_nr) & (L_bestand.artnr == s_artnr)).with_for_update().first()
 
             if not l_bestand:
                 l_bestand = L_bestand()
@@ -128,9 +135,7 @@ def s_stockin_btn_gobl(s_artnr:int, qty:Decimal, op_list_data:[Op_list], f_endku
 
         if l_lieferant:
 
-            # l_liefumsatz = get_cache (L_liefumsatz, {"lief_nr": [(eq, lief_nr)],"datum": [(eq, billdate)]})
-            l_liefumsatz = db_session.query(L_liefumsatz).filter(
-                (L_liefumsatz.lief_nr == lief_nr) & (L_liefumsatz.datum == billdate)).with_for_update().first()
+            l_liefumsatz = get_cache (L_liefumsatz, {"lief_nr": [(eq, lief_nr)],"datum": [(eq, billdate)]})
 
             if not l_liefumsatz:
                 l_liefumsatz = L_liefumsatz()
@@ -147,17 +152,52 @@ def s_stockin_btn_gobl(s_artnr:int, qty:Decimal, op_list_data:[Op_list], f_endku
         l_op.pos = curr_pos
         l_op.lief_nr = lief_nr
 
+        queasy = get_cache (Queasy, {"key": [(eq, 304)],"char1": [(eq, l_op.lscheinnr)],"number1": [(eq, l_op.artnr)]})
 
+        if not queasy:
+            queasy = Queasy()
+            db_session.add(queasy)
+
+            queasy.key = 304
+            queasy.char1 = l_op.lscheinnr
+            queasy.number1 = l_op.artnr
+            queasy.number2 = op_list.vat_no
+            queasy.deci1 =  to_decimal(op_list.vat_value)
+
+
+            pass
+
+        queasy336 = get_cache (Queasy, {"key": [(eq, 336)],"number1": [(eq, to_int(l_op._recid))],"char1": [(eq, l_op.lscheinnr)],"number2": [(eq, l_op.artnr)],"char2": [(eq, to_string(l_op.einzelpreis))],"date1": [(eq, l_op.datum)]})
+
+        if not queasy336:
+            queasy336 = Queasy()
+            db_session.add(queasy336)
+
+            queasy336.key = 336
+            queasy336.char1 = l_op.lscheinnr
+            queasy336.number1 = to_int(l_op._recid)
+            queasy336.number2 = l_op.artnr
+            queasy336.date1 = l_op.datum
+            queasy336.deci1 =  to_decimal(op_list.disc_amount)
+            queasy336.deci2 =  to_decimal(op_list.disc_amount2)
+            queasy336.deci3 =  to_decimal(op_list.tax_percent)
+            queasy336.logi1 = op_list.discamt_flag
+            queasy336.logi2 = False
+            queasy336.char2 = to_string(l_op.einzelpreis)
+            queasy336.char3 = to_string(op_list.addvat_amount)
+            queasy336.number3 = l_op.op_art
+            queasy336.logi3 = False
+
+
+            pass
         pass
         create_purchase_book(s_artnr, price, anzahl, billdate, lief_nr)
 
         if (l_artikel.ek_aktuell != price) and price != 0:
-            # pass
+            pass
             l_artikel.ek_letzter =  to_decimal(l_artikel.ek_aktuell)
             l_artikel.ek_aktuell =  to_decimal(price)
-            # pass
-        
-        db_session.refresh(l_artikel, with_for_update=True)
+            pass
 
         return
         err_flag2 = 1
@@ -165,11 +205,12 @@ def s_stockin_btn_gobl(s_artnr:int, qty:Decimal, op_list_data:[Op_list], f_endku
 
     def create_ap():
 
-        nonlocal err_flag, err_flag2, price, created, printer_nr, curr_pos, t_amount, pos, l_op, l_ophdr, l_artikel, l_bestand, l_lieferant, l_liefumsatz, htparam, gl_acct, l_kredit, ap_journal, l_pprice
+        nonlocal err_flag, err_flag2, price, created, printer_nr, curr_pos, t_amount, pos, l_op, queasy, l_ophis, l_ophdr, l_artikel, l_bestand, l_lieferant, l_liefumsatz, htparam, gl_acct, l_kredit, ap_journal, l_pprice
         nonlocal s_artnr, qty, f_endkum, b_endkum, m_endkum, lief_nr, lscheinnr, billdate, curr_lager, fb_closedate, m_closedate, bediener_nr, bediener_userinit
+        nonlocal queasy336
 
 
-        nonlocal op_list
+        nonlocal op_list, queasy336
 
         ap_license:bool = False
         ap_acct:string = ""
@@ -223,11 +264,12 @@ def s_stockin_btn_gobl(s_artnr:int, qty:Decimal, op_list_data:[Op_list], f_endku
 
     def create_purchase_book(s_artnr:int, price:Decimal, qty:Decimal, datum:date, lief_nr:int):
 
-        nonlocal err_flag, err_flag2, printer_nr, curr_pos, t_amount, pos, l_op, l_ophdr, l_artikel, l_bestand, l_lieferant, l_liefumsatz, htparam, gl_acct, l_kredit, ap_journal, l_pprice
+        nonlocal err_flag, err_flag2, printer_nr, curr_pos, t_amount, pos, l_op, queasy, l_ophis, l_ophdr, l_artikel, l_bestand, l_lieferant, l_liefumsatz, htparam, gl_acct, l_kredit, ap_journal, l_pprice
         nonlocal f_endkum, b_endkum, m_endkum, lscheinnr, billdate, curr_lager, fb_closedate, m_closedate, bediener_nr, bediener_userinit
+        nonlocal queasy336
 
 
-        nonlocal op_list
+        nonlocal op_list, queasy336
 
         max_anz:int = 0
         curr_anz:int = 0
@@ -273,8 +315,9 @@ def s_stockin_btn_gobl(s_artnr:int, qty:Decimal, op_list_data:[Op_list], f_endku
 
                 if l_pprice:
                     # pass
+                    db_session.refresh(l_pprice, with_for_update=True)
                     l_pprice.counter = l_pprice.counter - 1
-                    # pass
+                    pass
 
             if created:
                 l_price1.counter = curr_anz
@@ -292,10 +335,11 @@ def s_stockin_btn_gobl(s_artnr:int, qty:Decimal, op_list_data:[Op_list], f_endku
             l_pprice.bestelldatum = datum
             l_pprice.lief_nr = lief_nr
             l_pprice.counter = curr_anz + 1
-            pass
-            pass
+            # pass
+            # pass
+            db_session.refresh(l_art, with_for_update=True)
             l_art.lieferfrist = curr_anz + 1
-            pass
+            # pass
 
 
     l_op = get_cache (L_op, {"op_art": [(eq, 1)],"loeschflag": [(le, 1)],"lscheinnr": [(eq, lscheinnr)]})
@@ -304,6 +348,14 @@ def s_stockin_btn_gobl(s_artnr:int, qty:Decimal, op_list_data:[Op_list], f_endku
         err_flag = 1
 
         return generate_output()
+    else:
+
+        l_ophis = get_cache (L_ophis, {"op_art": [(eq, 1)],"lscheinnr": [(eq, lscheinnr)]})
+
+        if l_ophis:
+            err_flag = 1
+
+            return generate_output()
 
     l_ophdr = get_cache (L_ophdr, {"lscheinnr": [(eq, lscheinnr)],"op_typ": [(eq, "sti")],"datum": [(eq, billdate)],"lager_nr": [(eq, curr_lager)]})
 
@@ -327,7 +379,13 @@ def s_stockin_btn_gobl(s_artnr:int, qty:Decimal, op_list_data:[Op_list], f_endku
         s_artnr = op_list.artnr
         qty =  to_decimal(op_list.anzahl)
         price =  to_decimal(op_list.warenwert) / to_decimal(qty)
-        t_amount =  to_decimal(t_amount) + to_decimal(op_list.warenwert)
+
+        if op_list.vat_value != 0:
+            t_amount =  to_decimal(t_amount) + to_decimal((op_list.warenwert) + to_decimal((op_list.warenwert) * to_decimal((op_list.vat_value) / to_decimal(100))) )
+
+
+        else:
+            t_amount =  to_decimal(t_amount) + to_decimal(op_list.warenwert)
 
 
         create_l_op()
@@ -336,5 +394,9 @@ def s_stockin_btn_gobl(s_artnr:int, qty:Decimal, op_list_data:[Op_list], f_endku
     if lief_nr != 0 and t_amount != 0:
         create_ap()
     printer_nr = get_output(htpint(220))
+
+    for queasy in db_session.query(Queasy).filter(
+             (Queasy.key == 331) & ((Queasy.char2 == ("Inv-Cek Reciving").lower()) | (Queasy.char2 == ("Inv-Cek Reorg").lower()) | (Queasy.char2 == ("Inv-Cek Journal").lower()))).order_by(Queasy._recid).all():
+        db_session.delete(queasy)
 
     return generate_output()

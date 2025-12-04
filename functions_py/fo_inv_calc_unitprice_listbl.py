@@ -38,7 +38,7 @@ from decimal import Decimal
 from functions.fo_invoice_return_qtybl import fo_invoice_return_qtybl
 from functions.fo_invoice_calculate_unitpricebl import fo_invoice_calculate_unitpricebl
 
-def fo_inv_calc_unitprice_listbl(autosaldo:bool, pricetab:bool, double_currency:bool, artnr:int, balance:Decimal, balance_foreign:Decimal, billart:int, vat_artlist:[int], lvanzvat:int, curr_department:int, bil_recid:int):
+def fo_inv_calc_unitprice_listbl(autosaldo:bool, pricetab:bool, double_currency:bool, artnr:int, balance:Decimal, balance_foreign:Decimal, billart:int, vat_art_list:list[int], lvanzvat:int, curr_department:int, bil_recid:int):
     price = to_decimal("0.0")
     exrate = to_decimal("0.0")
     found = False
@@ -50,7 +50,7 @@ def fo_inv_calc_unitprice_listbl(autosaldo:bool, pricetab:bool, double_currency:
 
     def generate_output():
         nonlocal price, exrate, found, msg, amt, ind
-        nonlocal autosaldo, pricetab, double_currency, artnr, balance, balance_foreign, billart, vat_artlist, lvanzvat, curr_department, bil_recid
+        nonlocal autosaldo, pricetab, double_currency, artnr, balance, balance_foreign, billart, vat_art_list, lvanzvat, curr_department, bil_recid
 
         return {"price": price, "exrate": exrate, "found": found, "msg": msg}
 
@@ -70,13 +70,14 @@ def fo_inv_calc_unitprice_listbl(autosaldo:bool, pricetab:bool, double_currency:
         else:
             for ind in range(1,lvanzvat + 1) :
 
-                if billart == vat_artlist[ind - 1]:
+                if billart == vat_art_list[ind - 1]:
                     found = True
 
             if not found or curr_department > 0:
                 price =  - to_decimal(balance)
 
                 return generate_output()
+            
             amt = get_output(fo_invoice_calculate_unitpricebl(billart, bil_recid))
             price =  to_decimal(amt)
 

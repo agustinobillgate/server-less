@@ -3,53 +3,38 @@
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
-from sqlalchemy import MetaData
-from functions.reorg_monhand_init_onhandbl import reorg_monhand_init_onhandbl
-from functions.reorg_monhand_update_eingang_1bl import reorg_monhand_update_eingang_1bl
-from functions.reorg_monhand_update_ausgangbl import reorg_monhand_update_ausgangbl
-from functions.reorg_monhand_update_averagebl import reorg_monhand_update_averagebl
 from functions.htpdate import htpdate
-from functions.close_inventory_assign_parambl import close_inventory_assign_parambl
-from functions.close_inventory_step1bl import close_inventory_step1bl
-from functions.close_inventory_step2bl import close_inventory_step2bl
-from functions.close_inventory_step3bl import close_inventory_step3bl
-from functions.close_inventory_step4bl import close_inventory_step4bl
-from models import L_bestand, L_op, L_ophdr, L_pprice, L_kredit, Ap_journal, L_artikel, L_besthis, L_hauptgrp, L_lager, L_lieferant, L_liefumsatz, L_ophhis, L_ophis, L_order, L_orderhdr, L_quote, L_segment, L_umsatz, L_untergrup, L_verbrauch, L_zahlbed, H_rezept, H_rezlin, Queasy, Paramtext, Htparam
+from sqlalchemy import MetaData
+from models import L_bestand, L_op, L_ophdr, L_pprice, L_kredit, Ap_journal, L_artikel, L_besthis, L_hauptgrp, L_lager, L_lieferant, L_liefumsatz, L_ophhis, L_ophis, L_order, L_orderhdr, L_quote, L_segment, L_umsatz, L_untergrup, L_verbrauch, L_zahlbed, H_rezept, H_rezlin, Htparam, Paramtext
 
 import os
 import platform
 
-def close_inventory_webbl(inv_type:int, user_init:string, port:string):
+def prepare_close_inventory1_1bl(inv_type:int, user_init:string, port:string):
 
-    prepare_cache ([L_ophis, Queasy, Paramtext, Htparam])
+    prepare_cache ([Htparam, Paramtext])
 
-    its_ok = False
-    msg_str = ""
-    loopi:int = 0
+    f_endkum = 0
+    b_endkum = 0
+    m_endkum = 0
+    m_datum = None
+    fb_datum = None
+    billdate = None
+    closedate = None
+    begindate = None
+    todate = None
+    tlist_data = []
     curr_folder:string = ""
     lic_nr:string = " "
     type_inv:string = " "
     period:date = None
+    doit:bool = False
     fb_close_date:date = None
     mat_close_date:date = None
     last_journ_transgl:date = None
-    doit:bool = False
-    f_endkum:int = 0
-    b_endkum:int = 0
-    m_endkum:int = 0
-    m_datum:date = None
-    fb_datum:date = None
-    billdate:date = None
-    closedate:date = None
-    begindate:date = None
-    todate:date = None
-    msg_str2:string = ""
-    delete_oph:bool = False
-    cfolder:string = ""
-    hname:string = ""
-    l_bestand = l_op = l_ophdr = l_pprice = l_kredit = ap_journal = l_artikel = l_besthis = l_hauptgrp = l_lager = l_lieferant = l_liefumsatz = l_ophhis = l_ophis = l_order = l_orderhdr = l_quote = l_segment = l_umsatz = l_untergrup = l_verbrauch = l_zahlbed = h_rezept = h_rezlin = queasy = paramtext = htparam = None
+    l_bestand = l_op = l_ophdr = l_pprice = l_kredit = ap_journal = l_artikel = l_besthis = l_hauptgrp = l_lager = l_lieferant = l_liefumsatz = l_ophhis = l_ophis = l_order = l_orderhdr = l_quote = l_segment = l_umsatz = l_untergrup = l_verbrauch = l_zahlbed = h_rezept = h_rezlin = htparam = paramtext = None
 
-    t_l_bestand = t_l_op = t_l_ophdr = t_l_pprice = t_l_kredit = t_ap_journal = t_l_artikel = t_l_besthis = t_l_hauptgrp = t_l_lager = t_l_lieferant = t_l_liefumsatz = t_l_ophhis = t_l_ophis = t_l_order = t_l_orderhdr = t_l_quote = t_l_segment = t_l_umsatz = t_l_untergrup = t_l_verbrauch = t_l_zahlbed = t_h_rezept = t_h_rezlin = tlist = ophis_fnb = ophis_mat = tqueasy = mqueasy = None
+    t_l_bestand = t_l_op = t_l_ophdr = t_l_pprice = t_l_kredit = t_ap_journal = t_l_artikel = t_l_besthis = t_l_hauptgrp = t_l_lager = t_l_lieferant = t_l_liefumsatz = t_l_ophhis = t_l_ophis = t_l_order = t_l_orderhdr = t_l_quote = t_l_segment = t_l_umsatz = t_l_untergrup = t_l_verbrauch = t_l_zahlbed = t_h_rezept = t_h_rezlin = tlist = ophis_fnb = ophis_mat = None
 
     t_l_bestand_data, T_l_bestand = create_model_like(L_bestand)
     t_l_op_data, T_l_op = create_model_like(L_op)
@@ -79,23 +64,20 @@ def close_inventory_webbl(inv_type:int, user_init:string, port:string):
 
     Ophis_fnb = create_buffer("Ophis_fnb",L_ophis)
     Ophis_mat = create_buffer("Ophis_mat",L_ophis)
-    Tqueasy = create_buffer("Tqueasy",Queasy)
-    Mqueasy = create_buffer("Mqueasy",Queasy)
-
 
     db_session = local_storage.db_session
 
     def generate_output():
-        nonlocal its_ok, msg_str, loopi, curr_folder, lic_nr, type_inv, period, fb_close_date, mat_close_date, last_journ_transgl, doit, f_endkum, b_endkum, m_endkum, m_datum, fb_datum, billdate, closedate, begindate, todate, msg_str2, delete_oph, cfolder, hname, l_bestand, l_op, l_ophdr, l_pprice, l_kredit, ap_journal, l_artikel, l_besthis, l_hauptgrp, l_lager, l_lieferant, l_liefumsatz, l_ophhis, l_ophis, l_order, l_orderhdr, l_quote, l_segment, l_umsatz, l_untergrup, l_verbrauch, l_zahlbed, h_rezept, h_rezlin, queasy, paramtext, htparam
+        nonlocal f_endkum, b_endkum, m_endkum, m_datum, fb_datum, billdate, closedate, begindate, todate, tlist_data, curr_folder, lic_nr, type_inv, period, doit, fb_close_date, mat_close_date, last_journ_transgl, l_bestand, l_op, l_ophdr, l_pprice, l_kredit, ap_journal, l_artikel, l_besthis, l_hauptgrp, l_lager, l_lieferant, l_liefumsatz, l_ophhis, l_ophis, l_order, l_orderhdr, l_quote, l_segment, l_umsatz, l_untergrup, l_verbrauch, l_zahlbed, h_rezept, h_rezlin, htparam, paramtext
         nonlocal inv_type, user_init, port
-        nonlocal ophis_fnb, ophis_mat, tqueasy, mqueasy
+        nonlocal ophis_fnb, ophis_mat
 
 
-        nonlocal t_l_bestand, t_l_op, t_l_ophdr, t_l_pprice, t_l_kredit, t_ap_journal, t_l_artikel, t_l_besthis, t_l_hauptgrp, t_l_lager, t_l_lieferant, t_l_liefumsatz, t_l_ophhis, t_l_ophis, t_l_order, t_l_orderhdr, t_l_quote, t_l_segment, t_l_umsatz, t_l_untergrup, t_l_verbrauch, t_l_zahlbed, t_h_rezept, t_h_rezlin, tlist, ophis_fnb, ophis_mat, tqueasy, mqueasy
+        nonlocal t_l_bestand, t_l_op, t_l_ophdr, t_l_pprice, t_l_kredit, t_ap_journal, t_l_artikel, t_l_besthis, t_l_hauptgrp, t_l_lager, t_l_lieferant, t_l_liefumsatz, t_l_ophhis, t_l_ophis, t_l_order, t_l_orderhdr, t_l_quote, t_l_segment, t_l_umsatz, t_l_untergrup, t_l_verbrauch, t_l_zahlbed, t_h_rezept, t_h_rezlin, tlist, ophis_fnb, ophis_mat
         nonlocal t_l_bestand_data, t_l_op_data, t_l_ophdr_data, t_l_pprice_data, t_l_kredit_data, t_ap_journal_data, t_l_artikel_data, t_l_besthis_data, t_l_hauptgrp_data, t_l_lager_data, t_l_lieferant_data, t_l_liefumsatz_data, t_l_ophhis_data, t_l_ophis_data, t_l_order_data, t_l_orderhdr_data, t_l_quote_data, t_l_segment_data, t_l_umsatz_data, t_l_untergrup_data, t_l_verbrauch_data, t_l_zahlbed_data, t_h_rezept_data, t_h_rezlin_data, tlist_data
 
-        return {"its_ok": its_ok, "msg_str": msg_str}
-    
+        return {"f_endkum": f_endkum, "b_endkum": b_endkum, "m_endkum": m_endkum, "m_datum": m_datum, "fb_datum": fb_datum, "billdate": billdate, "closedate": closedate, "begindate": begindate, "todate": todate, "tlist": tlist_data}
+
     def dump_data_to_sql(tableName):
         nonlocal f_endkum, b_endkum, m_endkum, m_datum, fb_datum, billdate, closedate, begindate, todate, tlist_data, curr_folder, lic_nr, type_inv, period, doit, fb_close_date, mat_close_date, last_journ_transgl, l_bestand, l_op, l_ophdr, l_pprice, l_kredit, ap_journal, l_artikel, l_besthis, l_hauptgrp, l_lager, l_lieferant, l_liefumsatz, l_ophhis, l_ophis, l_order, l_orderhdr, l_quote, l_segment, l_umsatz, l_untergrup, l_verbrauch, l_zahlbed, h_rezept, h_rezlin, htparam, paramtext
         nonlocal inv_type, user_init, port
@@ -126,15 +108,15 @@ def close_inventory_webbl(inv_type:int, user_init:string, port:string):
 
         with open(output_path, "w") as f:
             f.write("\n".join(lines))
-     
+        
     def dump_files():
 
-        nonlocal its_ok, msg_str, loopi, curr_folder, lic_nr, type_inv, period, fb_close_date, mat_close_date, last_journ_transgl, doit, f_endkum, b_endkum, m_endkum, m_datum, fb_datum, billdate, closedate, begindate, todate, msg_str2, delete_oph, cfolder, hname, l_bestand, l_op, l_ophdr, l_pprice, l_kredit, ap_journal, l_artikel, l_besthis, l_hauptgrp, l_lager, l_lieferant, l_liefumsatz, l_ophhis, l_ophis, l_order, l_orderhdr, l_quote, l_segment, l_umsatz, l_untergrup, l_verbrauch, l_zahlbed, h_rezept, h_rezlin, queasy, paramtext, htparam
+        nonlocal f_endkum, b_endkum, m_endkum, m_datum, fb_datum, billdate, closedate, begindate, todate, tlist_data, curr_folder, lic_nr, type_inv, period, doit, fb_close_date, mat_close_date, last_journ_transgl, l_bestand, l_op, l_ophdr, l_pprice, l_kredit, ap_journal, l_artikel, l_besthis, l_hauptgrp, l_lager, l_lieferant, l_liefumsatz, l_ophhis, l_ophis, l_order, l_orderhdr, l_quote, l_segment, l_umsatz, l_untergrup, l_verbrauch, l_zahlbed, h_rezept, h_rezlin, htparam, paramtext
         nonlocal inv_type, user_init, port
-        nonlocal ophis_fnb, ophis_mat, tqueasy, mqueasy
+        nonlocal ophis_fnb, ophis_mat
 
 
-        nonlocal t_l_bestand, t_l_op, t_l_ophdr, t_l_pprice, t_l_kredit, t_ap_journal, t_l_artikel, t_l_besthis, t_l_hauptgrp, t_l_lager, t_l_lieferant, t_l_liefumsatz, t_l_ophhis, t_l_ophis, t_l_order, t_l_orderhdr, t_l_quote, t_l_segment, t_l_umsatz, t_l_untergrup, t_l_verbrauch, t_l_zahlbed, t_h_rezept, t_h_rezlin, tlist, ophis_fnb, ophis_mat, tqueasy, mqueasy
+        nonlocal t_l_bestand, t_l_op, t_l_ophdr, t_l_pprice, t_l_kredit, t_ap_journal, t_l_artikel, t_l_besthis, t_l_hauptgrp, t_l_lager, t_l_lieferant, t_l_liefumsatz, t_l_ophhis, t_l_ophis, t_l_order, t_l_orderhdr, t_l_quote, t_l_segment, t_l_umsatz, t_l_untergrup, t_l_verbrauch, t_l_zahlbed, t_h_rezept, t_h_rezlin, tlist, ophis_fnb, ophis_mat
         nonlocal t_l_bestand_data, t_l_op_data, t_l_ophdr_data, t_l_pprice_data, t_l_kredit_data, t_ap_journal_data, t_l_artikel_data, t_l_besthis_data, t_l_hauptgrp_data, t_l_lager_data, t_l_lieferant_data, t_l_liefumsatz_data, t_l_ophhis_data, t_l_ophis_data, t_l_order_data, t_l_orderhdr_data, t_l_quote_data, t_l_segment_data, t_l_umsatz_data, t_l_untergrup_data, t_l_verbrauch_data, t_l_zahlbed_data, t_h_rezept_data, t_h_rezlin_data, tlist_data
 
         list_d = [ "l_bestand", 
@@ -168,15 +150,15 @@ def close_inventory_webbl(inv_type:int, user_init:string, port:string):
 
         for file_d in list_d:
             dump_data_to_sql(file_d)
-        
+
     def create_file():
 
-        nonlocal its_ok, msg_str, loopi, curr_folder, lic_nr, type_inv, period, fb_close_date, mat_close_date, last_journ_transgl, doit, f_endkum, b_endkum, m_endkum, m_datum, fb_datum, billdate, closedate, begindate, todate, msg_str2, delete_oph, cfolder, hname, l_bestand, l_op, l_ophdr, l_pprice, l_kredit, ap_journal, l_artikel, l_besthis, l_hauptgrp, l_lager, l_lieferant, l_liefumsatz, l_ophhis, l_ophis, l_order, l_orderhdr, l_quote, l_segment, l_umsatz, l_untergrup, l_verbrauch, l_zahlbed, h_rezept, h_rezlin, queasy, paramtext, htparam
+        nonlocal f_endkum, b_endkum, m_endkum, m_datum, fb_datum, billdate, closedate, begindate, todate, tlist_data, curr_folder, lic_nr, type_inv, period, doit, fb_close_date, mat_close_date, last_journ_transgl, l_bestand, l_op, l_ophdr, l_pprice, l_kredit, ap_journal, l_artikel, l_besthis, l_hauptgrp, l_lager, l_lieferant, l_liefumsatz, l_ophhis, l_ophis, l_order, l_orderhdr, l_quote, l_segment, l_umsatz, l_untergrup, l_verbrauch, l_zahlbed, h_rezept, h_rezlin, htparam, paramtext
         nonlocal inv_type, user_init, port
-        nonlocal ophis_fnb, ophis_mat, tqueasy, mqueasy
+        nonlocal ophis_fnb, ophis_mat
 
 
-        nonlocal t_l_bestand, t_l_op, t_l_ophdr, t_l_pprice, t_l_kredit, t_ap_journal, t_l_artikel, t_l_besthis, t_l_hauptgrp, t_l_lager, t_l_lieferant, t_l_liefumsatz, t_l_ophhis, t_l_ophis, t_l_order, t_l_orderhdr, t_l_quote, t_l_segment, t_l_umsatz, t_l_untergrup, t_l_verbrauch, t_l_zahlbed, t_h_rezept, t_h_rezlin, tlist, ophis_fnb, ophis_mat, tqueasy, mqueasy
+        nonlocal t_l_bestand, t_l_op, t_l_ophdr, t_l_pprice, t_l_kredit, t_ap_journal, t_l_artikel, t_l_besthis, t_l_hauptgrp, t_l_lager, t_l_lieferant, t_l_liefumsatz, t_l_ophhis, t_l_ophis, t_l_order, t_l_orderhdr, t_l_quote, t_l_segment, t_l_umsatz, t_l_untergrup, t_l_verbrauch, t_l_zahlbed, t_h_rezept, t_h_rezlin, tlist, ophis_fnb, ophis_mat
         nonlocal t_l_bestand_data, t_l_op_data, t_l_ophdr_data, t_l_pprice_data, t_l_kredit_data, t_ap_journal_data, t_l_artikel_data, t_l_besthis_data, t_l_hauptgrp_data, t_l_lager_data, t_l_lieferant_data, t_l_liefumsatz_data, t_l_ophhis_data, t_l_ophis_data, t_l_order_data, t_l_orderhdr_data, t_l_quote_data, t_l_segment_data, t_l_umsatz_data, t_l_untergrup_data, t_l_verbrauch_data, t_l_zahlbed_data, t_h_rezept_data, t_h_rezlin_data, tlist_data
 
 
@@ -413,7 +395,7 @@ def close_inventory_webbl(inv_type:int, user_init:string, port:string):
         # OUTPUT STREAM s1 TO VALUE (curr_folder + "/h-rezlin.d")
 
         # for t_h_rezlin in query(t_h_rezlin_data):
-        #     EXPORT STREAM s1 t_h_rezlin
+        #     EXPORT STREAM s1 h_rezlin
         # OUTPUT STREAM s1 CLOSE
         # tlist = Tlist()
         # tlist_data.append(tlist)
@@ -422,12 +404,12 @@ def close_inventory_webbl(inv_type:int, user_init:string, port:string):
 
     def decode_string(in_str:string):
 
-        nonlocal its_ok, msg_str, loopi, curr_folder, lic_nr, type_inv, period, fb_close_date, mat_close_date, last_journ_transgl, doit, f_endkum, b_endkum, m_endkum, m_datum, fb_datum, billdate, closedate, begindate, todate, msg_str2, delete_oph, cfolder, hname, l_bestand, l_op, l_ophdr, l_pprice, l_kredit, ap_journal, l_artikel, l_besthis, l_hauptgrp, l_lager, l_lieferant, l_liefumsatz, l_ophhis, l_ophis, l_order, l_orderhdr, l_quote, l_segment, l_umsatz, l_untergrup, l_verbrauch, l_zahlbed, h_rezept, h_rezlin, queasy, paramtext, htparam
+        nonlocal f_endkum, b_endkum, m_endkum, m_datum, fb_datum, billdate, closedate, begindate, todate, tlist_data, curr_folder, lic_nr, type_inv, period, doit, fb_close_date, mat_close_date, last_journ_transgl, l_bestand, l_op, l_ophdr, l_pprice, l_kredit, ap_journal, l_artikel, l_besthis, l_hauptgrp, l_lager, l_lieferant, l_liefumsatz, l_ophhis, l_ophis, l_order, l_orderhdr, l_quote, l_segment, l_umsatz, l_untergrup, l_verbrauch, l_zahlbed, h_rezept, h_rezlin, htparam, paramtext
         nonlocal inv_type, user_init, port
-        nonlocal ophis_fnb, ophis_mat, tqueasy, mqueasy
+        nonlocal ophis_fnb, ophis_mat
 
 
-        nonlocal t_l_bestand, t_l_op, t_l_ophdr, t_l_pprice, t_l_kredit, t_ap_journal, t_l_artikel, t_l_besthis, t_l_hauptgrp, t_l_lager, t_l_lieferant, t_l_liefumsatz, t_l_ophhis, t_l_ophis, t_l_order, t_l_orderhdr, t_l_quote, t_l_segment, t_l_umsatz, t_l_untergrup, t_l_verbrauch, t_l_zahlbed, t_h_rezept, t_h_rezlin, tlist, ophis_fnb, ophis_mat, tqueasy, mqueasy
+        nonlocal t_l_bestand, t_l_op, t_l_ophdr, t_l_pprice, t_l_kredit, t_ap_journal, t_l_artikel, t_l_besthis, t_l_hauptgrp, t_l_lager, t_l_lieferant, t_l_liefumsatz, t_l_ophhis, t_l_ophis, t_l_order, t_l_orderhdr, t_l_quote, t_l_segment, t_l_umsatz, t_l_untergrup, t_l_verbrauch, t_l_zahlbed, t_h_rezept, t_h_rezlin, tlist, ophis_fnb, ophis_mat
         nonlocal t_l_bestand_data, t_l_op_data, t_l_ophdr_data, t_l_pprice_data, t_l_kredit_data, t_ap_journal_data, t_l_artikel_data, t_l_besthis_data, t_l_hauptgrp_data, t_l_lager_data, t_l_lieferant_data, t_l_liefumsatz_data, t_l_ophhis_data, t_l_ophis_data, t_l_order_data, t_l_orderhdr_data, t_l_quote_data, t_l_segment_data, t_l_umsatz_data, t_l_untergrup_data, t_l_verbrauch_data, t_l_zahlbed_data, t_h_rezept_data, t_h_rezlin_data, tlist_data
 
         out_str = ""
@@ -447,99 +429,6 @@ def close_inventory_webbl(inv_type:int, user_init:string, port:string):
 
         return generate_inner_output()
 
-    def cqueasy(bezeich:string, str_process:string):
-
-        nonlocal its_ok, msg_str, loopi, curr_folder, lic_nr, type_inv, period, fb_close_date, mat_close_date, last_journ_transgl, doit, f_endkum, b_endkum, m_endkum, m_datum, fb_datum, billdate, closedate, begindate, todate, msg_str2, delete_oph, cfolder, hname, l_bestand, l_op, l_ophdr, l_pprice, l_kredit, ap_journal, l_artikel, l_besthis, l_hauptgrp, l_lager, l_lieferant, l_liefumsatz, l_ophhis, l_ophis, l_order, l_orderhdr, l_quote, l_segment, l_umsatz, l_untergrup, l_verbrauch, l_zahlbed, h_rezept, h_rezlin, queasy, paramtext, htparam
-        nonlocal inv_type, user_init, port
-        nonlocal ophis_fnb, ophis_mat, tqueasy, mqueasy
-
-
-        nonlocal t_l_bestand, t_l_op, t_l_ophdr, t_l_pprice, t_l_kredit, t_ap_journal, t_l_artikel, t_l_besthis, t_l_hauptgrp, t_l_lager, t_l_lieferant, t_l_liefumsatz, t_l_ophhis, t_l_ophis, t_l_order, t_l_orderhdr, t_l_quote, t_l_segment, t_l_umsatz, t_l_untergrup, t_l_verbrauch, t_l_zahlbed, t_h_rezept, t_h_rezlin, tlist, ophis_fnb, ophis_mat, tqueasy, mqueasy
-        nonlocal t_l_bestand_data, t_l_op_data, t_l_ophdr_data, t_l_pprice_data, t_l_kredit_data, t_ap_journal_data, t_l_artikel_data, t_l_besthis_data, t_l_hauptgrp_data, t_l_lager_data, t_l_lieferant_data, t_l_liefumsatz_data, t_l_ophhis_data, t_l_ophis_data, t_l_order_data, t_l_orderhdr_data, t_l_quote_data, t_l_segment_data, t_l_umsatz_data, t_l_untergrup_data, t_l_verbrauch_data, t_l_zahlbed_data, t_h_rezept_data, t_h_rezlin_data, tlist_data
-
-        queasy = db_session.query(Queasy).filter(
-             (Queasy.key == 279) & (Queasy.char2 == bezeich) & (Queasy.date1 == get_current_date())).first()
-
-        if not queasy:
-            queasy = Queasy()
-            db_session.add(queasy)
-
-            queasy.key = 279
-            queasy.char1 = "LOG CLOSING INVENTORY"
-            queasy.char2 = bezeich
-            queasy.char3 = str_process
-            queasy.date1 = get_current_date()
-            queasy.number1 = get_current_time_in_seconds()
-
-        else:
-            db_session.refresh(queasy, with_for_update=True)
-            queasy.char3 = str_process
-            queasy.number1 = get_current_time_in_seconds()
-            db_session.flush()
-
-    paramtext = get_cache (Paramtext, {"txtnr": [(eq, 200)]})
-    hname = paramtext.ptexte
-    hname = replace_str(hname, " ", "")
-    mqueasy = Queasy()
-    db_session.add(mqueasy)
-
-    mqueasy.key = 296
-    mqueasy.date1 = get_current_date()
-    mqueasy.number1 = get_current_time_in_seconds()
-    mqueasy.number2 = 1
-
-    cqueasy("Deleted Queasy", "PROCESS")
-
-    for queasy in db_session.query(Queasy).filter(
-             (Queasy.key == 279) & (Queasy.date1 == get_current_date())).order_by(Queasy._recid).all():
-        db_session.delete(queasy)
-
-    for tqueasy in db_session.query(Tqueasy).filter(
-             (Tqueasy.key == 283) & (Tqueasy.date1 == get_current_date())).order_by(Tqueasy._recid).all():
-        db_session.delete(tqueasy)
-    cqueasy("Deleted Queasy", "DONE")
-
-    if inv_type == 1:
-        for loopi in range(1,2 + 1) :
-            cqueasy("Reorg SOH - Initial Onhand", "PROCESS")
-            get_output(reorg_monhand_init_onhandbl(loopi))
-            cqueasy("Reorg SOH - Initial Onhand", "DONE")
-            cqueasy("Reorg SOH - Updating Incoming stocks", "PROCESS")
-            get_output(reorg_monhand_update_eingang_1bl(loopi, user_init))
-            cqueasy("Reorg SOH - Updating Incoming stocks", "DONE")
-            cqueasy("Reorg SOH - Updating Outgoing stocks", "PROCESS")
-            get_output(reorg_monhand_update_ausgangbl(loopi))
-            get_output(reorg_monhand_update_averagebl(loopi))
-            cqueasy("Reorg SOH - Updating Outgoing stocks", "DONE")
-
-    elif inv_type == 2:
-        loopi = 3
-
-
-        cqueasy("Reorg SOH - Initial Onhand", "PROCESS")
-        get_output(reorg_monhand_init_onhandbl(loopi))
-        cqueasy("Reorg SOH - Initial Onhand", "DONE")
-        cqueasy("Reorg SOH - Updating Incoming stocks", "PROCESS")
-        get_output(reorg_monhand_update_eingang_1bl(loopi, user_init))
-        cqueasy("Reorg SOH - Updating Incoming stocks", "DONE")
-        cqueasy("Reorg SOH - Updating Outgoing stocks", "PROCESS")
-        get_output(reorg_monhand_update_ausgangbl(loopi))
-        get_output(reorg_monhand_update_averagebl(loopi))
-        cqueasy("Reorg SOH - Updating Outgoing stocks", "DONE")
-
-    elif inv_type == 3:
-        for loopi in range(1,3 + 1) :
-            cqueasy("Reorg SOH - Initial Onhand", "PROCESS")
-            get_output(reorg_monhand_init_onhandbl(loopi))
-            cqueasy("Reorg SOH - Initial Onhand", "DONE")
-            cqueasy("Reorg SOH - Updating Incoming stocks", "PROCESS")
-            get_output(reorg_monhand_update_eingang_1bl(loopi, user_init))
-            cqueasy("Reorg SOH - Updating Incoming stocks", "DONE")
-            cqueasy("Reorg SOH - Updating Outgoing stocks", "PROCESS")
-            get_output(reorg_monhand_update_ausgangbl(loopi))
-            get_output(reorg_monhand_update_averagebl(loopi))
-            cqueasy("Reorg SOH - Updating Outgoing stocks", "DONE")
-
     htparam = get_cache (Htparam, {"paramnr": [(eq, 257)]})
     f_endkum = htparam.finteger
 
@@ -556,11 +445,10 @@ def close_inventory_webbl(inv_type:int, user_init:string, port:string):
     fb_datum = htparam.fdate
 
     if inv_type == 1:
-
         htparam = get_cache (Htparam, {"paramnr": [(eq, 224)]})
     else:
-
         htparam = get_cache (Htparam, {"paramnr": [(eq, 221)]})
+
     billdate = htparam.fdate
 
     if get_month(billdate) == 1:
@@ -568,16 +456,14 @@ def close_inventory_webbl(inv_type:int, user_init:string, port:string):
     else:
         closedate = billdate + timedelta(days=30)
 
-    closedate = date_mdy(get_month(closedate) , 1, get_year(closedate)) - timedelta(days=1)
-    begindate = date_mdy(get_month(closedate) , 1, get_year(closedate))
-
+    closedate = date_mdy(get_month(closedate), 1, get_year(closedate)) - timedelta(days=1)
+    begindate = date_mdy(get_month(closedate), 1, get_year(closedate))
     todate = closedate + timedelta(days=32)
-
-    todate = date_mdy(get_month(todate) , 1, get_year(todate)) - timedelta(days=1)
+    todate = date_mdy(get_month(todate), 1, get_year(todate)) - timedelta(days=1)
 
     htparam = db_session.query(Htparam).filter(Htparam.paramnr == 232).with_for_update().first()
     htparam.flogical = True
-    db_session.flush()
+    pass
 
     paramtext = get_cache (Paramtext, {"txtnr": [(eq, 243)]})
 
@@ -596,64 +482,44 @@ def close_inventory_webbl(inv_type:int, user_init:string, port:string):
         type_inv = "ALL"
         period = fb_datum
 
-
     doit = True
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1035)]})
     last_journ_transgl = htparam.fdate
-    cqueasy("Checking Last Closing", "PROCESS")
 
     if inv_type == 1:
-        fb_close_date = get_output(htpdate(224))
+        mat_close_date = get_output(htpdate(221))
 
-        if fb_close_date == last_journ_transgl:
-            doit = True
+        if mat_close_date == last_journ_transgl:
 
-            for ophis_fnb in db_session.query(Ophis_fnb).filter(
-                     (get_month(Ophis_fnb.datum) == get_month(fb_close_date)) & (get_year(Ophis_fnb.datum) == get_year(fb_close_date))).order_by(Ophis_fnb._recid).yield_per(100):
+            ophis_mat = db_session.query(Ophis_mat).filter(
+                     (Ophis_mat.op_art == 3) & (get_month(Ophis_mat.datum) == get_month(mat_close_date)) & (get_year(Ophis_mat.datum) == get_year(mat_close_date))).first()
 
-                l_artikel = get_cache (L_artikel, {"artnr": [(eq, ophis_fnb.artnr)],"endkum": [(le, 2)]})
+            if ophis_mat:
+                doit = False
 
-                if l_artikel:
-                    doit = False
-
-
-                    break
+            elif not ophis_mat:
+                doit = True
         else:
             doit = False
 
     elif inv_type == 2:
-        mat_close_date = get_output(htpdate(221))
+        fb_close_date = get_output(htpdate(224))
 
-        if mat_close_date == last_journ_transgl:
-            doit = True
+        if fb_close_date == last_journ_transgl:
 
-            for ophis_mat in db_session.query(Ophis_mat).filter(
-                     (get_month(Ophis_mat.datum) == get_month(mat_close_date)) & (get_year(Ophis_mat.datum) == get_year(mat_close_date))).order_by(Ophis_mat._recid).yield_per(100):
+            ophis_fnb = db_session.query(Ophis_fnb).filter(
+                     (Ophis_fnb.op_art == 1) & (get_month(Ophis_fnb.datum) == get_month(fb_close_date)) & (get_year(Ophis_fnb.datum) == get_year(fb_close_date))).first()
 
-                l_artikel = get_cache (L_artikel, {"artnr": [(eq, ophis_mat.artnr)],"endkum": [(gt, 2)]})
+            if ophis_fnb:
+                doit = False
 
-                if l_artikel:
-                    doit = False
-
-
-                    break
+            elif not ophis_fnb:
+                doit = True
         else:
             doit = False
-    cqueasy("Checking Last Closing", "DONE")
-
-    if doit == False:
-        tqueasy = Queasy()
-        db_session.add(tqueasy)
-
-        tqueasy.key = 283
-        tqueasy.char1 = "Closing Date is less than date of closing date in generate parameter "
-        tqueasy.date1 = get_current_date()
-
-        return generate_output()
 
     if doit:
-        cqueasy("Dump Table", "PROCESS")
 
         if platform.system().lower()  == ("Windows").lower() :
             curr_folder = "c:\\backupinv\\bkpinv-" + port + "-" + lic_nr + "-ALL-" +\
@@ -665,50 +531,28 @@ def close_inventory_webbl(inv_type:int, user_init:string, port:string):
         os.makedirs(curr_folder, exist_ok=True)
         dump_files()
         # create_file()
-        cqueasy("Dump Table", "DONE")
 
-    cqueasy("Update Date of Inventory", "PROCESS")
-    get_output(close_inventory_assign_parambl(user_init, inv_type))
-    cqueasy("Update Date of Inventory", "DONE")
-    cqueasy("Creating closed Onhands", "PROCESS")
-    its_ok, msg_str, msg_str2 = get_output(close_inventory_step1bl(1, closedate, inv_type, m_endkum))
-    cqueasy("Creating closed Onhands", "DONE")
+    if inv_type == 1:
 
-    if not its_ok:
-        tqueasy = Queasy()
-        db_session.add(tqueasy)
+        htparam = db_session.query(Htparam).filter(Htparam.paramnr == 224).with_for_update().first()
+        htparam.lupdate = get_current_date()
+        htparam.fdefault = user_init + " - " + to_string(get_current_time_in_seconds(), "HH:MM:SS")
 
-        tqueasy.key = 283
-        tqueasy.char1 = msg_str
-        tqueasy.date1 = get_current_date()
+    elif inv_type == 2:
 
-        return generate_output()
-    cqueasy("Creating closed In/Out-records", "PROCESS")
-    get_output(close_inventory_step2bl(inv_type, m_endkum, closedate))
-    cqueasy("Creating closed In/Out-records", "DONE")
-
-    if inv_type == 1 and fb_datum < m_datum:
-        delete_oph = True
-
-    elif inv_type == 2 and m_datum < fb_datum:
-        delete_oph = True
+        htparam = db_session.query(Htparam).filter(Htparam.paramnr == 221).with_for_update().first()
+        htparam.lupdate = get_current_date()
+        htparam.fdefault = user_init + " - " + to_string(get_current_time_in_seconds(), "HH:MM:SS")
 
     elif inv_type == 3:
-        delete_oph = True
 
-    if delete_oph:
-        cqueasy("Calculating closed Onhands", "PROCESS")
-        get_output(close_inventory_step3bl(inv_type, m_endkum, closedate))
-        cqueasy("Calculating closed Onhands", "DONE")
-    cqueasy("Updating Onhands", "PROCESS")
-    get_output(close_inventory_step4bl(inv_type, m_endkum, closedate, todate, user_init))
-    cqueasy("Updating Onhands", "DONE")
-    cqueasy("Updating Flag Closing", "PROCESS")
-    get_output(close_inventory_step4bl(inv_type, m_endkum, closedate, todate, user_init))
-    cqueasy("Updating Flag Closing", "DONE")
+        htparam = db_session.query(Htparam).filter(Htparam.paramnr == 221).with_for_update().first()
+        htparam.lupdate = get_current_date()
+        htparam.fdefault = user_init + " - " + to_string(get_current_time_in_seconds(), "HH:MM:SS")
 
-    for mqueasy in db_session.query(Mqueasy).filter(
-             (Mqueasy.key == 296) & (Mqueasy.date1 == get_current_date()) & (Mqueasy.number2 == 1)).order_by(Mqueasy._recid).all():
-        mqueasy.number2 = 0
+        htparam = db_session.query(Htparam).filter(Htparam.paramnr == 224).with_for_update().first()
+        htparam.lupdate = get_current_date()
+        htparam.fdefault = user_init + " - " + to_string(get_current_time_in_seconds(), "HH:MM:SS")
 
     return generate_output()
+

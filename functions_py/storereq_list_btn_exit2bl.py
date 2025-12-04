@@ -6,6 +6,11 @@
 # Issue recompile program 
 # -------------------------------------------
 
+# ==============================================
+# Rulita, 02-12-2025
+# - Added with_for_update all query 
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from models import L_op
@@ -25,15 +30,16 @@ def storereq_list_btn_exit2bl(t_list_s_recid:int, flager:int, tlager:int):
         return {}
 
 
-    l_op = get_cache (L_op, {"_recid": [(eq, t_list_s_recid)]})
+    # l_op = get_cache (L_op, {"_recid": [(eq, t_list_s_recid)]})
+    l_op = db_session.query(L_op).filter(
+             (L_op._recid == t_list_s_recid)).with_for_update().first()
 
     if l_op:
-        pass
+        # pass
         l_op.lager_nr = flager
         l_op.pos = tlager
-
-
-        pass
-        pass
+        # pass
+        # pass
+        db_session.refresh(l_op, with_for_update=True)
 
     return generate_output()

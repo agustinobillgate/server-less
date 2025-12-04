@@ -1,9 +1,4 @@
-#using conversion tools version: 1.0.0.117
-
-# =======================================
-# Rulita, 17-10-2025 
-# Tiket ID : 6526C2 | New compile program
-# =======================================
+#using conversion tools version: 1.0.0.119
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -29,6 +24,7 @@ def close_inventory1_step2bl(inv_type:int, m_endkum:int, closedate:date):
         nonlocal l_lager, l_op, l_artikel, l_ophhis, l_ophis, queasy
         nonlocal inv_type, m_endkum, closedate
 
+        # l_op = get_cache (L_op, {"lager_nr": [(eq, lager_nr)],"datum": [(le, closedate)],"op_art": [(le, 5)]})
         l_op = db_session.query(L_op).filter(
                  (L_op.lager_nr == lager_nr) & (L_op.datum <= closedate) & (L_op.op_art <= 5)).order_by(L_op._recid).first()
         
@@ -56,23 +52,25 @@ def close_inventory1_step2bl(inv_type:int, m_endkum:int, closedate:date):
                      (L_op.lager_nr == lager_nr) & (L_op.datum <= closedate) & (L_op.op_art <= 5) & (L_op._recid > curr_recid)).first()
 
 
-# Rulita, 17-10-2025
-# Dont used in progress program 
-    # def create_ophhis():
+    def create_ophhis():
 
-    #     nonlocal l_lager, l_op, l_artikel, l_ophhis, l_ophis, queasy
-    #     nonlocal inv_type, m_endkum, closedate
+        nonlocal l_lager, l_op, l_artikel, l_ophhis, l_ophis, queasy
+        nonlocal inv_type, m_endkum, closedate
 
-    #     l_ophhis = L_ophhis()
-    #     db_session.add(l_ophhis)
 
-    #     l_ophhis.datum = l_ophdr.datum
-    #     l_ophhis.op_typ = l_ophdr.op_typ
-    #     l_ophhis.docu_nr = l_ophdr.docu_nr
-    #     l_ophhis.lscheinnr = l_ophdr.lscheinnr
-    #     l_ophhis.fibukonto = l_ophdr.fibukonto
+        # commented out as not used and no l_ophdr defined
 
-    #     pass
+        # l_ophhis = L_ophhis()
+        # db_session.add(l_ophhis)
+
+        # l_ophhis.datum = l_ophdr.datum
+        # l_ophhis.op_typ = l_ophdr.op_typ
+        # l_ophhis.docu_nr = l_ophdr.docu_nr
+        # l_ophhis.lscheinnr = l_ophdr.lscheinnr
+        # l_ophhis.fibukonto = l_ophdr.fibukonto
+
+
+        pass
 
 
     def create_ophis():
@@ -123,6 +121,7 @@ def close_inventory1_step2bl(inv_type:int, m_endkum:int, closedate:date):
             queasy.number1 = l_op.artnr
             queasy.number2 = l_op.fuellflag
             queasy.deci1 =  to_decimal(l_op.deci1[0])
+
 
     for l_lager in db_session.query(L_lager).order_by(L_lager._recid).all():
         close_op(l_lager.lager_nr)

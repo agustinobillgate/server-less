@@ -8,12 +8,12 @@
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
-from functions.htpint import htpint
+from functions_py.htpint import htpint
 from models import L_op, L_ophdr, L_artikel, L_bestand, L_lieferant, L_liefumsatz, Htparam, Gl_acct, L_kredit, Ap_journal, L_pprice
 
 op_list_data, Op_list = create_model_like(L_op, {"a_bezeich":string})
 
-def s_stockin_btn_gobl(s_artnr:int, qty:Decimal, op_list_data:[Op_list], f_endkum:int, b_endkum:int, m_endkum:int, lief_nr:int, lscheinnr:string, billdate:date, curr_lager:int, fb_closedate:date, m_closedate:date, bediener_nr:int, bediener_userinit:string):
+def s_stockin_btn_gobl(s_artnr:int, qty:Decimal, op_list_data, f_endkum:int, b_endkum:int, m_endkum:int, lief_nr:int, lscheinnr:string, billdate:date, curr_lager:int, fb_closedate:date, m_closedate:date, bediener_nr:int, bediener_userinit:string):
 
     prepare_cache ([L_op, L_ophdr, L_artikel, L_bestand, L_liefumsatz, Htparam, L_kredit, Ap_journal, L_pprice])
 
@@ -102,6 +102,7 @@ def s_stockin_btn_gobl(s_artnr:int, qty:Decimal, op_list_data:[Op_list], f_endku
             if tot_anz != 0:
                 avrg_price =  to_decimal(tot_wert) / to_decimal(tot_anz)
                 # pass
+                db_session.refresh(l_artikel, with_for_update=True)
                 l_artikel.vk_preis =  to_decimal(avrg_price)
                 # pass
 
@@ -273,6 +274,7 @@ def s_stockin_btn_gobl(s_artnr:int, qty:Decimal, op_list_data:[Op_list], f_endku
 
                 if l_pprice:
                     # pass
+                    db_session.refresh(l_pprice, with_for_update=True)
                     l_pprice.counter = l_pprice.counter - 1
                     # pass
 
@@ -292,10 +294,11 @@ def s_stockin_btn_gobl(s_artnr:int, qty:Decimal, op_list_data:[Op_list], f_endku
             l_pprice.bestelldatum = datum
             l_pprice.lief_nr = lief_nr
             l_pprice.counter = curr_anz + 1
-            pass
-            pass
+            # pass
+            # pass
+            db_session.refresh(l_art, with_for_update=True)
             l_art.lieferfrist = curr_anz + 1
-            pass
+            # pass
 
 
     l_op = get_cache (L_op, {"op_art": [(eq, 1)],"loeschflag": [(le, 1)],"lscheinnr": [(eq, lscheinnr)]})
