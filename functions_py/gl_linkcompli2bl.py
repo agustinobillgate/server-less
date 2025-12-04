@@ -98,8 +98,7 @@ def gl_linkcompli2bl(pvilanguage:int, remains:Decimal, credits:Decimal, debits:D
             gl_journal = Gl_journal()
             db_session.add(gl_journal)
 
-            # gl_journal.jnr = counters.counter
-            gl_journal.jnr = last_count
+            gl_journal.jnr = counters.counter
 
             gl_journal.fibukonto = g_list.fibukonto
             gl_journal.debit = to_decimal(round(g_list.debit , 2))
@@ -110,18 +109,19 @@ def gl_linkcompli2bl(pvilanguage:int, remains:Decimal, credits:Decimal, debits:D
 
         if remains == 0.01 or remains == - 0.01:
             remains =  to_decimal("0")
-        pass
+
+        db_session.refresh(gl_jouhdr, with_for_update=True)
+        
         gl_jouhdr.credit =  to_decimal(credits)
         gl_jouhdr.debit =  to_decimal(debits)
         gl_jouhdr.remain =  to_decimal(remains)
-        pass
-        pass
+
+        db_session.flush()
 
     create_header()
     create_journals()
 
-    htparam = get_cache (Htparam, {"paramnr": [(eq, 1123)]})
+    htparam = db_session.query(Htparam).filter(Htparam.paramnr == 1123).with_for_update().first()
     htparam.fdate = to_date
-    pass
 
     return generate_output()

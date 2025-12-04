@@ -1,4 +1,4 @@
-#using conversion tools version: 1.0.0.117
+#using conversion tools version: 1.0.0.119
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -90,29 +90,27 @@ def cancel_dpurchasebl(lief_nr:int, docu_nr:string, user_init:string):
 
             return
 
-        l_kredit = get_cache (L_kredit, {"lief_nr": [(eq, lief_nr)],"name": [(eq, doc_nr)],"lscheinnr": [(eq, lscheinnr)]})
+        l_kredit = db_session.query(L_kredit).filter(
+            (L_kredit.lief_nr == lief_nr) & (L_kredit.name == doc_nr) & (L_kredit.lscheinnr == lscheinnr)).first()
 
         if not l_kredit:
 
-            # l_kredit = get_cache (L_kredit, {"lief_nr": [(eq, lief_nr)],"lscheinnr": [(eq, lscheinnr)],"rgdatum": [(eq, billdate)]})
             l_kredit = db_session.query(L_kredit).filter(
-                     (L_kredit.lief_nr == lief_nr) & (L_kredit.lscheinnr == lscheinnr) &
-                     (L_kredit.rgdatum == billdate)).with_for_update().first()
+                (L_kredit.lief_nr == lief_nr) & (L_kredit.lscheinnr == lscheinnr) & (L_kredit.rgdatum == billdate)).first()
 
         if l_kredit:
-            pass
+            db_session.refresh(l_kredit, with_for_update=True)
             db_session.delete(l_kredit)
-            pass
+            db_session.flush()
 
-            # ap_journal = get_cache (Ap_journal, {"lief_nr": [(eq, lief_nr)],"docu_nr": [(eq, doc_nr)],"lscheinnr": [(eq, lscheinnr)]})
             ap_journal = db_session.query(Ap_journal).filter(
-                     (Ap_journal.lief_nr == lief_nr) & (Ap_journal.docu_nr == doc_nr) &
-                     (Ap_journal.lscheinnr == lscheinnr)).with_for_update().first()
+                (Ap_journal.lief_nr == lief_nr) & (Ap_journal.docu_nr == doc_nr) & (Ap_journal.lscheinnr == lscheinnr)).first()
 
             if ap_journal:
-                pass
+                db_session.refresh(ap_journal, with_for_update=True)
                 db_session.delete(ap_journal)
-                pass
+                db_session.flush()
+                
         ap_journal = Ap_journal()
         db_session.add(ap_journal)
 
@@ -157,17 +155,16 @@ def cancel_dpurchasebl(lief_nr:int, docu_nr:string, user_init:string):
     for l_op in db_session.query(L_op).filter(
              (L_op.lief_nr == lief_nr) & (L_op.docu_nr == (docu_nr).lower()) & (L_op.lscheinnr == (docu_nr).lower()) & (L_op.op_art == 1) & (L_op.loeschflag <= 1) & (L_op.pos > 0)).order_by(L_op._recid).all():
 
-        l_artikel = get_cache (L_artikel, {"artnr": [(eq, l_op.artnr)]})
+        l_artikel = db_session.query(L_artikel).filter(L_artikel.artnr == l_op.artnr).first()
         l_op.loeschflag = 2
 
         queasy = get_cache (Queasy, {"key": [(eq, 304)],"char1": [(eq, l_op.lscheinnr)],"number1": [(eq, l_op.artnr)]})
 
         if queasy:
             wert =  to_decimal(l_op.warenwert) + (to_decimal(l_op.warenwert) * to_decimal((queasy.deci1) / to_decimal(100)) )
-
-
         else:
             wert =  to_decimal(l_op.warenwert)
+
         curr_lager = l_op.lager_nr
         billdate = l_op.datum
         anzahl =  - to_decimal(l_op.anzahl)
@@ -176,14 +173,16 @@ def cancel_dpurchasebl(lief_nr:int, docu_nr:string, user_init:string):
 
         if ((l_artikel.endkum == f_endkum or l_artikel.endkum == b_endkum) and not l_op.flag and billdate <= fb_closedate) or (l_artikel.endkum >= m_endkum and billdate <= m_closedate and not l_op.flag):
 
-            l_bestand = get_cache (L_bestand, {"lager_nr": [(eq, 0)],"artnr": [(eq, l_artikel.artnr)]})
+            l_bestand = db_session.query(L_bestand).filter(
+                (L_bestand.lager_nr == 0) & (L_bestand.artnr == l_artikel.artnr)).with_for_update().first()
+
             l_bestand.anz_eingang =  to_decimal(l_bestand.anz_eingang) + to_decimal(anzahl)
             l_bestand.wert_eingang =  to_decimal(l_bestand.wert_eingang) + to_decimal(wert)
             tot_anz =  to_decimal(l_bestand.anz_anf_best) + to_decimal(l_bestand.anz_eingang) - to_decimal(l_bestand.anz_ausgang)
             tot_wert =  to_decimal(l_bestand.val_anf_best) + to_decimal(l_bestand.wert_eingang) - to_decimal(l_bestand.wert_ausgang)
-            pass
 
-            l_bestand = get_cache (L_bestand, {"lager_nr": [(eq, curr_lager)],"artnr": [(eq, l_artikel.artnr)]})
+            l_bestand = db_session.query(L_bestand).filter(
+                (L_bestand.lager_nr == curr_lager) & (L_bestand.artnr == l_artikel.artnr)).with_for_update().first()
 
             if not l_bestand:
                 l_bestand = L_bestand()
@@ -192,16 +191,17 @@ def cancel_dpurchasebl(lief_nr:int, docu_nr:string, user_init:string):
                 l_bestand.anf_best_dat = billdate
                 l_bestand.artnr = l_artikel.artnr
                 l_bestand.lager_nr = curr_lager
+
             l_bestand.anz_eingang =  to_decimal(l_bestand.anz_eingang) + to_decimal(anzahl)
             l_bestand.wert_eingang =  to_decimal(l_bestand.wert_eingang) + to_decimal(wert)
-            pass
 
             if tot_anz != 0:
-                pass
+                db_session.refresh(l_artikel, with_for_update=True)
                 l_artikel.vk_preis =  to_decimal(tot_wert) / to_decimal(tot_anz)
-                pass
+                db_session.flush()
 
-        l_liefumsatz = get_cache (L_liefumsatz, {"lief_nr": [(eq, lief_nr)],"datum": [(eq, billdate)]})
+        l_liefumsatz = db_session.query(L_liefumsatz).filter(
+            (L_liefumsatz.lief_nr == lief_nr) & (L_liefumsatz.datum == billdate)).with_for_update().first()
 
         if not l_liefumsatz:
             l_liefumsatz = L_liefumsatz()
@@ -209,7 +209,9 @@ def cancel_dpurchasebl(lief_nr:int, docu_nr:string, user_init:string):
 
             l_liefumsatz.datum = billdate
             l_liefumsatz.lief_nr = lief_nr
+
         l_liefumsatz.gesamtumsatz =  to_decimal(l_liefumsatz.gesamtumsatz) + to_decimal(wert)
+
     update_ap()
 
     return generate_output()

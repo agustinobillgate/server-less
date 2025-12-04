@@ -1,14 +1,11 @@
 #using conversion tools version: 1.0.0.119
 
-# ============================
-# Rulita, 17-11-2025 | E86F77
-# - New Compile Program
-# ============================
-
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import L_op, L_order, L_artikel, Bediener, Queasy, L_orderhdr, L_bestand, L_liefumsatz, L_ophdr, Htparam, Gl_acct, L_kredit, Ap_journal, L_pprice
+
+from sqlalchemy.orm.attributes import flag_modified
 
 op_list_data, Op_list = create_model_like(L_op, {"rec_id":int, "vat_no":int, "vat_value":Decimal})
 t_l_order_data, T_l_order = create_model_like(L_order, {"rec_id":int, "art_bezeich":string, "jahrgang":int, "alkoholgrad":Decimal, "lief_einheit":Decimal, "curr_disc":int, "curr_disc2":int, "curr_vat":int})
@@ -53,46 +50,48 @@ def po_stockin_btn_stop_web_1bl(user_init:string, l_orderhdr_recid:int, f_endkum
         update_price:Decimal = to_decimal("0.0")
 
         if l_order:
-            pass
+            db_session.refresh(l_order, with_for_update=True)
+
             l_order.geliefert =  to_decimal(l_order.geliefert) + to_decimal(op_list.anzahl)
             l_order.rechnungspreis =  to_decimal(t_l_order.rechnungspreis)
             l_order.rechnungswert =  to_decimal(l_order.rechnungswert) + to_decimal(t_l_order.rechnungswert)
             l_order.lieferdatum_eff = t_l_order.lieferdatum_eff
             l_order.lief_fax[1] = bediener.username
 
-
-            pass
-            pass
+            flag_modified(l_order, "lief_fax")
+            
+            db_session.flush()
 
         l_orderhdr = get_cache (L_orderhdr, {"_recid": [(eq, l_orderhdr_recid)]})
 
         if l_orderhdr:
 
-            l_order1 = get_cache (L_order, {"docu_nr": [(eq, l_orderhdr.docu_nr)],"pos": [(eq, 0)]})
+            l_order1 = db_session.query(L_order1).filter((L_order1.docu_nr == l_orderhdr.docu_nr) & (L_order1.pos == 0)).first()
 
             if l_order1:
-                pass
+                db_session.refresh(l_order1, with_for_update=True)
+
                 l_order1.rechnungspreis =  to_decimal(l_order1.rechnungspreis) + to_decimal(op_list.einzelpreis)
                 l_order1.rechnungswert =  to_decimal(l_order1.rechnungswert) + to_decimal(op_list.einzelpreis)
 
-
-                pass
-                pass
+                db_session.flush()
 
         if l_art:
             update_price =  to_decimal(op_list.einzelpreis) / to_decimal(l_art.lief_einheit)
 
             if l_art.ek_aktuell != update_price:
-                pass
+                db_session.refresh(l_art, with_for_update=True)
+
                 l_art.ek_letzter =  to_decimal(l_art.ek_aktuell)
                 l_art.ek_aktuell =  to_decimal(update_price)
 
-
-                pass
+                db_session.flush()
 
             if ((l_art.endkum == f_endkum or l_art.endkum == b_endkum) and billdate <= fb_closedate) or (l_art.endkum >= m_endkum and billdate <= m_closedate):
 
-                l_bestand = get_cache (L_bestand, {"lager_nr": [(eq, 0)],"artnr": [(eq, l_art.artnr)]})
+                # l_bestand = get_cache (L_bestand, {"lager_nr": [(eq, 0)],"artnr": [(eq, l_art.artnr)]})
+                l_bestand = db_session.query(L_bestand).filter(
+                     (L_bestand.lager_nr == 0) & (L_bestand.artnr == l_art.artnr)).first()
 
                 if not l_bestand:
                     l_bestand = L_bestand()
@@ -104,20 +103,18 @@ def po_stockin_btn_stop_web_1bl(user_init:string, l_orderhdr_recid:int, f_endkum
                     l_bestand.wert_eingang =  to_decimal(l_bestand.wert_eingang) + to_decimal(op_list.warenwert)
                     tot_anz =  to_decimal(l_bestand.anz_anf_best) + to_decimal(l_bestand.anz_eingang) - to_decimal(l_bestand.anz_ausgang)
                     tot_wert =  to_decimal(l_bestand.val_anf_best) + to_decimal(l_bestand.wert_eingang) - to_decimal(l_bestand.wert_ausgang)
-
-
                 else:
-                    pass
+                    db_session.refresh(l_bestand, with_for_update=True)
+
                     l_bestand.anz_eingang =  to_decimal(l_bestand.anz_eingang) + to_decimal(op_list.anzahl)
                     l_bestand.wert_eingang =  to_decimal(l_bestand.wert_eingang) + to_decimal(op_list.warenwert)
                     tot_anz =  to_decimal(l_bestand.anz_anf_best) + to_decimal(l_bestand.anz_eingang) - to_decimal(l_bestand.anz_ausgang)
                     tot_wert =  to_decimal(l_bestand.val_anf_best) + to_decimal(l_bestand.wert_eingang) - to_decimal(l_bestand.wert_ausgang)
 
+                    db_session.flush()
 
-                    pass
-                    pass
-
-                l_bestand = get_cache (L_bestand, {"lager_nr": [(eq, op_list.lager_nr)],"artnr": [(eq, l_art.artnr)]})
+                l_bestand = db_session.query(L_bestand).filter(
+                     (L_bestand.lager_nr == op_list.lager_nr) & (L_bestand.artnr == l_art.artnr)).first()
 
                 if not l_bestand:
                     l_bestand = L_bestand()
@@ -128,23 +125,21 @@ def po_stockin_btn_stop_web_1bl(user_init:string, l_orderhdr_recid:int, f_endkum
                     l_bestand.lager_nr = op_list.lager_nr
                     l_bestand.anz_eingang =  to_decimal(l_bestand.anz_eingang) + to_decimal(op_list.anzahl)
                     l_bestand.wert_eingang =  to_decimal(l_bestand.wert_eingang) + to_decimal(op_list.warenwert)
-
-
                 else:
-                    pass
+                    db_session.refresh(l_bestand, with_for_update=True)
+
                     l_bestand.anz_eingang =  to_decimal(l_bestand.anz_eingang) + to_decimal(op_list.anzahl)
                     l_bestand.wert_eingang =  to_decimal(l_bestand.wert_eingang) + to_decimal(op_list.warenwert)
 
+                    db_session.flush()
 
-                    pass
-                    pass
-                pass
-
+                db_session.refresh(l_art, with_for_update=True)
                 if tot_anz != 0:
                     l_art.vk_preis =  to_decimal(tot_wert) / to_decimal(tot_anz)
-                pass
+                    db_session.flush()
 
-        l_liefumsatz = get_cache (L_liefumsatz, {"lief_nr": [(eq, op_list.lief_nr)],"datum": [(eq, billdate)]})
+        l_liefumsatz = db_session.query(L_liefumsatz).filter(
+             (L_liefumsatz.lief_nr == op_list.lief_nr) & (L_liefumsatz.datum == billdate)).first()
 
         if not l_liefumsatz:
             l_liefumsatz = L_liefumsatz()
@@ -153,15 +148,13 @@ def po_stockin_btn_stop_web_1bl(user_init:string, l_orderhdr_recid:int, f_endkum
             l_liefumsatz.datum = billdate
             l_liefumsatz.lief_nr = op_list.lief_nr
             l_liefumsatz.gesamtumsatz =  to_decimal(l_liefumsatz.gesamtumsatz) + to_decimal(op_list.warenwert)
-
-
         else:
-            pass
+            db_session.refresh(l_liefumsatz, with_for_update=True)
+
             l_liefumsatz.gesamtumsatz =  to_decimal(l_liefumsatz.gesamtumsatz) + to_decimal(op_list.warenwert)
 
+            db_session.flush()
 
-            pass
-            pass
         l_op = L_op()
         db_session.add(l_op)
 
@@ -317,27 +310,27 @@ def po_stockin_btn_stop_web_1bl(user_init:string, l_orderhdr_recid:int, f_endkum
 
             return
 
-        l_od = get_cache (L_order, {"docu_nr": [(eq, docu_nr)],"pos": [(eq, 0)]})
+        l_od = db_session.query(L_od).filter(
+             (L_od.docu_nr == (docu_nr).lower()) & (L_od.pos == 0)).first()
 
         if l_od:
-            pass
+            db_session.refresh(l_od, with_for_update=True)
+
             l_od.loeschflag = 1
             l_od.lieferdatum_eff = billdate
             l_od.lief_fax[2] = bediener.username
 
-
-            pass
-            pass
+            flag_modified(l_od, "lief_fax")
+            
+            db_session.flush()
 
         for l_od in db_session.query(L_od).filter(
-                 (L_od.docu_nr == (docu_nr).lower()) & (L_od.pos > 0) & (L_od.loeschflag == 0)).order_by(L_od._recid).all():
+                 (L_od.docu_nr == (docu_nr).lower()) & (L_od.pos > 0) & (L_od.loeschflag == 0)).with_for_update().order_by(L_od._recid).all():
+            
             l_od.loeschflag = 1
             l_od.lieferdatum = billdate
 
-
-            pass
         fl_code = 1
-
 
     def create_purchase_book():
 
@@ -367,7 +360,8 @@ def po_stockin_btn_stop_web_1bl(user_init:string, l_orderhdr_recid:int, f_endkum
 
         if curr_anz >= max_anz:
 
-            l_price1 = get_cache (L_pprice, {"artnr": [(eq, l_op.artnr)],"counter": [(eq, 1)]})
+            l_price1 = db_session.query(L_price1).filter(
+                 (L_price1.artnr == l_op.artnr) & (L_price1.counter == 1)).with_for_update().first()
 
             if l_price1:
                 l_price1.docu_nr = docu_nr
@@ -381,17 +375,16 @@ def po_stockin_btn_stop_web_1bl(user_init:string, l_orderhdr_recid:int, f_endkum
                 created = True
             for i in range(2,curr_anz + 1) :
 
-                l_pprice = get_cache (L_pprice, {"artnr": [(eq, l_op.artnr)],"counter": [(eq, i)]})
+                l_pprice = db_session.query(L_pprice).filter(
+                     (L_pprice.artnr == l_op.artnr) & (L_pprice.counter == i)).first()
 
                 if l_pprice:
-                    pass
+                    db_session.refresh(l_pprice, with_for_update=True)
                     l_pprice.counter = l_pprice.counter - 1
-                    pass
-                    pass
+                    db_session.flush()
 
             if created:
                 l_price1.counter = curr_anz
-                pass
 
         if not created:
             l_pprice = L_pprice()
@@ -406,10 +399,10 @@ def po_stockin_btn_stop_web_1bl(user_init:string, l_orderhdr_recid:int, f_endkum
             l_pprice.lief_nr = l_op.lief_nr
             l_pprice.counter = curr_anz + 1
             l_pprice.betriebsnr = curr_disc
-            pass
-            pass
+
+            db_session.refresh(l_art, with_for_update=True)
             l_art.lieferfrist = curr_anz + 1
-            pass
+            db_session.flush()
 
     bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})
 
@@ -419,17 +412,20 @@ def po_stockin_btn_stop_web_1bl(user_init:string, l_orderhdr_recid:int, f_endkum
 
         if t_l_order:
 
-            l_order = get_cache (L_order, {"_recid": [(eq, t_l_order.rec_id)]})
+            l_order = db_session.query(L_order).filter(L_order._recid == t_l_order.rec_id).first()
 
-            l_art = get_cache (L_artikel, {"artnr": [(eq, t_l_order.artnr)]})
+            l_art = db_session.query(L_art).filter(L_art.artnr == t_l_order.artnr).first()
+
             create_l_op()
 
     if lief_nr != 0:
         create_ap()
+
     close_po()
 
     for queasy in db_session.query(Queasy).filter(
-             (Queasy.key == 331) & ((Queasy.char2 == ("Inv-Cek Reciving").lower()) | (Queasy.char2 == ("Inv-Cek Reorg").lower()) | (Queasy.char2 == ("Inv-Cek Journal").lower()))).order_by(Queasy._recid).all():
+             (Queasy.key == 331) & ((Queasy.char2 == ("Inv-Cek Reciving").lower()) | (Queasy.char2 == ("Inv-Cek Reorg").lower()) | (Queasy.char2 == ("Inv-Cek Journal").lower()))).order_by(Queasy._recid).with_for_update().all():
+        
         db_session.delete(queasy)
 
     return generate_output()

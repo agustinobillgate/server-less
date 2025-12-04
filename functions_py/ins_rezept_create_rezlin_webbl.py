@@ -1,4 +1,4 @@
-#using conversion tools version: 1.0.0.117
+#using conversion tools version: 1.0.0.119
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -126,19 +126,16 @@ def ins_rezept_create_rezlin_webbl(artnr:int, h_artnr:int, s_artnr:int, qty:Deci
 
             if s_rezlin.cost == 0:
                 warn_flag = 1
-
+                
 
             poten_sell_price =  safe_divide(to_decimal("100") , to_decimal(cost_percent)) * safe_divide(to_decimal(amount) , to_decimal(portion))
 
-            queasy = get_cache (Queasy, {"key": [(eq, 252)],"number1": [(eq, h_artnr)]})
+            queasy = db_session.query(Queasy).filter(
+                     (Queasy.key == 252) & (Queasy.number1 == h_artnr)).with_for_update().first()
 
             if queasy:
                 queasy.deci1 =  to_decimal(cost_percent)
                 queasy.deci2 =  to_decimal(poten_sell_price)
-
-
-                pass
-                pass
             else:
                 queasy = Queasy()
                 db_session.add(queasy)
@@ -148,9 +145,6 @@ def ins_rezept_create_rezlin_webbl(artnr:int, h_artnr:int, s_artnr:int, qty:Deci
                 queasy.date1 = get_current_date()
                 queasy.deci1 =  to_decimal(cost_percent)
                 queasy.deci2 =  to_decimal(poten_sell_price)
-
-
-                pass
 
         elif recipetype == 2:
 
@@ -165,22 +159,21 @@ def ins_rezept_create_rezlin_webbl(artnr:int, h_artnr:int, s_artnr:int, qty:Deci
 
                     if hrecipe.portion > 1:
                         inh =  to_decimal(qty) * to_decimal(h_rezlin1.menge) / to_decimal(hrecipe.portion)
-
-
                     else:
                         inh =  to_decimal(qty) * to_decimal(h_rezlin1.menge)
 
                     if h_rezlin1.recipe_flag :
                         cost = cal_cost(h_rezlin1.artnrlager, inh, cost)
                     else:
-
                         l_artikel = get_cache (L_artikel, {"artnr": [(eq, h_rezlin1.artnrlager)]})
 
                         if price_type == 0 or l_artikel.ek_aktuell == 0:
                             vk_preis =  to_decimal(l_artikel.vk_preis)
                         else:
                             vk_preis =  to_decimal(l_artikel.ek_aktuell)
+
                         cost =  to_decimal(cost) + to_decimal(inh) / to_decimal(l_artikel.inhalt) * to_decimal(vk_preis) / to_decimal((1) - to_decimal(h_rezlin1.lostfact) / to_decimal(100))
+
                 s_rezlin.recipe_flag = True
                 s_rezlin.inhalt =  to_decimal(inhalt)
                 s_rezlin.cost =  to_decimal(cost)
@@ -190,15 +183,12 @@ def ins_rezept_create_rezlin_webbl(artnr:int, h_artnr:int, s_artnr:int, qty:Deci
                 amount =  to_decimal(amount) + to_decimal(s_rezlin.cost)
                 poten_sell_price =  to_decimal("100") / to_decimal(cost_percent) * to_decimal(amount) / to_decimal(portion)
 
-                queasy = get_cache (Queasy, {"key": [(eq, 252)],"number1": [(eq, h_artnr)]})
+                queasy = db_session.query(Queasy).filter(
+                         (Queasy.key == 252) & (Queasy.number1 == h_artnr)).with_for_update().first()
 
                 if queasy:
                     queasy.deci1 =  to_decimal(cost_percent)
                     queasy.deci2 =  to_decimal(poten_sell_price)
-
-
-                    pass
-                    pass
                 else:
                     queasy = Queasy()
                     db_session.add(queasy)
@@ -209,8 +199,6 @@ def ins_rezept_create_rezlin_webbl(artnr:int, h_artnr:int, s_artnr:int, qty:Deci
                     queasy.deci1 =  to_decimal(cost_percent)
                     queasy.deci2 =  to_decimal(poten_sell_price)
 
-
-                    pass
         h_rezlin = H_rezlin()
         db_session.add(h_rezlin)
 
@@ -280,7 +268,7 @@ def ins_rezept_create_rezlin_webbl(artnr:int, h_artnr:int, s_artnr:int, qty:Deci
 
     if h_rezept:
         portion = h_rezept.portion
-        create_amount()
-        create_rezlin()
+    create_amount()
+    create_rezlin()
 
     return generate_output()

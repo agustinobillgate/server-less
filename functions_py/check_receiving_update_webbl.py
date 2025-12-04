@@ -27,18 +27,16 @@ output_list_data, Output_list = create_model(
         }
     )
 
-def check_receiving_update_webbl(from_date:date, to_date:date, ref_no:string, id_user:string, output_list_data:Output_list):
+def check_receiving_update_webbl(from_date:date, to_date:date, ref_no:string, id_user:string, output_list_data:[Output_list]):
 
     prepare_cache ([L_op, Queasy, Fa_op, Bediener])
 
     flag_up = False
-    amt = to_decimal("0.0")
-    amount = to_decimal("0.0")
-    t_amount = to_decimal("0.0")
+    amt:Decimal = to_decimal("0.0")
+    amount:Decimal = to_decimal("0.0")
+    t_amount:Decimal = to_decimal("0.0")
     ct:int = 0
-    l_kredit = ap_journal = queasy = l_lieferant = fa_artikel = bediener = None
-    l_op = L_op()
-    fa_op = Fa_op()
+    l_kredit = ap_journal = l_op = queasy = l_lieferant = fa_artikel = fa_op = bediener = None
 
     output_list = s_list = b_kredit = bl_kredit = buff_lkredit = buff_apjournal = None
 
@@ -80,7 +78,7 @@ def check_receiving_update_webbl(from_date:date, to_date:date, ref_no:string, id
 
 
     for l_op in db_session.query(L_op).filter(
-    (L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.op_art == 1) & (L_op.loeschflag <= 2)).order_by(L_op._recid).all():
+             (L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.op_art == 1) & (L_op.loeschflag <= 2)).order_by(L_op._recid).all():
         amount =  to_decimal("0")
 
         queasy = get_cache (Queasy, {
@@ -103,25 +101,25 @@ def check_receiving_update_webbl(from_date:date, to_date:date, ref_no:string, id
             s_list = S_list()
             s_list_data.append(s_list)
 
-            s_list.datum = l_op.datum  
-            s_list.lief_nr = l_op.lief_nr 
-            s_list.docu_nr = l_op.docu_nr 
-            s_list.lschein = l_op.lscheinnr 
-            s_list.lager = l_op.lager_nr 
-            s_list.zeit = l_op.zeit 
-            s_list.userno = l_op.fuellflag 
-            s_list.storno = l_op.stornogrund 
-            s_list.loeschflag = l_op.loeschflag 
-            s_list.amount =  to_decimal(amount) 
-            s_list.inv_dept = True 
+            s_list.datum = l_op.datum
+            s_list.lief_nr = l_op.lief_nr
+            s_list.docu_nr = l_op.docu_nr
+            s_list.lschein = l_op.lscheinnr
+            s_list.lager = l_op.lager_nr
+            s_list.zeit = l_op.zeit
+            s_list.userno = l_op.fuellflag
+            s_list.storno = l_op.stornogrund
+            s_list.loeschflag = l_op.loeschflag
+            s_list.amount =  to_decimal(amount)
+            s_list.inv_dept = True
 
 
         else:
-            s_list.amount =  to_decimal(s_list.amount + amount) 
+            s_list.amount =  to_decimal(s_list.amount) + to_decimal(amount)
 
     fa_op_obj_list = {}
     for fa_op, l_lieferant, fa_artikel in db_session.query(Fa_op, L_lieferant, Fa_artikel).join(L_lieferant,(L_lieferant.lief_nr == Fa_op.lief_nr)).join(Fa_artikel,(Fa_artikel.nr == Fa_op.nr)).filter(
-    (Fa_op.anzahl != 0) & (Fa_op.loeschflag < 2) & (Fa_op.opart == 1) & (Fa_op.datum >= from_date) & (Fa_op.datum <= to_date)).order_by(Fa_op.lscheinnr).all():
+             (Fa_op.anzahl != 0) & (Fa_op.loeschflag < 2) & (Fa_op.opart == 1) & (Fa_op.datum >= from_date) & (Fa_op.datum <= to_date)).order_by(Fa_op.lscheinnr).all():
         if fa_op_obj_list.get(fa_op._recid):
             continue
         else:
@@ -133,44 +131,53 @@ def check_receiving_update_webbl(from_date:date, to_date:date, ref_no:string, id
             s_list = S_list()
             s_list_data.append(s_list)
 
-            s_list.datum = fa_op.datum 
-            s_list.lief_nr = fa_op.lief_nr 
-            s_list.docu_nr = fa_op.docu_nr 
-            s_list.lschein = fa_op.lscheinnr 
-            s_list.zeit = fa_op.zeit 
-            s_list.userno = 00 
-            s_list.amount =  to_decimal(fa_op.warenwert)  
-            s_list.inv_dept = False 
+            s_list.datum = fa_op.datum
+            s_list.lief_nr = fa_op.lief_nr
+            s_list.docu_nr = fa_op.docu_nr
+            s_list.lschein = fa_op.lscheinnr
+            s_list.zeit = fa_op.zeit
+            s_list.userno = 00
+            s_list.amount =  to_decimal(fa_op.warenwert)
+            s_list.inv_dept = False
 
 
         else:
-            s_list.amount =  to_decimal(s_list.amount + fa_op.warenwert)
-    for output_list in query(output_list_data, filters=(lambda output_list: Output_list["datum"] >= from_date and Output_list["datum"] <= to_date)):  # type: ignore
+            s_list.amount =  to_decimal(s_list.amount) + to_decimal(fa_op.warenwert)
+
+    for output_list in query(output_list_data, filters=(lambda output_list: output_list.datum >= from_date and output_list.datum <= to_date)):
+
         if output_list.flag_diff_ap or output_list.flag_diff_rcv:
-            for s_list in query(s_list_data, filters=(lambda s_list: s_list["datum"] == output_list["datum"]), sort_by=[("loeschflag",True)]):  # type: ignore
+
+            for s_list in query(s_list_data, filters=(lambda s_list: s_list.datum == output_list.datum), sort_by=[("loeschflag",True)]):
+
                 if s_list.loeschflag == 2:
-                    l_kredit = get_cache (L_kredit, {
-                        "lscheinnr": [(eq, s_list.lschein)]})
+
+                    l_kredit = get_cache (L_kredit, {"lscheinnr": [(eq, s_list.lschein)]})
 
                     if l_kredit:
-                        buff_lkredit = db_session.query(Buff_lkredit).filter((Buff_lkredit._recid == l_kredit._recid)).first()
+
+                        buff_lkredit = db_session.query(Buff_lkredit).filter(
+                                 (Buff_lkredit._recid == l_kredit._recid)).with_for_update().first()
+                        
                         db_session.delete(buff_lkredit)
 
-                        ap_journal = get_cache (Ap_journal, {
-                            "lscheinnr": [(eq, s_list.lschein)],
-                            "lief_nr": [(eq, s_list.lief_nr)]})
+                        ap_journal = get_cache (Ap_journal, {"lscheinnr": [(eq, s_list.lschein)],"lief_nr": [(eq, s_list.lief_nr)]})
 
                         if ap_journal:
-                            buff_apjournal = db_session.query(Buff_apjournal).filter((Buff_apjournal._recid == ap_journal._recid)).first()
+
+                            buff_apjournal = db_session.query(Buff_apjournal).filter(
+                                     (Buff_apjournal._recid == ap_journal._recid)).with_for_update().first()
+                            
                             db_session.delete(buff_apjournal)
+                            
 
                 elif s_list.loeschflag == 0:
-                    l_kredit = get_cache (L_kredit, {
-                        "lscheinnr": [(eq, s_list.lschein)],
-                        "lief_nr": [(eq, s_list.lief_nr)]})
+
+                    l_kredit = get_cache (L_kredit, {"lscheinnr": [(eq, s_list.lschein)],"lief_nr": [(eq, s_list.lief_nr)]})
 
                     if not l_kredit:
                         l_kredit = L_kredit()
+                        db_session.add(l_kredit)
 
                         l_kredit.name = s_list.docu_nr
                         l_kredit.lief_nr = s_list.lief_nr
@@ -181,12 +188,10 @@ def check_receiving_update_webbl(from_date:date, to_date:date, ref_no:string, id
                         l_kredit.saldo =  to_decimal(s_list.amount)
                         l_kredit.netto =  to_decimal(s_list.amount)
                         l_kredit.bediener_nr = s_list.userNo
-                        
-                        db_session.add(l_kredit)
 
-                        bediener = get_cache (Bediener, {
-                            "nr": [(eq, s_list.userno)]})
+                        bediener = get_cache (Bediener, {"nr": [(eq, s_list.userno)]})
                         ap_journal = Ap_journal()
+                        db_session.add(ap_journal)
 
                         ap_journal.docu_nr = s_list.docu_nr
                         ap_journal.lscheinnr = s_list.lschein
@@ -195,24 +200,30 @@ def check_receiving_update_webbl(from_date:date, to_date:date, ref_no:string, id
                         ap_journal.zeit = s_list.zeit
                         ap_journal.saldo =  to_decimal(s_list.amount)
                         ap_journal.netto =  to_decimal(s_list.amount)
-                        
-                        db_session.add(ap_journal)
 
                         if bediener:
                             ap_journal.userinit = bediener.userinit
                     else:
-                        for l_kredit in db_session.query(L_kredit).filter(
-                        (L_kredit.lscheinnr == s_list.lschein)).order_by(L_kredit._recid).all():
-                            buff_lkredit = db_session.query(Buff_lkredit).filter((Buff_lkredit._recid == l_kredit._recid)).first()
-                            db_session.delete(buff_lkredit)
 
+                        for l_kredit in db_session.query(L_kredit).filter(
+                                 (L_kredit.lscheinnr == s_list.lschein)).order_by(L_kredit._recid).all():
+
+                            buff_lkredit = db_session.query(Buff_lkredit).filter(
+                                     (Buff_lkredit._recid == l_kredit._recid)).with_for_update().first()
+                            
+                            db_session.delete(buff_lkredit)
+                            
                         for ap_journal in db_session.query(Ap_journal).filter(
-                        (Ap_journal.lscheinnr == s_list.lschein)).order_by(Ap_journal._recid).all():
-                            buff_apjournal = db_session.query(Buff_apjournal).filter((Buff_apjournal._recid == ap_journal._recid)).first()
+                                 (Ap_journal.lscheinnr == s_list.lschein)).order_by(Ap_journal._recid).all():
+
+                            buff_apjournal = db_session.query(Buff_apjournal).filter(
+                                     (Buff_apjournal._recid == ap_journal._recid)).with_for_update().first()
+                            
                             db_session.delete(buff_apjournal)
-                        
+                            
                         l_kredit = L_kredit()
-                        
+                        db_session.add(l_kredit)
+
                         l_kredit.name = s_list.docu_nr
                         l_kredit.lief_nr = s_list.lief_nr
                         l_kredit.lscheinnr = s_list.lschein
@@ -222,12 +233,10 @@ def check_receiving_update_webbl(from_date:date, to_date:date, ref_no:string, id
                         l_kredit.saldo =  to_decimal(s_list.amount)
                         l_kredit.netto =  to_decimal(s_list.amount)
                         l_kredit.bediener_nr = s_list.userNo
-                        
-                        db_session.add(l_kredit)
 
-                        bediener = get_cache (Bediener, {
-                            "nr": [(eq, s_list.userno)]})
+                        bediener = get_cache (Bediener, {"nr": [(eq, s_list.userno)]})
                         ap_journal = Ap_journal()
+                        db_session.add(ap_journal)
 
                         ap_journal.docu_nr = s_list.docu_nr
                         ap_journal.lscheinnr = s_list.lschein
@@ -237,9 +246,8 @@ def check_receiving_update_webbl(from_date:date, to_date:date, ref_no:string, id
                         ap_journal.saldo =  to_decimal(s_list.amount)
                         ap_journal.netto =  to_decimal(s_list.amount)
 
-                        db_session.add(ap_journal)
-                        
                         if bediener:
                             ap_journal.userinit = bediener.userinit
         flag_up = True
+
     return generate_output()

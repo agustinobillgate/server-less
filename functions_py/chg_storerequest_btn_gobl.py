@@ -150,36 +150,33 @@ def chg_storerequest_btn_gobl(op_list_data:[Op_list], s_recid:int, user_init:str
             if s_recid == 0:
                 s_recid = op_list._recid
             elif op_list._recid == s_recid:
-                break
+                    break
             else:
                 s_recid = op_list._recid
 
     for op_list in query(op_list_data, filters=(lambda op_list: op_list.anzahl != op_list.anzahl0 or op_list.fibu != op_list.fibu10)):
 
-        l_op = get_cache (L_op, {"_recid": [(eq, op_list.s_recid)]})
+        l_op = db_session.query(L_op).filter(L_op._recid == op_list.s_recid).first()
 
         if l_op:
-            pass
+            db_session.refresh(l_op, with_for_update=True)
+
             l_op.anzahl =  to_decimal(op_list.anzahl)
             l_op.stornogrund = op_list.fibu
             l_op.fuellflag = bediener.nr
             l_op.warenwert =  to_decimal(op_list.warenwert)
             changed = True
-
-
-            pass
-            pass
+            
+            db_session.flush()
 
     if release_flag:
 
-        l_ophdr = get_cache (L_ophdr, {"op_typ": [(eq, "req")],"lscheinnr": [(eq, t_lschein)],"docu_nr": [(eq, t_lschein)]})
+        l_ophdr = db_session.query(L_ophdr).filter(
+                 (L_ophdr.op_typ == "req") & (L_ophdr.lscheinnr == t_lschein) & (L_ophdr.docu_nr == t_lschein)).with_for_update().first()
 
         if l_ophdr:
             l_ophdr.betriebsnr = bediener.nr
 
-
-            pass
-            pass
             approved = True
 
     return generate_output()

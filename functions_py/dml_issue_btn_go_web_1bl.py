@@ -22,6 +22,7 @@ def dml_issue_btn_go_web_1bl(op_list_data:[Op_list], billdate:date, closedate:da
     err_code = 0
     gl_notfound:bool = False
     dml_code:string = ""
+    
     l_op = gl_acct = bediener = l_ophdr = queasy = dml_art = dml_artdep = l_artikel = l_lieferant = l_liefumsatz = reslin_queasy = htparam = l_kredit = ap_journal = l_pprice = l_bestand = None
 
     op_list = None
@@ -56,7 +57,6 @@ def dml_issue_btn_go_web_1bl(op_list_data:[Op_list], billdate:date, closedate:da
 
         return generate_inner_output()
 
-
     def create_l_op():
 
         nonlocal curr_pos, s_artnr, qty, price, created, err_code, gl_notfound, dml_code, l_op, gl_acct, bediener, l_ophdr, queasy, dml_art, dml_artdep, l_artikel, l_lieferant, l_liefumsatz, reslin_queasy, htparam, l_kredit, ap_journal, l_pprice, l_bestand
@@ -79,13 +79,15 @@ def dml_issue_btn_go_web_1bl(op_list_data:[Op_list], billdate:date, closedate:da
         wert =  to_decimal(qty) * to_decimal(price)
         wert = to_decimal(round(wert , 2))
 
-        l_artikel = get_cache (L_artikel, {"artnr": [(eq, s_artnr)]})
+        l_artikel = db_session.query(L_artikel).filter(
+            L_artikel.artnr == s_artnr).first()
 
         l_lieferant = get_cache (L_lieferant, {"lief_nr": [(eq, lief_nr)]})
 
         if l_lieferant:
 
-            l_liefumsatz = get_cache (L_liefumsatz, {"lief_nr": [(eq, lief_nr)],"datum": [(eq, billdate)]})
+            l_liefumsatz = db_session.query(L_liefumsatz).filter(
+                (L_liefumsatz.lief_nr == lief_nr) & (L_liefumsatz.datum == billdate)).first()
 
             if not l_liefumsatz:
                 l_liefumsatz = L_liefumsatz()
@@ -93,8 +95,9 @@ def dml_issue_btn_go_web_1bl(op_list_data:[Op_list], billdate:date, closedate:da
 
                 l_liefumsatz.datum = billdate
                 l_liefumsatz.lief_nr = lief_nr
+                
             l_liefumsatz.gesamtumsatz =  to_decimal(l_liefumsatz.gesamtumsatz) + to_decimal(wert)
-            pass
+            
         l_op = L_op()
         db_session.add(l_op)
 
@@ -115,47 +118,38 @@ def dml_issue_btn_go_web_1bl(op_list_data:[Op_list], billdate:date, closedate:da
         l_op.flag = True
         l_op.stornogrund = cost_acct
 
-
-        pass
-
         if curr_dept == 0:
 
-            # Rd 13/8/2025
-            # d_art = db_session.query(D_art).filter(
-            #          (D_art.artnr == s_artnr) & (D_art.datum == billdate) & (num_entries(D_art.chginit, ";") > 1)).first()
             d_art = db_session.query(D_art).filter(
-                     (D_art.artnr == s_artnr) & (D_art.datum == billdate) ).first()
-            if (num_entries(d_art.chginit, ";") > 1):
+                     (D_art.artnr == s_artnr) & (D_art.datum == billdate) & (num_entries(D_art.chginit, ";") > 1)).first()
+
+            if d_art:
+
+                if entry(1, d_art.chginit, ";") != "" and entry(1, d_art.chginit, ";") == (dml_code).lower() :
+                    db_session.refresh(d_art, with_for_update=True)
+                    d_art.geliefert =  to_decimal(d_art.geliefert) + to_decimal(anzahl)
+                    db_session.flush()
+            else:
+
+                d_art = db_session.query(D_art).filter(
+                         (D_art.artnr == s_artnr) & (D_art.datum == billdate)).first()
+
                 if d_art:
-
-                    if entry(1, d_art.chginit, ";") != "" and entry(1, d_art.chginit, ";") == (dml_code).lower() :
-                        pass
-                        d_art.geliefert =  to_decimal(d_art.geliefert) + to_decimal(anzahl)
-                        pass
-                else:
-
-                    d_art = db_session.query(D_art).filter(
-                            (D_art.artnr == s_artnr) & (D_art.datum == billdate)).first()
-
-                    if d_art:
-                        pass
-                        d_art.geliefert =  to_decimal(d_art.geliefert) + to_decimal(anzahl)
-                        pass
+                    db_session.refresh(d_art, with_for_update=True)
+                    d_art.geliefert =  to_decimal(d_art.geliefert) + to_decimal(anzahl)
+                    db_session.flush()
 
         elif curr_dept > 0:
-            # Rd 13/8/2025
-            # d_art1 = db_session.query(D_art1).filter(
-            #          (D_art1.artnr == s_artnr) & (D_art1.datum == billdate) & (D_art1.departement == curr_dept) & (num_entries(D_art1.chginit, ";") > 1) & (entry(1, D_art1.chginit, ";") == (dml_code).lower())).first()
+
             d_art1 = db_session.query(D_art1).filter(
-                     (D_art1.artnr == s_artnr) & (D_art1.datum == billdate) & (D_art1.departement == curr_dept) 
-                    & (entry(1, D_art1.chginit, ";") == (dml_code).lower())).first()
+                     (D_art1.artnr == s_artnr) & (D_art1.datum == billdate) & (D_art1.departement == curr_dept) & (num_entries(D_art1.chginit, ";") > 1) & (entry(1, D_art1.chginit, ";") == (dml_code).lower())).first()
             if (num_entries(d_art1.chginit, ";") > 1):
                 if d_art1:
-
                     if entry(1, d_art1.chginit, ";") != "" and entry(1, d_art1.chginit, ";") == (dml_code).lower() :
-                        pass
+                        db_session.refresh(d_art1, with_for_update=True)
                         d_art1.geliefert =  to_decimal(d_art1.geliefert) + to_decimal(anzahl)
-                        pass
+                        db_session.flush()
+                        
                 else:
 
                     reslin_queasy = db_session.query(Reslin_queasy).filter(
@@ -164,30 +158,29 @@ def dml_issue_btn_go_web_1bl(op_list_data:[Op_list], billdate:date, closedate:da
                     if reslin_queasy:
 
                         if entry(1, reslin_queasy.char3, ";") != "" and entry(1, reslin_queasy.char3, ";") == (dml_code).lower() :
-                            pass
+                            db_session.refresh(reslin_queasy, with_for_update=True)
                             reslin_queasy.deci3 =  to_decimal(reslin_queasy.deci3) + to_decimal(anzahl)
+                            db_session.flush()
 
-
-                            pass
                     else:
 
                         d_art1 = db_session.query(D_art1).filter(
                                 (D_art1.artnr == s_artnr) & (D_art1.datum == billdate) & (D_art1.departement == curr_dept)).first()
 
                         if d_art1:
-                            pass
+                            db_session.refresh(d_art1, with_for_update=True)
                             d_art1.geliefert =  to_decimal(d_art1.geliefert) + to_decimal(anzahl)
-                            pass
+                            db_session.flush()
                         
+
         create_purchase_book(s_artnr, price, anzahl, billdate, lief_nr)
         update_price =  to_decimal(wert) / to_decimal(qty)
 
         if (l_artikel.ek_aktuell != update_price) and update_price != 0:
-            pass
+            db_session.refresh(l_artikel, with_for_update=True)
             l_artikel.ek_letzter =  to_decimal(l_artikel.ek_aktuell)
             l_artikel.ek_aktuell =  to_decimal(update_price)
-            pass
-
+            db_session.flush()
 
     def create_ap():
 
@@ -245,7 +238,6 @@ def dml_issue_btn_go_web_1bl(op_list_data:[Op_list], billdate:date, closedate:da
         ap_journal.userinit = bediener.userinit
         ap_journal.zeit = get_current_time_in_seconds()
 
-
     def create_purchase_book(s_artnr:int, price:Decimal, qty:Decimal, datum:date, lief_nr:int):
 
         nonlocal curr_pos, err_code, gl_notfound, dml_code, l_op, gl_acct, bediener, l_ophdr, queasy, dml_art, dml_artdep, l_artikel, l_lieferant, l_liefumsatz, reslin_queasy, htparam, l_kredit, ap_journal, l_pprice, l_bestand
@@ -269,12 +261,15 @@ def dml_issue_btn_go_web_1bl(op_list_data:[Op_list], billdate:date, closedate:da
         if max_anz == 0:
             max_anz = 1
 
-        l_art = get_cache (L_artikel, {"artnr": [(eq, s_artnr)]})
+        l_art = db_session.query(L_art).filter(L_art.artnr == s_artnr).first()
         curr_anz = l_art.lieferfrist
 
         if curr_anz >= max_anz:
 
-            l_price1 = get_cache (L_pprice, {"artnr": [(eq, s_artnr)],"counter": [(eq, 1)]})
+            l_price1 = db_session.query(L_price1).filter(
+                (L_price1.artnr == s_artnr) &
+                (L_price1.counter == 1)
+            ).with_for_update().first()
 
             if l_price1:
                 l_price1.docu_nr = lscheinnr
@@ -286,20 +281,22 @@ def dml_issue_btn_go_web_1bl(op_list_data:[Op_list], billdate:date, closedate:da
                 l_price1.lief_nr = lief_nr
                 l_price1.counter = 0
 
-
                 created = True
+                
             for i in range(2,curr_anz + 1) :
 
-                l_pprice = get_cache (L_pprice, {"artnr": [(eq, s_artnr)],"counter": [(eq, i)]})
+                l_pprice = db_session.query(L_price1).filter(
+                    (L_price1.artnr == s_artnr) &
+                    (L_price1.counter == i)
+                ).with_for_update().first()
 
                 if l_pprice:
-                    pass
+                    db_session.refresh(l_pprice, with_for_update=True)
                     l_pprice.counter = l_pprice.counter - 1
-                    pass
+                    db_session.flush()
 
             if created:
                 l_price1.counter = curr_anz
-                pass
 
         if not created:
             l_pprice = L_pprice()
@@ -314,12 +311,9 @@ def dml_issue_btn_go_web_1bl(op_list_data:[Op_list], billdate:date, closedate:da
             l_pprice.lief_nr = lief_nr
             l_pprice.counter = curr_anz + 1
 
-
-            pass
-            pass
+            db_session.refresh(l_art, with_for_update=True)
             l_art.lieferfrist = curr_anz + 1
-            pass
-
+            db_session.flush()
 
     def create_l_op1():
 
@@ -360,11 +354,11 @@ def dml_issue_btn_go_web_1bl(op_list_data:[Op_list], billdate:date, closedate:da
         l_op.stornogrund = cost_acct
 
 
-        pass
-
         if billdate <= closedate:
 
-            l_bestand = get_cache (L_bestand, {"lager_nr": [(eq, curr_lager)],"artnr": [(eq, s_artnr)]})
+            l_bestand = db_session.query(L_bestand).filter(
+                (L_bestand.lager_nr == curr_lager) & (L_bestand.artnr == s_artnr)
+            ).with_for_update().first()
 
             if not l_bestand:
                 l_bestand = L_bestand()
@@ -374,16 +368,14 @@ def dml_issue_btn_go_web_1bl(op_list_data:[Op_list], billdate:date, closedate:da
                 l_bestand.lager_nr = curr_lager
                 l_bestand.anf_best_dat = billdate
 
-
             l_bestand.anz_eingang =  to_decimal(l_bestand.anz_eingang) + to_decimal(anzahl)
             l_bestand.wert_eingang =  to_decimal(l_bestand.wert_eingang) + to_decimal(wert)
             l_bestand.anz_ausgang =  to_decimal(l_bestand.anz_ausgang) + to_decimal(anzahl)
             l_bestand.wert_ausgang =  to_decimal(l_bestand.wert_ausgang) + to_decimal(wert)
 
-
-            pass
-
-            l_bestand = get_cache (L_bestand, {"lager_nr": [(eq, 0)],"artnr": [(eq, s_artnr)]})
+            l_bestand = db_session.query(L_bestand).filter(
+                (L_bestand.lager_nr == 0) & (L_bestand.artnr == s_artnr)
+            ).with_for_update().first()
 
             if not l_bestand:
                 l_bestand = L_bestand()
@@ -392,15 +384,10 @@ def dml_issue_btn_go_web_1bl(op_list_data:[Op_list], billdate:date, closedate:da
                 l_bestand.artnr = s_artnr
                 l_bestand.anf_best_dat = billdate
 
-
             l_bestand.anz_eingang =  to_decimal(l_bestand.anz_eingang) + to_decimal(anzahl)
             l_bestand.wert_eingang =  to_decimal(l_bestand.wert_eingang) + to_decimal(wert)
             l_bestand.anz_ausgang =  to_decimal(l_bestand.anz_ausgang) + to_decimal(anzahl)
             l_bestand.wert_ausgang =  to_decimal(l_bestand.wert_ausgang) + to_decimal(wert)
-
-
-            pass
-
 
     if cost_acct.lower()  != "" and cost_acct.lower()  != ("00000000").lower()  and cost_acct.lower()  != None:
 

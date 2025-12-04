@@ -24,14 +24,11 @@ def chg_rezeipt_btn_go1_webbl(rec_id:int, katnr:int, portion:int, h_bezeich:stri
 
         return {}
 
-
-    h_rezept = get_cache (H_rezept, {"_recid": [(eq, rec_id)]})
+    h_rezept = db_session.query(H_rezept).filter(H_rezept._recid == rec_id).with_for_update().first()
     # Rd 4/8/2025
     if h_rezept is None:
         return generate_output()
-    
     h_artnr = h_rezept.artnrrezept
-    pass
 
     if h_rezept.kategorie != katnr or h_rezept.portion != portion or to_string(h_bezeich, "x(24)") != substring(h_rezept.bezeich, 0, 24):
         vlog = True
@@ -67,7 +64,7 @@ def chg_rezeipt_btn_go1_webbl(rec_id:int, katnr:int, portion:int, h_bezeich:stri
         h_rezept.bezeich = to_string(h_bezeich, "x(24)") + katbezeich
     pass
 
-    queasy = get_cache (Queasy, {"key": [(eq, 252)],"number1": [(eq, h_artnr)]})
+    queasy = db_session.query(Queasy).filter((Queasy.key == 252) & (Queasy.number1 == h_artnr)).with_for_update().first()
 
     if queasy:
         queasy.deci1 =  to_decimal(cost_percent)

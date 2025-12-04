@@ -1,8 +1,5 @@
-#using conversion tools version: 1.0.0.117
-#-----------------------------------------
-# Rd, 25/7/2025
-# gitlab: 648
-#-----------------------------------------
+#using conversion tools version: 1.0.0.119
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -94,7 +91,8 @@ def dml_stockin_btn_go_webbl(pvilanguage:int, op_list_data:[Op_list], curr_dept:
 
         if ((l_artikel.endkum == f_endkum or l_artikel.endkum == b_endkum) and billdate <= fb_closedate) or (l_artikel.endkum >= m_endkum and billdate <= m_closedate):
 
-            l_bestand = get_cache (L_bestand, {"lager_nr": [(eq, 0)],"artnr": [(eq, s_artnr)]})
+            l_bestand = db_session.query(L_bestand).filter(
+                (L_bestand.lager_nr == 0) & (L_bestand.artnr == s_artnr)).with_for_update().first()
 
             if not l_bestand:
                 l_bestand = L_bestand()
@@ -102,19 +100,23 @@ def dml_stockin_btn_go_webbl(pvilanguage:int, op_list_data:[Op_list], curr_dept:
 
                 l_bestand.artnr = s_artnr
                 l_bestand.anf_best_dat = billdate
+
             l_bestand.anz_eingang =  to_decimal(l_bestand.anz_eingang) + to_decimal(anzahl)
             l_bestand.wert_eingang =  to_decimal(l_bestand.wert_eingang) + to_decimal(wert)
-            pass
+            
             tot_anz =  to_decimal(l_bestand.anz_anf_best) + to_decimal(l_bestand.anz_eingang) - to_decimal(l_bestand.anz_ausgang)
             tot_wert =  to_decimal(l_bestand.val_anf_best) + to_decimal(l_bestand.wert_eingang) - to_decimal(l_bestand.wert_ausgang)
 
             if tot_anz != 0:
-                avrg_price =  to_decimal(tot_wert) / to_decimal(tot_anz)
-                pass
-                l_artikel.vk_preis =  to_decimal(avrg_price)
-                pass
+                db_session.refresh(l_artikel, with_for_update=True)
 
-            l_bestand = get_cache (L_bestand, {"lager_nr": [(eq, curr_lager)],"artnr": [(eq, s_artnr)]})
+                avrg_price =  to_decimal(tot_wert) / to_decimal(tot_anz)
+                l_artikel.vk_preis =  to_decimal(avrg_price)
+
+                db_session.flush()
+
+            l_bestand = db_session.query(L_bestand).filter(
+                (L_bestand.lager_nr == curr_lager) & (L_bestand.artnr == s_artnr)).with_for_update().first()
 
             if not l_bestand:
                 l_bestand = L_bestand()
@@ -129,13 +131,12 @@ def dml_stockin_btn_go_webbl(pvilanguage:int, op_list_data:[Op_list], curr_dept:
             l_bestand.wert_eingang =  to_decimal(l_bestand.wert_eingang) + to_decimal(wert)
 
 
-            pass
-
         l_lieferant = get_cache (L_lieferant, {"lief_nr": [(eq, lief_nr)]})
 
         if l_lieferant:
 
-            l_liefumsatz = get_cache (L_liefumsatz, {"lief_nr": [(eq, lief_nr)],"datum": [(eq, billdate)]})
+            l_liefumsatz = db_session.query(L_liefumsatz).filter(
+                (L_liefumsatz.lief_nr == lief_nr) & (L_liefumsatz.datum == billdate)).with_for_update().first()
 
             if not l_liefumsatz:
                 l_liefumsatz = L_liefumsatz()
@@ -146,7 +147,7 @@ def dml_stockin_btn_go_webbl(pvilanguage:int, op_list_data:[Op_list], curr_dept:
 
 
             l_liefumsatz.gesamtumsatz =  to_decimal(l_liefumsatz.gesamtumsatz) + to_decimal(wert)
-            pass
+            
         l_op = L_op()
         db_session.add(l_op)
 
@@ -165,9 +166,6 @@ def dml_stockin_btn_go_webbl(pvilanguage:int, op_list_data:[Op_list], curr_dept:
         l_op.pos = curr_pos
         l_op.fuellflag = bediener.nr
 
-
-        pass
-
         if curr_dept == 0:
 
             d_art = db_session.query(D_art).filter(
@@ -176,18 +174,19 @@ def dml_stockin_btn_go_webbl(pvilanguage:int, op_list_data:[Op_list], curr_dept:
             if d_art:
 
                 if entry(1, d_art.chginit, ";") != "" and entry(1, d_art.chginit, ";") == (dml_code).lower() :
-                    pass
+                    db_session.refresh(d_art, with_for_update=True)
                     d_art.geliefert =  to_decimal(d_art.geliefert) + to_decimal(anzahl)
-                    pass
+                    db_session.flush()
+                    
             else:
 
                 d_art = db_session.query(D_art).filter(
                              (D_art.artnr == s_artnr) & (D_art.datum == billdate)).first()
 
                 if d_art:
-                    pass
+                    db_session.refresh(d_art, with_for_update=True)
                     d_art.geliefert =  to_decimal(d_art.geliefert) + to_decimal(anzahl)
-                    pass
+                    db_session.flush()
 
         elif curr_dept > 0:
 
@@ -197,9 +196,10 @@ def dml_stockin_btn_go_webbl(pvilanguage:int, op_list_data:[Op_list], curr_dept:
             if d_art1:
 
                 if entry(1, d_art1.chginit, ";") != "" and entry(1, d_art1.chginit, ";") == (dml_code).lower() :
-                    pass
+                    db_session.refresh(d_art1, with_for_update=True)
                     d_art1.geliefert =  to_decimal(d_art1.geliefert) + to_decimal(anzahl)
-                    pass
+                    db_session.flush()
+                    
             else:
 
                 reslin_queasy = db_session.query(Reslin_queasy).filter(
@@ -208,11 +208,10 @@ def dml_stockin_btn_go_webbl(pvilanguage:int, op_list_data:[Op_list], curr_dept:
                 if reslin_queasy:
 
                     if entry(1, reslin_queasy.char3, ";") != "" and entry(1, reslin_queasy.char3, ";") == (dml_code).lower() :
-                        pass
+                        db_session.refresh(reslin_queasy, with_for_update=True)
                         reslin_queasy.deci3 =  to_decimal(reslin_queasy.deci3) + to_decimal(anzahl)
+                        db_session.flush()
 
-
-                        pass
                 else:
 
                     d_art1 = db_session.query(D_art1).filter(
@@ -221,21 +220,22 @@ def dml_stockin_btn_go_webbl(pvilanguage:int, op_list_data:[Op_list], curr_dept:
                     if d_art1:
 
                         if entry(1, d_art1.chginit, ";") != "" and entry(1, d_art1.chginit, ";") == (dml_code).lower() :
-                            pass
+                            db_session.refresh(d_art1, with_for_update=True)
                             d_art1.geliefert =  to_decimal(d_art1.geliefert) + to_decimal(anzahl)
-                            pass
+                            db_session.flush()
+                            
         create_purchase_book(s_artnr, price, anzahl, billdate, lief_nr)
 
         if (l_artikel.ek_aktuell != price) and price != 0:
-            pass
+            db_session.refresh(l_artikel, with_for_update=True)
+
             l_artikel.ek_letzter =  to_decimal(l_artikel.ek_aktuell)
             l_artikel.ek_aktuell =  to_decimal(price)
 
-
-            pass
+            db_session.flush()
 
         return
-        msg_str = msg_str + chr_unicode(2) + translateExtended ("Incoming record can not be ctreated : ", lvcarea, "") + to_string(s_artnr, "9999999")
+        # msg_str = msg_str + chr_unicode(2) + translateExtended ("Incoming record can not be ctreated : ", lvcarea, "") + to_string(s_artnr, "9999999")
 
 
     def create_ap():
@@ -331,12 +331,15 @@ def dml_stockin_btn_go_webbl(pvilanguage:int, op_list_data:[Op_list], curr_dept:
         if max_anz == 0:
             max_anz = 1
 
-        l_art = get_cache (L_artikel, {"artnr": [(eq, s_artnr)]})
+        l_art = db_session.query(L_art).filter(
+             (L_art.artnr == s_artnr)).first()
+        
         curr_anz = l_art.lieferfrist
 
         if curr_anz >= max_anz:
 
-            l_price1 = get_cache (L_pprice, {"artnr": [(eq, s_artnr)],"counter": [(eq, 1)]})
+            l_price1 = db_session.query(L_price1).filter(
+                         (L_price1.artnr == s_artnr) & (L_price1.counter == 1)).with_for_update().first()
 
             if l_price1:
                 l_price1.docu_nr = lscheinnr
@@ -348,20 +351,20 @@ def dml_stockin_btn_go_webbl(pvilanguage:int, op_list_data:[Op_list], curr_dept:
                 l_price1.lief_nr = lief_nr
                 l_price1.counter = 0
 
-
                 created = True
+
             for i in range(2,curr_anz + 1) :
 
-                l_pprice = get_cache (L_pprice, {"artnr": [(eq, s_artnr)],"counter": [(eq, i)]})
+                l_pprice = db_session.query(L_pprice).filter(
+                             (L_pprice.artnr == s_artnr) & (L_pprice.counter == i)).first()
 
                 if l_pprice:
-                    pass
+                    db_session.refresh(l_pprice, with_for_update=True)
                     l_pprice.counter = l_pprice.counter - 1
-                    pass
+                    db_session.flush()
 
             if created:
                 l_price1.counter = curr_anz
-                pass
 
         if not created:
             l_pprice = L_pprice()
@@ -376,11 +379,9 @@ def dml_stockin_btn_go_webbl(pvilanguage:int, op_list_data:[Op_list], curr_dept:
             l_pprice.lief_nr = lief_nr
             l_pprice.counter = curr_anz + 1
 
-
-            pass
-            pass
+            db_session.refresh(l_art, with_for_update=True)
             l_art.lieferfrist = curr_anz + 1
-            pass
+            db_session.flush()
 
     bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})
 
@@ -410,7 +411,8 @@ def dml_stockin_btn_go_webbl(pvilanguage:int, op_list_data:[Op_list], curr_dept:
         curr_lager = op_list.lager_nr
         dml_code = op_list.dml_code
 
-        l_artikel = get_cache (L_artikel, {"artnr": [(eq, s_artnr)]})
+        l_artikel = db_session.query(L_artikel).filter(
+             (L_artikel.artnr == s_artnr)).first()
         create_l_op()
         created = True
 

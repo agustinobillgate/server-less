@@ -88,9 +88,10 @@ def close_inventory1_get_info_webbl(pvilanguage:int):
                      (Pqueasy.key == 296) & (Pqueasy.number2 == 0)).first()
 
             if pqueasy:
-                pass
+                db_session.refresh(pqueasy, with_for_update=True)
                 db_session.delete(pqueasy)
-                pass
+                db_session.flush()
+
     else:
 
         mqueasy = db_session.query(Mqueasy).filter(
@@ -103,10 +104,10 @@ def close_inventory1_get_info_webbl(pvilanguage:int):
                      (Pqueasy.key == 296) & (Pqueasy.number2 == 0)).first()
 
             if pqueasy:
-                pass
+                db_session.refresh(pqueasy, with_for_update=True)
                 db_session.delete(pqueasy)
-                pass
-            
+                db_session.flush()
+
             # Rd 14/8/2025
             # TODAY -> today
             today = datetime.date.today()
