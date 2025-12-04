@@ -2,6 +2,12 @@
 #-------------------------------------------------------
 # Rd, 01/12/2025, with_for_update added
 #-------------------------------------------------------
+
+# ==============================================
+# Rulita, 03-12-2025
+# - Added with_for_update all query 
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -154,7 +160,9 @@ def prepare_chg_po_webbl(pvilanguage:int, docu_nr:string, lief_nr:int):
 
     l_lieferant = get_cache (L_lieferant, {"lief_nr": [(eq, lief_nr)]})
 
-    l_orderhdr = get_cache (L_orderhdr, {"docu_nr": [(eq, docu_nr)]})
+    # l_orderhdr = get_cache (L_orderhdr, {"docu_nr": [(eq, docu_nr)]})
+    l_orderhdr = db_session.query(L_orderhdr).filter(
+             (L_orderhdr.docu_nr == (docu_nr).lower())).with_for_update().first()
 
     if l_orderhdr.betriebsnr == 1:
         potype = 2
