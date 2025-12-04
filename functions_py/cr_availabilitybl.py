@@ -142,7 +142,8 @@ def cr_availabilitybl(pvilanguage:int, vhp_limited:bool, op_type:int, printer_nr
 
 
             indgastnr, created_list_data, rate_list_data = get_output(available_ratesbl(f_date, tdate, room_avail_list.zikatnr, curr_i, adult_child_str, indgastnr, created_list_data))
-            print(room_avail_list.zikatnr, rate_list_data)
+            
+            # print(room_avail_list.zikatnr, rate_list_data)
 
             for rate_list in query(rate_list_data, sort_by=[("i_counter",False)]):
 
