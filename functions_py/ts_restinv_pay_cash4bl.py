@@ -2,12 +2,18 @@
 # ----------------------------------------
 # Rd, 01/12/2025, with_for_update added
 #----------------------------------------
+
+# =========================================
+# Rulita, 03/12/2025
+# Added missing table kellner 
+# =========================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from functions.rest_addgastinfo import rest_addgastinfo
 from functions.ts_voucherui import ts_voucherui
-from models import Htparam, H_bill, Interface, H_bill_line, H_artikel, Queasy, Tisch, H_umsatz, Artikel
+from models import Htparam, H_bill, Interface, H_bill_line, H_artikel, Kellner, Queasy, Tisch, H_umsatz, Artikel
 
 def ts_restinv_pay_cash4bl(rec_id:int, transdate:date, curr_dept:int, disc_art1:int, disc_art2:int, disc_art3:int):
 
@@ -55,6 +61,12 @@ def ts_restinv_pay_cash4bl(rec_id:int, transdate:date, curr_dept:int, disc_art1:
         if h_bill.resnr > 0:
             get_output(rest_addgastinfo(h_bill.departement, h_bill.rechnr, h_bill.resnr, h_bill.reslinnr, 0, transdate))
         pass
+        
+        # Rulita, 03/12/2025
+        # Added missing table kellner 
+        kellner = db_session.query(Kellner).filter(
+                     (Kellner.kellner_nr == tbuff.kellner_nr)).first()
+
         h_bill.kellner_nr = kellner.kellner_nr
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 739)]})
@@ -64,8 +76,6 @@ def ts_restinv_pay_cash4bl(rec_id:int, transdate:date, curr_dept:int, disc_art1:
 
             if str != "":
                 h_bill.service[4] = to_decimal(str)
-
-
         pass
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 110)]})

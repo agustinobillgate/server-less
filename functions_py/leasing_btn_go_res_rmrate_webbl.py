@@ -12,6 +12,11 @@
 # Rd, 26/11/2025, with_for_update
 #--------------------------------------------
 
+# ==============================================
+# Rulita, 03-12-2025
+# - Added with_for_update all query 
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -235,8 +240,8 @@ def leasing_btn_go_res_rmrate_webbl(pvilanguage: int, curr_select: str, max_rate
 
         if curr_select.lower() == "add":
             if res_line.active_flag == 0:
-                reslin_queasy = get_cache(
-                    Reslin_queasy, {"key": [(eq, "fixrate-trace-record")], "resnr": [(eq, resnr)], "reslinnr": [(eq, reslinnr)]})
+                # reslin_queasy = get_cache( Reslin_queasy, {"key": [(eq, "fixrate-trace-record")], "resnr": [(eq, resnr)], "reslinnr": [(eq, reslinnr)]})
+                reslin_queasy = db_session.query(Reslin_queasy).filter(Reslin_queasy.key == "fixrate-trace-record", Reslin_queasy.resnr == resnr, Reslin_queasy.reslinnr == reslinnr).with_for_update().first()
 
                 if not reslin_queasy:
                     reslin_queasy = Reslin_queasy()
@@ -276,14 +281,14 @@ def leasing_btn_go_res_rmrate_webbl(pvilanguage: int, curr_select: str, max_rate
                     buffer_copy(reslin_queasy, t_reslin_queasy)
                     t_reslin_queasy.recid_reslin = reslin_queasy._recid
 
-                    res_line = get_cache(
-                        Res_line, {"resnr": [(eq, reslin_queasy.resnr)], "reslinnr": [(eq, reslin_queasy.reslinnr)]})
+                    # res_line = get_cache(Res_line, {"resnr": [(eq, reslin_queasy.resnr)], "reslinnr": [(eq, reslin_queasy.reslinnr)]})
+                    res_line = db_session.query(Res_line).filter(Res_line.resnr == reslin_queasy.resnr, Res_line.reslinnr == reslin_queasy.reslinnr).first()
                     res_changes_chg()
 
         elif curr_select.lower() == "chg":
             if res_line.active_flag == 0:
-                reslin_queasy = get_cache(
-                    Reslin_queasy, {"key": [(eq, "fixrate-trace-record")], "resnr": [(eq, resnr)], "reslinnr": [(eq, reslinnr)]})
+                # reslin_queasy = get_cache(Reslin_queasy, {"key": [(eq, "fixrate-trace-record")], "resnr": [(eq, resnr)], "reslinnr": [(eq, reslinnr)]})
+                reslin_queasy = db_session.query(Reslin_queasy).filter(Reslin_queasy.key == "fixrate-trace-record", Reslin_queasy.resnr == resnr, Reslin_queasy.reslinnr == reslinnr).with_for_update().first()
 
                 if not reslin_queasy:
                     reslin_queasy = Reslin_queasy()
@@ -352,11 +357,12 @@ def leasing_btn_go_res_rmrate_webbl(pvilanguage: int, curr_select: str, max_rate
                         buffer_copy(reslin_queasy, t_reslin_queasy)
                         t_reslin_queasy.recid_reslin = reslin_queasy._recid
 
-                        res_line = get_cache(
-                            Res_line, {"resnr": [(eq, reslin_queasy.resnr)], "reslinnr": [(eq, reslin_queasy.reslinnr)]})
+                        # res_line = get_cache(Res_line, {"resnr": [(eq, reslin_queasy.resnr)], "reslinnr": [(eq, reslin_queasy.reslinnr)]})
+                        res_line = db_session.query(Res_line).filter(Res_line.resnr == reslin_queasy.resnr, Res_line.reslinnr == reslin_queasy.reslinnr).first()
                         res_changes_chg()
 
                     elif reslin_queasy:
+                        db_session.refresh(reslin_queasy, with_for_update=True)
                         reslin_queasy.date1 = loopdate
                         reslin_queasy.date2 = loopdate
                         reslin_queasy.deci1 = to_decimal(curr_amount)
@@ -374,8 +380,8 @@ def leasing_btn_go_res_rmrate_webbl(pvilanguage: int, curr_select: str, max_rate
                         t_reslin_queasy.recid_reslin = reslin_queasy._recid
 
 
-                        res_line = get_cache(
-                            Res_line, {"resnr": [(eq, reslin_queasy.resnr)], "reslinnr": [(eq, reslin_queasy.reslinnr)]})
+                        # res_line = get_cache(Res_line, {"resnr": [(eq, reslin_queasy.resnr)], "reslinnr": [(eq, reslin_queasy.reslinnr)]})
+                        res_line = db_session.query(Res_line).filter(Res_line.resnr == reslin_queasy.resnr, Res_line.reslinnr == reslin_queasy.reslinnr).first()
                         res_changes_chg()
             proc_create_journal()
 
@@ -487,6 +493,7 @@ def leasing_btn_go_res_rmrate_webbl(pvilanguage: int, curr_select: str, max_rate
 
                 return generate_inner_output()
         return generate_inner_output()
+    
     def check_currency():
         nonlocal msg_str, error_found1, error_code, t_reslin_queasy_data, lvcarea, error_found, log_artnr, ar_ledger, divered_rental, tot_amount, tot_nettamount, tot_serv, tot_tax, serv_acctno, vat_acctno, vat_fibu, vat2_fibu, serv_fibu, div_fibu, amount_periode, month_str1, month_str2, exrate2, wd_array, bill_date, pinvoice, reslin_queasy, waehrung, res_line, htparam, bediener, arrangement, guest_pr, ratecode, pricecod, katpreis, queasy, artikel, debitor, guest, counters, gl_jouhdr, gl_journal, bresline
         nonlocal pvilanguage, curr_select, max_rate, fact1, inp_wahrnr, inp_zikatnr, user_init, resnr, reslinnr, recid_reslin, contcode, repeat_charge
@@ -494,8 +501,8 @@ def leasing_btn_go_res_rmrate_webbl(pvilanguage: int, curr_select: str, max_rate
         nonlocal t_reslin_queasy, p_list, periode_list, brq, waehrung1, breslin, preslin
         nonlocal t_reslin_queasy_data, periode_list_data
 
-        reslin_queasy = get_cache(
-            Reslin_queasy, {"key": [(eq, "arrangement")], "resnr": [(eq, resnr)], "reslinnr": [(eq, reslinnr)]})
+        # reslin_queasy = get_cache(Reslin_queasy, {"key": [(eq, "arrangement")], "resnr": [(eq, resnr)], "reslinnr": [(eq, reslinnr)]})
+        reslin_queasy = db_session.query(Reslin_queasy).filter(Reslin_queasy.key == "arrangement", Reslin_queasy.resnr == resnr, Reslin_queasy.reslinnr == reslinnr).with_for_update().first()
 
         if not reslin_queasy:
             # if not guest_pr:
@@ -509,7 +516,9 @@ def leasing_btn_go_res_rmrate_webbl(pvilanguage: int, curr_select: str, max_rate
                     Waehrung, {"waehrungsnr": [(eq, queasy.number1)]})
 
                 if waehrung1 and waehrung1.waehrungsnr != res_line.betriebsnr:
+                    db_session.refresh(res_line, with_for_update=True)
                     res_line.betriebsnr = waehrung1.waehrungsnr
+                    db_session.flush()
                     msg_str = msg_str + chr_unicode(2) + "&W" + translateExtended("No AdHoc Rates found; set back the currency code", lvcarea, "") + chr_unicode(
                         10) + translateExtended("to", lvcarea, "") + " " + waehrung1.bezeich + " " + translateExtended("as defined in the contract rates.", lvcarea, "")
 
@@ -726,8 +735,8 @@ def leasing_btn_go_res_rmrate_webbl(pvilanguage: int, curr_select: str, max_rate
             counters.counter_bez = "G/L Transaction Journal"
         counters.counter = counters.counter + 1
 
-        res_line = get_cache(
-            Res_line, {"resnr": [(eq, queasy.number1)], "reslinnr": [(eq, queasy.number2)]})
+        # res_line = get_cache(Res_line, {"resnr": [(eq, queasy.number1)], "reslinnr": [(eq, queasy.number2)]})
+        res_line = db_session.query(Res_line).filter(Res_line.resnr == queasy.number1, Res_line.reslinnr == queasy.number2).first()
 
         if res_line:
             # guest = get_cache( Guest, {"gastnr": [(eq, res_line.gastnr)]})
@@ -919,8 +928,8 @@ def leasing_btn_go_res_rmrate_webbl(pvilanguage: int, curr_select: str, max_rate
         debitor.transzeit = get_current_time_in_seconds()
         debitor.vesrcod = to_string(pinvoice)
 
-        res_line = get_cache(
-            Res_line, {"resnr": [(eq, queasy.number1)], "reslinnr": [(eq, queasy.number2)]})
+        # res_line = get_cache(Res_line, {"resnr": [(eq, queasy.number1)], "reslinnr": [(eq, queasy.number2)]})
+        res_line = db_session.query(Res_line).filter(Res_line.resnr == queasy.number1, Res_line.reslinnr == queasy.number2).first()
 
         if res_line:
             guest = get_cache(Guest, {"gastnr": [(eq, res_line.gastnr)]})
@@ -952,8 +961,8 @@ def leasing_btn_go_res_rmrate_webbl(pvilanguage: int, curr_select: str, max_rate
         counters.counter = counters.counter + 1
 
 
-        res_line = get_cache(
-            Res_line, {"resnr": [(eq, queasy.number1)], "reslinnr": [(eq, queasy.number2)]})
+        # res_line = get_cache(Res_line, {"resnr": [(eq, queasy.number1)], "reslinnr": [(eq, queasy.number2)]})
+        res_line = db_session.query(Res_line).filter(Res_line.resnr == queasy.number1, Res_line.reslinnr == queasy.number2).first()
 
         if res_line:
             # guest = get_cache(Guest, {"gastnr": [(eq, res_line.gastnr)]})
@@ -1075,8 +1084,8 @@ def leasing_btn_go_res_rmrate_webbl(pvilanguage: int, curr_select: str, max_rate
 
     p_list = query(p_list_data, first=True)
 
-    res_line = get_cache(
-        Res_line, {"resnr": [(eq, resnr)], "reslinnr": [(eq, reslinnr)]})
+    # res_line = get_cache(Res_line, {"resnr": [(eq, resnr)], "reslinnr": [(eq, reslinnr)]})
+    res_line = db_session.query(Res_line).filter(Res_line.resnr == resnr, Res_line.reslinnr == reslinnr).first()
 
     bediener = get_cache(
         Bediener, {"userinit": [(eq, user_init)]})
