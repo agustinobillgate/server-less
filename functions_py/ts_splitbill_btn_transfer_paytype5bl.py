@@ -2,15 +2,21 @@
 #-------------------------------------------------------
 # Rd, 28/11/2025, with_for_update added
 #-------------------------------------------------------
+
+#==========================================
+# Rulita, 02/12/2025
+# Added procedure cal_cost 
+#==========================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from functions.ts_splitbill_update_billbl import ts_splitbill_update_billbl
-from models import H_bill_line, H_bill, H_artikel, Artikel, Kellner, Htparam, Kellne1, H_umsatz, Umsatz, H_journal, H_compli, L_artikel, H_rezept, Gl_acct, Gl_cost, Queasy
+from models import H_bill_line, H_bill, H_artikel, Artikel, Kellner, Htparam, Kellne1, H_umsatz, Umsatz, H_journal, H_compli, L_artikel, H_rezept, Gl_acct, Gl_cost, H_rezlin, Queasy
 
 def ts_splitbill_btn_transfer_paytype5bl(curr_select:int, rec_id_h_bill:int, p_artnr:int, balance:Decimal, price_decimal:int, transdate:date, dept:int, change_str:string, price:Decimal, add_zeit:int, hoga_card:string, cancel_str:string, curr_waiter:int, amount_foreign:Decimal, curr_room:string, user_init:string, cc_comment:string, guestnr:int, tischnr:int):
 
-    prepare_cache ([H_bill, H_artikel, Htparam, H_umsatz, Umsatz, H_journal, H_compli, L_artikel, H_rezept, Gl_acct, Gl_cost])
+    prepare_cache ([H_bill, H_artikel, Htparam, H_umsatz, Umsatz, H_journal, H_compli, L_artikel, H_rezept, Gl_acct, Gl_cost, H_rezlin])
 
     billart = 0
     qty = 0
@@ -19,7 +25,7 @@ def ts_splitbill_btn_transfer_paytype5bl(curr_select:int, rec_id_h_bill:int, p_a
     bill_date = None
     fl_code = 0
     t_h_bill_line_data = []
-    h_bill_line = h_bill = h_artikel = artikel = kellner = htparam = kellne1 = h_umsatz = umsatz = h_journal = h_compli = l_artikel = h_rezept = gl_acct = gl_cost = queasy = None
+    h_bill_line = h_bill = h_artikel = artikel = kellner = htparam = kellne1 = h_umsatz = umsatz = h_journal = h_compli = l_artikel = h_rezept = gl_acct = gl_cost = h_rezlin = queasy = None
 
     t_h_bill_line = None
 
@@ -28,7 +34,7 @@ def ts_splitbill_btn_transfer_paytype5bl(curr_select:int, rec_id_h_bill:int, p_a
     db_session = local_storage.db_session
 
     def generate_output():
-        nonlocal billart, qty, description, amount, bill_date, fl_code, t_h_bill_line_data, h_bill_line, h_bill, h_artikel, artikel, kellner, htparam, kellne1, h_umsatz, umsatz, h_journal, h_compli, l_artikel, h_rezept, gl_acct, gl_cost, queasy
+        nonlocal billart, qty, description, amount, bill_date, fl_code, t_h_bill_line_data, h_bill_line, h_bill, h_artikel, artikel, kellner, htparam, kellne1, h_umsatz, umsatz, h_journal, h_compli, l_artikel, h_rezept, gl_acct, gl_cost, h_rezlin, queasy
         nonlocal curr_select, rec_id_h_bill, p_artnr, balance, price_decimal, transdate, dept, change_str, price, add_zeit, hoga_card, cancel_str, curr_waiter, amount_foreign, curr_room, user_init, cc_comment, guestnr, tischnr
 
 
@@ -39,7 +45,7 @@ def ts_splitbill_btn_transfer_paytype5bl(curr_select:int, rec_id_h_bill:int, p_a
 
     def adjust_compliment_umsatz(curr_select:int):
 
-        nonlocal billart, qty, description, bill_date, fl_code, t_h_bill_line_data, h_bill_line, h_bill, h_artikel, artikel, kellner, htparam, kellne1, h_umsatz, umsatz, h_journal, h_compli, l_artikel, h_rezept, gl_acct, gl_cost, queasy
+        nonlocal billart, qty, description, bill_date, fl_code, t_h_bill_line_data, h_bill_line, h_bill, h_artikel, artikel, kellner, htparam, kellne1, h_umsatz, umsatz, h_journal, h_compli, l_artikel, h_rezept, gl_acct, gl_cost, h_rezlin, queasy
         nonlocal rec_id_h_bill, p_artnr, balance, price_decimal, transdate, dept, change_str, price, add_zeit, hoga_card, cancel_str, curr_waiter, amount_foreign, curr_room, user_init, cc_comment, guestnr, tischnr
 
 
@@ -233,7 +239,60 @@ def ts_splitbill_btn_transfer_paytype5bl(curr_select:int, rec_id_h_bill:int, p_a
             h_bline = db_session.query(H_bline).filter(
                      (H_bline.rechnr == h_bill.rechnr) & (h_bill_line.waehrungsnr == curr_select) & (H_bline._recid > curr_recid)).first()
 
+    # Rulita, 02/12/2025
+    # Added procedure cal_cost 
+    def cal_cost(p_artnr:int, menge:Decimal, cost:Decimal):
 
+        nonlocal billart, qty, description, amount, bill_date, fl_code, t_h_bill_line_data, h_bill_line, h_bill, h_artikel, artikel, kellner, htparam, kellne1, h_umsatz, umsatz, h_journal, h_compli, l_artikel, h_rezept, gl_acct, gl_cost, h_rezlin, queasy
+        nonlocal curr_select, rec_id_h_bill, balance, price_decimal, transdate, dept, change_str, price, add_zeit, hoga_card, cancel_str, curr_waiter, amount_foreign, curr_room, user_init, cc_comment, guestnr, tischnr
+
+
+        nonlocal t_h_bill_line
+        nonlocal t_h_bill_line_data
+
+        inh:Decimal = to_decimal("0.0")
+        i:int = 0
+        h_recipe = None
+        hrecipe = None
+
+        def generate_inner_output():
+            return (cost)
+
+        H_recipe =  create_buffer("H_recipe",H_rezept)
+        Hrecipe =  create_buffer("Hrecipe",H_rezept)
+
+        h_recipe = get_cache (H_rezept, {"artnrrezept": [(eq, p_artnr)]})
+
+        htparam = db_session.query(Htparam).filter(
+                 (Htparam.paramnr == 1024)).first()
+        price_type = htparam.finteger
+
+        for h_rezlin in db_session.query(H_rezlin).filter(
+                 (H_rezlin.artnrrezept == p_artnr)).order_by(H_rezlin._recid).all():
+
+            if h_rezlin.recipe_flag :
+
+                hrecipe = get_cache (H_rezept, {"artnrrezept": [(eq, h_rezlin.artnrlager)]})
+
+                if hrecipe.portion > 1:
+                    inh =  to_decimal(menge) * to_decimal(h_rezlin.menge) / to_decimal(hrecipe.portion)
+                else:
+                    inh =  to_decimal(menge) * to_decimal(h_rezlin.menge)
+
+                cost = cal_cost(h_rezlin.artnrlager, inh, cost)
+                
+            else:
+                inh =  to_decimal(menge) * to_decimal(h_rezlin.menge)
+
+                l_artikel = get_cache (L_artikel, {"artnr": [(eq, h_rezlin.artnrlager)]})
+
+                if price_type == 0 or l_artikel.ek_aktuell == 0:
+                    cost =  to_decimal(cost) + to_decimal(inh) / to_decimal(l_artikel.inhalt) * to_decimal(l_artikel.vk_preis) / to_decimal((1) - to_decimal(h_rezlin.lostfact) / to_decimal(100))
+                else:
+                    cost =  to_decimal(cost) + to_decimal(inh) / to_decimal(l_artikel.inhalt) * to_decimal(l_artikel.ek_aktuell) / to_decimal((1) - to_decimal(h_rezlin.lostfact) / to_decimal(100))
+
+        return generate_inner_output()
+    
     def del_queasy():
 
         nonlocal billart, qty, description, amount, bill_date, fl_code, t_h_bill_line_data, h_bill_line, h_bill, h_artikel, artikel, kellner, htparam, kellne1, h_umsatz, umsatz, h_journal, h_compli, l_artikel, h_rezept, gl_acct, gl_cost, queasy

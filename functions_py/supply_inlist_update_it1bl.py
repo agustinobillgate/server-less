@@ -4,6 +4,12 @@
 # gitlab: -
 # remarks: if available
 #-----------------------------------------
+
+# ==============================================
+# Rulita, 02-12-2025
+# - Added with_for_update all query 
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from models import L_op, L_order
@@ -27,7 +33,7 @@ def supply_inlist_update_it1bl(rec_id:int):
     # Rd 04/08/2025
     if l_op:
         for l_order in db_session.query(L_order).filter(
-                (L_order.docu_nr == l_op.docu_nr) & (L_order.lief_nr == l_op.lief_nr) & (L_order.pos >= 0) & (L_order.loeschflag == 1)).order_by(L_order._recid).all():
+                (L_order.docu_nr == l_op.docu_nr) & (L_order.lief_nr == l_op.lief_nr) & (L_order.pos >= 0) & (L_order.loeschflag == 1)).order_by(L_order._recid).with_for_update().all():
             l_order.loeschflag = 0
             pass
 
