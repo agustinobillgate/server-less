@@ -131,8 +131,10 @@ def prepare_ratecode_adm_2bl(pvilanguage:int):
             curr_recid = prbuff._recid
             prbuff = db_session.query(Prbuff).filter(Prbuff._recid > curr_recid).first()
 
-        flag_modified(prtable, "zikatnr")
-        flag_modified(prtable, "argtnr")
+            pass
+
+            curr_recid = prbuff._recid
+            prbuff = db_session.query(Prbuff).filter(Prbuff._recid > curr_recid).first()
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 87)]})
 
