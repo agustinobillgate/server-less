@@ -5,7 +5,7 @@
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Bk_veran, Bk_reser, Bk_func
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 def ba_cancreslinebl(resnr:int, resline:int):
 

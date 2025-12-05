@@ -12,6 +12,7 @@ from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Queasy, Htparam, Waehrung, Ratecode, Prmarket, Prtable, Zimkateg, Arrangement
+from sqlalchemy.orm.attributes import flag_modified
 
 def prepare_ratecode_adm_2bl(pvilanguage:int):
 
@@ -127,6 +128,8 @@ def prepare_ratecode_adm_2bl(pvilanguage:int):
                 curr_i = curr_i + 1
                 prtable.argtnr[curr_i - 1] = arrangement.argtnr
 
+            curr_recid = prbuff._recid
+            prbuff = db_session.query(Prbuff).filter(Prbuff._recid > curr_recid).first()
 
             pass
 

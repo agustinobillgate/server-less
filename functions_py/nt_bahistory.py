@@ -5,7 +5,7 @@
 from functions.additional_functions import *
 import decimal
 from models import Bk_reser, Bk_func, Bk_veran, Htparam, B_history
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 def nt_bahistory():
     rechnr:int = 0

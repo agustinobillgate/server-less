@@ -7,7 +7,7 @@ from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Bediener, Bk_veran, Bk_reser, Bk_func, Bk_raum, Counters
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 s_list_data, S_list = create_model("S_list", {"datum":date, "ftime":string, "ttime":string, "raum":string, "wday":string, "raum1":string, "resstatus":int})
 

@@ -6,7 +6,7 @@ from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import H_bill, H_bill_line, H_artikel, Hoteldpt, Res_line, H_journal, H_umsatz, Umsatz, Artikel, Guest, Debitor, Htparam, Waehrung, Bediener, Billjournal
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 t_payload_list_data, T_payload_list = create_model("T_payload_list", {"hbill_recid":int, "hbline_recid":int, "bill_number":int, "art_number":int, "dept_number":int, "bill_date":date, "curr_waiter":int, "user_init":string, "cancel_reason":string})
 

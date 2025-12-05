@@ -6,7 +6,7 @@ from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import L_orderhdr, L_order, Htparam, L_artikel, L_bestand, Parameters, Dml_art
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 def prepare_mk_pr_1bl(docu_nr:string, tp_bediener_user_group:int, tp_bediener_username:string, dml_flag:bool, dml_grp:int, dml_datum:date, cost_acct:string):
 

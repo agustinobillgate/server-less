@@ -6,7 +6,7 @@ from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import H_bill, H_artikel, Htparam, Kellne1, H_bill_line, H_umsatz, H_journal, Umsatz, Guest, Artikel, Debitor, Waehrung, Bediener, Billjournal
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 def ts_closeinv_update_billbl(amount:Decimal, amount_foreign:Decimal, balance:Decimal, rec_bill_guest:int, foreign_rate:bool, 
                               curr_dept:int, rec_h_artikel:int, rec_h_bill:int, h_artart:int, h_artnrfront:int, unit_price:Decimal, 

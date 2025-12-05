@@ -5,7 +5,7 @@
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Counters, Ratecode, Queasy, Zimkateg
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 def ratecode_admin_fill_dynarate_counterbl(r_code:string, dynarate_list_rmtype:string, dynarate_list_rcode:string, dynarate_list_w_day:int):
 

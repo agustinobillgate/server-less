@@ -11,10 +11,10 @@ from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from functions.leasing_cancel_rsvbl import leasing_cancel_rsvbl
-from sqlalchemy import func
 from functions.intevent_1 import intevent_1
+from sqlalchemy import func
 from models import Queasy, Zimkateg, Res_line, Htparam, Reslin_queasy, Bediener, Res_history, Zinrstat, Outorder, Reservation, Guest, Bill, Master, Mast_art, Zimmer, Zimplan, Resplan
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 def del_reslinebl(pvilanguage:int, res_mode:string, resnr:int, reslinnr:int, user_init:string, cancel_str:string):
 
@@ -87,7 +87,6 @@ def del_reslinebl(pvilanguage:int, res_mode:string, resnr:int, reslinnr:int, use
 
             if res_mode.lower()  == ("delete").lower()  or res_mode.lower()  == ("cancel").lower()  and rline.resstatus == 1:
 
-                # res_line1 = get_cache (Res_line, {"resnr": [(eq, resnr)],"zinr": [(eq, rline.zinr)],"resstatus": [(eq, 11)]})
                 res_line1 = db_session.query(Res_line).filter(
                          (Res_line.resnr == resnr) & (Res_line.zinr == rline.zinr) & (Res_line.resstatus == 11)).with_for_update().first()
 
@@ -110,8 +109,7 @@ def del_reslinebl(pvilanguage:int, res_mode:string, resnr:int, reslinnr:int, use
                         for res_line2 in db_session.query(Res_line2).filter(
                                  (Res_line2.resnr == resnr) & (Res_line2.zinr == rline.zinr) & 
                                  (Res_line2.resstatus == 13)).order_by(Res_line2._recid).with_for_update().all():
-
-                            # bill = get_cache (Bill, {"resnr": [(eq, resnr)],"reslinnr": [(eq, res_line2.reslinnr)],"flag": [(eq, 0)],"zinr": [(eq, res_line2.zinr)]})
+                            
                             bill = db_session.query(Bill).filter(
                                      (Bill.resnr == resnr) & (Bill.reslinnr == res_line2.reslinnr) & 
                                      (Bill.flag == 0) & (Bill.zinr == res_line2.zinr)).with_for_update().first()
@@ -128,7 +126,6 @@ def del_reslinebl(pvilanguage:int, res_mode:string, resnr:int, reslinnr:int, use
                             res_line2.zinr = new_zinr
                             pass
 
-                        # zimmer = get_cache (Zimmer, {"zinr": [(eq, rline.zinr)]})
                         zimmer = db_session.query(Zimmer).filter(
                                  (Zimmer.zinr == rline.zinr)).with_for_update().first()
                         zimmer.zistatus = 2
@@ -175,26 +172,24 @@ def del_reslinebl(pvilanguage:int, res_mode:string, resnr:int, reslinnr:int, use
                 beg_datum = get_current_date()
             else:
                 beg_datum = rline.ankunft
-            curr_date = beg_datum
-            while curr_date >= beg_datum and curr_date < rline.abreise:
 
-                # resplan = get_cache (Resplan, {"zikatnr": [(eq, zimkateg.zikatnr)],"datum": [(eq, curr_date)]})
+            curr_date = beg_datum
+            
+            while curr_date >= beg_datum and curr_date < rline.abreise:
                 resplan = db_session.query(Resplan).filter(
                          (Resplan.zikatnr == zimkateg.zikatnr) & (Resplan.datum == curr_date)).with_for_update().first()
                 if resplan:
-                    pass
+                    
                     resplan.anzzim[i - 1] = resplan.anzzim[i - 1] - rline.zimmeranz
-                    pass
-                pass
+                    
+                    flag_modified(resplan, "anzzim")
+                
                 curr_date = curr_date + timedelta(days=1)
-            flag_modified(resplan, "anzzim")
 
-    #main code block
     htparam = get_cache (Htparam, {"paramnr": [(eq, 87)]})
     ci_date = htparam.fdate
     
     if (res_mode.lower()  == ("cancel").lower()  or res_mode.lower()  == ("delete").lower()):
-        # res_line = get_cache (Res_line, {"resnr": [(eq, resnr)],"reslinnr": [(eq, reslinnr)]})
         res_line = db_session.query(Res_line).filter(
                  (Res_line.resnr == resnr) & (Res_line.reslinnr == reslinnr)).with_for_update().first()
 
@@ -213,7 +208,6 @@ def del_reslinebl(pvilanguage:int, res_mode:string, resnr:int, reslinnr:int, use
         pass
         pass
 
-        # bqueasy = get_cache (Queasy, {"key": [(eq, 329)],"number1": [(eq, res_line.resnr)],"number2": [(eq, res_line.reslinnr)],"logi1": [(eq, False)]})
         bqueasy = db_session.query(Queasy).filter(
                  (Queasy.key == 329) & (Queasy.number1 == res_line.resnr) & 
                  (Queasy.number2 == res_line.reslinnr) & (Queasy.logi1 == False)).with_for_update().first()
@@ -263,7 +257,6 @@ def del_reslinebl(pvilanguage:int, res_mode:string, resnr:int, reslinnr:int, use
 
             if origcode != "":
 
-                # queasy = get_cache (Queasy, {"key": [(eq, 171)],"date1": [(eq, datum)],"number1": [(eq, roomnr)],"char1": [(eq, origcode)]})
                 queasy = db_session.query(Queasy).filter(
                          (Queasy.key == 171) & (Queasy.date1 == datum) & 
                          (Queasy.number1 == roomnr) & (Queasy.char1 == origcode)).with_for_update().first()
@@ -302,7 +295,6 @@ def del_reslinebl(pvilanguage:int, res_mode:string, resnr:int, reslinnr:int, use
 
         if (res_mode.lower()  == ("cancel").lower()) and (res_line.resstatus <= 2 or res_line.resstatus == 5):
 
-            # zinrstat = get_cache (Zinrstat, {"zinr": [(eq, "cancres")],"datum": [(eq, ci_date)]})
             zinrstat = db_session.query(Zinrstat).filter(
                      (func.lower(Zinrstat.zinr) == ("cancres").lower()) & (Zinrstat.datum == ci_date)).with_for_update().first()
             if not zinrstat:
@@ -319,7 +311,6 @@ def del_reslinebl(pvilanguage:int, res_mode:string, resnr:int, reslinnr:int, use
 
         if (res_line.resstatus <= 2 or res_line.resstatus == 5) and res_line.zinr != "":
 
-            # outorder = get_cache (Outorder, {"zinr": [(eq, res_line.zinr)],"betriebsnr": [(eq, res_line.resnr)]})
             outorder = db_session.query(Outorder).filter(
                      (Outorder.zinr == res_line.zinr) & (Outorder.betriebsnr == res_line.resnr)).with_for_update().first()
             if outorder:
@@ -380,7 +371,6 @@ def del_reslinebl(pvilanguage:int, res_mode:string, resnr:int, reslinnr:int, use
                     ";" + res_line.zinr
             res_line.zinr = ""
 
-
             pass
 
             for rline in db_session.query(Rline).filter(
@@ -393,10 +383,8 @@ def del_reslinebl(pvilanguage:int, res_mode:string, resnr:int, reslinnr:int, use
                 rline.cancelled_id = user_init +\
                         ";" + to_string(get_current_date()) + "-" + to_string(get_current_time_in_seconds(), "HH:MM:SS")
 
-
                 pass
 
-            # reservation = get_cache (Reservation, {"resnr": [(eq, resnr)]})
             reservation = db_session.query(Reservation).filter(
                      (Reservation.resnr == resnr)).with_for_update().first()
             if reservation:
@@ -409,7 +397,6 @@ def del_reslinebl(pvilanguage:int, res_mode:string, resnr:int, reslinnr:int, use
         if not res_line:
             del_mainres = True
 
-            # reservation = get_cache (Reservation, {"resnr": [(eq, resnr)]})
             reservation = db_session.query(Reservation).filter(
                      (Reservation.resnr == resnr)).with_for_update().first()    
             reservation.activeflag = 1
@@ -417,16 +404,13 @@ def del_reslinebl(pvilanguage:int, res_mode:string, resnr:int, reslinnr:int, use
             if cancel_str != "":
                 reservation.vesrdepot2 = cancel_str
 
-
             pass
 
-            # guest = get_cache (Guest, {"gastnr": [(eq, reservation.gastnr)]})
             guest = db_session.query(Guest).filter(
                      (Guest.gastnr == reservation.gastnr)).with_for_update().first()
             guest.stornos = guest.stornos + 1
             pass
 
-            # bill = get_cache (Bill, {"resnr": [(eq, resnr)],"reslinnr": [(eq, 0)],"zinr": [(eq, "")]})
             bill = db_session.query(Bill).filter(
                      (Bill.resnr == resnr) & (Bill.reslinnr == 0) & (Bill.zinr == "")).with_for_update().first()
             if bill:
@@ -434,7 +418,6 @@ def del_reslinebl(pvilanguage:int, res_mode:string, resnr:int, reslinnr:int, use
                 db_session.delete(bill)
                 pass
 
-            # master = get_cache (Master, {"resnr": [(eq, resnr)],"flag": [(eq, 0)]})
             master = db_session.query(Master).filter(
                      (Master.resnr == resnr) & (Master.flag == 0)).with_for_update().first()
 
@@ -446,8 +429,7 @@ def del_reslinebl(pvilanguage:int, res_mode:string, resnr:int, reslinnr:int, use
             for mast_art in db_session.query(Mast_art).filter(
                      (Mast_art.resnr == resnr) & (Mast_art.reslinnr == 1)).order_by(Mast_art._recid).with_for_update().all():
                 db_session.delete(mast_art)
-        else:
-            print("tidak masuk cancel.")
+
         if res_mode.lower()  == ("delete").lower() :
 
             bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})

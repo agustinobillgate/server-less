@@ -8,7 +8,7 @@ from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import L_orderhdr
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 def dml_list_upd_orderhdrbl(case_type:int, rec_id:int, dept:int, comments_screen_value:string, datum:date):
     l_orderhdr = None

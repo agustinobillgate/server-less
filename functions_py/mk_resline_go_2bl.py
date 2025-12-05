@@ -996,11 +996,13 @@ def mk_resline_go_2bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
                     else:
 
                         # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
-                        counters = db_session.query(Counters).filter(
-                                 (Counters.counter_no == 3)).with_for_update().first()
-                        counters.counter = counters.counter + 1
-                        bill.rechnr = counters.counter
-                        
+                        # counters.counter = counters.counter + 1
+                        # bill.rechnr = counters.counter
+                        # pass
+                        # pass
+                        # master.rechnr = bill.rechnr
+                        last_count, error_lock = get_output(next_counter_for_update(3))
+                        bill.rechnr = last_count
                         master.rechnr = bill.rechnr
                         
                 bill.gastnr = reslin_list.gastnr
@@ -2806,10 +2808,12 @@ def mk_resline_go_2bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
         if queasy:
             update_qsy171()
+
         update_resline()
         res_dyna_rmrate()
         update_mainres()
         add_resplan()
+
 
         if res_mode.lower()  == ("inhouse").lower()  and (prev_zinr != res_line.zinr):
 

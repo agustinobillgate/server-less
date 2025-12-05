@@ -13,7 +13,7 @@ from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Queasy, Paramtext, Htparam, L_orderhdr, L_lieferant, L_order, Parameters, Waehrung, Guestbook, L_artikel
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 def print_pchase_lnl_webbl(pvilanguage: int, lnldelimeter: string, docunr: string, stattype: int, curr_status: string):
     prepare_cache([Queasy, Paramtext, Htparam, L_orderhdr, L_lieferant, L_order, Parameters, Waehrung, Guestbook, L_artikel])

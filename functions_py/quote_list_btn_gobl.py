@@ -5,7 +5,7 @@
 from functions.additional_functions import *
 from decimal import Decimal
 from models import L_quote
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 t_quote_data, T_quote = create_model("T_quote", {"artnr":int, "lief_nr":int, "supname":string, "artname":string, "devunit":string, "content":Decimal, "unitprice":Decimal, "curr":string, "from_date":date, "to_date":date, "remark":string, "filname":string, "activeflag":bool, "docu_nr":string, "minqty":Decimal, "delivday":int, "disc":Decimal, "avl":bool}, {"activeflag": True, "avl": True})
 t_quote1_data, T_quote1 = create_model_like(T_quote)

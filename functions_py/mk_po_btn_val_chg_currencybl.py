@@ -5,7 +5,7 @@
 from functions.additional_functions import *
 from decimal import Decimal
 from models import L_orderhdr, Waehrung
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 def mk_po_btn_val_chg_currencybl(currency_screen_value:string, rec_id:int):
 

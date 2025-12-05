@@ -10,7 +10,7 @@ from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import H_bill, H_bill_line, H_artikel, Htparam, Kellne1, H_umsatz, H_journal, Umsatz, Queasy, Guest, Artikel, Debitor, Waehrung, Bediener, Billjournal
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 input_list_data, Input_list = create_model("Input_list", {"mc_str":string})
 

@@ -6,7 +6,7 @@ from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Queasy, Htparam, Waehrung, Ratecode, Prmarket, Prtable, Zimkateg, Arrangement
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 def prepare_ratecode_adm_1bl(pvilanguage:int):
 

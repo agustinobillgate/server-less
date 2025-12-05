@@ -5,7 +5,7 @@
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Bk_reser, Bk_veran, Bk_func
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 def rsv_list_update_resstatusbl(output_list_resnr:int, output_list_reslinnr:int, r_status:int, c_status:string):
 

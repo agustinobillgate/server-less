@@ -6,7 +6,7 @@ from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Reslin_queasy, Dml_artdep, Dml_art, Queasy
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 def dml_list_save_it_2bl(curr_dept:int, cbuff_artnr:int, cbuff_qty:Decimal, selected_date:date, 
                          user_init:string, cbuff_price:Decimal, cbuff_lief_nr:int, cbuff_approved:bool, cbuff_remark:string, curr_select:string, dml_no:string, counter:int):

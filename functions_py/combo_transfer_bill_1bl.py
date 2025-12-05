@@ -7,7 +7,7 @@ from decimal import Decimal
 from datetime import date
 from functions.htpdate import htpdate
 from models import Bill, Htparam, Artikel, Counters, Umsatz, Bill_line, Billjournal, Res_line
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 def combo_transfer_bill_1bl(pvilanguage:int, dept_type:int, dept:int, dept_bezeich:string, h_bill_rechnr:int, transdate:date, double_currency:bool, exchg_rate:Decimal, bilrecid:int, foreign_rate:bool, user_init:string, amount:Decimal, amount_foreign:Decimal):
 

@@ -95,11 +95,11 @@ def arl_list_cancelcibl(recid_resline: int, user_init: string, t_ankunft: date):
             db_session.delete(bill)
             pass
         else:
+            db_session.refresh(bill, with_for_update=True)
             bill.flag = 1
             fl_error = 3
             billnumber = billnumber + ";" + to_string(bill.rechnr)
 
-        db_session.refresh(bill, with_for_update=True)
 
     for buff_resline in db_session.query(Buff_resline).filter(
             (Buff_resline.resnr == res_number) & (Buff_resline.resstatus == 6)).order_by(Buff_resline._recid).all():

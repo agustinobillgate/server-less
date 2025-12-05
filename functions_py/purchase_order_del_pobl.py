@@ -6,7 +6,7 @@ from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import L_order
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 def purchase_order_del_pobl(billdate:date, q2_list_docu_nr:string, bediener_username:string):
 
     prepare_cache ([L_order])

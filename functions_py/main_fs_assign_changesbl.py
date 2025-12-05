@@ -5,7 +5,7 @@
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Bk_reser, Bk_func, Bk_rart, Bk_veran
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 def main_fs_assign_changesbl(resnr:int, resline:int, rsvsort:int, user_init:string, fsl_segmentcode:int, fsl_in_sales:string, fsl_in_conv:string, fsl_cutoff:date):
 

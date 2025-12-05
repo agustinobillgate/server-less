@@ -76,14 +76,10 @@ def res_checkin1bl(pvilanguage:int, resnr:int, reslinnr:int, silenzio:bool):
 
         return generate_output()
 
-    # print("res_line.gastnrmember = " + to_string(res_line.gastnrmember))
-    
     # gast = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
     gast = db_session.query(Guest).filter(
              (Guest.gastnr == res_line.gastnrmember)).with_for_update().first()
-    
-    # print("gast.karteityp = " + to_string(gast.karteityp))
-    
+
     if gast.karteityp != 0:
         msg_str = translateExtended ("Guest Type must be individual guest.", lvcarea, "")
 

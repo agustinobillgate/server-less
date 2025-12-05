@@ -10,7 +10,7 @@ from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from functions.calc_servvat import calc_servvat
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 from models import Ratecode, Queasy, Htparam, Bediener, Res_history, Zimkateg, Guest_pr, Guest, Prtable, Arrangement, Artikel, Waehrung
 
 tb3_data, Tb3 = create_model_like(Ratecode, {"s_recid":int})

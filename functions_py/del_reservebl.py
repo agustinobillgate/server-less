@@ -10,16 +10,19 @@ from decimal import Decimal
 from functions.del_reslinebl import del_reslinebl
 from models import Res_line, Bediener, Htparam
 
+from functions import log_program
+
 def del_reservebl(pvilanguage:int, res_mode:string, resnr:int, user_init:string, cancel_str:string):
     msg_str = ""
     del_mainres:bool = False
     lvcarea:string = "del-reserve"
     res_line = bediener = htparam = None
 
+    cancel_str = cancel_str.strip()
+
     rline = None
 
     Rline = create_buffer("Rline",Res_line)
-
 
     db_session = local_storage.db_session
 
@@ -38,9 +41,14 @@ def del_reservebl(pvilanguage:int, res_mode:string, resnr:int, user_init:string,
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 87)]})
 
-    if res_mode.lower()  == ("cancel").lower()  or res_mode.lower()  == ("delete").lower() :
+    if res_mode.lower() == ("cancel").lower()  or res_mode.lower()  == ("delete").lower() :
 
-        res_line = get_cache (Res_line, {"resnr": [(eq, resnr)],"active_flag": [(eq, 0)],"l_zuordnung[2]": [(eq, 0)]})
+        res_line = db_session.query(Res_line).with_for_update().filter(
+                     (Res_line.resnr == resnr) & (Res_line.active_flag == 0) & (Res_line.l_zuordnung[inc_value(2)] == 0)).first()
+        
+        print(f"[INFO] delete reservation line {res_line.reslinnr} | reserve no: {res_line.resnr}") # keeping log for debug purpose
+        log_program.write_log("INFO", f"delete reservation line {res_line.reslinnr} | reserve no: {res_line.resnr}") # keeping log for debug purpose
+        
         while None != res_line:
             del_mainres, msg_str = get_output(del_reslinebl(pvilanguage, res_mode, res_line.resnr, res_line.reslinnr, user_init, cancel_str))
 

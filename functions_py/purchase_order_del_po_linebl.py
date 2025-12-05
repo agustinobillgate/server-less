@@ -6,7 +6,7 @@ from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import L_order, L_orderhdr
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 def purchase_order_del_po_linebl(billdate:date, rec_id:int, l_orderhdr_rec_id:int, bediener_username:string):
 

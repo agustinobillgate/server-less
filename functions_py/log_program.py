@@ -3,9 +3,9 @@ from datetime import datetime
 
 LOG_DIR = "/usr1/serverless/src/logs"
 os.makedirs(LOG_DIR, exist_ok=True)
-log_file_path = os.path.join(LOG_DIR, "log.txt")
 
-def write_log(level, message):
+def write_log(level, message, filename="log.txt"):
+    log_file_path = os.path.join(LOG_DIR, filename)
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     formatted_message = f"[{timestamp}] [{level.upper()}] {message}\n"
 

@@ -6,7 +6,7 @@ from functions.additional_functions import *
 from decimal import Decimal
 from functions.ba_cancreslinebl import ba_cancreslinebl
 from models import Bk_veran, Bk_reser, B_storno
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 def bqt_cutoff_res_cancel2bl(recid_bk_reser:int, o_resnr:int, cancel_str:string, user_init:string):
 
