@@ -16,7 +16,7 @@ from models import Zimkateg, Queasy, Ratecode, Bediener, Res_history, Counters, 
 
 # Rulita, 21-11-2025
 # - Fixing add data ratecode array char1[4]
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 dynarate_list_data, Dynarate_list = create_model("Dynarate_list", {"s_recid":int, "counter":int, "w_day":int, "rmType":string, "fr_room":int, "to_room":int, "days1":int, "days2":int, "rCode":string})
 drbuff_data, Drbuff = create_model_like(Dynarate_list)

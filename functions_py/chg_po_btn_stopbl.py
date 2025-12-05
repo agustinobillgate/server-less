@@ -5,7 +5,7 @@
 from functions.additional_functions import *
 from decimal import Decimal
 from models import L_orderhdr
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 def chg_po_btn_stopbl(case_type:int, rec_id_l_orderhdr:int, waehrung_waehrungsnr:int):
 

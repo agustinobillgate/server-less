@@ -7,7 +7,7 @@ from decimal import Decimal
 from datetime import date
 from sqlalchemy import func
 from models import L_orderhdr, L_order, L_artikel, Waehrung, Htparam
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 t_l_orderhdr_data, T_l_orderhdr = create_model_like(L_orderhdr, {"rec_id":int})
 t_l_order_data, T_l_order = create_model_like(L_order, {"rec_id":int, "a_bezeich":string, "price0":Decimal, "brutto":Decimal, "disc":Decimal, "disc2":Decimal, "vat":Decimal, "disc_val":Decimal, "disc2_val":Decimal, "vat_val":Decimal})

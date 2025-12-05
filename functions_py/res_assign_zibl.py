@@ -6,7 +6,7 @@ from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Htparam, Res_line, Zimkateg, Zimmer, Resplan, Zimplan, Guest, Reslin_queasy
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 def res_assign_zibl(resnr:int, reslinnr:int, rmcat:string, ses_param:string, user_init:string, zinr:string):
 

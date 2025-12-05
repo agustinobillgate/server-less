@@ -9,7 +9,7 @@ from datetime import date
 from functions.htpint import htpint
 from sqlalchemy import func
 from models import L_order, L_orderhdr, Htparam, Waehrung, L_lieferant, Parameters, L_artikel
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 def prepare_mk_po1_webbl(docu_nr:string, pvilanguage:int, lief_nr:int, pr_deptnr:int, po_type:int, potype:int, 
                          bediener_username:string, ordername_screen_value:string, crterm:int):

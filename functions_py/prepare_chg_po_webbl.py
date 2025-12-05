@@ -13,7 +13,7 @@ from decimal import Decimal
 from datetime import date
 from functions.htpint import htpint
 from models import L_artikel, L_order, L_orderhdr, Waehrung, Htparam, L_lieferant, Parameters, Queasy
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 def prepare_chg_po_webbl(pvilanguage:int, docu_nr:string, lief_nr:int):
 

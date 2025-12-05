@@ -5,7 +5,7 @@
 from functions.additional_functions import *
 from decimal import Decimal
 from models import B_storno
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 output_list_data, Output_list = create_model("Output_list", {"outnr":int, "act_str":string})
 

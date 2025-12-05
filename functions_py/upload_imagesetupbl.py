@@ -5,7 +5,7 @@
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Bediener, Guestbook, Res_history
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 def upload_imagesetupbl(case_type:int, base64image:string, user_init:string, image_number:int):
 

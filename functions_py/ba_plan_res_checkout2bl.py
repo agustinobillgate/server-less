@@ -6,7 +6,7 @@ from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Bk_reser, Bk_veran, Htparam, Bill, Bk_func, B_history
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 def ba_plan_res_checkout2bl(mainres_recid:int, t_resnr:int, t_reslinnr:int, user_init:string):
 

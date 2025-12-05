@@ -4,7 +4,7 @@
 # gitlab: 614
 # Rd, 28/11/2025, with_for_update added
 #-----------------------------------------
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 from functions.additional_functions import *
 from decimal import Decimal

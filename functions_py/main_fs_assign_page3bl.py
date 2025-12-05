@@ -5,7 +5,7 @@
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Bk_func
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 t_kartentext_data, T_kartentext = create_model("T_kartentext", {"kartentext":string, "curr_i":int})
 t_sonstiges_data, T_sonstiges = create_model("T_sonstiges", {"sonstiges":string, "curr_i":int})

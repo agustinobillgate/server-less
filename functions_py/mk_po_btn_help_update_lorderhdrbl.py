@@ -6,7 +6,7 @@ from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import L_orderhdr
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 def mk_po_btn_help_update_lorderhdrbl(case_type:int, rec_id:int, datum:date, dept:int):
 

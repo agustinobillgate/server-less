@@ -5,7 +5,7 @@
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Htparam, L_orderhdr, L_order, Waehrung, L_lieferant, Gl_department, Printer, Briefzei, L_artikel, Printcod, Queasy, Parameters
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 def pchase_parserbl(briefnr:int, printnr:int, docu_nr:string):
 

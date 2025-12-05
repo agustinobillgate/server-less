@@ -8,7 +8,7 @@ from decimal import Decimal
 from datetime import date
 from functions.calc_servtaxesbl import calc_servtaxesbl
 from models import H_bill, Kellner, Htparam, Artikel, Bill, Counters, Bill_line, Billjournal, H_bill_line, H_artikel, H_journal
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 def ts_closeinv_update_bill1bl(amount:Decimal, amount_foreign:Decimal, rec_kellner:int, rec_h_bill:int, double_currency:bool, 
                                exchg_rate:Decimal, bilrecid:int, value_sign:int, user_init:string, bill_date:date, 

@@ -6,7 +6,7 @@ from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Bk_func, Bk_reser, Bk_veran
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 def bqt_cutoff_update_resstatusbl(r_status:int, c_status:string, o_resnr:int, o_reslinnr:int):
 

@@ -12,7 +12,7 @@
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Ratecode, Queasy, Prtable, Zimkateg, Arrangement
-# from sqlalchemy.orm import flag_modified
+# from sqlalchemy.orm.attributes import flag_modified
 
 
 def ratecode_adm_create_list_1bl(prcode: string, market_nr: int):

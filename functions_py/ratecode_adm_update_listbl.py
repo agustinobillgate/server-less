@@ -6,7 +6,7 @@
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Prtable, Ratecode, Queasy, Waehrung
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 pr_list_data, Pr_list = create_model("Pr_list", {"cstr":[string,2], "prcode":string, "rmcat":string, "argt":string, "zikatnr":int, "argtnr":int, "i_typ":int, "flag":int})
 prbuff_data, Prbuff = create_model_like(Pr_list)

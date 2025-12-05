@@ -6,7 +6,7 @@ from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Htparam, Guest, Counters, Bk_reser, Bk_raum, Akt_kont, Bk_func, Bk_veran
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 def ba_plan_create_reslinebl(curr_resnr:int, guest_gastnr:int, bkl_ftime:int, bkl_ttime:int, 
                              bkl_raum:string, bkl_datum:date, bkl_tdatum:date, bediener_nr:int, ba_dept:int, curr_resstatus:int, user_init:string):
