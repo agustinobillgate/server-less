@@ -15,8 +15,7 @@
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
-# from functions.calc_servtaxesbl import calc_servtaxesbl
-from functions_py.calc_servtaxesbl import calc_servtaxesbl
+from functions.calc_servtaxesbl import calc_servtaxesbl
 from models import Artikel, Htparam, Queasy, Res_line, Arrangement, Reslin_queasy, Counters, Reservation, Guest, Bediener, Bill, Bill_line, Debitor, Billjournal, Umsatz, Gl_jouhdr, Gl_journal
 
 
@@ -90,7 +89,6 @@ def leasing_cancel_rsvbl(qrecid: int, user_init: str):
 
         billnr: int = 0
 
-        # counters = get_cache(Counters, {"counter_no": [(eq, 3)]})
         counters = db_session.query(Counters).filter(
             Counters.counter_no == 3
         ).with_for_update().first()
@@ -249,8 +247,6 @@ def leasing_cancel_rsvbl(qrecid: int, user_init: str):
 
         db_session.add(billjournal)
 
-        # umsatz = get_cache(
-        #     Umsatz, {"artnr": [(eq, ar_ledger)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
         umsatz = db_session.query(Umsatz).filter(
                  (Umsatz.artnr == ar_ledger) & (Umsatz.departement == 0) & (Umsatz.datum == bill_date)).with_for_update().first()
         if not umsatz:
@@ -285,8 +281,6 @@ def leasing_cancel_rsvbl(qrecid: int, user_init: str):
 
         db_session.add(billjournal)
 
-        # umsatz = get_cache(
-        #     Umsatz, {"artnr": [(eq, divered_rental)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
         umsatz = db_session.query(Umsatz).filter(
                  (Umsatz.artnr == divered_rental) & (Umsatz.departement == 0) & (Umsatz.datum == bill_date)).with_for_update().first()
         if not umsatz:
@@ -309,7 +303,6 @@ def leasing_cancel_rsvbl(qrecid: int, user_init: str):
 
         gname: string = ""
 
-        # counters = get_cache(Counters, {"counter_no": [(eq, 25)]})
         counters = db_session.query(Counters).filter(
             Counters.counter_no == 25
         ).with_for_update().first()
@@ -334,9 +327,7 @@ def leasing_cancel_rsvbl(qrecid: int, user_init: str):
 
         gl_jouhdr = Gl_jouhdr()
 
-        gl_jouhdr.jnr = counters.counter        
-        # gl_jouhdr.refno = "CANCEL-" + \
-        #     to_string(queasy.number1) + "-" + to_string(bill_date)
+        gl_jouhdr.jnr = counters.counter
         gl_jouhdr.refno = f"CANCEL-{queasy.number1}-{bill_date}"
         gl_jouhdr.datum = bill_date
         gl_jouhdr.batch = True
@@ -347,8 +338,6 @@ def leasing_cancel_rsvbl(qrecid: int, user_init: str):
         guest = get_cache(Guest, {"gastnr": [(eq, queasy.number2)]})
 
         if guest:
-            # gl_jouhdr.bezeich = "CANCEL-service RESIDENT-" + \
-            #     to_string(queasy.number1) + "-" + to_string(bill_date)
             gl_jouhdr.bezeich = f"CANCEL-service RESIDENT-{queasy.number1}-{bill_date}"
 
         gl_journal = Gl_journal()
@@ -544,7 +533,6 @@ def leasing_cancel_rsvbl(qrecid: int, user_init: str):
         Htparam, {"paramnr": [(eq, 133)]})
 
     artikel = get_cache(
-        # Artikel, {"artnr": [(eq, finteger)], "departement": [(eq, 0)]})
         Artikel, {"artnr": [(eq, htparam.finteger)], "departement": [(eq, 0)]})
 
     if artikel:
