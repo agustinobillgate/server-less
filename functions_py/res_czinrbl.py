@@ -6,12 +6,19 @@
 # =============================
 # Rd, 26/11/2025, with_for_update
 #------------------------------
+
+# ==============================================
+# Rulita, 04-12-2025
+# Fixing input param var typo anknuft -> ankuft
+# Added with_for_update all query 
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Res_line, Queasy, Htparam, Zimkateg, Zimmer, Outorder, Zimplan
 
-def res_czinrbl(pvilanguage:int, ankunft:date, abreise:date, sharer:bool, resnr:int, reslinnr:int, rmcat:string, zinr:string):
+def res_czinrbl(pvilanguage:int, ankuft:date, abreise:date, sharer:bool, resnr:int, reslinnr:int, rmcat:string, zinr:string):
 
     prepare_cache ([Queasy, Htparam, Zimkateg, Zimmer, Outorder])
 
@@ -39,7 +46,7 @@ def res_czinrbl(pvilanguage:int, ankunft:date, abreise:date, sharer:bool, resnr:
 
     def generate_output():
         nonlocal error_code, msg_str, lvcarea, found, answer, resline_recid, ci_date, from_date, to_date, count_q359, timestamp_str, accept_it, res_line, queasy, htparam, zimkateg, zimmer, outorder, zimplan
-        nonlocal pvilanguage, ankunft, abreise, sharer, resnr, reslinnr, rmcat, zinr
+        nonlocal pvilanguage, ankuft, abreise, sharer, resnr, reslinnr, rmcat, zinr
         nonlocal resline, buf_q359
 
 
@@ -51,7 +58,7 @@ def res_czinrbl(pvilanguage:int, ankunft:date, abreise:date, sharer:bool, resnr:
     def check_roomplan_old():
 
         nonlocal error_code, msg_str, lvcarea, found, answer, resline_recid, ci_date, from_date, to_date, count_q359, timestamp_str, accept_it, res_line, queasy, htparam, zimkateg, zimmer, outorder, zimplan
-        nonlocal pvilanguage, ankunft, abreise, sharer, resnr, reslinnr, rmcat, zinr
+        nonlocal pvilanguage, ankuft, abreise, sharer, resnr, reslinnr, rmcat, zinr
         nonlocal resline, buf_q359
 
 
@@ -128,7 +135,7 @@ def res_czinrbl(pvilanguage:int, ankunft:date, abreise:date, sharer:bool, resnr:
     def check_roomplan():
 
         nonlocal error_code, msg_str, lvcarea, found, answer, resline_recid, ci_date, from_date, to_date, count_q359, timestamp_str, accept_it, res_line, queasy, htparam, zimkateg, zimmer, outorder, zimplan
-        nonlocal pvilanguage, ankunft, abreise, sharer, resnr, reslinnr, rmcat, zinr
+        nonlocal pvilanguage, ankuft, abreise, sharer, resnr, reslinnr, rmcat, zinr
         nonlocal resline, buf_q359
 
 
@@ -209,15 +216,20 @@ def res_czinrbl(pvilanguage:int, ankunft:date, abreise:date, sharer:bool, resnr:
 
     if resnr > 0:
 
-        res_line = get_cache (Res_line, {"resnr": [(eq, resnr)],"reslinnr": [(eq, reslinnr)]})
+        # res_line = get_cache (Res_line, {"resnr": [(eq, resnr)],"reslinnr": [(eq, reslinnr)]})
+        res_line = db_session.query(Res_line).filter(
+                 (Res_line.resnr == resnr) & (Res_line.reslinnr == reslinnr)).first()
 
-    htparam = get_cache (Htparam, {"paramnr": [(eq, 87)]})
+    # htparam = get_cache (Htparam, {"paramnr": [(eq, 87)]})
+    htparam = db_session.query(Htparam).filter(
+             (Htparam.paramnr == 87)).first()
     ci_date = htparam.fdate
 
     if res_line and res_line.active_flag == 1:
         from_date = ci_date
     else:
-        from_date = ankunft
+        from_date = ankuft
+
     to_date = abreise
 
     for queasy in db_session.query(Queasy).filter(
@@ -226,13 +238,15 @@ def res_czinrbl(pvilanguage:int, ankunft:date, abreise:date, sharer:bool, resnr:
 
     if count_q359 > 1:
 
-        buf_q359 = get_cache (Queasy, {"number3": [(eq, 1)],"number1": [(eq, resnr)],"number2": [(eq, reslinnr)],"char1": [(eq, zinr)]})
+        # buf_q359 = get_cache (Queasy, {"number3": [(eq, 1)],"number1": [(eq, resnr)],"number2": [(eq, reslinnr)],"char1": [(eq, zinr)]})
+        buf_q359 = db_session.query(Queasy).filter(
+                 (Queasy.number3 == 1) & (Queasy.number1 == resnr) & (Queasy.number2 == reslinnr) & (Queasy.char1 == (zinr).lower())).first()
 
         if buf_q359:
             timestamp_str = buf_q359.char3
 
         for queasy in db_session.query(Queasy).filter(
-                 (Queasy.key == 359) & (Queasy.number3 == 1) & ((Queasy.number1 != resnr) | (Queasy.number2 != reslinnr)) & (Queasy.char1 == (zinr).lower()) & not_ (Queasy.date2 <= ankunft) & not_ (Queasy.date1 >= abreise)).order_by(Queasy.char3.desc()).all():
+                 (Queasy.key == 359) & (Queasy.number3 == 1) & ((Queasy.number1 != resnr) | (Queasy.number2 != reslinnr)) & (Queasy.char1 == (zinr).lower()) & not_ (Queasy.date2 <= ankuft) & not_ (Queasy.date1 >= abreise)).order_by(Queasy.char3.desc()).all():
 
             if queasy.char3.lower()  > (timestamp_str).lower() :
                 error_code = -8
@@ -240,7 +254,9 @@ def res_czinrbl(pvilanguage:int, ankunft:date, abreise:date, sharer:bool, resnr:
 
                 return generate_output()
 
-    zimkateg = get_cache (Zimkateg, {"kurzbez": [(eq, rmcat)]})
+    # zimkateg = get_cache (Zimkateg, {"kurzbez": [(eq, rmcat)]})
+    zimkateg = db_session.query(Zimkateg).filter(
+             (Zimkateg.kurzbez == (rmcat).lower())).first()
 
     if not zimkateg:
         error_code = -7
@@ -253,12 +269,17 @@ def res_czinrbl(pvilanguage:int, ankunft:date, abreise:date, sharer:bool, resnr:
                  (Resline.resnr == resnr) & (Resline.zinr == (zinr).lower()) & (Resline.reslinnr != reslinnr)).first()
         while None != resline and not found:
 
-            if resline.ankunft <= ankunft and resline.abreise >= abreise:
+            if resline.ankunft <= ankuft and resline.abreise >= abreise:
                 found = True
 
-                zimmer = get_cache (Zimmer, {"zinr": [(eq, zinr)]})
+                # zimmer = get_cache (Zimmer, {"zinr": [(eq, zinr)]})
+                zimmer = db_session.query(Zimmer).filter(
+                         (Zimmer.zinr == (zinr).lower())).first()
 
-                zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, zimmer.zikatnr)]})
+                # zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, zimmer.zikatnr)]})
+                zimkateg = db_session.query(Zimkateg).filter(
+                         (Zimkateg.zikatnr == zimmer.zikatnr)).first()
+                
                 rmcat = zimkateg.kurzbez
 
                 return generate_output()
@@ -298,7 +319,9 @@ def res_czinrbl(pvilanguage:int, ankunft:date, abreise:date, sharer:bool, resnr:
 
         return generate_output()
 
-    zimmer = get_cache (Zimmer, {"zinr": [(eq, zinr)]})
+    # zimmer = get_cache (Zimmer, {"zinr": [(eq, zinr)]})
+    zimmer = db_session.query(Zimmer).filter(
+             (Zimmer.zinr == (zinr).lower())).first()
 
     if not zimmer:
         error_code = -1
@@ -315,17 +338,22 @@ def res_czinrbl(pvilanguage:int, ankunft:date, abreise:date, sharer:bool, resnr:
 
             return generate_output()
 
-    zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, zimmer.zikatnr)]})
+    # zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, zimmer.zikatnr)]})
+    zimkateg = db_session.query(Zimkateg).filter(
+             (Zimkateg.zikatnr == zimmer.zikatnr)).first()
 
     if zimkateg.kurzbez.lower()  != (rmcat).lower() :
         msg_str = "&W" + translateExtended ("Room Type changed to", lvcarea, "") + " " + zimkateg.kurzbez + "." + chr_unicode(10)
 
     if resnr > 0:
-
-        outorder = get_cache (Outorder, {"zinr": [(eq, zimmer.zinr)],"betriebsnr": [(ne, resnr)],"gespstart": [(ge, to_date)],"gespende": [(lt, from_date)]})
+        # outorder = get_cache (Outorder, {"zinr": [(eq, zimmer.zinr)],"betriebsnr": [(ne, resnr)],"gespstart": [(ge, to_date)],"gespende": [(lt, from_date)]})
+        outorder = db_session.query(Outorder).filter(
+                 (Outorder.zinr == zimmer.zinr) & (Outorder.betriebsnr != resnr) & (Outorder.gespstart >= to_date) & (Outorder.gespende < from_date)).first()
     else:
 
-        outorder = get_cache (Outorder, {"zinr": [(eq, zimmer.zinr)],"gespstart": [(ge, to_date)],"gespende": [(lt, from_date)]})
+        # outorder = get_cache (Outorder, {"zinr": [(eq, zimmer.zinr)],"gespstart": [(ge, to_date)],"gespende": [(lt, from_date)]})
+        outorder = db_session.query(Outorder).filter(
+                 (Outorder.zinr == zimmer.zinr) & (Outorder.gespstart >= to_date) & (Outorder.gespende < from_date)).first()
 
     if outorder:
 
@@ -356,7 +384,9 @@ def res_czinrbl(pvilanguage:int, ankunft:date, abreise:date, sharer:bool, resnr:
              (Queasy.key == 359) & (Queasy.number3 == 1) & (Queasy.number1 == resnr) & (Queasy.number2 == reslinnr)).with_for_update().first()
 
     if queasy:
+        db_session.refresh(queasy,with_for_update=True)
         db_session.delete(queasy)
+        db_session.flush()
         pass
 
     return generate_output()

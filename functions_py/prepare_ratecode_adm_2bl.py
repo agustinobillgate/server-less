@@ -2,11 +2,16 @@
 #-------------------------------------------
 # Rd, 27/11/2025, with_for_update
 #-------------------------------------------
+
+# # =============================================================
+# Rulita, 05-12-2025
+# Fixing issue contract rate looping after update with_for_update
+# ===============================================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Queasy, Htparam, Waehrung, Ratecode, Prmarket, Prtable, Zimkateg, Arrangement
-from sqlalchemy.orm import flag_modified
 
 def prepare_ratecode_adm_2bl(pvilanguage:int):
 
@@ -75,7 +80,7 @@ def prepare_ratecode_adm_2bl(pvilanguage:int):
             return
 
         for queasy in db_session.query(Queasy).filter(
-                 (Queasy.key == 2) & (Queasy.number1 == 0)).order_by(Queasy._recid).with_for_update().all():
+                 (Queasy.key == 2) & (Queasy.number1 == 0)).order_by(Queasy._recid).all():
 
             if (not f_ratecode.foreign_rate) or queasy.logi1:
                 queasy.number1 = f_ratecode.local_nr
@@ -97,11 +102,12 @@ def prepare_ratecode_adm_2bl(pvilanguage:int):
         curr_i:int = 0
         Prbuff =  create_buffer("Prbuff",Prtable)
 
-        prbuff = db_session.query(Prbuff).with_for_update().first()
+        prbuff = db_session.query(Prbuff).first()
         while None != prbuff:
 
             # prtable = get_cache (Prtable, {"_recid": [(eq, prbuff._recid)]})
-            prtable = db_session.query(Prtable).filter(Prtable._recid == prbuff._recid).with_for_update().first()
+            prtable = db_session.query(Prtable).filter(
+                     (Prtable._recid == prbuff._recid)).with_for_update().first()
             for curr_i in range(1,99 + 1) :
                 prtable.zikatnr[curr_i - 1] = 0
                 prtable.argtnr[curr_i - 1] = 0
@@ -121,11 +127,11 @@ def prepare_ratecode_adm_2bl(pvilanguage:int):
                 curr_i = curr_i + 1
                 prtable.argtnr[curr_i - 1] = arrangement.argtnr
 
-            curr_recid = prbuff._recid
-            prbuff = db_session.query(Prbuff).filter(Prbuff._recid > curr_recid).with_for_update().first()
 
-        flag_modified(prtable, "zikatnr")
-        flag_modified(prtable, "argtnr")
+            pass
+
+            curr_recid = prbuff._recid
+            prbuff = db_session.query(Prbuff).filter(Prbuff._recid > curr_recid).first()
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 87)]})
 

@@ -2,9 +2,16 @@
 #------------------------------------------
 # Rd, 26/11/2025, with_for_update, skip, temp-table
 #------------------------------------------
+
+# ==============================================
+# Rulita, 04/12/25
+# Fixing error datetime.strptime argument format
+# Fixing error added function add_interval_local
+# ==============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
-from datetime import date
+from datetime import date, timezone
 from models import Queasy, Htparam, Res_line
 
 t_input_list_data, T_input_list = create_model("T_input_list", {"v_mode":int, "curr_room":string, "res_number":int, "reslin_number":int, "user_initial":string, "arrival_date":date, "depart_date":date})
@@ -54,11 +61,32 @@ def general_lockrecord_validationbl(t_input_list_data:[T_input_list]):
         epoch_millisecond:int = 0
         human_date:datetime = None
         dtz1 = get_current_datetime()
-        dtz2 = "1970_01_01T00:00:00.000"
+        # Rulita, 04/12/25
+        # Fixing error datetime.strptime argument format
+        # dtz2 = "1970_01_01T00:00:00.000"
+        # dtz2 = datetime.strptime("1970-01-01T00:00:00.000", "%Y-%m-%dT%H:%M:%S.%f")
+        dtz2 = datetime(1970, 1, 1, 0, 0, 0, 0, tzinfo=timezone.utc)
         epoch_millisecond = get_interval(dtz1, dtz2, "milliseconds")
-        human_date = add_interval(dtz2, epoch_millisecond, "milliseconds")
+        human_date = add_interval_local(dtz2, epoch_millisecond, "milliseconds")
         time_stamp_str = to_string(human_date)
         return time_stamp_str
+    
+    # Rulita, 04/12/25
+    # Fixing error added function add_interval_local
+    def add_interval_local(start_date, interval_value, interval_unit):
+        interval_unit = interval_unit.rstrip("s")
+        interval_unit += "s"
+        if interval_unit in ['days', 'weeks', 'hours', 'minutes', 'seconds']:
+            kwargs = {interval_unit: interval_value}
+            return start_date + timedelta(**kwargs)
+        elif interval_unit == 'months':
+            return start_date + relativedelta(months=interval_value)
+        elif interval_unit == 'years':
+            return start_date + relativedelta(years=interval_value)
+        elif interval_unit == "milliseconds": 
+            return start_date + timedelta(milliseconds=interval_value)
+        else:
+            raise ValueError("Unsupported interval unit")
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 110)]})
 
@@ -88,7 +116,9 @@ def general_lockrecord_validationbl(t_input_list_data:[T_input_list]):
             db_session.delete(queasy_359)
             pass
 
-        queasy = get_cache (Queasy, {"key": [(eq, 359)],"char1": [(eq, t_input_list.curr_room)],"number1": [(eq, t_input_list.res_number)],"number2": [(eq, t_input_list.reslin_number)],"number3": [(eq, 1)]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 359)],"char1": [(eq, t_input_list.curr_room)],"number1": [(eq, t_input_list.res_number)],"number2": [(eq, t_input_list.reslin_number)],"number3": [(eq, 1)]})
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 359) & (Queasy.char1 == t_input_list.curr_room) & (Queasy.number1 == t_input_list.res_number) & (Queasy.number2 == t_input_list.reslin_number) & (Queasy.number3 == 1)).with_for_update().first()
 
         if not queasy:
             queasy = Queasy()
@@ -110,7 +140,9 @@ def general_lockrecord_validationbl(t_input_list_data:[T_input_list]):
 
     elif t_input_list.v_mode == 2:
 
-        queasy = get_cache (Queasy, {"key": [(eq, 359)],"number3": [(eq, 1)],"number1": [(eq, t_input_list.res_number)],"number2": [(eq, t_input_list.reslin_number)]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 359)],"number3": [(eq, 1)],"number1": [(eq, t_input_list.res_number)],"number2": [(eq, t_input_list.reslin_number)]})
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 359) & (Queasy.number3 == 1) & (Queasy.number1 == t_input_list.res_number) & (Queasy.number2 == t_input_list.reslin_number)).with_for_update().first()
 
         if queasy:
             db_session.delete(queasy)
@@ -128,7 +160,9 @@ def general_lockrecord_validationbl(t_input_list_data:[T_input_list]):
             else:
                 res_line_obj_list[res_line._recid] = True
 
-            queasy = get_cache (Queasy, {"key": [(eq, 359)],"number3": [(eq, 1)],"number1": [(eq, res_line.resnr)],"number2": [(eq, res_line.reslinnr)]})
+            # queasy = get_cache (Queasy, {"key": [(eq, 359)],"number3": [(eq, 1)],"number1": [(eq, res_line.resnr)],"number2": [(eq, res_line.reslinnr)]})
+            queasy = db_session.query(Queasy).filter(
+                     (Queasy.key == 359) & (Queasy.number3 == 1) & (Queasy.number1 == res_line.resnr) & (Queasy.number2 == res_line.reslinnr)).with_for_update().first()
 
             if queasy:
                 db_session.delete(queasy)
