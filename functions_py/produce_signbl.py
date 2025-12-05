@@ -74,8 +74,9 @@ def produce_signbl(pvilanguage:int, resno:int, reslino:int, gastno:int):
         image_data = archieve.char[1]
 
     if length(image_data) > 0:
-        bb = image_data.encode('utf-8')
-        ct = base64_encode(bb)
+        # bb = image_data.encode('utf-8')
+        # ct = base64_encode(bb)
+        ct = image_data
 
     res_line = get_cache (Res_line, {"resnr": [(eq, resno)],"reslinnr": [(eq, reslino)]})
 
@@ -282,6 +283,7 @@ def produce_signbl(pvilanguage:int, resno:int, reslino:int, gastno:int):
                 newsletter_flag = True
             else:
                 newsletter_flag = False
+                
         output_list_data = get_output(view_staycostbl(pvilanguage, resno, reslino, contcode))
 
     return generate_output()

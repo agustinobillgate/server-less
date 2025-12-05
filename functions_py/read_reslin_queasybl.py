@@ -207,7 +207,7 @@ def read_reslin_queasybl(case_type:int, rkey:string, inpchar:string, resno:int, 
 
             if res_line:
                 roomrate_tot =  to_decimal("0")
-                for curr_datum in date_range(res_line.ankunft,res_line.abreise - 1) :
+                for curr_datum in date_range(res_line.ankunft, res_line.abreise - timedelta(days=1)) :
 
                     for reslin_queasy in db_session.query(Reslin_queasy).filter(
                              (Reslin_queasy.key == (rkey).lower()) & (Reslin_queasy.resnr == resno) & (Reslin_queasy.reslinnr == reslinno) & (Reslin_queasy.date1 <= curr_datum) & (Reslin_queasy.date2 >= curr_datum)).order_by(Reslin_queasy._recid).all():
