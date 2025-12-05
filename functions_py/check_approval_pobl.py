@@ -7,7 +7,7 @@ from decimal import Decimal
 from datetime import date
 from functions.htplogic import htplogic
 from models import Messages, Htparam, L_orderhdr, Queasy, Bediener
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 def check_approval_pobl(user_init:string):
 

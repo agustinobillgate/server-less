@@ -19,7 +19,7 @@ from functions.ratecode_rate import ratecode_rate
 from functions.res_dyna_rmrate import res_dyna_rmrate
 from models import Res_line, Bill, Queasy, Htparam, Nation, Arrangement, Reservation, Bediener, Outorder, Zimmer, Mealcoup, Reslin_queasy, Resplan, Zimkateg, Messages, Waehrung, Guest_pr, Guest, Res_history, Master, Brief, Segment, Sourccod, Counters, Mc_guest, Interface, Guestseg
 from functions.next_counter_for_update import next_counter_for_update   
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 
 reslin_list_data, Reslin_list = create_model_like(Res_line)

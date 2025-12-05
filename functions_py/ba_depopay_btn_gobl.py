@@ -6,7 +6,7 @@ from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Htparam, Bk_veran, Artikel, Umsatz, Billjournal, Bediener, Guest, Debitor
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 def ba_depopay_btn_gobl(curr_i:int, veran_nr:int, user_init:string, payment:Decimal, artnr:int, foreign_payment:Decimal, depoart:int, depobezeich:string):
 

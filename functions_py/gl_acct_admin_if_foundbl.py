@@ -5,7 +5,7 @@
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Gl_acct
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 def gl_acct_admin_if_foundbl(fibukonto:string):
 

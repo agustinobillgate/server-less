@@ -6,7 +6,7 @@ from functions.additional_functions import *
 from decimal import Decimal
 from functions.ba_cancreslinebl import ba_cancreslinebl
 from models import Bk_veran, Bk_reser, Guest, Bk_raum, B_storno
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 def rsv_cancel_listbl(bqt_resnr:int, bqt_reslinnr:int, user_init:string):
 

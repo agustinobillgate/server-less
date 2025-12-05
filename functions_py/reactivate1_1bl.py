@@ -15,7 +15,7 @@ from datetime import date
 from functions.htpdate import htpdate
 from functions.intevent_1 import intevent_1
 from models import Reservation, Res_line, Reslin_queasy, Zinrstat, Master, Bediener, Res_history, Guest, History, Resplan, Zimkateg, Queasy
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 def reactivate1_1bl(resno:int, reslinno:int, user_init:string, all_flag:bool, deposit_flag:bool):
 

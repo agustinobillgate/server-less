@@ -5,7 +5,7 @@
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Bk_func
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 meal_list_data, Meal_list = create_model("Meal_list", {"nr":int, "meals":string, "times":string, "venue":string, "pax":int, "setup":string})
 

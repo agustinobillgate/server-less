@@ -6,7 +6,7 @@ from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import L_orderhdr, L_lieferant, L_order, L_artikel, Dml_art, Reslin_queasy, Dml_artdep
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 
 

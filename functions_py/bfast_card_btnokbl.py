@@ -6,7 +6,7 @@ from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Htparam, Mealcoup, Queasy, Bediener, Res_history
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 def bfast_card_btnokbl(resnr:int, failreadflag:bool, user_init:string, roomnr:string, consumeuse:int, mealtime:string, cidate:date, codate:date):
 

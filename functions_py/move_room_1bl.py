@@ -11,7 +11,7 @@ from datetime import date, time
 from functions.intevent_1 import intevent_1
 from functions.create_historybl import create_historybl
 from models import Bill, Res_line, Zimmer, Htparam, Mealcoup, Zimkateg, Resplan, Messages, Queasy, Guest, Reslin_queasy
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 def move_room_1bl(pvilanguage:int, recid1:int, moved_room:string, ci_date:date, user_init:string, movereason:string):
 

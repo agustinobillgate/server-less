@@ -5,7 +5,7 @@
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Bk_func, Bk_reser, Bk_rart, Bk_veran
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 fsl_data, Fsl = create_model_like(Bk_func, {"deposit":Decimal, "limit_date":date, "deposit_payment":[Decimal,9], "payment_date":[date,9], "total_paid":Decimal, "payment_userinit":[string,9], "betriebsnr2":int, "cutoff":date, "raum":string, "grund":[string,18], "in_sales":string, "in_conv":string})
 

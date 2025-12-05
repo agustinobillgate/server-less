@@ -14,7 +14,7 @@ from functions.leasing_cancel_rsvbl import leasing_cancel_rsvbl
 from sqlalchemy import func
 from functions.intevent_1 import intevent_1
 from models import Queasy, Zimkateg, Res_line, Htparam, Reslin_queasy, Bediener, Res_history, Zinrstat, Outorder, Reservation, Guest, Bill, Master, Mast_art, Zimmer, Zimplan, Resplan
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 def del_reslinebl(pvilanguage:int, res_mode:string, resnr:int, reslinnr:int, user_init:string, cancel_str:string):
 

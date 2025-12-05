@@ -12,7 +12,7 @@ from datetime import date
 from functions.link_ratecodebl import link_ratecodebl
 from functions.calc_servvat import calc_servvat
 from models import Ratecode, Queasy, Htparam, Zimkateg, Bediener, Res_history, Guest_pr, Guest, Arrangement, Artikel, Waehrung
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 early_discount_data, Early_discount = create_model("Early_discount", {"disc_rate":Decimal, "min_days":int, "min_stay":int, "max_occ":int, "from_date":date, "to_date":date})
 kickback_discount_data, Kickback_discount = create_model("Kickback_discount", {"disc_rate":Decimal, "max_days":int, "min_stay":int, "max_occ":int})

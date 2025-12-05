@@ -36,7 +36,7 @@ from functions.create_newbillbl import create_newbillbl
 from functions.ratecode_compli import ratecode_compli
 from models import Bill_line, Bill, Artikel, Htparam, Waehrung, Arrangement, Zimmer, Queasy, Counters, Guest, Umsatz, Billjournal, Argt_line, Res_line, Res_history, Exrate, Reservation, Segment, Reslin_queasy, Zwkum, Fixleist, Master, Interface, Mast_art, Zimkateg, Guest_pr
 from functions.next_counter_for_update import next_counter_for_update
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 def rmchargebl():
 
     prepare_cache ([Bill, Artikel, Htparam, Waehrung, Arrangement, Queasy, Counters, Guest, Umsatz, Billjournal, Argt_line, Res_line, Res_history, Exrate, Reservation, Segment, Reslin_queasy, Fixleist, Master, Zimkateg, Guest_pr])

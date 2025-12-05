@@ -6,7 +6,7 @@ from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import L_order
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 def chg_po_update_l_orderbl(rec_id:int, potype:int, cost_acct:string, bez:string, billdate:date, bediener_username:string):
 

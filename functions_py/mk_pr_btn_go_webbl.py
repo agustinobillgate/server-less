@@ -8,7 +8,7 @@ from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import L_order, L_orderhdr, Dml_art, L_artikel
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 s_list_data, S_list = create_model_like(L_order, {"s_recid":int})
 

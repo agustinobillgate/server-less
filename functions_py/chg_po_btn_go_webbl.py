@@ -5,7 +5,7 @@
 from functions.additional_functions import *
 from decimal import Decimal
 from models import L_order, L_orderhdr, Queasy, Bediener, Res_history
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 t_l_orderhdr_data, T_l_orderhdr = create_model_like(L_orderhdr, {"rec_id":int})
 s_order_data, S_order = create_model_like(L_order, {"rec_id":int, "lief_einheit":Decimal, "addvat_no":int, "addvat_value":Decimal, "disc":Decimal, "disc2":Decimal, "vat":Decimal, "disc_val":Decimal, "disc2_val":Decimal, "vat_val":Decimal})

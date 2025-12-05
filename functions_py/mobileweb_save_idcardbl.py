@@ -5,7 +5,7 @@
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Guest, Guestbook
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 def mobileweb_save_idcardbl(inp_resnr:int, inp_reslinnr:int, guestno:int, imagedata:string, userinit:string):
 

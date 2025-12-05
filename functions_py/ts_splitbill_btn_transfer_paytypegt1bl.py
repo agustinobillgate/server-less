@@ -9,7 +9,7 @@ from functions.rest_addgastinfo import rest_addgastinfo
 from functions.ts_splitbill_update_billbl import ts_splitbill_update_billbl
 from functions.calc_servtaxesbl import calc_servtaxesbl
 from models import H_bill_line, Kellner, H_bill, Bill, H_artikel, Counters, Htparam, Artikel, Bill_line, Billjournal, H_journal, Queasy
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 def ts_splitbill_btn_transfer_paytypegt1bl(rec_id_h_bill:int, bilrecid:int, curr_select:int, multi_vat:bool, balance:Decimal, 
                                            pay_type:int, transdate:date, price_decimal:int, exchg_rate:Decimal, foreign_rate:bool, 
