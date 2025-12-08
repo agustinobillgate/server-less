@@ -4,7 +4,7 @@ from functions.additional_functions import *
 from decimal import Decimal
 from models import Zimmer
 
-def read_zimmerbl(case_type:int, rmno:string, zikatno:int, setupno:int):
+def read_zimmerbl(case_type:int, rmNo:string, zikatNo:int, setupNo:int):
     t_zimmer_data = []
     counter:int = 0
     str:string = ""
@@ -18,7 +18,7 @@ def read_zimmerbl(case_type:int, rmno:string, zikatno:int, setupno:int):
 
     def generate_output():
         nonlocal t_zimmer_data, counter, str, zimmer
-        nonlocal case_type, rmno, zikatno, setupno
+        nonlocal case_type, rmNo, zikatNo, setupNo
 
 
         nonlocal t_zimmer
@@ -28,9 +28,9 @@ def read_zimmerbl(case_type:int, rmno:string, zikatno:int, setupno:int):
 
     if case_type == 1:
 
-        if num_entries(rmno, ";") > 1:
-            for counter in range(1,num_entries(rmno, ";")  + 1) :
-                str = entry(counter - 1, rmno, ";")
+        if num_entries(rmNo, ";") > 1:
+            for counter in range(1,num_entries(rmNo, ";")  + 1) :
+                str = entry(counter - 1, rmNo, ";")
 
                 zimmer = get_cache (Zimmer, {"zinr": [(eq, str)]})
 
@@ -45,7 +45,7 @@ def read_zimmerbl(case_type:int, rmno:string, zikatno:int, setupno:int):
                         buffer_copy(zimmer, t_zimmer)
         else:
 
-            zimmer = get_cache (Zimmer, {"zinr": [(eq, rmno)]})
+            zimmer = get_cache (Zimmer, {"zinr": [(eq, rmNo)]})
 
             if zimmer:
                 t_zimmer = T_zimmer()
@@ -54,7 +54,7 @@ def read_zimmerbl(case_type:int, rmno:string, zikatno:int, setupno:int):
                 buffer_copy(zimmer, t_zimmer)
     elif case_type == 2:
 
-        zimmer = get_cache (Zimmer, {"zikatnr": [(eq, zikatno)],"setup": [(eq, setupno)]})
+        zimmer = get_cache (Zimmer, {"zikatnr": [(eq, zikatNo)],"setup": [(eq, setupNo)]})
 
         if zimmer:
             t_zimmer = T_zimmer()
@@ -64,7 +64,7 @@ def read_zimmerbl(case_type:int, rmno:string, zikatno:int, setupno:int):
     elif case_type == 3:
 
         for zimmer in db_session.query(Zimmer).filter(
-                 (Zimmer.zikatnr == zikatno)).order_by(Zimmer.zinr).all():
+                 (Zimmer.zikatnr == zikatNo)).order_by(Zimmer.zinr).all():
             t_zimmer = T_zimmer()
             t_zimmer_data.append(t_zimmer)
 
@@ -91,7 +91,7 @@ def read_zimmerbl(case_type:int, rmno:string, zikatno:int, setupno:int):
     elif case_type == 6:
 
         zimmer = db_session.query(Zimmer).filter(
-                 (Zimmer.zikatnr == zikatno) & (Zimmer.sleeping)).first()
+                 (Zimmer.zikatnr == zikatNo) & (Zimmer.sleeping)).first()
 
         if zimmer:
             t_zimmer = T_zimmer()
@@ -115,7 +115,7 @@ def read_zimmerbl(case_type:int, rmno:string, zikatno:int, setupno:int):
             buffer_copy(zimmer, t_zimmer)
     elif case_type == 9:
 
-        zimmer = get_cache (Zimmer, {"typ": [(eq, zikatno)]})
+        zimmer = get_cache (Zimmer, {"typ": [(eq, zikatNo)]})
 
         if zimmer:
             t_zimmer = T_zimmer()
@@ -125,7 +125,7 @@ def read_zimmerbl(case_type:int, rmno:string, zikatno:int, setupno:int):
     elif case_type == 10:
 
         zimmer = db_session.query(Zimmer).filter(
-                 ((Zimmer.setup + 9200) == setupno)).first()
+                 ((Zimmer.setup + 9200) == setupNo)).first()
 
         if zimmer:
             t_zimmer = T_zimmer()

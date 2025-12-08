@@ -16,6 +16,30 @@ from models import Queasy, Htparam, Res_line
 
 t_input_list_data, T_input_list = create_model("T_input_list", {"v_mode":int, "curr_room":string, "res_number":int, "reslin_number":int, "user_initial":string, "arrival_date":date, "depart_date":date})
 
+def get_timestamp_with_ms() -> str:
+    """
+    Returns current timestamp as a string with millisecond precision,
+    equivalent to the Progress ABL getTimestampWithMs function.
+    """
+    # current UTC time
+    now = datetime.now(timezone.utc)
+
+    # Epoch (1970-01-01 UTC)
+    epoch = datetime(1970, 1, 1, tzinfo=timezone.utc)
+
+    # milliseconds since epoch
+    epoch_milliseconds = int((now - epoch).total_seconds() * 1000)
+
+    # reconstruct human-readable datetime from milliseconds
+    human_date = datetime.fromtimestamp(epoch_milliseconds / 1000, tz=timezone.utc)
+
+    # format string same as ABL STRING(DATETIME) output: "YYYY-MM-DDTHH:MM:SS.mmm"
+    timestamp_str = human_date.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]  # trim to milliseconds
+
+    return timestamp_str
+
+
+
 def general_lockrecord_validationbl(t_input_list_data:[T_input_list]):
 
     prepare_cache ([Htparam, Res_line])
@@ -63,9 +87,9 @@ def general_lockrecord_validationbl(t_input_list_data:[T_input_list]):
         dtz1 = get_current_datetime()
         # Rulita, 04/12/25
         # Fixing error datetime.strptime argument format
-        # dtz2 = "1970_01_01T00:00:00.000"
-        # dtz2 = datetime.strptime("1970-01-01T00:00:00.000", "%Y-%m-%dT%H:%M:%S.%f")
-        dtz2 = datetime(1970, 1, 1, 0, 0, 0, 0, tzinfo=timezone.utc)
+        # dtz2 = "1970-01-01T00:00:00.000"
+        dtz2 = datetime.strptime("1970-01-01T00:00:00.000", "%Y-%m-%dT%H:%M:%S.%f")
+        # dtz2 = datetime(1970, 1, 1, 0, 0, 0, 0, tzinfo=timezone.utc)
         epoch_millisecond = get_interval(dtz1, dtz2, "milliseconds")
         human_date = add_interval_local(dtz2, epoch_millisecond, "milliseconds")
         time_stamp_str = to_string(human_date)
@@ -127,7 +151,7 @@ def general_lockrecord_validationbl(t_input_list_data:[T_input_list]):
             queasy.key = 359
             queasy.char1 = t_input_list.curr_room
             queasy.char2 = t_input_list.user_initial
-            queasy.char3 = gettimestampwithms()
+            queasy.char3 = get_timestamp_with_ms()
             queasy.number1 = t_input_list.res_number
             queasy.number2 = t_input_list.reslin_number
             queasy.number3 = 1

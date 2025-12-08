@@ -4,7 +4,7 @@ from functions.additional_functions import *
 from decimal import Decimal
 from models import Zimkateg, Zimmer
 
-def read_zimkategbl(case_type:int, zikatno:int, shortbez:string):
+def read_zimkategbl(case_type:int, zikatNo:int, shortBez:string):
     t_zimkateg_data = []
     zimkateg = zimmer = None
 
@@ -16,7 +16,7 @@ def read_zimkategbl(case_type:int, zikatno:int, shortbez:string):
 
     def generate_output():
         nonlocal t_zimkateg_data, zimkateg, zimmer
-        nonlocal case_type, zikatno, shortbez
+        nonlocal case_type, zikatNo, shortBez
 
 
         nonlocal t_zimkateg
@@ -26,7 +26,7 @@ def read_zimkategbl(case_type:int, zikatno:int, shortbez:string):
 
     if case_type == 1:
 
-        zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, zikatno)]})
+        zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, zikatNo)]})
 
         if zimkateg:
             t_zimkateg = T_zimkateg()
@@ -35,7 +35,9 @@ def read_zimkategbl(case_type:int, zikatno:int, shortbez:string):
             buffer_copy(zimkateg, t_zimkateg)
     elif case_type == 2:
 
-        zimkateg = get_cache (Zimkateg, {"kurzbez": [(eq, shortbez)]})
+        # zimkateg = get_cache (Zimkateg, {"kurzbez": [(eq, shortBez)]})
+        zimkateg = db_session.query(Zimkateg).filter(
+                 (Zimkateg.kurzbez == shortBez)).first()
 
         if zimkateg:
             t_zimkateg = T_zimkateg()
@@ -62,7 +64,7 @@ def read_zimkategbl(case_type:int, zikatno:int, shortbez:string):
             buffer_copy(zimkateg, t_zimkateg)
     elif case_type == 5:
 
-        zimkateg = get_cache (Zimkateg, {"kurzbez": [(eq, shortbez)],"zikatnr": [(ne, zikatno)]})
+        zimkateg = get_cache (Zimkateg, {"kurzbez": [(eq, shortBez)],"zikatnr": [(ne, zikatNo)]})
 
         if zimkateg:
             t_zimkateg = T_zimkateg()
@@ -72,7 +74,7 @@ def read_zimkategbl(case_type:int, zikatno:int, shortbez:string):
     elif case_type == 6:
 
         for zimkateg in db_session.query(Zimkateg).filter(
-                 (Zimkateg.typ == zikatno)).order_by(Zimkateg._recid).all():
+                 (Zimkateg.typ == zikatNo)).order_by(Zimkateg._recid).all():
             t_zimkateg = T_zimkateg()
             t_zimkateg_data.append(t_zimkateg)
 
