@@ -15,7 +15,6 @@ from functions.fo_invoice_disp_totbalancebl import fo_invoice_disp_totbalancebl
 from functions.fo_invoice_disp_bill_line_cldbl import fo_invoice_disp_bill_line_cldbl
 from models import Bill, Res_line, Bill_line
 
-
 def fo_inv_openbill_list_webbl(bil_flag: int, bil_recid: int, room: str, vipflag: bool, fill_co: bool, double_currency: bool, foreign_rate: bool):
     abreise = None
     resname = ""
@@ -149,6 +148,7 @@ def fo_inv_openbill_list_webbl(bil_flag: int, bil_recid: int, room: str, vipflag
             else:
                 tot_balance = get_output(
                     fo_invoice_disp_totbalancebl(bil_recid))
+                
         spbill_list_data.clear()
         disp_bill_line()
         
@@ -156,4 +156,5 @@ def fo_inv_openbill_list_webbl(bil_flag: int, bil_recid: int, room: str, vipflag
         balance = to_decimal(round(balance, 0))
         tot_balance = to_decimal(round(tot_balance, 0))
         # end - ITA: Program terkait feature service apartment
+
     return generate_output()

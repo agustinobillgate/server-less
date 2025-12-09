@@ -5,6 +5,7 @@
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Master, Bediener, Counters, Res_history
+from sqlalchemy.orm.attributes import flag_modified
 
 def mk_resline_create_masterbl(resnr:int, gastnr:int, invno_flag:bool, user_init:string):
 
@@ -52,6 +53,8 @@ def mk_resline_create_masterbl(resnr:int, gastnr:int, invno_flag:bool, user_init
         master.umsatzart[0] = True
         master.umsatzart[1] = True
         gastnrpay = gastnr
+
+        flag_modified(master, "umsatzart")
 
 
         if invno_flag:

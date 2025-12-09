@@ -43,7 +43,8 @@ def fo_invoice_disp_bill_line_cldbl(bil_recid:int, double_currency:bool):
         return {"t-bill-line": t_bill_line_data, "t-spbill-list": t_spbill_list_data}
 
 
-    bill = get_cache (Bill, {"_recid": [(eq, bil_recid)]})
+    # bill = get_cache (Bill, {"_recid": [(eq, bil_recid)]})
+    bill = db_session.query(Bill).filter((Bill._recid == bil_recid)).first()
 
     if bill:
 
@@ -73,9 +74,8 @@ def fo_invoice_disp_bill_line_cldbl(bil_recid:int, double_currency:bool):
 
                 if artikel:
                     art_type = artikel.artart
-
-
                     serv, vat, vat2, fact = get_output(calc_servtaxesbl(1, artikel.artnr, artikel.departement, bill_line.bill_datum))
+                    
                 t_bill_line = T_bill_line()
                 t_bill_line_data.append(t_bill_line)
 
@@ -101,9 +101,8 @@ def fo_invoice_disp_bill_line_cldbl(bil_recid:int, double_currency:bool):
 
                 if artikel:
                     art_type = artikel.artart
-
-
                     serv, vat, vat2, fact = get_output(calc_servtaxesbl(1, artikel.artnr, artikel.departement, bill_line.bill_datum))
+
                 t_bill_line = T_bill_line()
                 t_bill_line_data.append(t_bill_line)
 

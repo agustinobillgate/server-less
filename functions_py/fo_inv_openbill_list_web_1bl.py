@@ -19,7 +19,6 @@ from functions.fo_invoice_disp_bill_line_cldbl import fo_invoice_disp_bill_line_
 
 from models import Bill, Res_line, Bill_line
 
-
 def fo_inv_openbill_list_web_1bl(bil_flag: int, bil_recid: int, room: str, vipflag: bool, fill_co: bool, double_currency: bool, foreign_rate: bool):
     abreise = None
     resname = ""
@@ -128,43 +127,45 @@ def fo_inv_openbill_list_web_1bl(bil_flag: int, bil_recid: int, room: str, vipfl
 
     abreise, resname, res_exrate, zimmer_bezeich, kreditlimit, master_str, master_rechnr, bill_anzahl, queasy_char1, disp_warning, flag_report, guest_taxcode, repeat_charge, t_res_line_data, t_bill_data = get_output(
         fo_invoice_open_bill_cld_2bl(bil_flag, bil_recid, room, vipflag))
-
+    rescomment = get_output(fo_invoice_fill_rescommentbl(bil_recid, fill_co))
+    
     t_bill = query(t_bill_data, first=True)
 
-    t_res_line = query(t_res_line_data, first=True)
-    rescomment = get_output(fo_invoice_fill_rescommentbl(bil_recid, fill_co))
+    if t_bill:
+        t_res_line = query(t_res_line_data, first=True)
 
-    if t_bill.rgdruck == 0:
-        printed = ""
-    else:
-        printed = "*"
-    rechnr = t_bill.rechnr
-    rmrate = to_decimal("0")
-
-    if t_res_line:
-        rmrate = to_decimal(t_res_line.zipreis)
-    balance = to_decimal(t_bill.saldo)
-
-    if double_currency or foreign_rate:
-        balance_foreign = to_decimal(t_bill.mwst[98])
-
-    if bil_flag == 0:
-        tot_balance = to_decimal("0")
-
-        if t_bill.parent_nr == 0:
-            tot_balance = to_decimal(t_bill.saldo)
+        if t_bill.rgdruck == 0:
+            printed = ""
         else:
-            tot_balance = get_output(fo_invoice_disp_totbalancebl(bil_recid))
-    spbill_list_data.clear()
-    disp_bill_line()
+            printed = "*"
+        rechnr = t_bill.rechnr
+        rmrate = to_decimal("0")
 
-    # start - ITA: Program terkait feature service apartment
-    for t_bill_line in query(t_bill_line_data, filters=(lambda t_bill_line: getattr(t_bill_line, "bjournal", False))):
-        balance = to_decimal(balance) + to_decimal(t_bill_line.betrag)
-        tot_balance = to_decimal(tot_balance) + to_decimal(t_bill_line.betrag)
-    # end - ITA: Program terkait feature service apartment
+        if t_res_line:
+            rmrate = to_decimal(t_res_line.zipreis)
+        balance = to_decimal(t_bill.saldo)
 
-    balance = to_decimal(round(balance, 0))
-    tot_balance = to_decimal(round(tot_balance, 0))
+        if double_currency or foreign_rate:
+            balance_foreign = to_decimal(t_bill.mwst[98])
+
+        if bil_flag == 0:
+            tot_balance = to_decimal("0")
+
+            if t_bill.parent_nr == 0:
+                tot_balance = to_decimal(t_bill.saldo)
+            else:
+                tot_balance = get_output(fo_invoice_disp_totbalancebl(bil_recid))
+                
+        spbill_list_data.clear()
+        disp_bill_line()
+
+        # start - ITA: Program terkait feature service apartment
+        for t_bill_line in query(t_bill_line_data, filters=(lambda t_bill_line: getattr(t_bill_line, "bjournal", False))):
+            balance = to_decimal(balance) + to_decimal(t_bill_line.betrag)
+            tot_balance = to_decimal(tot_balance) + to_decimal(t_bill_line.betrag)
+        # end - ITA: Program terkait feature service apartment
+
+        balance = to_decimal(round(balance, 0))
+        tot_balance = to_decimal(round(tot_balance, 0))
 
     return generate_output()

@@ -4,6 +4,7 @@ from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Bill, Res_line, Htparam, Guestat, Bediener, Guest, Akt_cust, Salestat, Interface, Bk_veran, Bk_reser, Bk_func, B_history
+from sqlalchemy.orm.attributes import flag_modified
 
 def inv_closebillbl(invoice_type:string, s_recid:int, curr_dept:int, transdate:date, user_init:string):
 
@@ -11,6 +12,7 @@ def inv_closebillbl(invoice_type:string, s_recid:int, curr_dept:int, transdate:d
 
     bill_recid = 0
     bill_date:date = None
+    
     ba_dept:int = 0
     curr_billnr:int = 0
     bill_anzahl:int = 0
@@ -58,19 +60,22 @@ def inv_closebillbl(invoice_type:string, s_recid:int, curr_dept:int, transdate:d
 
         db_session.refresh(bk_veran, with_for_update=True)
         bk_veran.activeflag = 1
+        db_session.flush()
         
 
-        bk_reser = db_session.query(Bk_reser).filter(Bk_reser.veran_nr == bk_veran.veran_nr, Bk_reser.resstatus == 1).first()
+        bk_reser = db_session.query(Bk_reser).filter((Bk_reser.veran_nr == bk_veran.veran_nr) & (Bk_reser.resstatus == 1)).first()
 
         while bk_reser is not None:
             db_session.refresh(bk_reser, with_for_update=True)
             bk_reser.resstatus = 8
+
+            db_session.flush()
             
             curr_recid = bk_reser._recid
             bk_reser = db_session.query(Bk_reser).filter(
                          (Bk_reser.veran_nr == bk_veran.veran_nr) & (Bk_reser.resstatus == 1) & (Bk_reser._recid > curr_recid)).first()
 
-        bk_func = db_session.query(Bk_func).filter(Bk_func.veran_nr == bk_veran.veran_nr, Bk_func.resstatus == 1).first()
+        bk_func = db_session.query(Bk_func).filter((Bk_func.veran_nr == bk_veran.veran_nr) & (Bk_func.resstatus == 1)).first()
         
         while bk_func is not None:
             create_bahistory()
@@ -79,6 +84,10 @@ def inv_closebillbl(invoice_type:string, s_recid:int, curr_dept:int, transdate:d
             bk_func.c_resstatus[0] = "I"
             bk_func.r_resstatus[0] = 8
 
+            flag_modified(bk_func, "c_resstatus")
+            flag_modified(bk_func, "r_resstatus")
+            db_session.flush()
+            
             curr_recid = bk_func._recid
             bk_func = db_session.query(Bk_func).filter(
                          (Bk_func.veran_nr == bk_veran.veran_nr) & (Bk_func.resstatus == 1) & (Bk_func._recid > curr_recid)).first()
@@ -88,6 +97,7 @@ def inv_closebillbl(invoice_type:string, s_recid:int, curr_dept:int, transdate:d
             bill.flag = 1
             bill.datum = ci_date
             bill.vesrcod = user_init
+            db_session.flush()
 
 
     def create_bahistory():
@@ -136,15 +146,17 @@ def inv_closebillbl(invoice_type:string, s_recid:int, curr_dept:int, transdate:d
         b_history.total_paid =  to_decimal(bk_veran.total_paid)
 
 
-        pass
-        pass
+        flag_modified(b_history, "deposit_payment")
+        flag_modified(b_history, "payment_date")
+        flag_modified(b_history, "payment_userinit")
+        db_session.flush()
 
     bill = db_session.query(Bill).filter(Bill._recid == s_recid).first()
 
     if not bill:
         return generate_output()
 
-    res_line = db_session.query(Res_line).filter(Res_line.resnr == bill.resnr, Res_line.active_flag <= 1).first()
+    res_line = db_session.query(Res_line).filter((Res_line.resnr == bill.resnr) & (Res_line.active_flag <= 1)).first()
 
     if res_line:
         return generate_output()
@@ -175,10 +187,10 @@ def inv_closebillbl(invoice_type:string, s_recid:int, curr_dept:int, transdate:d
                 bill_date = bill_date + timedelta(days=1)
 
         guestat = db_session.query(Guestat).filter(
-            Guestat.gastnr == bill.gastnr,
-            Guestat.monat == get_month(bill_date),
-            Guestat.jahr == get_year(bill_date),
-            Guestat.betriebsnr == 0
+            (Guestat.gastnr == bill.gastnr) &
+            (Guestat.monat == get_month(bill_date)) &
+            (Guestat.jahr == get_year(bill_date)) &
+            (Guestat.betriebsnr == 0)
         ).with_for_update().first()
 
         if not guestat:
@@ -215,9 +227,9 @@ def inv_closebillbl(invoice_type:string, s_recid:int, curr_dept:int, transdate:d
 
         if usrbuff:
             salestat = db_session.query(Salestat).filter(
-                Salestat.bediener_nr == usrbuff.nr,
-                Salestat.jahr == get_year(bill_date),
-                Salestat.monat == get_month(bill_date)
+                (Salestat.bediener_nr == usrbuff.nr) &
+                (Salestat.jahr == get_year(bill_date)) &
+                (Salestat.monat == get_month(bill_date))
             ).with_for_update().first()
 
             if not salestat:
@@ -244,12 +256,13 @@ def inv_closebillbl(invoice_type:string, s_recid:int, curr_dept:int, transdate:d
 
         if bill_anzahl != curr_billnr:
             bill1 = db_session.query(Bill).filter(
-                Bill.resnr == bill.resnr,
-                Bill.parent_nr == bill.parent_nr,
-                Bill.billnr == bill_anzahl,
-                Bill.flag == 0,
-                Bill.zinr == bill.zinr
+                (Bill.resnr == bill.resnr) & 
+                (Bill.parent_nr == bill.parent_nr) & 
+                (Bill.billnr == bill_anzahl) & 
+                (Bill.flag == 0) & 
+                (Bill.zinr == bill.zinr)
             ).with_for_update().first()
+            
             bill1.billnr = curr_billnr
             
         max_anzahl = bill_anzahl + 1
@@ -264,11 +277,12 @@ def inv_closebillbl(invoice_type:string, s_recid:int, curr_dept:int, transdate:d
         db_session.refresh(bill, with_for_update=True)
         bill.billnr = max_anzahl
         bill.vesrcod = user_init
+        db_session.flush()
 
         res_line = db_session.query(Res_line).filter(
-            Res_line.resnr == bill.resnr,
-            Res_line.reslinnr == bill.reslinnr,
-            Res_line.zinr == bill.zinr
+            (Res_line.resnr == bill.resnr) &
+            (Res_line.reslinnr == bill.reslinnr) &
+            (Res_line.zinr == bill.zinr)
         ).with_for_update().first()
         
         res_line.abreise = bill_date
@@ -284,6 +298,9 @@ def inv_closebillbl(invoice_type:string, s_recid:int, curr_dept:int, transdate:d
     db_session.refresh(bill, with_for_update=True)
     
     bill.flag = 1
+
+    db_session.flush()
+
     interface = Interface()
     db_session.add(interface)
 

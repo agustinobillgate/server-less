@@ -576,8 +576,15 @@ def inv_checkout_listbl(pvilanguage: int, case_type: int, resnr: int, reslinnr: 
             Res_line, {"resnr": [(eq, resnr)], "reslinnr": [(eq, reslinnr)]})
 
         if not silenzio:
-            resline = get_cache(
-                Res_line, {"resnr": [(eq, resnr)], "active_flag": [(eq, 1)], "zinr": [(eq, res_line.zinr)], "l_zuordnung[2]": [(eq, 0)], "abreise": [(eq, co_date)]})
+            # resline = get_cache(
+            #     Res_line, {"resnr": [(eq, resnr)], "active_flag": [(eq, 1)], "zinr": [(eq, res_line.zinr)], "l_zuordnung[2]": [(eq, 0)], "abreise": [(eq, co_date)]})
+
+            resline = db_session.query(Res_line).filter(
+                (Res_line.resnr == resnr) &
+                (Res_line.active_flag == 1) &
+                (Res_line.zinr == res_line.zinr) &
+                (Res_line.l_zuordnung[2] == 0) &
+                (Res_line.abreise == co_date)).first()
 
             if resline:
                 if resline.resstatus == 6:
@@ -609,8 +616,12 @@ def inv_checkout_listbl(pvilanguage: int, case_type: int, resnr: int, reslinnr: 
                 if res_line.l_zuordnung[4] == 0:
                     goto_master = True
                 else:
-                    resline = get_cache(
-                        Res_line, {"resnr": [(ne, mbill.resnr)], "active_flag": [(eq, 1)], "l_zuordnung[1]": [(eq, 0)], "l_zuordnung[4]": [(eq, mbill.resnr)]})
+                    # resline = get_cache(
+                    #     Res_line, {"resnr": [(ne, mbill.resnr)], "active_flag": [(eq, 1)], "l_zuordnung[1]": [(eq, 0)], "l_zuordnung[4]": [(eq, mbill.resnr)]})
+                    resline = db_session.query(Res_line).filter((Res_line.resnr != mbill.resnr) & 
+                                                               (Res_line.active_flag == 1) &
+                                                               (Res_line.l_zuordnung[1] == 0) &
+                                                               (Res_line.l_zuordnung[4] == mbill.resnr)).first()
                     goto_master = not None != resline
 
         if goto_master:
@@ -792,8 +803,13 @@ def inv_checkout_listbl(pvilanguage: int, case_type: int, resnr: int, reslinnr: 
 
     if case_type == 1:
 
-        rline = get_cache(Res_line, {"active_flag": [(eq, 1)], "zinr": [
-                          (eq, res_line.zinr)], "l_zuordnung[2]": [(eq, 0)], "_recid": [(eq, res_line._recid)]})
+        # rline = get_cache(Res_line, {"active_flag": [(eq, 1)], "zinr": [
+        #                   (eq, res_line.zinr)], "l_zuordnung[2]": [(eq, 0)], "_recid": [(eq, res_line._recid)]})
+        rline = db_session.query(Res_line).filter(
+            (Res_line.active_flag == 1) &
+            (Res_line.zinr == (res_line.zinr)) &
+            (Res_line.l_zuordnung[2] == 0) &
+            (Res_line._recid == res_line._recid)).first()
 
         if rline:
 

@@ -779,7 +779,7 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
                 if resline:
                     pass
                     resline.l_zuordnung[2] = 0
-
+                    flag_modified(resline, "l_zuordnung")
 
                     pass
                     pass
@@ -1376,12 +1376,13 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
                     resline.cancelled_id = user_init
                     resline.ankzeit = get_current_time_in_seconds()
                     resline.resstatus = 13
-
-
                 else:
                     resline.resstatus = 11
+
                 pass
                 accompany_vip()
+
+                flag_modified(resline, "l_zuordnung")
 
             elif (resline.gastnrmember != accompany_tmpnr[0]) and (accompany_tmpnr[0] > 0):
 
@@ -1443,12 +1444,12 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
                     resline.cancelled_id = user_init
                     resline.ankzeit = get_current_time_in_seconds()
                     resline.resstatus = 13
-
-
                 else:
                     resline.resstatus = 11
+
                 accompany_vip()
-                pass
+
+                flag_modified(resline, "l_zuordnung")
 
             elif (resline.gastnrmember != accompany_tmpnr[1]) and (accompany_tmpnr[1] > 0):
 
@@ -1514,8 +1515,9 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
                 else:
                     resline.resstatus = 11
+
                 accompany_vip()
-                pass
+                flag_modified(resline, "l_zuordnung")
 
             elif (resline.gastnrmember != accompany_tmpnr[2]) and (accompany_tmpnr[2] > 0):
 
@@ -2024,6 +2026,9 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
         res_line.l_zuordnung[3] = comchild
         res_line.resstatus = reslin_list.resstatus
         res_line.zimmerfix = (res_line.resstatus == 13)
+
+        flag_modified(res_line, "l_zuordnung")
+        
         tot_qty = tot_qty + res_line.zimmeranz
 
         if accompany_gastnr > 0 or accompany_tmpnr[0] > 0:

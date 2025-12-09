@@ -9,16 +9,11 @@ artikel_list_data, Artikel_list = create_model("Artikel_list", {"artnr":int, "de
 def write_mast_artbl(case_type:int, resno:int, artikel_list_data:[Artikel_list]):
     mast_art = None
 
-    artikel_list = None
-
     db_session = local_storage.db_session
 
     def generate_output():
         nonlocal mast_art
         nonlocal case_type, resno
-
-
-        nonlocal artikel_list
 
         return {}
 
