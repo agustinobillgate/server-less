@@ -5,6 +5,23 @@
 #------------------------------------------
 # Rd, 26/11/2025, with_for_update
 #------------------------------------------
+
+# =======================================================
+# Rulita, 05-12-2025
+# Fixing issue input param name -> lname
+# Change var lname in procedure create_gcf to tmp_lname
+# Change var fname in procedure create_gcf to tmp_fname
+# Change var ftitle in procedure create_gcf to tmp_ftitle
+# =======================================================
+
+# ==============================================
+# Rulita, 08-12-2025
+# - Fix error cannot assing room zinr after
+# proccess auto assign room
+# - Chg name buffer from resline to Resline_buff 
+# procedure assign_zinr
+# ==============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -14,7 +31,7 @@ from models import Res_line, Queasy, Reservation, Guest, Bill, Zimmer, Zimkateg,
 
 s_list_data, S_list = create_model("S_list", {"res_recid":int, "resstatus":int, "active_flag":int, "flag":int, "karteityp":int, "zimmeranz":int, "erwachs":int, "kind1":int, "kind2":int, "old_zinr":string, "name":string, "nat":string, "land":string, "zinr":string, "eta":string, "etd":string, "flight1":string, "flight2":string, "rmcat":string, "ankunft":date, "abreise":date, "zipreis":Decimal, "bemerk":string, "user_init":string})
 
-def res_gname2_update_res1_webbl(inp_resnr:int, name:string, fname:string, ftitle:string, name_screen:string, user_init:string, if_flag:bool, ci_date:date, answer:bool, s_list_data:[S_list]):
+def res_gname2_update_res1_webbl(inp_resnr:int, lname:string, fname:string, ftitle:string, name_screen:string, user_init:string, if_flag:bool, ci_date:date, answer:bool, s_list_data:[S_list]):
 
     prepare_cache ([Res_line, Reservation, Guest, Bill, Zimmer, Reslin_queasy, Guestseg, Htparam])
 
@@ -28,7 +45,7 @@ def res_gname2_update_res1_webbl(inp_resnr:int, name:string, fname:string, ftitl
 
     s_list = t_output_list = t_resline = resline = resline1 = buf_q359 = q359 = None
 
-    t_output_list_data, T_output_list = create_model("T_output_list", {"vsuccessflag":bool, "verrormessage":string}, {"vsuccessflag": True})
+    t_output_list_data, T_output_list = create_model("T_output_list", {"vSuccessFlag":bool, "vErrormessage":string}, {"vSuccessFlag": True})
     t_resline_data, T_resline = create_model_like(Res_line)
 
     Resline = create_buffer("Resline",Res_line)
@@ -44,7 +61,7 @@ def res_gname2_update_res1_webbl(inp_resnr:int, name:string, fname:string, ftitl
 
     def generate_output():
         nonlocal t_output_list_data, res_mode, curr_reslinnr, priscilla_active, count_q359, timestamp_str, res_line, queasy, reservation, guest, bill, zimmer, zimkateg, reslin_queasy, guestseg, zimplan, htparam
-        nonlocal inp_resnr, name, fname, ftitle, name_screen, user_init, if_flag, ci_date, answer
+        nonlocal inp_resnr, lname, fname, ftitle, name_screen, user_init, if_flag, ci_date, answer
         nonlocal resline, resline1, buf_q359, q359
 
 
@@ -56,7 +73,7 @@ def res_gname2_update_res1_webbl(inp_resnr:int, name:string, fname:string, ftitl
     def update_res1():
 
         nonlocal t_output_list_data, res_mode, curr_reslinnr, priscilla_active, count_q359, timestamp_str, res_line, queasy, reservation, guest, bill, zimmer, zimkateg, reslin_queasy, guestseg, zimplan, htparam
-        nonlocal inp_resnr, name, fname, ftitle, name_screen, user_init, if_flag, ci_date, answer
+        nonlocal inp_resnr, lname, fname, ftitle, name_screen, user_init, if_flag, ci_date, answer
         nonlocal resline, resline1, buf_q359, q359
 
 
@@ -75,7 +92,12 @@ def res_gname2_update_res1_webbl(inp_resnr:int, name:string, fname:string, ftitl
         for s_list in query(s_list_data):
 
             # res_line = get_cache (Res_line, {"_recid": [(eq, s_list.res_recid)]})
-            res_line = db_session.query(Res_line).filter(Res_line._recid == s_list.res_recid).with_for_update().first()
+            res_line = db_session.query(Res_line).filter(Res_line._recid == s_list.res_recid).first()
+            # print("[DEBUG0]")
+            # print(f"res_line.zinr = {res_line.zinr} ")
+            # print(f"res_line.resnr = {res_line.resnr} ")
+            # print(f"res_line.reslinnr = {res_line.reslinnr} ")
+            # print("[END DEBUG0]")
 
             if res_line:
                 buffer_copy(res_line, t_resline)
@@ -93,24 +115,33 @@ def res_gname2_update_res1_webbl(inp_resnr:int, name:string, fname:string, ftitl
 
                     if gastmember > 0:
 
-                        guest = get_cache (Guest, {"gastnr": [(eq, gastmember)]})
+                        # guest = get_cache (Guest, {"gastnr": [(eq, gastmember)]})
+                        guest = db_session.query(Guest).filter(Guest.gastnr == gastmember).with_for_update().first()
 
                     elif gastmember == 0:
                         gastmember = create_gcf()
 
-                        guest = get_cache (Guest, {"gastnr": [(eq, gastmember)]})
+                        # guest = get_cache (Guest, {"gastnr": [(eq, gastmember)]})
+                        guest = db_session.query(Guest).filter(Guest.gastnr == gastmember).with_for_update().first()
 
-                    if res_line.gastnrmember != gastmember:
-                        pass
+                    # Debug
+                    # if res_line.gastnrmember != gastmember:
+                    #     print(f"[DEBUG2]")
+                    #     print(f"CatchLog Update Guest Name from Manage RSV = {inp_resnr}")
+                    #     print(f"Gastnrmember from = {res_line.gastnrmember} => {gastmember}")
+                    #     print(f"Guest Name from = {res_line.NAME} => {guest.NAME} ")
+                    #     print(f", {guest.vorname1} {guest.anrede1}")
+                    #     print(f"END CatchLog")
+                    #     print(f"[END DEBUG2]")
+
+
                     res_line.gastnrmember = gastmember
                     res_line.name = guest.name + ", " + guest.vorname1 +\
                             " " + guest.anrede1
                     res_line.changed = ci_date
                     res_line.changed_id = user_init
 
-
                 else:
-
                     # guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
                     guest = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnrmember).with_for_update().first()
                 pass
@@ -129,7 +160,7 @@ def res_gname2_update_res1_webbl(inp_resnr:int, name:string, fname:string, ftitl
                     pass
 
                 # resline = get_cache (Res_line, {"_recid": [(eq, s_list.res_recid)]})
-                resline = db_session.query(Res_line).filter(Res_line._recid == s_list.res_recid).with_for_update().first()
+                resline = db_session.query(Res_line).filter(Res_line._recid == s_list.res_recid).first()
 
                 if resline:
 
@@ -169,6 +200,7 @@ def res_gname2_update_res1_webbl(inp_resnr:int, name:string, fname:string, ftitl
                         if not still_error:
 
                             if resline.zinr != "":
+                            # if resline and resline.zinr not in ("", None, " "):
                                 release_zinr(s_list.zinr)
 
                                 if res_line.resstatus == 6 and if_flag:
@@ -178,14 +210,15 @@ def res_gname2_update_res1_webbl(inp_resnr:int, name:string, fname:string, ftitl
 
                             if s_list.zinr != "":
 
-                                zimmer = get_cache (Zimmer, {"zinr": [(eq, s_list.zinr)]})
+                                # zimmer = get_cache (Zimmer, {"zinr": [(eq, s_list.zinr)]})
+                                zimmer = db_session.query(Zimmer).filter(Zimmer.zinr == s_list.zinr).first()
 
                                 if zimmer:
                                     resline.setup = zimmer.setup
                                     resline.zikatnr = zimmer.zikatnr
-
+                            
                             for accbuff in db_session.query(Accbuff).filter(
-                                     (accbuff.resnr == resline.resnr) & (accbuff.kontakt_nr == resline.reslinnr) & (accbuff.l_zuordnung[2] == 1)).order_by(Accbuff._recid).with_for_update().all():
+                                     (Accbuff.resnr == resline.resnr) & (Accbuff.kontakt_nr == resline.reslinnr) & (Accbuff.l_zuordnung[2] == 1)).order_by(Accbuff._recid).all():
                                 accbuff.zinr = resline.zinr
 
                             if resline.active_flag == 1:
@@ -232,7 +265,7 @@ def res_gname2_update_res1_webbl(inp_resnr:int, name:string, fname:string, ftitl
     def update_qsy171():
 
         nonlocal t_output_list_data, res_mode, curr_reslinnr, priscilla_active, count_q359, timestamp_str, res_line, queasy, reservation, guest, bill, zimmer, zimkateg, reslin_queasy, guestseg, zimplan, htparam
-        nonlocal inp_resnr, name, fname, ftitle, name_screen, user_init, if_flag, ci_date, answer
+        nonlocal inp_resnr, lname, fname, ftitle, name_screen, user_init, if_flag, ci_date, answer
         nonlocal resline, resline1, buf_q359, q359
 
 
@@ -259,7 +292,8 @@ def res_gname2_update_res1_webbl(inp_resnr:int, name:string, fname:string, ftitl
                 origcode = substring(iftask, 10)
                 return
 
-        queasy = get_cache (Queasy, {"key": [(eq, 152)]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 152)]})
+        queasy = db_session.query(Queasy).filter(Queasy.key == 152).first()
 
         if queasy:
             cat_flag = True
@@ -289,7 +323,9 @@ def res_gname2_update_res1_webbl(inp_resnr:int, name:string, fname:string, ftitl
             upto_date = res_line.ankunft
         for curr_date in date_range(res_line.ankunft,upto_date) :
 
-            queasy = get_cache (Queasy, {"key": [(eq, 171)],"date1": [(eq, curr_date)],"number1": [(eq, roomnr)],"char1": [(eq, "")]})
+            # queasy = get_cache (Queasy, {"key": [(eq, 171)],"date1": [(eq, curr_date)],"number1": [(eq, roomnr)],"char1": [(eq, "")]})
+            queasy = db_session.query(Queasy).filter(
+                     (Queasy.key == 171) & (Queasy.date1 == curr_date) & (Queasy.number1 == roomnr) & (Queasy.char1 == "")).first()
 
             if queasy and queasy.logi1 == False and queasy.logi2 == False:
 
@@ -301,7 +337,9 @@ def res_gname2_update_res1_webbl(inp_resnr:int, name:string, fname:string, ftitl
                     pass
                     pass
 
-            queasy = get_cache (Queasy, {"key": [(eq, 171)],"date1": [(eq, curr_date)],"number1": [(eq, zikatnr)],"char1": [(eq, "")]})
+            # queasy = get_cache (Queasy, {"key": [(eq, 171)],"date1": [(eq, curr_date)],"number1": [(eq, zikatnr)],"char1": [(eq, "")]})
+            queasy = db_session.query(Queasy).filter(
+                     (Queasy.key == 171) & (Queasy.date1 == curr_date) & (Queasy.number1 == zikatnr) & (Queasy.char1 == "")).first()
 
             if queasy and queasy.logi1 == False and queasy.logi2 == False:
 
@@ -315,7 +353,9 @@ def res_gname2_update_res1_webbl(inp_resnr:int, name:string, fname:string, ftitl
 
             if origcode != "":
 
-                queasy = get_cache (Queasy, {"key": [(eq, 171)],"date1": [(eq, curr_date)],"number1": [(eq, roomnr)],"char1": [(eq, origcode)]})
+                # queasy = get_cache (Queasy, {"key": [(eq, 171)],"date1": [(eq, curr_date)],"number1": [(eq, roomnr)],"char1": [(eq, origcode)]})
+                queasy = db_session.query(Queasy).filter(
+                         (Queasy.key == 171) & (Queasy.date1 == curr_date) & (Queasy.number1 == roomnr) & (Queasy.char1 == origcode)).first()
 
                 if queasy and queasy.logi1 == False and queasy.logi2 == False:
 
@@ -328,7 +368,9 @@ def res_gname2_update_res1_webbl(inp_resnr:int, name:string, fname:string, ftitl
                         pass
                         pass
 
-                queasy = get_cache (Queasy, {"key": [(eq, 171)],"date1": [(eq, curr_date)],"number1": [(eq, zikatnr)],"char1": [(eq, origcode)]})
+                # queasy = get_cache (Queasy, {"key": [(eq, 171)],"date1": [(eq, curr_date)],"number1": [(eq, zikatnr)],"char1": [(eq, origcode)]})
+                queasy = db_session.query(Queasy).filter(
+                         (Queasy.key == 171) & (Queasy.date1 == curr_date) & (Queasy.number1 == zikatnr) & (Queasy.char1 == origcode)).first()
 
                 if queasy and queasy.logi1 == False and queasy.logi2 == False:
 
@@ -343,15 +385,15 @@ def res_gname2_update_res1_webbl(inp_resnr:int, name:string, fname:string, ftitl
     def res_changes():
 
         nonlocal t_output_list_data, res_mode, curr_reslinnr, priscilla_active, count_q359, timestamp_str, res_line, queasy, reservation, guest, bill, zimmer, zimkateg, reslin_queasy, guestseg, zimplan, htparam
-        nonlocal inp_resnr, name, fname, ftitle, name_screen, user_init, if_flag, ci_date, answer
+        nonlocal inp_resnr, lname, fname, ftitle, name_screen, user_init, if_flag, ci_date, answer
         nonlocal resline, resline1, buf_q359, q359
 
 
         nonlocal s_list, t_output_list, t_resline, resline, resline1, buf_q359, q359
         nonlocal t_output_list_data, t_resline_data
 
-        cid:string = " "
-        cdate:string = " "
+        cid:string = "  "
+        cdate:string = "        "
         reslin_queasy = Reslin_queasy()
         db_session.add(reslin_queasy)
 
@@ -370,7 +412,7 @@ def res_gname2_update_res1_webbl(inp_resnr:int, name:string, fname:string, ftitl
     def create_gcf():
 
         nonlocal t_output_list_data, res_mode, curr_reslinnr, priscilla_active, count_q359, timestamp_str, res_line, queasy, reservation, guest, bill, zimmer, zimkateg, reslin_queasy, guestseg, zimplan, htparam
-        nonlocal inp_resnr, name, name_screen, user_init, if_flag, ci_date, answer
+        nonlocal inp_resnr, lname, name_screen, user_init, if_flag, ci_date, answer
         nonlocal resline, resline1, buf_q359, q359
 
 
@@ -380,24 +422,28 @@ def res_gname2_update_res1_webbl(inp_resnr:int, name:string, fname:string, ftitl
         curr_gastnr = 0
         i:int = 0
         inp_name:string = ""
-        lname:string = ""
-        fname:string = ""
-        ftitle:string = ""
+
+        # Rulita, 05-12-2025
+        # Change var lname in procedure create_gcf to tmp_lname
+        # Change var fname in procedure create_gcf to tmp_fname
+        # Change var ftitle in procedure create_gcf to tmp_ftitle
+        tmp_lname:string = ""
+        tmp_fname:string = ""
+        tmp_ftitle:string = ""
 
         def generate_inner_output():
             return (curr_gastnr)
 
         inp_name = s_list.name
 
-
         for i in range(1,num_entries(inp_name, ",")  + 1) :
 
             if i == 1:
-                lname = trim(entry(0, inp_name, ","))
+                tmp_lname = trim(entry(0, inp_name, ","))
             elif i == 2:
-                fname = trim(entry(1, inp_name, ","))
+                tmp_fname = trim(entry(1, inp_name, ","))
             elif i == 3:
-                ftitle = trim(entry(2, inp_name, ","))
+                tmp_ftitle = trim(entry(2, inp_name, ","))
 
         guest = db_session.query(Guest).order_by(Guest._recid.desc()).first()
 
@@ -412,9 +458,9 @@ def res_gname2_update_res1_webbl(inp_resnr:int, name:string, fname:string, ftitl
         guest.karteityp = 0
         guest.nation1 = s_list.nat
         guest.land = s_list.land
-        guest.name = lname
-        guest.vorname1 = fname
-        guest.anrede1 = ftitle
+        guest.name = tmp_lname
+        guest.vorname1 = tmp_fname
+        guest.anrede1 = tmp_ftitle
         guest.char1 = user_init
 
 
@@ -450,16 +496,20 @@ def res_gname2_update_res1_webbl(inp_resnr:int, name:string, fname:string, ftitl
         res_recid:int = 0
         res_line1 = None
         zimplan1 = None
-        resline = None
+        resline_buff = None
 
         def generate_inner_output():
             return (room_blocked)
 
         Res_line1 =  create_buffer("Res_line1",Res_line)
         Zimplan1 =  create_buffer("Zimplan1",Zimplan)
-        Resline =  create_buffer("Resline",Res_line)
 
-        htparam = get_cache (Htparam, {"paramnr": [(eq, 87)]})
+        # Rulita, 08-12-2025
+        # chg name buffer from resline to Resline_buff
+        Resline_buff = create_buffer("Resline_buff",Res_line)
+
+        # htparam = get_cache (Htparam, {"paramnr": [(eq, 87)]})
+        htparam = db_session.query(Htparam).filter(Htparam.paramnr == 87).first()
         sharer = (resstatus == 11) or (resstatus == 13)
 
         if zinr != "" and not sharer:
@@ -469,10 +519,10 @@ def res_gname2_update_res1_webbl(inp_resnr:int, name:string, fname:string, ftitl
             else:
                 beg_datum = ankunft
             room_blocked = False
-            for curr_datum in date_range(beg_datum,(abreise - 1)) :
+            for curr_datum in date_range(beg_datum,(abreise - timedelta(days=1))) :
 
                 zimplan1 = db_session.query(Zimplan1).filter(
-                         (Zimplan1.datum == curr_datum) & (Zimplan1.zinr == (zinr))).with_for_update().first()
+                         (Zimplan1.datum == curr_datum) & (Zimplan1.zinr == (zinr))).first()
 
                 if (not zimplan1) and (not room_blocked):
                     zimplan = Zimplan()
@@ -491,9 +541,13 @@ def res_gname2_update_res1_webbl(inp_resnr:int, name:string, fname:string, ftitl
 
                     if zimplan1 and (zimplan1.res_recid != resline_recid):
 
-                        resline = get_cache (Res_line, {"_recid": [(eq, zimplan1.res_recid)]})
+                        # resline = get_cache (Res_line, {"_recid": [(eq, zimplan1.res_recid)]})
+                        resline_buff = db_session.query(Resline_buff).filter(Resline_buff._recid == zimplan1.res_recid).first()
 
-                        if resline and resline.zinr  == (zinr)  and resline.active_flag < 2 and resline.ankunft <= zimplan1.datum and resline.abreise > zimplan1.datum:
+                        if resline_buff and resline_buff.zinr == (zinr) \
+                        and resline_buff.active_flag < 2 \
+                        and resline_buff.ankunft <= zimplan1.datum \
+                        and resline_buff.abreise > zimplan1.datum:
                             curr_datum = abreise
                             room_blocked = True
                         else:
@@ -503,8 +557,6 @@ def res_gname2_update_res1_webbl(inp_resnr:int, name:string, fname:string, ftitl
                             zimplan1.bemerk = bemerk
                             zimplan1.resstatus = resstatus
                             zimplan1.name = name
-
-
                             pass
                             pass
 
@@ -516,7 +568,9 @@ def res_gname2_update_res1_webbl(inp_resnr:int, name:string, fname:string, ftitl
                              (Zimplan.datum == curr_datum) & (Zimplan.zinr == (zinr)) & (Zimplan.res_recid == resline_recid)).with_for_update().first()
 
                     if zimplan:
+                        db_session.refresh(zimplan,with_for_update=True)
                         db_session.delete(zimplan)
+                        db_session.flush()
                         pass
             else:
 
@@ -547,7 +601,7 @@ def res_gname2_update_res1_webbl(inp_resnr:int, name:string, fname:string, ftitl
     def release_zinr(new_zinr:string):
 
         nonlocal t_output_list_data, res_mode, curr_reslinnr, priscilla_active, count_q359, timestamp_str, res_line, queasy, reservation, guest, bill, zimmer, zimkateg, reslin_queasy, guestseg, zimplan, htparam
-        nonlocal inp_resnr, name, fname, ftitle, name_screen, user_init, if_flag, ci_date, resline, resline1, buf_q359, q359
+        nonlocal inp_resnr, lname, fname, ftitle, name_screen, user_init, if_flag, ci_date, resline, resline1, buf_q359, q359
 
 
         nonlocal s_list, t_output_list, t_resline, resline, resline1, buf_q359, q359
@@ -564,9 +618,12 @@ def res_gname2_update_res1_webbl(inp_resnr:int, name:string, fname:string, ftitl
         Res_line2 =  create_buffer("Res_line2",Res_line)
         Rline =  create_buffer("Rline",Res_line)
 
-        htparam = get_cache (Htparam, {"paramnr": [(eq, 87)]})
+        # htparam = get_cache (Htparam, {"paramnr": [(eq, 87)]})
+        htparam = db_session.query(Htparam).filter(Htparam.paramnr == 87).first()
 
         rline = get_cache (Res_line, {"resnr": [(eq, inp_resnr)],"reslinnr": [(eq, curr_reslinnr)]})
+        rline = db_session.query(Res_line).filter(
+            (Res_line.resnr == inp_resnr) & (Res_line.reslinnr == curr_reslinnr)).first()
 
         if rline.zinr != "":
             beg_datum = rline.ankunft
@@ -590,7 +647,9 @@ def res_gname2_update_res1_webbl(inp_resnr:int, name:string, fname:string, ftitl
 
                 if rline.resstatus == 6 and (rline.zinr  != (new_zinr)):
 
-                    res_line1 = get_cache (Res_line, {"resnr": [(eq, inp_resnr)],"zinr": [(eq, rline.zinr)],"resstatus": [(eq, 13)]})
+                    # res_line1 = get_cache (Res_line, {"resnr": [(eq, inp_resnr)],"zinr": [(eq, rline.zinr)],"resstatus": [(eq, 13)]})
+                    res_line1 = db_session.query(Res_line1).filter(
+                             (Res_line1.resnr == inp_resnr) & (Res_line1.zinr == rline.zinr) & (Res_line1.resstatus == 13)).first()
 
                     if res_line1:
 
@@ -623,7 +682,9 @@ def res_gname2_update_res1_webbl(inp_resnr:int, name:string, fname:string, ftitl
                 if res_recid1 != 0:
                     zimplan.res_recid = res_recid1
                 else:
+                    db_session.refresh(zimplan,with_for_update=True)
                     db_session.delete(zimplan)
+                    db_session.flush()
 
 
     if inp_resnr == -1:
@@ -634,7 +695,8 @@ def res_gname2_update_res1_webbl(inp_resnr:int, name:string, fname:string, ftitl
         for s_list in query(s_list_data):
             count_q359 = 0
 
-            res_line = get_cache (Res_line, {"_recid": [(eq, s_list.res_recid)]})
+            # res_line = get_cache (Res_line, {"_recid": [(eq, s_list.res_recid)]})
+            res_line = db_session.query(Res_line).filter(Res_line._recid == s_list.res_recid).first()
 
             if res_line:
 
@@ -654,20 +716,21 @@ def res_gname2_update_res1_webbl(inp_resnr:int, name:string, fname:string, ftitl
                              (Queasy.key == 359) & (Queasy.number3 == 1) & ((Queasy.number1 != res_line.resnr) | (Queasy.number2 != res_line.reslinnr)) & (Queasy.char1 == s_list.zinr) & not_ (Queasy.date2 <= res_line.ankunft) & not_ (Queasy.date1 >= res_line.abreise)).order_by(Queasy.char3.desc()).all():
 
                         if queasy.char3  > (timestamp_str) :
-                            t_output_list.vsuccessflag = False
-                            t_output_list.verrormessage = "Room " + s_list.zinr + " is currently locked for Reservation Number: " + to_string(queasy.number1) + "/" + to_string(queasy.number2, "999") + " - By User: " + queasy.char2 + chr_unicode(10) + "Please select another room."
+                            t_output_list.vSuccessFlag = False
+                            t_output_list.vErrorMessage = "Room " + s_list.zinr + " is currently locked for Reservation Number: " + to_string(queasy.number1) + "/" + to_string(queasy.number2, "999") + " - By User: " + queasy.char2 + chr_unicode(10) + "Please select another room."
 
                             return generate_output()
     else:
         t_resline = T_resline()
         t_resline_data.append(t_resline)
 
-
-        reservation = get_cache (Reservation, {"resnr": [(eq, inp_resnr)]})
+        # reservation = get_cache (Reservation, {"resnr": [(eq, inp_resnr)]})
+        reservation = db_session.query(Reservation).filter(Reservation.resnr == inp_resnr).first()
 
         if not reservation:
-
             return generate_output()
         update_res1()
-
+    
     return generate_output()
+
+    
