@@ -5,6 +5,7 @@
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Guest, Res_line, Archieve
+from sqlalchemy.orm.attributes import flag_modified
 
 def store_signaturebl(res_no:int, resline_no:int, gast_no:int, ct:string, update_flag:bool, mobile_no:string, email:string):
 
@@ -52,7 +53,9 @@ def store_signaturebl(res_no:int, resline_no:int, gast_no:int, ct:string, update
         return generate_output()
     pass
 
-    res_line = get_cache (Res_line, {"resnr": [(eq, res_no)],"reslinnr": [(eq, resline_no)]})
+    # res_line = get_cache (Res_line, {"resnr": [(eq, res_no)],"reslinnr": [(eq, resline_no)]})
+    res_line = db_session.query(Res_line).with_for_update().filter(
+                 (Res_line.resnr == res_no) & (Res_line.reslinnr == resline_no)).with_for_update().first()
 
     if res_line:
 
@@ -60,15 +63,19 @@ def store_signaturebl(res_no:int, resline_no:int, gast_no:int, ct:string, update
             res_line.zimmer_wunsch = res_line.zimmer_wunsch + "mobile-sign-rc;"
         pass
 
-        archieve = get_cache (Archieve, {"key": [(eq, "send-sign-rc")],"num1": [(eq, res_no)],"num2": [(eq, resline_no)]})
+        # archieve = get_cache (Archieve, {"key": [(eq, "send-sign-rc")],"num1": [(eq, res_no)],"num2": [(eq, resline_no)]})
+        archieve = db_session.query(Archieve).filter((Archieve.key == "send-sign-rc") & 
+                                                     (Archieve.num1 == res_no) & 
+                                                     (Archieve.num2 == resline_no)).with_for_update().first()
 
         if archieve:
             db_session.delete(archieve)
 
         # archieve = get_cache (Archieve, {"key": [(eq, "send-sign-rc")],"num1": [(eq, res_no)],"num2": [(eq, resline_no)],"num3": [(eq, gast_no)]})
-        archieve = db_session.query(Archieve).filter(Archieve.key == "send-sign-rc", 
-                                                     Archieve.num1 == res_no, 
-                                                     Archieve.num2 == resline_no, Archieve.num3 == gast_no).with_for_update().first()
+        archieve = db_session.query(Archieve).filter((Archieve.key == "send-sign-rc") &
+                                                     (Archieve.num1 == res_no) & 
+                                                     (Archieve.num2 == resline_no) &
+                                                     (Archieve.num3 == gast_no)).with_for_update().first()
 
         if not archieve:
             sys_date = to_string(get_month(get_current_date()) , "99") + "/" + to_string(get_day(get_current_date()) , "99") + "/" + to_string(get_year(get_current_date()) , "9999") + ";" + to_string(get_current_time_in_seconds()) + ";"
@@ -85,6 +92,7 @@ def store_signaturebl(res_no:int, resline_no:int, gast_no:int, ct:string, update
             archieve.char[3] = ""
             archieve.char[4] = ""
             archieve.datum = res_line.ankunft
+            flag_modified(archieve, "char")
 
 
         else:
@@ -95,9 +103,6 @@ def store_signaturebl(res_no:int, resline_no:int, gast_no:int, ct:string, update
             archieve.char[3] = ""
             archieve.char[4] = ""
             archieve.datum = res_line.ankunft
-
-
-        pass
-        pass
+            flag_modified(archieve, "char")
 
     return generate_output()
