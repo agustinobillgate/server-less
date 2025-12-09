@@ -94,11 +94,11 @@ def fo_invoice_open_bill_cld_1bl(bil_flag:int, bil_recid:int, room:string, vipfl
     htparam = get_cache (Htparam, {"paramnr": [(eq, 87)]})
     ci_date = htparam.fdate
 
-    bill = get_cache (Bill, {"_recid": [(eq, bil_recid)]})
+    bill = db_session.query(Bill).filter((Bill._recid == bil_recid) & (Bill.flag < 1)).first()
 
+    res_line = None
     if bill:
-
-        res_line = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"reslinnr": [(eq, bill.reslinnr)]})
+        res_line = db_session.query(Res_line).filter((Res_line.resnr == bill.resnr) & (Res_line.reslinnr == bill.reslinnr)).first()
 
         if res_line:
             t_res_line = T_res_line()
@@ -106,34 +106,35 @@ def fo_invoice_open_bill_cld_1bl(bil_flag:int, bil_recid:int, room:string, vipfl
 
             buffer_copy(res_line, t_res_line)
 
-            guestmember = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
+            guestmember = db_session.query(Guest).filter((Guest.gastnr == res_line.gastnrmember)).first()
 
             if guestmember:
                 t_res_line.guest_name = guestmember.anrede1 + " " + guestmember.name + ", " + guestmember.vorname1
+
         t_bill = T_bill()
         t_bill_data.append(t_bill)
 
         buffer_copy(bill, t_bill)
 
-        resbuff = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"reslinnr": [(eq, bill.parent_nr)]})
+        resbuff = db_session.query(Res_line).filter((Res_line.resnr == bill.resnr) & (Res_line.reslinnr == bill.parent_nr)).first()
 
         if resbuff:
             abreise = resbuff.abreise
         else:
             abreise = bill.datum
 
-        if res_line and bil_flag == 0 and res_line.abreise == ci_date:
+        if res_line:
+            if bil_flag == 0 and res_line.abreise == ci_date:
+                reslin_queasy = db_session.query(Reslin_queasy).filter(
+                        (Reslin_queasy.key == ("flag").lower()) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.betriebsnr == 0) & ((Reslin_queasy.logi1) | (Reslin_queasy.logi2) | (Reslin_queasy.logi3))).first()
 
-            reslin_queasy = db_session.query(Reslin_queasy).filter(
-                     (Reslin_queasy.key == ("flag").lower()) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.betriebsnr == 0) & ((Reslin_queasy.logi1) | (Reslin_queasy.logi2) | (Reslin_queasy.logi3))).first()
+                if reslin_queasy:
+                    flag_report = True
 
-            if reslin_queasy:
-                flag_report = True
-
-        reservation = get_cache (Reservation, {"resnr": [(eq, bill.resnr)]})
+        reservation =db_session.query(Reservation).filter((Reservation.resnr == bill.resnr)).first()
         resname = ""
 
-        guest = get_cache (Guest, {"gastnr": [(eq, bill.gastnr)]})
+        guest = db_session.query(Guest).filter((Guest.gastnr == bill.gastnr)).first()
         g_address = guest.adresse1
         g_wonhort = guest.wohnort
         g_plz = guest.plz
@@ -165,7 +166,8 @@ def fo_invoice_open_bill_cld_1bl(bil_flag:int, bil_recid:int, room:string, vipfl
             else:
                 kreditlimit =  to_decimal(htparam.finteger)
 
-        zimmer = get_cache (Zimmer, {"zinr": [(eq, bill.zinr)]})
+        zimmer = db_session.query(Zimmer).filter(
+                (Zimmer.zinr == bill.zinr)).first()
         if zimmer:
             zimmer_bezeich = zimmer.bezeich
         else:
@@ -177,8 +179,8 @@ def fo_invoice_open_bill_cld_1bl(bil_flag:int, bil_recid:int, room:string, vipfl
             if res_line.reserve_dec != 0:
                 res_exrate =  to_decimal(res_line.reserve_dec)
             else:
-
-                waehrung = get_cache (Waehrung, {"waehrungsnr": [(eq, res_line.betriebsnr)]})
+                waehrung = db_session.query(Waehrung).filter(
+                        (Waehrung.waehrungsnr == res_line.betriebsnr)).first()
 
                 if waehrung:
                     res_exrate =  to_decimal(waehrung.ankauf) / to_decimal(waehrung.einheit)
@@ -238,7 +240,8 @@ def fo_invoice_open_bill_cld_1bl(bil_flag:int, bil_recid:int, room:string, vipfl
 
         if master:
 
-            mbill = get_cache (Bill, {"resnr": [(eq, bill.resnr)],"reslinnr": [(eq, 0)],"zinr": [(eq, "")]})
+            mbill = db_session.query(Bill).filter(
+                (Bill.resnr == bill.resnr) & (Bill.reslinnr == 0) & (func.trim(Bill.zinr) == "")).first()
 
             if not mbill:
 
@@ -266,14 +269,12 @@ def fo_invoice_open_bill_cld_1bl(bil_flag:int, bil_recid:int, room:string, vipfl
 
         if res_line and res_line.code != "" and bill.flag == 0:
 
-            # queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code.strip()))]})
             queasy = db_session.query(Queasy).filter(
                      (Queasy.key == 9) & (Queasy.number1 == to_int(res_line.code.strip()))).first()
 
             if queasy and queasy.logi1:
                 queasy_char1 = queasy.char1
     else:
-
         return generate_output()
 
     return generate_output()
