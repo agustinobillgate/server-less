@@ -910,9 +910,8 @@ def prepare_resline_3bl(pvilanguage: int, res_mode: string, session_date: string
 
         res_dynarate = res_dynarate_data[0]
 
-        # if not res_dynarate or res_dynarate.rmcat == "" or res_dynarate.rmcat == " ":
-
-        # return
+        if not res_dynarate or res_dynarate.rmcat == "" or res_dynarate.rmcat == " ":
+            return
 
         arrangement = get_cache(
             Arrangement, {"arrangement": [(eq, res_dynarate.argt.strip())]})

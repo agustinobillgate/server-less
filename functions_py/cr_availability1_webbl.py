@@ -1,10 +1,13 @@
-#using conversion tools version: 1.0.0.117b
-#---------------------------------------------
+# using conversion tools version: 1.0.0.117b
+# ---------------------------------------------
 # Rd, 17-July-25
 # replace variable fdate -> ffdate
 # #859, overbook -> overbooking
 # Rd, data room availability with rates
-#---------------------------------------------
+
+# yusufwijasena, 05/12/2025
+# fix get_output(available_ratesbl(ffdate, tdate, room_avail_list.zikatnr, curr_i, adult_child_str, indgastnr, created_list_data)), replace fdate to ffdate
+# ---------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -13,60 +16,204 @@ from functions.available_ratesbl import available_ratesbl
 from sqlalchemy import func
 from models import Kontline, Res_line, Zimmer, Paramtext, Htparam, Queasy, Arrangement, Zimkateg, Artikel, Fixleist, Guest_pr, Argt_line, Genstat, Reslin_queasy, Zwkum, Reservation, Segment, Outorder, Resplan
 
-def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, printer_nr:int, call_from:int, adult_child_str:string, statsort:int, dispsort:int, curr_date:date, incl_tentative:bool, mi_inactive:bool, show_rate:bool, indgastnr:int, qci_zinr:string):
 
-    prepare_cache ([Zimmer, Paramtext, Htparam, Queasy, Arrangement, Zimkateg, Artikel, Fixleist, Guest_pr, Argt_line, Genstat, Reslin_queasy, Reservation, Outorder, Resplan])
+def cr_availability1_webbl(pvilanguage: int, vhp_limited: bool, op_type: int, printer_nr: int, call_from: int, adult_child_str: string, statsort: int, dispsort: int, curr_date: date, incl_tentative: bool, mi_inactive: bool, show_rate: bool, indgastnr: int, qci_zinr: string):
+
+    prepare_cache([Zimmer, Paramtext, Htparam, Queasy, Arrangement, Zimkateg, Artikel,
+                  Fixleist, Guest_pr, Argt_line, Genstat, Reslin_queasy, Reservation, Outorder, Resplan])
 
     room_list_data = []
     sum_list_data = []
-    lvcarea:string = "availability"
-    logid:int = 0
-    logstr:string = ""
-    cdstr:string = ""
-    col_label:List[string] = create_empty_list(31,"")
-    curr_day:int = 0
-    datum:date = None
-    tot_room:int = 0
-    i:int = 0
-    ci_date:date = None
-    co_date:date = None
-    from_date:date = None
-    to_date:date = None
-    last_option:bool = False
-    wlist:string = ""
-    dlist:string = ""
-    j:int = 0
-    dd:int = 0
-    mm:int = 0
-    yyyy:int = 0
-    num_day:int = 29
-    htl_name:string = ""
-    htl_adr:string = ""
-    htl_tel:string = ""
-    res_allot:List[int] = create_empty_list(30,0)
-    week_list:List[string] = create_empty_list(7,"")
-    rpt_title:string = ""
-    occ_room:List[int] = create_empty_list(30,0)
+    lvcarea: string = "availability"
+    logid: int = 0
+    logstr: string = ""
+    cdstr: string = ""
+    col_label: List[string] = create_empty_list(31, "")
+    curr_day: int = 0
+    datum: date = None
+    tot_room: int = 0
+    i: int = 0
+    ci_date: date = None
+    co_date: date = None
+    from_date: date = None
+    to_date: date = None
+    last_option: bool = False
+    wlist: string = ""
+    dlist: string = ""
+    j: int = 0
+    dd: int = 0
+    mm: int = 0
+    yyyy: int = 0
+    num_day: int = 29
+    htl_name: string = ""
+    htl_adr: string = ""
+    htl_tel: string = ""
+    res_allot: List[int] = create_empty_list(30, 0)
+    week_list: List[string] = create_empty_list(7, "")
+    rpt_title: string = ""
+    occ_room: List[int] = create_empty_list(30, 0)
     kontline = res_line = zimmer = paramtext = htparam = queasy = arrangement = zimkateg = artikel = fixleist = guest_pr = argt_line = genstat = reslin_queasy = zwkum = reservation = segment = outorder = resplan = None
 
     sum_list = room_avail_list = date_list = room_list = rate_list = created_list = t_kontline = argt_list = rmcat_list = tmp_resline = tmp_extra = temp_art = tmp_allotment = qci_zimmer = buff_ratelist = None
 
-    sum_list_data, Sum_list = create_model("Sum_list", {"allot_flag":bool, "bezeich":string, "summe":[int,30]})
-    room_avail_list_data, Room_avail_list = create_model("Room_avail_list", {"avail_flag":bool, "allot_flag":bool, "zikatnr":int, "i_typ":int, "sleeping":bool, "allotment":[int,30], "bezeich":string, "room":[int,30], "coom":[string,30], "sort_prior":int}, {"sleeping": True})
-    date_list_data, Date_list = create_model("Date_list", {"datum":date, "counter":int})
-    room_list_data, Room_list = create_model("Room_list", {"avail_flag":bool, "allot_flag":bool, "zikatnr":int, "i_typ":int, "sleeping":bool, "allotment":[int,30], "bezeich":string, "room":[int,30], "coom":[string,30], "rmrate":[Decimal,30], "currency":int, "wabkurz":string, "i_counter":int, "rateflag":bool, "adult":int, "child":int, "prcode":[string,30], "rmcat":string, "argt":string, "rcode":string, "segmentcode":string, "dynarate":bool, "expired":bool, "argt_remark":string, "minstay":int, "maxstay":int, "minadvance":int, "maxadvance":int, "frdate":date, "todate":date, "marknr":int, "datum":[date,30]}, {"sleeping": True, "frdate": None, "todate": None})
-    rate_list_data, Rate_list = create_model("Rate_list", {"ratecode":string, "segmentcode":string, "dynaflag":bool, "expired":bool, "room_type":int, "argtno":int, "statcode":[string,30], "rmrate":[Decimal,30], "minstay":int, "maxstay":int, "minadvance":int, "maxadvance":int, "frdate":date, "todate":date, "adult":int, "child":int, "currency":int, "wabkurz":string, "occ_rooms":int, "marknr":int, "i_counter":int}, {"frdate": None, "todate": None})
-    created_list_data, Created_list = create_model("Created_list", {"ratecode":string, "marknr":int, "rmcateg":int, "argtno":int, "statcode":[string,30], "rmrate":[Decimal,30]})
+    sum_list_data, Sum_list = create_model(
+        "Sum_list",
+        {
+            "allot_flag": bool,
+            "bezeich": string,
+            "summe": [int, 30]
+        })
+    room_avail_list_data, Room_avail_list = create_model(
+        "Room_avail_list",
+        {
+            "avail_flag": bool,
+            "allot_flag": bool,
+            "zikatnr": int,
+            "i_typ": int,
+            "sleeping": bool,
+            "allotment": [int, 30],
+            "bezeich": string,
+            "room": [int, 30],
+            "coom": [string, 30],
+            "sort_prior": int
+        },
+        {
+            "sleeping": True
+        })
+    date_list_data, Date_list = create_model(
+        "Date_list",
+        {
+            "datum": date,
+            "counter": int
+        })
+    room_list_data, Room_list = create_model(
+        "Room_list",
+        {
+            "avail_flag": bool,
+            "allot_flag": bool,
+            "zikatnr": int,
+            "i_typ": int,
+            "sleeping": bool,
+            "allotment": [int,
+                          30
+                          ],
+            "bezeich": string,
+            "room": [int, 30],
+            "coom": [string, 30],
+            "rmrate": [Decimal, 30],
+            "currency": int,
+            "wabkurz": string,
+            "i_counter": int,
+            "rateflag": bool,
+            "adult": int,
+            "child": int,
+            "prcode": [string, 30],
+            "rmcat": string,
+            "argt": string,
+            "rcode": string,
+            "segmentcode": string,
+            "dynarate": bool,
+            "expired": bool,
+            "argt_remark": string,
+            "minstay": int,
+            "maxstay": int,
+            "minadvance": int,
+            "maxadvance": int,
+            "frdate": date,
+            "todate": date,
+            "marknr": int,
+            "datum": [date, 30]
+        },
+        {
+            "sleeping": True,
+            "frdate": None,
+            "todate": None
+        })
+    rate_list_data, Rate_list = create_model(
+        "Rate_list",
+        {
+            "ratecode": string,
+            "segmentcode": string,
+            "dynaflag": bool,
+            "expired": bool,
+            "room_type": int,
+            "argtno": int,
+            "statcode": [string, 30],
+            "rmrate": [Decimal, 30],
+            "minstay": int,
+            "maxstay": int,
+            "minadvance": int,
+            "maxadvance": int,
+            "frdate": date,
+            "todate": date,
+            "adult": int,
+            "child": int,
+            "currency": int,
+            "wabkurz": string,
+            "occ_rooms": int,
+            "marknr": int,
+            "i_counter": int
+        },
+        {
+            "frdate": None,
+            "todate": None
+        })
+    created_list_data, Created_list = create_model(
+        "Created_list",
+        {
+            "ratecode": string,
+            "marknr": int,
+            "rmcateg": int,
+            "argtno": int,
+            "statcode": [string, 30],
+            "rmrate": [Decimal, 30]
+        })
     t_kontline_data, T_kontline = create_model_like(Kontline)
-    argt_list_data, Argt_list = create_model("Argt_list", {"argtnr":int, "argt_artnr":int, "departement":int, "is_charged":bool, "period":int, "vt_percnt":int})
-    rmcat_list_data, Rmcat_list = create_model("Rmcat_list", {"zikatnr":int, "anzahl":int, "sleeping":bool}, {"sleeping": True})
+    argt_list_data, Argt_list = create_model(
+        "Argt_list",
+        {
+            "argtnr": int,
+            "argt_artnr": int,
+            "departement": int,
+            "is_charged": bool,
+            "period": int,
+            "vt_percnt": int
+        })
+    rmcat_list_data, Rmcat_list = create_model(
+        "Rmcat_list",
+        {
+            "zikatnr": int,
+            "anzahl": int,
+            "sleeping": bool
+        },
+        {
+            "sleeping": True
+        })
     tmp_resline_data, Tmp_resline = create_model_like(Res_line)
-    tmp_extra_data, Tmp_extra = create_model("Tmp_extra", {"art":int, "typ_pos":string, "pos_from":string, "cdate":date, "room":string, "qty":int})
-    temp_art_data, Temp_art = create_model("Temp_art", {"art_nr":int, "art_nm":string})
-    tmp_allotment_data, Tmp_allotment = create_model("Tmp_allotment", {"zikatnr":int, "res_allot":[int,30]})
+    tmp_extra_data, Tmp_extra = create_model(
+        "Tmp_extra",
+        {
+            "art": int,
+            "typ_pos": string,
+            "pos_from": string,
+            "cdate": date,
+            "room": string,
+            "qty": int
+        })
+    temp_art_data, Temp_art = create_model(
+        "Temp_art",
+        {
+            "art_nr": int,
+            "art_nm": string
+        })
+    tmp_allotment_data, Tmp_allotment = create_model(
+        "Tmp_allotment",
+        {
+            "zikatnr": int,
+            "res_allot": [int, 30]
+        })
 
-    Qci_zimmer = create_buffer("Qci_zimmer",Zimmer)
-
+    Qci_zimmer = create_buffer("Qci_zimmer", Zimmer)
 
     db_session = local_storage.db_session
 
@@ -78,11 +225,14 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
         nonlocal pvilanguage, vhp_limited, op_type, printer_nr, call_from, adult_child_str, statsort, dispsort, curr_date, incl_tentative, mi_inactive, show_rate, indgastnr, qci_zinr
         nonlocal qci_zimmer
 
-
         nonlocal sum_list, room_avail_list, date_list, room_list, rate_list, created_list, t_kontline, argt_list, rmcat_list, tmp_resline, tmp_extra, temp_art, tmp_allotment, qci_zimmer, buff_ratelist
         nonlocal sum_list_data, room_avail_list_data, date_list_data, room_list_data, rate_list_data, created_list_data, t_kontline_data, argt_list_data, rmcat_list_data, tmp_resline_data, tmp_extra_data, temp_art_data, tmp_allotment_data
 
-        return {"indgastnr": indgastnr, "room-list": room_list_data, "sum-list": sum_list_data}
+        return {
+            "indgastnr": indgastnr,
+            "room-list": room_list_data,
+            "sum-list": sum_list_data
+        }
 
     def create_room_list():
 
@@ -90,21 +240,19 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
         nonlocal pvilanguage, vhp_limited, op_type, printer_nr, call_from, adult_child_str, statsort, dispsort, curr_date, incl_tentative, mi_inactive, show_rate, indgastnr, qci_zinr
         nonlocal qci_zimmer
 
-
         nonlocal sum_list, room_avail_list, date_list, room_list, rate_list, created_list, t_kontline, argt_list, rmcat_list, tmp_resline, tmp_extra, temp_art, tmp_allotment, qci_zimmer, buff_ratelist
         nonlocal sum_list_data, room_avail_list_data, date_list_data, room_list_data, rate_list_data, created_list_data, t_kontline_data, argt_list_data, rmcat_list_data, tmp_resline_data, tmp_extra_data, temp_art_data, tmp_allotment_data
 
-        curr_i:int = 0
-        i:int = 0
+        curr_i: int = 0
+        i: int = 0
 
-        for room_avail_list in query(room_avail_list_data, sort_by=[("sort_prior",False)]):
+        for room_avail_list in query(room_avail_list_data, sort_by=[("sort_prior", False)]):
             curr_i = curr_i + 1
             room_list = Room_list()
             room_list_data.append(room_list)
 
             buffer_copy(room_avail_list, room_list)
             room_list.i_counter = curr_i
-
 
     def create_rate_list():
 
@@ -115,39 +263,44 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
         nonlocal sum_list, room_avail_list, date_list, room_list, rate_list, created_list, t_kontline, argt_list, rmcat_list, tmp_resline, tmp_extra, temp_art, tmp_allotment, qci_zimmer, buff_ratelist
         nonlocal sum_list_data, room_avail_list_data, date_list_data, room_list_data, rate_list_data, created_list_data, t_kontline_data, argt_list_data, rmcat_list_data, tmp_resline_data, tmp_extra_data, temp_art_data, tmp_allotment_data
 
-        curr_i:int = 0
-        i:int = 0
-        looprate:int = 0
-        fdate:date = None
-        tdate:date = None
-        str_argt:string = ""
-        room_cat:string = ""
-        adult:int = 0
-        argt_code:string = ""
-        argt_intervall:int = 0
-        argt_zuordnung:string = ""
+        curr_i: int = 0
+        i: int = 0
+        looprate: int = 0
+        fdate: date = None
+        tdate: date = None
+        str_argt: string = ""
+        room_cat: string = ""
+        adult: int = 0
+        argt_code: string = ""
+        argt_intervall: int = 0
+        argt_zuordnung: string = ""
         Buff_ratelist = Rate_list
         buff_ratelist_data = rate_list_data
         ffdate = curr_date
         tdate = curr_date + timedelta(days=num_day)
 
+        # print(f"[LOG] fdate == frdate: {ffdate}")
+
         if co_date is not None and tdate > co_date:
             tdate = co_date
 
-        for room_avail_list in query(room_avail_list_data, sort_by=[("sort_prior",False)]):
+        for room_avail_list in query(room_avail_list_data, sort_by=[("sort_prior", False)]):
             curr_i = curr_i + 1
             room_list = Room_list()
             room_list_data.append(room_list)
 
             buffer_copy(room_avail_list, room_list)
             room_list.i_counter = curr_i * 100
-            indgastnr, created_list_data, rate_list_data = get_output(available_ratesbl(htparam.fdate, tdate, room_avail_list.zikatnr, curr_i, adult_child_str, indgastnr, created_list_data))
+            indgastnr, created_list_data, rate_list_data = get_output(available_ratesbl(
+                ffdate, tdate, room_avail_list.zikatnr, curr_i, adult_child_str, indgastnr, created_list_data))
 
-            for rate_list in query(rate_list_data, sort_by=[("i_counter",False)]):
+            for rate_list in query(rate_list_data, sort_by=[("i_counter", False)]):
 
-                arrangement = get_cache (Arrangement, {"argtnr": [(eq, rate_list.argtno)]})
+                arrangement = get_cache(
+                    Arrangement, {"argtnr": [(eq, rate_list.argtno)]})
 
-                zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, room_avail_list.zikatnr)]})
+                zimkateg = get_cache(
+                    Zimkateg, {"zikatnr": [(eq, room_avail_list.zikatnr)]})
 
                 if arrangement:
                     argt_code = arrangement.arrangement
@@ -178,14 +331,14 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
                     room_list.rmcat = zimkateg.kurzbez
                     room_list.argt = argt_code
                     room_list.bezeich = rate_list.rateCode + "/" +\
-                            argt_code + "/" +\
-                            to_string(room_list.adult) + "/" +\
-                            to_string(room_list.child) + ";"
+                        argt_code + "/" +\
+                        to_string(room_list.adult) + "/" +\
+                        to_string(room_list.child) + ";"
 
                     if num_entries(rate_list.wabkurz, ";") >= 2:
                         room_list.wabkurz = entry(0, rate_list.wabkurz, ";")
-                        room_list.bezeich = room_list.bezeich + entry(1, rate_list.wabkurz, ";")
-
+                        room_list.bezeich = room_list.bezeich + \
+                            entry(1, rate_list.wabkurz, ";")
 
                     else:
                         room_list.wabkurz = rate_list.wabkurz
@@ -193,41 +346,53 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
                     if room_list.minstay < argt_intervall:
                         room_list.minstay = argt_intervall
 
-                    queasy = get_cache (Queasy, {"key": [(eq, 2)],"char1": [(eq, rate_list.ratecode)]})
+                    queasy = get_cache(
+                        Queasy, {"key": [(eq, 2)], "char1": [(eq, rate_list.ratecode)]})
                     room_list.argt_remark = queasy.char2 + chr_unicode(10)
 
                     if room_list.frdate != None:
-                        room_list.argt_remark = room_list.argt_remark + translateExtended ("Begin Sell Date:", lvcarea, "") + " " + to_string(room_list.frdate) + "; "
+                        room_list.argt_remark = room_list.argt_remark + \
+                            translateExtended(
+                                "Begin Sell Date:", lvcarea, "") + " " + to_string(room_list.frdate) + "; "
 
                     if room_list.todate != None:
-                        room_list.argt_remark = room_list.argt_remark + translateExtended ("End Sell Date:", lvcarea, "") + " " + to_string(room_list.todate) + "; "
+                        room_list.argt_remark = room_list.argt_remark + \
+                            translateExtended(
+                                "End Sell Date:", lvcarea, "") + " " + to_string(room_list.todate) + "; "
 
                     if room_list.minstay > 0:
-                        room_list.argt_remark = room_list.argt_remark + translateExtended ("Minimum Stay (in nights):", lvcarea, "") + " " + to_string(room_list.minstay) + "; "
+                        room_list.argt_remark = room_list.argt_remark + translateExtended(
+                            "Minimum Stay (in nights):", lvcarea, "") + " " + to_string(room_list.minstay) + "; "
 
                     if room_list.maxstay > 0:
-                        room_list.argt_remark = room_list.argt_remark + translateExtended ("Maximum Stay (in nights):", lvcarea, "") + " " + to_string(room_list.maxstay) + "; "
+                        room_list.argt_remark = room_list.argt_remark + translateExtended(
+                            "Maximum Stay (in nights):", lvcarea, "") + " " + to_string(room_list.maxstay) + "; "
 
                     if room_list.minadvance > 0:
-                        room_list.argt_remark = room_list.argt_remark + translateExtended ("Min Advance Booking (in days):", lvcarea, "") + " " + to_string(room_list.minadvance) + "; "
+                        room_list.argt_remark = room_list.argt_remark + translateExtended(
+                            "Min Advance Booking (in days):", lvcarea, "") + " " + to_string(room_list.minadvance) + "; "
 
                     if room_list.maxadvance > 0:
-                        room_list.argt_remark = room_list.argt_remark + translateExtended ("Max Advance Booking (in days):", lvcarea, "") + " " + to_string(room_list.maxadvance) + "; "
+                        room_list.argt_remark = room_list.argt_remark + translateExtended(
+                            "Max Advance Booking (in days):", lvcarea, "") + " " + to_string(room_list.maxadvance) + "; "
 
                     if argt_zuordnung != "":
                         room_list.argt_remark = room_list.argt_remark + argt_zuordnung + ";"
                     looprate = 0
-                    for datum in date_range(ffdate,tdate) :
+                    for datum in date_range(ffdate, tdate):
                         looprate = looprate + 1
                         room_list.datum[looprate - 1] = datum
-                        room_list.prcode[looprate - 1] = rate_list.statCode[looprate - 1]
-                        room_list.rmrate[looprate - 1] = rate_list.rmrate[looprate - 1]
+                        room_list.prcode[looprate -
+                                         1] = rate_list.statCode[looprate - 1]
+                        room_list.rmrate[looprate -
+                                         1] = rate_list.rmrate[looprate - 1]
 
                         if room_list.rmrate[looprate - 1] <= 99999:
-                            room_list.coom[looprate - 1] = to_string(room_list.rmrate[looprate - 1], ">,>>>,>>9.99")
+                            room_list.coom[looprate - 1] = to_string(
+                                room_list.rmrate[looprate - 1], ">,>>>,>>9.99")
                         else:
-                            room_list.coom[looprate - 1] = to_string(room_list.rmrate[looprate - 1], " >>>,>>>,>>9")
-
+                            room_list.coom[looprate - 1] = to_string(
+                                room_list.rmrate[looprate - 1], " >>>,>>>,>>9")
 
     def create_tentative():
 
@@ -235,38 +400,36 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
         nonlocal pvilanguage, vhp_limited, op_type, printer_nr, call_from, adult_child_str, statsort, dispsort, curr_date, incl_tentative, mi_inactive, show_rate, indgastnr, qci_zinr
         nonlocal qci_zimmer
 
-
         nonlocal sum_list, room_avail_list, date_list, room_list, rate_list, created_list, t_kontline, argt_list, rmcat_list, tmp_resline, tmp_extra, temp_art, tmp_allotment, qci_zimmer, buff_ratelist
         nonlocal sum_list_data, room_avail_list_data, date_list_data, room_list_data, rate_list_data, created_list_data, t_kontline_data, argt_list_data, rmcat_list_data, tmp_resline_data, tmp_extra_data, temp_art_data, tmp_allotment_data
 
-        datum_t:date = None
-        loop_t:int = 0
+        datum_t: date = None
+        loop_t: int = 0
         sum_list = Sum_list()
         sum_list_data.append(sum_list)
 
-        sum_list.bezeich = translateExtended ("Tentative", lvcarea, "")
+        sum_list.bezeich = translateExtended("Tentative", lvcarea, "")
         datum = curr_date
         i = 1
-        while i <= (num_day + 1) :
+        while i <= (num_day + 1):
 
-            date_list = query(date_list_data, filters=(lambda date_list: date_list.counter == i), first=True)
+            date_list = query(date_list_data, filters=(
+                lambda date_list: date_list.counter == i), first=True)
 
             for res_line in db_session.query(Res_line).filter(
-                     (Res_line.active_flag <= 1) & (Res_line.resstatus == 3) & (((Res_line.ankunft <= date_list.datum) & (Res_line.abreise > date_list.datum)) | ((Res_line.ankunft == date_list.datum) & (Res_line.abreise == date_list.datum))) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line._recid).all():
-                sum_list.summe[date_list.counter - 1] = sum_list.summe[date_list.counter - 1] + res_line.zimmeranz
+                    (Res_line.active_flag <= 1) & (Res_line.resstatus == 3) & (((Res_line.ankunft <= date_list.datum) & (Res_line.abreise > date_list.datum)) | ((Res_line.ankunft == date_list.datum) & (Res_line.abreise == date_list.datum))) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line._recid).all():
+                sum_list.summe[date_list.counter -
+                               1] = sum_list.summe[date_list.counter - 1] + res_line.zimmeranz
             i = i + 1
 
-
-    def create_tmpextra(art_nr:int, typ_pos:string, pos_from:string, cdate:date, room:string, qty:int):
+    def create_tmpextra(art_nr: int, typ_pos: string, pos_from: string, cdate: date, room: string, qty: int):
 
         nonlocal room_list_data, sum_list_data, lvcarea, logid, logstr, cdstr, col_label, curr_day, datum, tot_room, i, ci_date, co_date, from_date, to_date, last_option, wlist, dlist, j, dd, mm, yyyy, num_day, htl_name, htl_adr, htl_tel, res_allot, week_list, rpt_title, occ_room, kontline, res_line, zimmer, paramtext, htparam, queasy, arrangement, zimkateg, artikel, fixleist, guest_pr, argt_line, genstat, reslin_queasy, zwkum, reservation, segment, outorder, resplan
         nonlocal pvilanguage, vhp_limited, op_type, printer_nr, call_from, adult_child_str, statsort, dispsort, curr_date, incl_tentative, mi_inactive, show_rate, indgastnr, qci_zinr
         nonlocal qci_zimmer
 
-
         nonlocal sum_list, room_avail_list, date_list, room_list, rate_list, created_list, t_kontline, argt_list, rmcat_list, tmp_resline, tmp_extra, temp_art, tmp_allotment, qci_zimmer, buff_ratelist
         nonlocal sum_list_data, room_avail_list_data, date_list_data, room_list_data, rate_list_data, created_list_data, t_kontline_data, argt_list_data, rmcat_list_data, tmp_resline_data, tmp_extra_data, temp_art_data, tmp_allotment_data
-
 
         tmp_extra = Tmp_extra()
         tmp_extra_data.append(tmp_extra)
@@ -278,42 +441,40 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
         tmp_extra.room = room
         tmp_extra.qty = qty
 
-
-    def calc_extra(ffdate:date):
+    def calc_extra(ffdate: date):
 
         nonlocal room_list_data, sum_list_data, lvcarea, logid, logstr, cdstr, col_label, curr_day, datum, tot_room, i, ci_date, co_date, from_date, to_date, last_option, wlist, dlist, j, dd, mm, yyyy, num_day, htl_name, htl_adr, htl_tel, res_allot, week_list, rpt_title, occ_room, kontline, res_line, zimmer, paramtext, htparam, queasy, arrangement, zimkateg, artikel, fixleist, guest_pr, argt_line, genstat, reslin_queasy, zwkum, reservation, segment, outorder, resplan
         nonlocal pvilanguage, vhp_limited, op_type, printer_nr, call_from, adult_child_str, statsort, dispsort, curr_date, incl_tentative, mi_inactive, show_rate, indgastnr, qci_zinr
         nonlocal qci_zimmer
 
-
         nonlocal sum_list, room_avail_list, date_list, room_list, rate_list, created_list, t_kontline, argt_list, rmcat_list, tmp_resline, tmp_extra, temp_art, tmp_allotment, qci_zimmer, buff_ratelist
         nonlocal sum_list_data, room_avail_list_data, date_list_data, room_list_data, rate_list_data, created_list_data, t_kontline_data, argt_list_data, rmcat_list_data, tmp_resline_data, tmp_extra_data, temp_art_data, tmp_allotment_data
 
-        tdate:date = None
-        art_nr:int = 0
-        int_art:string = ""
-        bdate:date = None
-        edate:date = None
-        eposdate:date = None
-        ndate:date = None
-        art_qty:int = 0
-        art_rem:int = 0
-        tot_used:int = 0
-        argtnr:int = 0
-        bill_date:date = None
-        bill_fdate:date = None
-        bill_tdate:date = None
-        curr_zikatnr:int = 0
-        rm_rate:Decimal = to_decimal("0.0")
-        pax:int = 0
-        argt_pax:int = 0
-        post_it:bool = False
-        argt_betrag:Decimal = to_decimal("0.0")
-        argt_found:bool = False
-        contcode:string = ""
-        ct:string = ""
+        tdate: date = None
+        art_nr: int = 0
+        int_art: string = ""
+        bdate: date = None
+        edate: date = None
+        eposdate: date = None
+        ndate: date = None
+        art_qty: int = 0
+        art_rem: int = 0
+        tot_used: int = 0
+        argtnr: int = 0
+        bill_date: date = None
+        bill_fdate: date = None
+        bill_tdate: date = None
+        curr_zikatnr: int = 0
+        rm_rate: Decimal = to_decimal("0.0")
+        pax: int = 0
+        argt_pax: int = 0
+        post_it: bool = False
+        argt_betrag: Decimal = to_decimal("0.0")
+        argt_found: bool = False
+        contcode: string = ""
+        ct: string = ""
         bargt = None
-        Bargt =  create_buffer("Bargt",Arrangement)
+        Bargt = create_buffer("Bargt", Arrangement)
         tdate = ffdate + timedelta(days=num_day)
 
         if co_date is not None and tdate > co_date:
@@ -323,9 +484,10 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
         temp_art_data.clear()
 
         for res_line in db_session.query(Res_line).filter(
-                 (not_ (Res_line.abreise < ffdate)) & (not_ (Res_line.ankunft > tdate)) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line.resnr).all():
+                (not_(Res_line.abreise < ffdate)) & (not_(Res_line.ankunft > tdate)) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line.resnr).all():
 
-            tmp_resline = query(tmp_resline_data, filters=(lambda tmp_resline: tmp_resline.resnr == res_line.resnr and tmp_resline.reslinnr == res_line.reslinnr), first=True)
+            tmp_resline = query(tmp_resline_data, filters=(lambda tmp_resline: tmp_resline.resnr ==
+                                res_line.resnr and tmp_resline.reslinnr == res_line.reslinnr), first=True)
 
             if not tmp_resline:
                 tmp_resline = Tmp_resline()
@@ -333,27 +495,28 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
 
                 buffer_copy(res_line, tmp_resline)
 
-        htparam = get_cache (Htparam, {"paramgruppe": [(eq, 5)],"paramnr": [(eq, 2999)]})
+        htparam = get_cache(
+            Htparam, {"paramgruppe": [(eq, 5)], "paramnr": [(eq, 2999)]})
 
         if htparam:
-            for i in range(1,num_entries(htparam.fchar , ";")  + 1) :
+            for i in range(1, num_entries(htparam.fchar, ";") + 1):
                 int_art = entry(i - 1, htparam.fchar, ";")
 
                 if int_art != "":
 
-                    artikel = get_cache (Artikel, {"artnr": [(eq, int (int_art))],"departement": [(eq, 0)]})
+                    artikel = get_cache(
+                        Artikel, {"artnr": [(eq, int(int_art))], "departement": [(eq, 0)]})
 
                     if artikel:
                         temp_art = Temp_art()
                         temp_art_data.append(temp_art)
 
-                        temp_art.art_nr = int (int_art)
+                        temp_art.art_nr = int(int_art)
                         temp_art.art_nm = artikel.bezeich
 
+                        art_nr = int(int_art)
 
-                        art_nr = int (int_art)
-
-                        for tmp_resline in query(tmp_resline_data, sort_by=[("resnr",False)]):
+                        for tmp_resline in query(tmp_resline_data, sort_by=[("resnr", False)]):
 
                             if tmp_resline.l_zuordnung[0] != 0:
                                 curr_zikatnr = tmp_resline.l_zuordnung[0]
@@ -361,22 +524,25 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
                                 curr_zikatnr = tmp_resline.zikatnr
 
                             for fixleist in db_session.query(Fixleist).filter(
-                                     (Fixleist.resnr == tmp_resline.resnr) & (Fixleist.reslinnr == tmp_resline.reslinnr) & (Fixleist.artnr == art_nr) & (Fixleist.departement == 0)).order_by(Fixleist._recid).all():
+                                    (Fixleist.resnr == tmp_resline.resnr) & (Fixleist.reslinnr == tmp_resline.reslinnr) & (Fixleist.artnr == art_nr) & (Fixleist.departement == 0)).order_by(Fixleist._recid).all():
 
                                 if tmp_resline.ankunft == tmp_resline.abreise:
 
                                     if fixleist.sequenz == 1 or fixleist.sequenz == 2 or fixleist.sequenz == 6:
-                                        create_tmpextra(art_nr, "Fix-cost line", to_string(fixleist.sequenz), tmp_resline.ankunft, tmp_resline.zinr, fixleist.number)
+                                        create_tmpextra(art_nr, "Fix-cost line", to_string(
+                                            fixleist.sequenz), tmp_resline.ankunft, tmp_resline.zinr, fixleist.number)
 
                                     elif fixleist.sequenz == 4:
 
                                         if get_day(tmp_resline.ankunft) == 1:
-                                            create_tmpextra(art_nr, "Fix-cost line", to_string(fixleist.sequenz), tmp_resline.ankunft, tmp_resline.zinr, fixleist.number)
+                                            create_tmpextra(art_nr, "Fix-cost line", to_string(
+                                                fixleist.sequenz), tmp_resline.ankunft, tmp_resline.zinr, fixleist.number)
 
                                     elif fixleist.sequenz == 5:
 
                                         if get_day(tmp_resline.ankunft + 1) == 1:
-                                            create_tmpextra(art_nr, "Fix-cost line", to_string(fixleist.sequenz), tmp_resline.ankunft, tmp_resline.zinr, fixleist.number)
+                                            create_tmpextra(art_nr, "Fix-cost line", to_string(
+                                                fixleist.sequenz), tmp_resline.ankunft, tmp_resline.zinr, fixleist.number)
                                 else:
 
                                     if fixleist.sequenz == 1 or fixleist.sequenz == 2 or fixleist.sequenz == 4 or fixleist.sequenz == 5:
@@ -393,29 +559,34 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
                                             edate = tmp_resline.abreise
 
                                     if fixleist.sequenz == 1:
-                                        while bdate < edate :
-                                            create_tmpextra(art_nr, "Fix-cost line", to_string(fixleist.sequenz), bdate, tmp_resline.zinr, fixleist.number)
+                                        while bdate < edate:
+                                            create_tmpextra(art_nr, "Fix-cost line", to_string(
+                                                fixleist.sequenz), bdate, tmp_resline.zinr, fixleist.number)
                                             bdate = bdate + timedelta(days=1)
 
                                     elif fixleist.sequenz == 2:
-                                        create_tmpextra(art_nr, "Fix-cost line", to_string(fixleist.sequenz), tmp_resline.ankunft, tmp_resline.zinr, fixleist.number)
+                                        create_tmpextra(art_nr, "Fix-cost line", to_string(
+                                            fixleist.sequenz), tmp_resline.ankunft, tmp_resline.zinr, fixleist.number)
 
                                     elif fixleist.sequenz == 4:
-                                        while bdate < edate :
+                                        while bdate < edate:
 
                                             if get_day(bdate) == 1:
-                                                create_tmpextra(art_nr, "Fix-cost line", to_string(fixleist.sequenz), bdate, tmp_resline.zinr, fixleist.number)
+                                                create_tmpextra(art_nr, "Fix-cost line", to_string(
+                                                    fixleist.sequenz), bdate, tmp_resline.zinr, fixleist.number)
                                             bdate = bdate + timedelta(days=1)
 
                                     elif fixleist.sequenz == 5:
-                                        while bdate < edate :
+                                        while bdate < edate:
 
                                             if get_day(bdate + 1) == 1:
-                                                create_tmpextra(art_nr, "Fix-cost line", to_string(fixleist.sequenz), bdate, tmp_resline.zinr, fixleist.number)
+                                                create_tmpextra(art_nr, "Fix-cost line", to_string(
+                                                    fixleist.sequenz), bdate, tmp_resline.zinr, fixleist.number)
                                             bdate = bdate + timedelta(days=1)
 
                                     elif fixleist.sequenz == 6:
-                                        eposdate = (fixleist.lfakt + timedelta(days=fixleist.dekade))
+                                        eposdate = (
+                                            fixleist.lfakt + timedelta(days=fixleist.dekade))
 
                                         if fixleist.lfakt < ffdate:
                                             bdate = ffdate
@@ -432,25 +603,30 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
 
                                             elif eposdate <= tmp_resline.abreise:
                                                 edate = eposdate
-                                        while bdate < edate :
-                                            create_tmpextra(art_nr, "Fix-cost line", to_string(fixleist.sequenz), bdate, tmp_resline.zinr, fixleist.number)
+                                        while bdate < edate:
+                                            create_tmpextra(art_nr, "Fix-cost line", to_string(
+                                                fixleist.sequenz), bdate, tmp_resline.zinr, fixleist.number)
                                             bdate = bdate + timedelta(days=1)
 
-                            bargt = get_cache (Arrangement, {"arrangement": [(eq, tmp_resline.arrangement)]})
+                            bargt = get_cache(Arrangement, {"arrangement": [
+                                              (eq, tmp_resline.arrangement)]})
 
                             if bargt:
                                 argtnr = bargt.argtnr
                                 contcode = ""
 
-                                guest_pr = get_cache (Guest_pr, {"gastnr": [(eq, tmp_resline.gastnr)]})
+                                guest_pr = get_cache(
+                                    Guest_pr, {"gastnr": [(eq, tmp_resline.gastnr)]})
 
                                 if guest_pr:
                                     contcode = guest_pr.code
                                     ct = tmp_resline.zimmer_wunsch
 
-                                    if matches(ct,r"*$CODE$*"):
-                                        ct = substring(ct, get_index(ct, "$CODE$") + 6 - 1)
-                                        contcode = substring(ct, 0, get_index(ct, ";") - 1)
+                                    if matches(ct, r"*$CODE$*"):
+                                        ct = substring(ct, get_index(
+                                            ct, "$CODE$") + 6 - 1)
+                                        contcode = substring(
+                                            ct, 0, get_index(ct, ";") - 1)
 
                             if tmp_resline.ankunft <= ffdate:
                                 bill_fdate = ffdate
@@ -460,26 +636,30 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
                             if tmp_resline.abreise >= tdate:
                                 bill_tdate = tdate
                             else:
-                                bill_tdate = tmp_resline.abreise - timedelta(days=1)
-                            rm_rate =  to_decimal(tmp_resline.zipreis)
+                                bill_tdate = tmp_resline.abreise - \
+                                    timedelta(days=1)
+                            rm_rate = to_decimal(tmp_resline.zipreis)
 
                             for argt_line in db_session.query(Argt_line).filter(
-                                     (Argt_line.argtnr == argtnr) & (Argt_line.argt_artnr == art_nr)).order_by(Argt_line._recid).all():
-                                for bill_date in date_range(tmp_resline.ankunft, tmp_resline.abreise - timedelta(days=1)) :
+                                    (Argt_line.argtnr == argtnr) & (Argt_line.argt_artnr == art_nr)).order_by(Argt_line._recid).all():
+                                for bill_date in date_range(tmp_resline.ankunft, tmp_resline.abreise - timedelta(days=1)):
                                     pax = tmp_resline.erwachs
 
                                     if bill_date < ci_date:
-                                        rm_rate =  to_decimal(None)
+                                        rm_rate = to_decimal(None)
 
-                                        genstat = get_cache (Genstat, {"datum": [(eq, bill_date)],"resnr": [(eq, res_line.resnr)],"res_int[0]": [(eq, res_line.reslinnr)]})
+                                        genstat = get_cache(Genstat, {"datum": [(eq, bill_date)], "resnr": [
+                                                            (eq, res_line.resnr)], "res_int[0]": [(eq, res_line.reslinnr)]})
 
                                         if genstat:
-                                            rm_rate =  to_decimal(genstat.zipreis)
+                                            rm_rate = to_decimal(
+                                                genstat.zipreis)
                                             pax = genstat.erwachs
 
                                     if (bill_date >= ci_date) or rm_rate == None:
 
-                                        reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "arrangement")],"resnr": [(eq, res_line.resnr)],"reslinnr": [(eq, res_line.reslinnr)],"date1": [(le, bill_date)],"date2": [(ge, bill_date)]})
+                                        reslin_queasy = get_cache(Reslin_queasy, {"key": [(eq, "arrangement")], "resnr": [(eq, res_line.resnr)], "reslinnr": [
+                                                                  (eq, res_line.reslinnr)], "date1": [(le, bill_date)], "date2": [(ge, bill_date)]})
 
                                         if reslin_queasy:
 
@@ -498,17 +678,19 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
 
                                     elif argt_line.vt_percnt == 2:
                                         argt_pax = tmp_resline.kind2
-                                    argt_betrag =  to_decimal(argt_line.betrag)
+                                    argt_betrag = to_decimal(argt_line.betrag)
 
                                     if argt_pax > 0:
 
                                         if argt_line.fakt_modus == 6:
 
-                                            argt_list = query(argt_list_data, filters=(lambda argt_list: argt_list.argtnr == argt_line.argtnr and argt_list.departement == argt_line.departement and argt_list.argt_artnr == argt_line.argt_artnr and argt_list.vt_percnt == argt_line.vt_percnt and argt_list.is_charged == argt_line.kind1), first=True)
+                                            argt_list = query(argt_list_data, filters=(lambda argt_list: argt_list.argtnr == argt_line.argtnr and argt_list.departement == argt_line.departement and argt_list.argt_artnr ==
+                                                              argt_line.argt_artnr and argt_list.vt_percnt == argt_line.vt_percnt and argt_list.is_charged == argt_line.kind1), first=True)
 
                                             if not argt_list:
                                                 argt_list = Argt_list()
-                                                argt_list_data.append(argt_list)
+                                                argt_list_data.append(
+                                                    argt_list)
 
                                                 argt_list.argtnr = argt_line.argtnr
                                                 argt_list.departement = argt_line.departement
@@ -519,151 +701,191 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
 
                                             if argt_list.period < argt_line.intervall:
 
-                                                reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "fargt-line")],"char1": [(eq, "")],"number1": [(eq, argt_line.departement)],"number2": [(eq, argt_line.argtnr)],"resnr": [(eq, tmp_resline.resnr)],"reslinnr": [(eq, tmp_resline.reslinnr)],"number3": [(eq, argt_line.argt_artnr)],"date1": [(le, tmp_resline.abreise)],"date2": [(ge, tmp_resline.ankunft)]})
+                                                reslin_queasy = get_cache(Reslin_queasy, {"key": [(eq, "fargt-line")], "char1": [(eq, "")], "number1": [(eq, argt_line.departement)], "number2": [(eq, argt_line.argtnr)], "resnr": [(
+                                                    eq, tmp_resline.resnr)], "reslinnr": [(eq, tmp_resline.reslinnr)], "number3": [(eq, argt_line.argt_artnr)], "date1": [(le, tmp_resline.abreise)], "date2": [(ge, tmp_resline.ankunft)]})
 
                                                 if reslin_queasy:
 
-                                                    reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "fargt-line")],"char1": [(eq, "")],"number1": [(eq, argt_line.departement)],"number2": [(eq, argt_line.argtnr)],"resnr": [(eq, tmp_resline.resnr)],"reslinnr": [(eq, tmp_resline.reslinnr)],"number3": [(eq, argt_line.argt_artnr)],"date1": [(le, bill_date)],"date2": [(ge, bill_date)]})
+                                                    reslin_queasy = get_cache(Reslin_queasy, {"key": [(eq, "fargt-line")], "char1": [(eq, "")], "number1": [(eq, argt_line.departement)], "number2": [(eq, argt_line.argtnr)], "resnr": [
+                                                                              (eq, tmp_resline.resnr)], "reslinnr": [(eq, tmp_resline.reslinnr)], "number3": [(eq, argt_line.argt_artnr)], "date1": [(le, bill_date)], "date2": [(ge, bill_date)]})
 
                                                     if reslin_queasy:
-                                                        argt_betrag =  to_decimal("0")
+                                                        argt_betrag = to_decimal(
+                                                            "0")
 
-                                                        if reslin_queasy.char2.lower()  != "" and reslin_queasy.char2.lower()  != ("0").lower() :
+                                                        if reslin_queasy.char2.lower() != "" and reslin_queasy.char2.lower() != ("0").lower():
 
                                                             zwkum = db_session.query(Zwkum).filter(
-                                                                     (Zwkum.zknr == artikel.zwkum) & (Zwkum.departement == artikel.departement) & (matches(Zwkum.bezeich,"*DISCOUNT*"))).first()
+                                                                (Zwkum.zknr == artikel.zwkum) & (Zwkum.departement == artikel.departement) & (matches(Zwkum.bezeich, "*DISCOUNT*"))).first()
 
                                                             if zwkum:
-                                                                argt_betrag =  to_decimal(rm_rate) * to_decimal(to_int(reslin_queasy.char2)) / to_decimal("100") * to_decimal(-1)
+                                                                argt_betrag = to_decimal(
+                                                                    rm_rate) * to_decimal(to_int(reslin_queasy.char2)) / to_decimal("100") * to_decimal(-1)
                                                             else:
-                                                                argt_betrag =  to_decimal(rm_rate) * to_decimal(to_int(reslin_queasy.char2)) / to_decimal("100")
+                                                                argt_betrag = to_decimal(
+                                                                    rm_rate) * to_decimal(to_int(reslin_queasy.char2)) / to_decimal("100")
                                                         else:
 
                                                             if reslin_queasy.deci1 != 0 and argt_line.vt_percnt == 0:
-                                                                argt_betrag =  to_decimal(reslin_queasy.deci1)
+                                                                argt_betrag = to_decimal(
+                                                                    reslin_queasy.deci1)
 
                                                             elif reslin_queasy.deci2 != 0 and argt_line.vt_percnt == 1:
-                                                                argt_betrag =  to_decimal(reslin_queasy.deci2)
+                                                                argt_betrag = to_decimal(
+                                                                    reslin_queasy.deci2)
 
                                                             elif reslin_queasy.deci3 != 0 and argt_line.vt_percnt == 2:
-                                                                argt_betrag =  to_decimal(reslin_queasy.deci3)
-                                                        post_it = check_argt_post(argt_line.argt_artnr, argt_line.departement, argt_line.fakt_modus, argt_line.intervall, reslin_queasy.date1, bill_date)
+                                                                argt_betrag = to_decimal(
+                                                                    reslin_queasy.deci3)
+                                                        post_it = check_argt_post(
+                                                            argt_line.argt_artnr, argt_line.departement, argt_line.fakt_modus, argt_line.intervall, reslin_queasy.date1, bill_date)
                                                     else:
                                                         post_it = False
                                                 else:
 
-                                                    reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "argt-line")],"char1": [(eq, contcode)],"number1": [(eq, tmp_resline.reserve_int)],"number2": [(eq, argtnr)],"reslinnr": [(eq, curr_zikatnr)],"number3": [(eq, argt_line.argt_artnr)],"resnr": [(eq, argt_line.departement)],"date1": [(le, tmp_resline.abreise)],"date2": [(ge, tmp_resline.ankunft)]})
+                                                    reslin_queasy = get_cache(Reslin_queasy, {"key": [(eq, "argt-line")], "char1": [(eq, contcode)], "number1": [(eq, tmp_resline.reserve_int)], "number2": [(eq, argtnr)], "reslinnr": [
+                                                                              (eq, curr_zikatnr)], "number3": [(eq, argt_line.argt_artnr)], "resnr": [(eq, argt_line.departement)], "date1": [(le, tmp_resline.abreise)], "date2": [(ge, tmp_resline.ankunft)]})
 
                                                     if reslin_queasy:
 
-                                                        reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "argt-line")],"char1": [(eq, contcode)],"number1": [(eq, tmp_resline.reserve_int)],"number2": [(eq, argtnr)],"reslinnr": [(eq, curr_zikatnr)],"number3": [(eq, argt_line.argt_artnr)],"resnr": [(eq, argt_line.departement)],"date1": [(le, bill_date)],"date2": [(ge, bill_date)]})
+                                                        reslin_queasy = get_cache(Reslin_queasy, {"key": [(eq, "argt-line")], "char1": [(eq, contcode)], "number1": [(eq, tmp_resline.reserve_int)], "number2": [(eq, argtnr)], "reslinnr": [
+                                                                                  (eq, curr_zikatnr)], "number3": [(eq, argt_line.argt_artnr)], "resnr": [(eq, argt_line.departement)], "date1": [(le, bill_date)], "date2": [(ge, bill_date)]})
 
                                                         if reslin_queasy:
-                                                            argt_betrag =  to_decimal("0")
+                                                            argt_betrag = to_decimal(
+                                                                "0")
 
-                                                            if reslin_queasy.char2.lower()  != "" and reslin_queasy.char2.lower()  != ("0").lower() :
+                                                            if reslin_queasy.char2.lower() != "" and reslin_queasy.char2.lower() != ("0").lower():
 
                                                                 zwkum = db_session.query(Zwkum).filter(
-                                                                         (Zwkum.zknr == artikel.zwkum) & (Zwkum.departement == artikel.departement) & (matches(Zwkum.bezeich,"*DISCOUNT*"))).first()
+                                                                    (Zwkum.zknr == artikel.zwkum) & (Zwkum.departement == artikel.departement) & (matches(Zwkum.bezeich, "*DISCOUNT*"))).first()
 
                                                                 if zwkum:
-                                                                    argt_betrag =  to_decimal(rm_rate) * to_decimal(to_int(reslin_queasy.char2)) / to_decimal("100") * to_decimal(-1)
+                                                                    argt_betrag = to_decimal(
+                                                                        rm_rate) * to_decimal(to_int(reslin_queasy.char2)) / to_decimal("100") * to_decimal(-1)
                                                                 else:
-                                                                    argt_betrag =  to_decimal(rm_rate) * to_decimal(to_int(reslin_queasy.char2)) / to_decimal("100")
+                                                                    argt_betrag = to_decimal(
+                                                                        rm_rate) * to_decimal(to_int(reslin_queasy.char2)) / to_decimal("100")
                                                             else:
 
                                                                 if reslin_queasy.deci1 != 0 and argt_line.vt_percnt == 0:
-                                                                    argt_betrag =  to_decimal(reslin_queasy.deci1)
+                                                                    argt_betrag = to_decimal(
+                                                                        reslin_queasy.deci1)
 
                                                                 elif reslin_queasy.deci2 != 0 and argt_line.vt_percnt == 1:
-                                                                    argt_betrag =  to_decimal(reslin_queasy.deci2)
+                                                                    argt_betrag = to_decimal(
+                                                                        reslin_queasy.deci2)
 
                                                                 elif reslin_queasy.deci3 != 0 and argt_line.vt_percnt == 2:
-                                                                    argt_betrag =  to_decimal(reslin_queasy.deci3)
-                                                            post_it = check_argt_post(argt_line.argt_artnr, argt_line.departement, argt_line.fakt_modus, argt_line.intervall, reslin_queasy.date1, bill_date)
+                                                                    argt_betrag = to_decimal(
+                                                                        reslin_queasy.deci3)
+                                                            post_it = check_argt_post(
+                                                                argt_line.argt_artnr, argt_line.departement, argt_line.fakt_modus, argt_line.intervall, reslin_queasy.date1, bill_date)
                                                         else:
                                                             post_it = False
                                                     else:
-                                                        post_it = check_argt_post(argt_line.argt_artnr, argt_line.departement, argt_line.fakt_modus, argt_line.intervall, tmp_resline.ankunft, bill_date)
+                                                        post_it = check_argt_post(
+                                                            argt_line.argt_artnr, argt_line.departement, argt_line.fakt_modus, argt_line.intervall, tmp_resline.ankunft, bill_date)
                                             else:
                                                 post_it = False
 
-                                            if post_it  and argt_betrag != 0:
+                                            if post_it and argt_betrag != 0:
 
                                                 if bill_date >= htparam.fdate and bill_date <= tdate:
-                                                    create_tmpextra(art_nr, "argt-line", "0", bill_date, tmp_resline.zinr, argt_pax)
+                                                    create_tmpextra(
+                                                        art_nr, "argt-line", "0", bill_date, tmp_resline.zinr, argt_pax)
                                                 argt_list.period = argt_list.period + 1
                                         else:
 
-                                            reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "fargt-line")],"char1": [(eq, "")],"number1": [(eq, argt_line.departement)],"number2": [(eq, argt_line.argtnr)],"resnr": [(eq, tmp_resline.resnr)],"reslinnr": [(eq, tmp_resline.reslinnr)],"number3": [(eq, argt_line.argt_artnr)],"date1": [(le, tmp_resline.abreise)],"date2": [(ge, tmp_resline.ankunft)]})
+                                            reslin_queasy = get_cache(Reslin_queasy, {"key": [(eq, "fargt-line")], "char1": [(eq, "")], "number1": [(eq, argt_line.departement)], "number2": [(eq, argt_line.argtnr)], "resnr": [(
+                                                eq, tmp_resline.resnr)], "reslinnr": [(eq, tmp_resline.reslinnr)], "number3": [(eq, argt_line.argt_artnr)], "date1": [(le, tmp_resline.abreise)], "date2": [(ge, tmp_resline.ankunft)]})
 
                                             if reslin_queasy:
 
-                                                reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "fargt-line")],"char1": [(eq, "")],"number1": [(eq, argt_line.departement)],"number2": [(eq, argt_line.argtnr)],"resnr": [(eq, tmp_resline.resnr)],"reslinnr": [(eq, tmp_resline.reslinnr)],"number3": [(eq, argt_line.argt_artnr)],"date1": [(le, bill_date)],"date2": [(ge, bill_date)]})
+                                                reslin_queasy = get_cache(Reslin_queasy, {"key": [(eq, "fargt-line")], "char1": [(eq, "")], "number1": [(eq, argt_line.departement)], "number2": [(eq, argt_line.argtnr)], "resnr": [
+                                                                          (eq, tmp_resline.resnr)], "reslinnr": [(eq, tmp_resline.reslinnr)], "number3": [(eq, argt_line.argt_artnr)], "date1": [(le, bill_date)], "date2": [(ge, bill_date)]})
 
                                                 if reslin_queasy:
-                                                    argt_betrag =  to_decimal("0")
+                                                    argt_betrag = to_decimal(
+                                                        "0")
 
-                                                    if reslin_queasy.char2.lower()  != "" and reslin_queasy.char2.lower()  != ("0").lower() :
+                                                    if reslin_queasy.char2.lower() != "" and reslin_queasy.char2.lower() != ("0").lower():
 
                                                         zwkum = db_session.query(Zwkum).filter(
-                                                                 (Zwkum.zknr == artikel.zwkum) & (Zwkum.departement == artikel.departement) & (matches(Zwkum.bezeich,"*DISCOUNT*"))).first()
+                                                            (Zwkum.zknr == artikel.zwkum) & (Zwkum.departement == artikel.departement) & (matches(Zwkum.bezeich, "*DISCOUNT*"))).first()
 
                                                         if zwkum:
-                                                            argt_betrag =  to_decimal(rm_rate) * to_decimal(to_int(reslin_queasy.char2)) / to_decimal("100") * to_decimal(-1)
+                                                            argt_betrag = to_decimal(
+                                                                rm_rate) * to_decimal(to_int(reslin_queasy.char2)) / to_decimal("100") * to_decimal(-1)
                                                         else:
-                                                            argt_betrag =  to_decimal(rm_rate) * to_decimal(to_int(reslin_queasy.char2)) / to_decimal("100")
+                                                            argt_betrag = to_decimal(
+                                                                rm_rate) * to_decimal(to_int(reslin_queasy.char2)) / to_decimal("100")
                                                     else:
 
                                                         if reslin_queasy.deci1 != 0 and argt_line.vt_percnt == 0:
-                                                            argt_betrag =  to_decimal(reslin_queasy.deci1)
+                                                            argt_betrag = to_decimal(
+                                                                reslin_queasy.deci1)
 
                                                         elif reslin_queasy.deci2 != 0 and argt_line.vt_percnt == 1:
-                                                            argt_betrag =  to_decimal(reslin_queasy.deci2)
+                                                            argt_betrag = to_decimal(
+                                                                reslin_queasy.deci2)
 
                                                         elif reslin_queasy.deci3 != 0 and argt_line.vt_percnt == 2:
-                                                            argt_betrag =  to_decimal(reslin_queasy.deci3)
-                                                    post_it = check_argt_post(argt_line.argt_artnr, argt_line.departement, argt_line.fakt_modus, argt_line.intervall, tmp_resline.ankunft, bill_date)
+                                                            argt_betrag = to_decimal(
+                                                                reslin_queasy.deci3)
+                                                    post_it = check_argt_post(
+                                                        argt_line.argt_artnr, argt_line.departement, argt_line.fakt_modus, argt_line.intervall, tmp_resline.ankunft, bill_date)
                                                 else:
                                                     post_it = False
                                             else:
 
-                                                reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "argt-line")],"char1": [(eq, contcode)],"number1": [(eq, tmp_resline.reserve_int)],"number2": [(eq, argtnr)],"reslinnr": [(eq, curr_zikatnr)],"number3": [(eq, argt_line.argt_artnr)],"resnr": [(eq, argt_line.departement)],"date1": [(le, tmp_resline.abreise)],"date2": [(ge, tmp_resline.ankunft)]})
+                                                reslin_queasy = get_cache(Reslin_queasy, {"key": [(eq, "argt-line")], "char1": [(eq, contcode)], "number1": [(eq, tmp_resline.reserve_int)], "number2": [(eq, argtnr)], "reslinnr": [
+                                                                          (eq, curr_zikatnr)], "number3": [(eq, argt_line.argt_artnr)], "resnr": [(eq, argt_line.departement)], "date1": [(le, tmp_resline.abreise)], "date2": [(ge, tmp_resline.ankunft)]})
 
                                                 if reslin_queasy:
 
-                                                    reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "argt-line")],"char1": [(eq, contcode)],"number1": [(eq, tmp_resline.reserve_int)],"number2": [(eq, argtnr)],"reslinnr": [(eq, curr_zikatnr)],"number3": [(eq, argt_line.argt_artnr)],"resnr": [(eq, argt_line.departement)],"date1": [(le, bill_date)],"date2": [(ge, bill_date)]})
+                                                    reslin_queasy = get_cache(Reslin_queasy, {"key": [(eq, "argt-line")], "char1": [(eq, contcode)], "number1": [(eq, tmp_resline.reserve_int)], "number2": [(eq, argtnr)], "reslinnr": [
+                                                                              (eq, curr_zikatnr)], "number3": [(eq, argt_line.argt_artnr)], "resnr": [(eq, argt_line.departement)], "date1": [(le, bill_date)], "date2": [(ge, bill_date)]})
 
                                                     if reslin_queasy:
-                                                        argt_betrag =  to_decimal("0")
+                                                        argt_betrag = to_decimal(
+                                                            "0")
 
-                                                        if reslin_queasy.char2.lower()  != "" and reslin_queasy.char2.lower()  != ("0").lower() :
+                                                        if reslin_queasy.char2.lower() != "" and reslin_queasy.char2.lower() != ("0").lower():
 
                                                             zwkum = db_session.query(Zwkum).filter(
-                                                                     (Zwkum.zknr == artikel.zwkum) & (Zwkum.departement == artikel.departement) & (matches(Zwkum.bezeich,"*DISCOUNT*"))).first()
+                                                                (Zwkum.zknr == artikel.zwkum) & (Zwkum.departement == artikel.departement) & (matches(Zwkum.bezeich, "*DISCOUNT*"))).first()
 
                                                             if zwkum:
-                                                                argt_betrag =  to_decimal(rm_rate) * to_decimal(to_int(reslin_queasy.char2)) / to_decimal("100") * to_decimal(-1)
+                                                                argt_betrag = to_decimal(
+                                                                    rm_rate) * to_decimal(to_int(reslin_queasy.char2)) / to_decimal("100") * to_decimal(-1)
                                                             else:
-                                                                argt_betrag =  to_decimal(rm_rate) * to_decimal(to_int(reslin_queasy.char2)) / to_decimal("100")
+                                                                argt_betrag = to_decimal(
+                                                                    rm_rate) * to_decimal(to_int(reslin_queasy.char2)) / to_decimal("100")
                                                         else:
 
                                                             if reslin_queasy.deci1 != 0 and argt_line.vt_percnt == 0:
-                                                                argt_betrag =  to_decimal(reslin_queasy.deci1)
+                                                                argt_betrag = to_decimal(
+                                                                    reslin_queasy.deci1)
 
                                                             elif reslin_queasy.deci2 != 0 and argt_line.vt_percnt == 1:
-                                                                argt_betrag =  to_decimal(reslin_queasy.deci2)
+                                                                argt_betrag = to_decimal(
+                                                                    reslin_queasy.deci2)
 
                                                             elif reslin_queasy.deci3 != 0 and argt_line.vt_percnt == 2:
-                                                                argt_betrag =  to_decimal(reslin_queasy.deci3)
-                                                        post_it = check_argt_post(argt_line.argt_artnr, argt_line.departement, argt_line.fakt_modus, argt_line.intervall, tmp_resline.ankunft, bill_date)
+                                                                argt_betrag = to_decimal(
+                                                                    reslin_queasy.deci3)
+                                                        post_it = check_argt_post(
+                                                            argt_line.argt_artnr, argt_line.departement, argt_line.fakt_modus, argt_line.intervall, tmp_resline.ankunft, bill_date)
                                                     else:
                                                         post_it = False
                                                 else:
-                                                    post_it = check_argt_post(argt_line.argt_artnr, argt_line.departement, argt_line.fakt_modus, argt_line.intervall, tmp_resline.ankunft, bill_date)
+                                                    post_it = check_argt_post(
+                                                        argt_line.argt_artnr, argt_line.departement, argt_line.fakt_modus, argt_line.intervall, tmp_resline.ankunft, bill_date)
 
-                                            if post_it  and argt_betrag != 0 and bill_date >= htparam.fdate and bill_date <= tdate:
-                                                create_tmpextra(art_nr, "argt-line", "0", bill_date, tmp_resline.zinr, argt_pax)
+                                            if post_it and argt_betrag != 0 and bill_date >= htparam.fdate and bill_date <= tdate:
+                                                create_tmpextra(
+                                                    art_nr, "argt-line", "0", bill_date, tmp_resline.zinr, argt_pax)
         ndate = ffdate
         sum_list = Sum_list()
         sum_list_data.append(sum_list)
@@ -676,7 +898,8 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
 
         for temp_art in query(temp_art_data):
 
-            artikel = get_cache (Artikel, {"artnr": [(eq, temp_art.art_nr)],"departement": [(eq, 0)]})
+            artikel = get_cache(
+                Artikel, {"artnr": [(eq, temp_art.art_nr)], "departement": [(eq, 0)]})
 
             if artikel:
                 art_qty = artikel.anzahl
@@ -685,7 +908,7 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
 
                 sum_list.bezeich = temp_art.art_nm
                 ndate = ffdate
-                for i in range(1,30 + 1) :
+                for i in range(1, 30 + 1):
 
                     for tmp_extra in query(tmp_extra_data, filters=(lambda tmp_extra: tmp_extra.art == temp_art.art_nr and tmp_extra.cdate == ndate and tmp_extra.qty != 0)):
                         tot_used = tot_used + tmp_extra.qty
@@ -693,7 +916,6 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
                     sum_list.summe[i - 1] = art_rem
                     ndate = ffdate + timedelta(days=i)
                     tot_used = 0
-
 
     def count_rmcateg():
 
@@ -704,14 +926,14 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
         nonlocal sum_list, room_avail_list, date_list, room_list, rate_list, created_list, t_kontline, argt_list, rmcat_list, tmp_resline, tmp_extra, temp_art, tmp_allotment, qci_zimmer, buff_ratelist
         nonlocal sum_list_data, room_avail_list_data, date_list_data, room_list_data, rate_list_data, created_list_data, t_kontline_data, argt_list_data, rmcat_list_data, tmp_resline_data, tmp_extra_data, temp_art_data, tmp_allotment_data
 
-        zikatnr:int = 0
+        zikatnr: int = 0
         rmcat_list_data.clear()
         tot_room = 0
 
         for zimmer in db_session.query(Zimmer).filter(
-                 (Zimmer.sleeping)).order_by(Zimmer.zikatnr).all():
+                (Zimmer.sleeping)).order_by(Zimmer.zikatnr).all():
 
-            zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, zimmer.zikatnr)]})
+            zimkateg = get_cache(Zimkateg, {"zikatnr": [(eq, zimmer.zikatnr)]})
 
             if zimkateg.verfuegbarkeit:
                 tot_room = tot_room + 1
@@ -728,13 +950,13 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
 
         if not mi_inactive:
             return
-        
+
         zikatnr = 0
 
         for zimmer in db_session.query(Zimmer).filter(
-                 (Zimmer.sleeping == False)).order_by(Zimmer.zikatnr).all():
+                (Zimmer.sleeping == False)).order_by(Zimmer.zikatnr).all():
 
-            zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, zimmer.zikatnr)]})
+            zimkateg = get_cache(Zimkateg, {"zikatnr": [(eq, zimmer.zikatnr)]})
 
             if zimkateg.verfuegbarkeit:
                 if zikatnr != zimkateg.zikatnr:
@@ -748,8 +970,6 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
                     rmcat_list.anzahl = rmcat_list.anzahl + 1
                 zikatnr = zimkateg.zikatnr
 
-
-
     def create_browse():
 
         nonlocal room_list_data, sum_list_data, lvcarea, logid, logstr, cdstr, col_label, curr_day, tot_room, ci_date, co_date, from_date, to_date, last_option, wlist, dlist, j, dd, mm, yyyy, num_day, htl_name, htl_adr, htl_tel, res_allot, week_list, rpt_title, occ_room, kontline, res_line, zimmer, paramtext, htparam, queasy, arrangement, zimkateg, artikel, fixleist, guest_pr, argt_line, genstat, reslin_queasy, zwkum, reservation, segment, outorder, resplan
@@ -759,110 +979,117 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
         nonlocal sum_list, room_avail_list, date_list, room_list, rate_list, created_list, t_kontline, argt_list, rmcat_list, tmp_resline, tmp_extra, temp_art, tmp_allotment, qci_zimmer, buff_ratelist
         nonlocal sum_list_data, room_avail_list_data, date_list_data, room_list_data, rate_list_data, created_list_data, t_kontline_data, argt_list_data, rmcat_list_data, tmp_resline_data, tmp_extra_data, temp_art_data, tmp_allotment_data
 
-        datum:date = None
-        ffdate:date = None
-        tdate:date = None
-        i:int = 0
-        anz:int = 0
-        do_it:bool = False
-        tmp_list:List[int] = create_empty_list(30,0)
-        ooo_list:List[int] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        om_list:List[int] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        om_flag:bool = False
-        tot_used:int = 0
-        art_qty:int = 0
+        datum: date = None
+        ffdate: date = None
+        tdate: date = None
+        i: int = 0
+        anz: int = 0
+        do_it: bool = False
+        tmp_list: List[int] = create_empty_list(30, 0)
+        ooo_list: List[int] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        om_list: List[int] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        om_flag: bool = False
+        tot_used: int = 0
+        art_qty: int = 0
         kline = None
-        Kline =  create_buffer("Kline",Kontline)
+        Kline = create_buffer("Kline", Kontline)
         count_rmcateg()
-        
+
         room_avail_list_data.clear()
         sum_list_data.clear()
         ffdate = curr_date
         tdate = curr_date + timedelta(days=num_day)
 
-        if co_date is not None and tdate > co_date  :
+        if co_date is not None and tdate > co_date:
             tdate = co_date
-        for i in range(1,30 + 1) :
+        for i in range(1, 30 + 1):
             res_allot[i - 1] = 0
 
         for kontline in db_session.query(Kontline).filter(
-                 (Kontline.betriebsnr == 0) & (Kontline.ankunft <= tdate) & (Kontline.abreise >= ffdate) & (Kontline.kontstatus == 1)).order_by(Kontline._recid).all():
+                (Kontline.betriebsnr == 0) & (Kontline.ankunft <= tdate) & (Kontline.abreise >= ffdate) & (Kontline.kontstatus == 1)).order_by(Kontline._recid).all():
             t_kontline = T_kontline()
             t_kontline_data.append(t_kontline)
 
             buffer_copy(kontline, t_kontline)
 
         for res_line in db_session.query(Res_line).filter(
-                 (Res_line.resstatus <= 6) & (Res_line.resstatus != 4) & (Res_line.active_flag <= 1) & (Res_line.kontignr > 0) & not_ (Res_line.ankunft > tdate) & not_ (Res_line.abreise <= ffdate) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line._recid).all():
+                (Res_line.resstatus <= 6) & (Res_line.resstatus != 4) & (Res_line.active_flag <= 1) & (Res_line.kontignr > 0) & not_(Res_line.ankunft > tdate) & not_(Res_line.abreise <= ffdate) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line._recid).all():
 
             if not vhp_limited:
                 do_it = True
             else:
 
-                reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+                reservation = get_cache(
+                    Reservation, {"resnr": [(eq, res_line.resnr)]})
 
-                segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+                segment = get_cache(
+                    Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
                 do_it = None != segment and segment.vip_level == 0
 
             if res_line.resstatus == 3 and not incl_tentative:
                 do_it = False
 
             if do_it:
-                for i in range(1,30 + 1) :
+                for i in range(1, 30 + 1):
                     datum = curr_date + timedelta(days=i - 1)
 
                     if datum >= res_line.ankunft and datum < res_line.abreise:
 
                         kline = db_session.query(Kline).filter(
-                                 (Kline.kontignr == res_line.kontignr) & (Kline.kontstatus == 1)).first()
+                            (Kline.kontignr == res_line.kontignr) & (Kline.kontstatus == 1)).first()
 
-                        kontline = get_cache (Kontline, {"kontcode": [(eq, kline.kontcode)],"betriebsnr": [(eq, 0)],"kontstatus": [(eq, 1)]})
+                        kontline = get_cache(Kontline, {"kontcode": [(eq, kline.kontcode)], "betriebsnr": [
+                                             (eq, 0)], "kontstatus": [(eq, 1)]})
 
                         if kontline and datum >= (ci_date + timedelta(days=kontline.ruecktage)):
-                            res_allot[i - 1] = res_allot[i - 1] + res_line.zimmeranz
+                            res_allot[i - 1] = res_allot[i - 1] + \
+                                res_line.zimmeranz
 
-                            tmp_allotment = query(tmp_allotment_data, filters=(lambda tmp_allotment: tmp_allotment.zikatnr == res_line.zikatnr), first=True)
+                            tmp_allotment = query(tmp_allotment_data, filters=(
+                                lambda tmp_allotment: tmp_allotment.zikatnr == res_line.zikatnr), first=True)
 
                             if not tmp_allotment:
                                 tmp_allotment = Tmp_allotment()
                                 tmp_allotment_data.append(tmp_allotment)
 
                                 tmp_allotment.zikatnr = res_line.zikatnr
-                            tmp_allotment.res_allot[i - 1] = tmp_allotment.res_allot[i - 1] + res_line.zimmeranz
-
-
+                            tmp_allotment.res_allot[i -
+                                                    1] = tmp_allotment.res_allot[i - 1] + res_line.zimmeranz
 
         if not incl_tentative:
 
             if statsort == 1:
-                
+
                 sum_list = Sum_list()
                 sum_list_data.append(sum_list)
 
-                sum_list.bezeich = translateExtended ("Avail before Allotm", lvcarea, "")
+                sum_list.bezeich = translateExtended(
+                    "Avail before Allotm", lvcarea, "")
 
                 for zimkateg in db_session.query(Zimkateg).filter(
-                         (Zimkateg.verfuegbarkeit)).order_by(Zimkateg.typ, Zimkateg.zikatnr).all():
+                        (Zimkateg.verfuegbarkeit)).order_by(Zimkateg.typ, Zimkateg.zikatnr).all():
 
-                    rmcat_list = query(rmcat_list_data, filters=(lambda rmcat_list: rmcat_list.zikatnr == zimkateg.zikatnr and rmcat_list.sleeping), first=True)
+                    rmcat_list = query(rmcat_list_data, filters=(
+                        lambda rmcat_list: rmcat_list.zikatnr == zimkateg.zikatnr and rmcat_list.sleeping), first=True)
 
                     if rmcat_list:
                         room_avail_list = Room_avail_list()
                         room_avail_list_data.append(room_avail_list)
 
                         i = 1
-                        while i <= (num_day + 1) :
+                        while i <= (num_day + 1):
                             room_avail_list.room[i - 1] = rmcat_list.anzahl
                             i = i + 1
                         room_avail_list.i_typ = zimkateg.typ
                         room_avail_list.zikatnr = zimkateg.zikatnr
                         room_avail_list.bezeich = zimkateg.kurzbez +\
-                                " - " + to_string(zimkateg.overbooking, ">>9")
-                
+                            " - " + to_string(zimkateg.overbooking, ">>9")
 
                 # Rd 18/9/2025
                 # diremark, data tampil double, .p e1 tidak double
-                #------------------------------------------------------------
+                # ------------------------------------------------------------
                 # zimkateg_obj_list = {}
                 # for zimkateg in db_session.query(Zimkateg).filter(
                 #          ((Zimkateg.zikatnr.in_(list(set([rmcat_list.zikatnr for rmcat_list in rmcat_list_data if ~rmcat_list.sleeping])))))).order_by(Zimkateg.typ, Zimkateg.zikatnr).all():
@@ -885,7 +1112,6 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
                 #     room_avail_list.zikatnr = zimkateg.zikatnr
                 #     room_avail_list.bezeich = zimkateg.kurzbez +\
                 #             " - " + to_string(zimkateg.overbooking, ">>9")
-
 
                 #     datum = curr_date
                     # for i in range(1,30 + 1) :
@@ -911,27 +1137,28 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
                     #             room_avail_list.room[i - 1] = room_avail_list.room[i - 1] - 1
                     #             occ_room[i - 1] = occ_room[i - 1] + 1
 
-
                     #     datum = datum + timedelta(days=1)
-                #------------------------------------------------------------
+                # ------------------------------------------------------------
 
                 outorder_obj_list = {}
                 outorder = Outorder()
                 zimmer = Zimmer()
-                for outorder.gespstart, outorder.gespende, outorder.zinr, outorder.betriebsnr, outorder._recid, zimmer.zikatnr, zimmer.sleeping, zimmer._recid in db_session.query(Outorder.gespstart, Outorder.gespende, Outorder.zinr, Outorder.betriebsnr, Outorder._recid, Zimmer.zikatnr, Zimmer.sleeping, Zimmer._recid).join(Zimmer,(Zimmer.zinr == Outorder.zinr) & (Zimmer.sleeping)).filter(
-                         (Outorder.betriebsnr <= 1)).order_by(Outorder._recid).all():
+                for outorder.gespstart, outorder.gespende, outorder.zinr, outorder.betriebsnr, outorder._recid, zimmer.zikatnr, zimmer.sleeping, zimmer._recid in db_session.query(Outorder.gespstart, Outorder.gespende, Outorder.zinr, Outorder.betriebsnr, Outorder._recid, Zimmer.zikatnr, Zimmer.sleeping, Zimmer._recid).join(Zimmer, (Zimmer.zinr == Outorder.zinr) & (Zimmer.sleeping)).filter(
+                        (Outorder.betriebsnr <= 1)).order_by(Outorder._recid).all():
                     if outorder_obj_list.get(outorder._recid):
                         continue
                     else:
                         outorder_obj_list[outorder._recid] = True
 
-                    zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, zimmer.zikatnr)]})
+                    zimkateg = get_cache(
+                        Zimkateg, {"zikatnr": [(eq, zimmer.zikatnr)]})
                     datum = curr_date
 
-                    room_avail_list = query(room_avail_list_data, filters=(lambda room_avail_list: room_avail_list.zikatnr == zimmer.zikatnr and room_avail_list.sleeping), first=True)
+                    room_avail_list = query(room_avail_list_data, filters=(
+                        lambda room_avail_list: room_avail_list.zikatnr == zimmer.zikatnr and room_avail_list.sleeping), first=True)
 
                     if room_avail_list:
-                        for i in range(1,30 + 1) :
+                        for i in range(1, 30 + 1):
 
                             if datum >= outorder.gespstart and datum <= outorder.gespende:
 
@@ -940,23 +1167,26 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
                                     om_flag = True
                                 else:
                                     ooo_list[i - 1] = ooo_list[i - 1] + 1
-                                    room_avail_list.room[i - 1] = room_avail_list.room[i - 1] - 1
+                                    room_avail_list.room[i -
+                                                         1] = room_avail_list.room[i - 1] - 1
                             datum = datum + timedelta(days=1)
                 i = 1
                 datum = curr_date
-                while i <= (num_day + 1) :
+                while i <= (num_day + 1):
 
                     for res_line in db_session.query(Res_line).filter(
-                             (Res_line.active_flag <= 1) & (Res_line.resstatus <= 6) & (Res_line.resstatus != 4) & (((Res_line.ankunft <= datum) & (Res_line.abreise > datum)) | ((Res_line.ankunft == datum) & (Res_line.abreise == datum))) & (Res_line.kontignr >= 0) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line._recid).all():
+                            (Res_line.active_flag <= 1) & (Res_line.resstatus <= 6) & (Res_line.resstatus != 4) & (((Res_line.ankunft <= datum) & (Res_line.abreise > datum)) | ((Res_line.ankunft == datum) & (Res_line.abreise == datum))) & (Res_line.kontignr >= 0) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line._recid).all():
 
-                        room_avail_list = query(room_avail_list_data, filters=(lambda room_avail_list: room_avail_list.sleeping and room_avail_list.zikatnr == res_line.zikatnr), first=True)
+                        room_avail_list = query(room_avail_list_data, filters=(
+                            lambda room_avail_list: room_avail_list.sleeping and room_avail_list.zikatnr == res_line.zikatnr), first=True)
 
                         if room_avail_list:
                             do_it = True
 
                             if res_line.zinr != "":
 
-                                zimmer = get_cache (Zimmer, {"zinr": [(eq, res_line.zinr)]})
+                                zimmer = get_cache(
+                                    Zimmer, {"zinr": [(eq, res_line.zinr)]})
                                 do_it = zimmer.sleeping
 
                             if res_line.resstatus == 3 and not incl_tentative:
@@ -964,69 +1194,80 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
 
                             if do_it and vhp_limited:
 
-                                reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+                                reservation = get_cache(
+                                    Reservation, {"resnr": [(eq, res_line.resnr)]})
 
-                                segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+                                segment = get_cache(
+                                    Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
                                 do_it = None != segment and segment.vip_level == 0
 
                             if do_it:
-                                room_avail_list.room[i - 1] = room_avail_list.room[i - 1] - res_line.zimmeranz
-                                occ_room[i - 1] = occ_room[i - 1] + res_line.zimmeranz
+                                room_avail_list.room[i -
+                                                     1] = room_avail_list.room[i - 1] - res_line.zimmeranz
+                                occ_room[i - 1] = occ_room[i - 1] + \
+                                    res_line.zimmeranz
 
                     for kontline in db_session.query(Kontline).filter(
-                             (Kontline.betriebsnr == 1) & (Kontline.ankunft <= datum) & (Kontline.abreise >= datum) & (Kontline.kontstatus == 1)).order_by(Kontline._recid).all():
+                            (Kontline.betriebsnr == 1) & (Kontline.ankunft <= datum) & (Kontline.abreise >= datum) & (Kontline.kontstatus == 1)).order_by(Kontline._recid).all():
 
-                        room_avail_list = query(room_avail_list_data, filters=(lambda room_avail_list: room_avail_list.sleeping and room_avail_list.zikatnr == kontline.zikatnr), first=True)
+                        room_avail_list = query(room_avail_list_data, filters=(
+                            lambda room_avail_list: room_avail_list.sleeping and room_avail_list.zikatnr == kontline.zikatnr), first=True)
 
                         if room_avail_list:
-                            room_avail_list.room[i - 1] = room_avail_list.room[i - 1] - kontline.zimmeranz
-                            occ_room[i - 1] = occ_room[i - 1] + kontline.zimmeranz
-
+                            room_avail_list.room[i -
+                                                 1] = room_avail_list.room[i - 1] - kontline.zimmeranz
+                            occ_room[i - 1] = occ_room[i - 1] + \
+                                kontline.zimmeranz
 
                     i = i + 1
                     datum = datum + timedelta(days=1)
-                for i in range(1,30 + 1) :
+                for i in range(1, 30 + 1):
                     sum_list.summe[i - 1] = 0
 
                     for room_avail_list in query(room_avail_list_data, filters=(lambda room_avail_list: room_avail_list.sleeping)):
-                        sum_list.summe[i - 1] = sum_list.summe[i - 1] + room_avail_list.room[i - 1]
+                        sum_list.summe[i - 1] = sum_list.summe[i -
+                                                               1] + room_avail_list.room[i - 1]
 
                 if mi_inactive:
                     i = 1
                     datum = curr_date
-                    while i <= (num_day + 1) :
+                    while i <= (num_day + 1):
 
                         for res_line in db_session.query(Res_line).filter(
-                                 (Res_line.active_flag <= 1) & (Res_line.resstatus <= 6) & (Res_line.resstatus != 4) & (((Res_line.ankunft <= datum) & (Res_line.abreise > datum)) | ((Res_line.ankunft == datum) & (Res_line.abreise == datum))) & (Res_line.kontignr >= 0) & (Res_line.l_zuordnung[inc_value(2)] == 0) & (Res_line.zinr != "")).order_by(Res_line._recid).all():
+                                (Res_line.active_flag <= 1) & (Res_line.resstatus <= 6) & (Res_line.resstatus != 4) & (((Res_line.ankunft <= datum) & (Res_line.abreise > datum)) | ((Res_line.ankunft == datum) & (Res_line.abreise == datum))) & (Res_line.kontignr >= 0) & (Res_line.l_zuordnung[inc_value(2)] == 0) & (Res_line.zinr != "")).order_by(Res_line._recid).all():
 
-                            room_avail_list = query(room_avail_list_data, filters=(lambda room_avail_list: not room_avail_list.sleeping and room_avail_list.zikatnr == res_line.zikatnr), first=True)
+                            room_avail_list = query(room_avail_list_data, filters=(
+                                lambda room_avail_list: not room_avail_list.sleeping and room_avail_list.zikatnr == res_line.zikatnr), first=True)
 
                             if room_avail_list:
 
                                 zimmer = db_session.query(Zimmer).filter(
-                                         (Zimmer.zinr == res_line.zinr) & not_ (Zimmer.sleeping)).first()
+                                    (Zimmer.zinr == res_line.zinr) & not_(Zimmer.sleeping)).first()
 
                                 if zimmer:
 
-                                    reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+                                    reservation = get_cache(
+                                        Reservation, {"resnr": [(eq, res_line.resnr)]})
 
-                                    segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+                                    segment = get_cache(
+                                        Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
 
                                     if segment and segment.vip_level == 0:
-                                        room_avail_list.room[i - 1] = room_avail_list.room[i - 1] - 1
+                                        room_avail_list.room[i -
+                                                             1] = room_avail_list.room[i - 1] - 1
                         i = i + 1
                         datum = datum + timedelta(days=1)
-                    for i in range(1,30 + 1) :
+                    for i in range(1, 30 + 1):
                         sum_list.summe[i - 1] = 0
 
                         for room_avail_list in query(room_avail_list_data, filters=(lambda room_avail_list: room_avail_list.sleeping)):
-                            sum_list.summe[i - 1] = sum_list.summe[i - 1] + room_avail_list.room[i - 1]
+                            sum_list.summe[i - 1] = sum_list.summe[i -
+                                                                   1] + room_avail_list.room[i - 1]
                 sum_list = Sum_list()
                 sum_list_data.append(sum_list)
 
                 sum_list.allot_flag = True
-                sum_list.bezeich = translateExtended ("Allotments", lvcarea, "")
-
+                sum_list.bezeich = translateExtended("Allotments", lvcarea, "")
 
                 from_date = curr_date
                 to_date = from_date + timedelta(days=num_day)
@@ -1034,64 +1275,78 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
                 if co_date is not None and to_date > co_date:
                     to_date = co_date
                 i = 1
-                for datum in date_range(from_date,to_date) :
+                for datum in date_range(from_date, to_date):
 
                     for t_kontline in query(t_kontline_data, filters=(lambda t_kontline: t_kontline.betriebsnr == 0 and t_kontline.ankunft <= datum and t_kontline.abreise >= datum and t_kontline.kontstat == 1)):
 
                         if datum >= (ci_date + timedelta(days=t_kontline.ruecktage)):
-                            sum_list.summe[i - 1] = sum_list.summe[i - 1] + t_kontline.zimmeranz
+                            sum_list.summe[i - 1] = sum_list.summe[i -
+                                                                   1] + t_kontline.zimmeranz
 
-                            room_avail_list = query(room_avail_list_data, filters=(lambda room_avail_list: room_avail_list.zikatnr == t_kontline.zikatnr and room_avail_list.sleeping), first=True)
+                            room_avail_list = query(room_avail_list_data, filters=(
+                                lambda room_avail_list: room_avail_list.zikatnr == t_kontline.zikatnr and room_avail_list.sleeping), first=True)
 
                             if not room_avail_list:
 
-                                room_avail_list = query(room_avail_list_data, filters=(lambda room_avail_list: room_avail_list.sleeping), first=True)
+                                room_avail_list = query(room_avail_list_data, filters=(
+                                    lambda room_avail_list: room_avail_list.sleeping), first=True)
 
                             if room_avail_list:
-                                room_avail_list.allotment[i - 1] = room_avail_list.allotment[i - 1] + t_kontline.zimmeranz
+                                room_avail_list.allotment[i -
+                                                          1] = room_avail_list.allotment[i - 1] + t_kontline.zimmeranz
                     i = i + 1
-                for i in range(1,30 + 1) :
-                    sum_list.summe[i - 1] = sum_list.summe[i - 1] - res_allot[i - 1]
+                for i in range(1, 30 + 1):
+                    sum_list.summe[i - 1] = sum_list.summe[i -
+                                                           1] - res_allot[i - 1]
 
                     for tmp_allotment in query(tmp_allotment_data):
 
-                        room_avail_list = query(room_avail_list_data, filters=(lambda room_avail_list: room_avail_list.zikatnr == tmp_allotment.zikatnr and room_avail_list.sleeping), first=True)
+                        room_avail_list = query(room_avail_list_data, filters=(
+                            lambda room_avail_list: room_avail_list.zikatnr == tmp_allotment.zikatnr and room_avail_list.sleeping), first=True)
 
                         if room_avail_list:
-                            room_avail_list.allotment[i - 1] = room_avail_list.allotment[i - 1] - tmp_allotment.res_allot[i - 1]
-                for i in range(1,30 + 1) :
+                            room_avail_list.allotment[i - 1] = room_avail_list.allotment[i -
+                                                                                         1] - tmp_allotment.res_allot[i - 1]
+                for i in range(1, 30 + 1):
                     tmp_list[i - 1] = sum_list.summe[i - 1]
                 sum_list = Sum_list()
                 sum_list_data.append(sum_list)
 
-                sum_list.bezeich = translateExtended ("Avail After Allotm", lvcarea, "")
-                for i in range(1,30 + 1) :
+                sum_list.bezeich = translateExtended(
+                    "Avail After Allotm", lvcarea, "")
+                for i in range(1, 30 + 1):
 
                     for room_avail_list in query(room_avail_list_data):
-                        sum_list.summe[i - 1] = sum_list.summe[i - 1] + room_avail_list.room[i - 1]
+                        sum_list.summe[i - 1] = sum_list.summe[i -
+                                                               1] + room_avail_list.room[i - 1]
 
                         if dispsort == 2:
-                            room_avail_list.room[i - 1] = room_avail_list.room[i - 1] - room_avail_list.allotment[i - 1]
-                    sum_list.summe[i - 1] = sum_list.summe[i - 1] - tmp_list[i - 1]
-                for i in range(1,30 + 1) :
+                            room_avail_list.room[i - 1] = room_avail_list.room[i -
+                                                                               1] - room_avail_list.allotment[i - 1]
+                    sum_list.summe[i - 1] = sum_list.summe[i -
+                                                           1] - tmp_list[i - 1]
+                for i in range(1, 30 + 1):
                     tmp_list[i - 1] = sum_list.summe[i - 1]
                 sum_list = Sum_list()
                 sum_list_data.append(sum_list)
 
-                sum_list.bezeich = translateExtended ("Room Occupied", lvcarea, "")
-                for i in range(1,30 + 1) :
+                sum_list.bezeich = translateExtended(
+                    "Room Occupied", lvcarea, "")
+                for i in range(1, 30 + 1):
                     sum_list.summe[i - 1] = occ_room[i - 1]
                 sum_list = Sum_list()
                 sum_list_data.append(sum_list)
 
-                sum_list.bezeich = translateExtended ("Total Active Room", lvcarea, "")
-                for i in range(1,30 + 1) :
+                sum_list.bezeich = translateExtended(
+                    "Total Active Room", lvcarea, "")
+                for i in range(1, 30 + 1):
                     sum_list.summe[i - 1] = tot_room
                 sum_list = Sum_list()
                 sum_list_data.append(sum_list)
 
-                sum_list.bezeich = translateExtended ("Total Overbooking", lvcarea, "")
-                for i in range(1,30 + 1) :
+                sum_list.bezeich = translateExtended(
+                    "Total Overbooking", lvcarea, "")
+                for i in range(1, 30 + 1):
                     anz = 0
 
                     if dispsort == 2 and tmp_list[i - 1] < 0:
@@ -1104,21 +1359,24 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
                 sum_list = Sum_list()
                 sum_list_data.append(sum_list)
 
-                sum_list.bezeich = translateExtended ("Out-of-Order", lvcarea, "")
-                for i in range(1,30 + 1) :
+                sum_list.bezeich = translateExtended(
+                    "Out-of-Order", lvcarea, "")
+                for i in range(1, 30 + 1):
                     sum_list.summe[i - 1] = ooo_list[i - 1]
 
                 if om_flag:
                     sum_list = Sum_list()
                     sum_list_data.append(sum_list)
 
-                    sum_list.bezeich = translateExtended ("Off-Market", lvcarea, "")
-                    for i in range(1,30 + 1) :
+                    sum_list.bezeich = translateExtended(
+                        "Off-Market", lvcarea, "")
+                    for i in range(1, 30 + 1):
                         sum_list.summe[i - 1] = om_list[i - 1]
 
                 for room_avail_list in query(room_avail_list_data):
-                    for i in range(1,30 + 1) :
-                        room_avail_list.coom[i - 1] = to_string(room_avail_list.room[i - 1], "->>>,>>>,>>9")
+                    for i in range(1, 30 + 1):
+                        room_avail_list.coom[i - 1] = to_string(
+                            room_avail_list.room[i - 1], "->>>,>>>,>>9")
 
             elif statsort == 2:
                 create_browse1()
@@ -1126,29 +1384,31 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
             sum_list = Sum_list()
             sum_list_data.append(sum_list)
 
-            sum_list.bezeich = translateExtended ("Avail before Allotm", lvcarea, "")
+            sum_list.bezeich = translateExtended(
+                "Avail before Allotm", lvcarea, "")
 
             for zimkateg in db_session.query(Zimkateg).filter(
-                     (Zimkateg.verfuegbarkeit)).order_by(Zimkateg.typ, Zimkateg.zikatnr).all():
+                    (Zimkateg.verfuegbarkeit)).order_by(Zimkateg.typ, Zimkateg.zikatnr).all():
 
-                rmcat_list = query(rmcat_list_data, filters=(lambda rmcat_list: rmcat_list.zikatnr == zimkateg.zikatnr and rmcat_list.sleeping), first=True)
+                rmcat_list = query(rmcat_list_data, filters=(
+                    lambda rmcat_list: rmcat_list.zikatnr == zimkateg.zikatnr and rmcat_list.sleeping), first=True)
 
                 if rmcat_list:
                     room_avail_list = Room_avail_list()
                     room_avail_list_data.append(room_avail_list)
 
                     i = 1
-                    while i <= (num_day + 1) :
+                    while i <= (num_day + 1):
                         room_avail_list.room[i - 1] = rmcat_list.anzahl
                         i = i + 1
                     room_avail_list.i_typ = zimkateg.typ
                     room_avail_list.zikatnr = zimkateg.zikatnr
                     room_avail_list.bezeich = zimkateg.kurzbez +\
-                            " - " + to_string(zimkateg.overbooking, ">>9")
-                    
+                        " - " + to_string(zimkateg.overbooking, ">>9")
+
             # Rd 18/9/2025
             # diremark, data tampil double, .p e1 tidak double
-            #------------------------------------------------------------
+            # ------------------------------------------------------------
             # zimkateg_obj_list = {}
             # for zimkateg in db_session.query(Zimkateg).filter(
             #          ((Zimkateg.zikatnr.in_(list(set([rmcat_list.zikatnr for rmcat_list in rmcat_list_data if ~rmcat_list.sleeping])))))).order_by(Zimkateg.typ, Zimkateg.zikatnr).all():
@@ -1170,7 +1430,6 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
             #     room_avail_list.zikatnr = zimkateg.zikatnr
             #     room_avail_list.bezeich = zimkateg.kurzbez +\
             #             " - " + to_string(zimkateg.overbooking, ">>9")
-
 
             #     datum = curr_date
             #     for i in range(1,30 + 1) :
@@ -1196,26 +1455,27 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
             #                 room_avail_list.room[i - 1] = room_avail_list.room[i - 1] - 1
             #                 occ_room[i - 1] = occ_room[i - 1] + 1
 
-
             #         datum = datum + timedelta(days=1)
-            #------------------------------------------------------------
+            # ------------------------------------------------------------
             outorder_obj_list = {}
             outorder = Outorder()
             zimmer = Zimmer()
-            for outorder.gespstart, outorder.gespende, outorder.zinr, outorder.betriebsnr, outorder._recid, zimmer.zikatnr, zimmer.sleeping, zimmer._recid in db_session.query(Outorder.gespstart, Outorder.gespende, Outorder.zinr, Outorder.betriebsnr, Outorder._recid, Zimmer.zikatnr, Zimmer.sleeping, Zimmer._recid).join(Zimmer,(Zimmer.zinr == Outorder.zinr) & (Zimmer.sleeping)).filter(
-                     (Outorder.betriebsnr <= 1)).order_by(Outorder._recid).all():
+            for outorder.gespstart, outorder.gespende, outorder.zinr, outorder.betriebsnr, outorder._recid, zimmer.zikatnr, zimmer.sleeping, zimmer._recid in db_session.query(Outorder.gespstart, Outorder.gespende, Outorder.zinr, Outorder.betriebsnr, Outorder._recid, Zimmer.zikatnr, Zimmer.sleeping, Zimmer._recid).join(Zimmer, (Zimmer.zinr == Outorder.zinr) & (Zimmer.sleeping)).filter(
+                    (Outorder.betriebsnr <= 1)).order_by(Outorder._recid).all():
                 if outorder_obj_list.get(outorder._recid):
                     continue
                 else:
                     outorder_obj_list[outorder._recid] = True
 
-                zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, zimmer.zikatnr)]})
+                zimkateg = get_cache(
+                    Zimkateg, {"zikatnr": [(eq, zimmer.zikatnr)]})
                 datum = curr_date
 
-                room_avail_list = query(room_avail_list_data, filters=(lambda room_avail_list: room_avail_list.zikatnr == zimmer.zikatnr and room_avail_list.sleeping), first=True)
+                room_avail_list = query(room_avail_list_data, filters=(
+                    lambda room_avail_list: room_avail_list.zikatnr == zimmer.zikatnr and room_avail_list.sleeping), first=True)
 
                 if room_avail_list:
-                    for i in range(1,30 + 1) :
+                    for i in range(1, 30 + 1):
 
                         if datum >= outorder.gespstart and datum <= outorder.gespende:
 
@@ -1224,92 +1484,105 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
                                 om_flag = True
                             else:
                                 ooo_list[i - 1] = ooo_list[i - 1] + 1
-                                room_avail_list.room[i - 1] = room_avail_list.room[i - 1] - 1
+                                room_avail_list.room[i -
+                                                     1] = room_avail_list.room[i - 1] - 1
                         datum = datum + timedelta(days=1)
 
-            
             i = 1
             datum = curr_date
-            while i <= (num_day + 1) :
+            while i <= (num_day + 1):
 
                 for res_line in db_session.query(Res_line).filter(
-                         (Res_line.active_flag <= 1) & (Res_line.resstatus <= 6) & (Res_line.resstatus != 4) & (((Res_line.ankunft <= datum) & (Res_line.abreise > datum)) | ((Res_line.ankunft == datum) & (Res_line.abreise == datum))) & (Res_line.kontignr >= 0) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line._recid).all():
+                        (Res_line.active_flag <= 1) & (Res_line.resstatus <= 6) & (Res_line.resstatus != 4) & (((Res_line.ankunft <= datum) & (Res_line.abreise > datum)) | ((Res_line.ankunft == datum) & (Res_line.abreise == datum))) & (Res_line.kontignr >= 0) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line._recid).all():
 
-                    room_avail_list = query(room_avail_list_data, filters=(lambda room_avail_list: room_avail_list.sleeping and room_avail_list.zikatnr == res_line.zikatnr), first=True)
+                    room_avail_list = query(room_avail_list_data, filters=(
+                        lambda room_avail_list: room_avail_list.sleeping and room_avail_list.zikatnr == res_line.zikatnr), first=True)
 
                     if room_avail_list:
                         do_it = True
 
                         if res_line.zinr != "":
 
-                            zimmer = get_cache (Zimmer, {"zinr": [(eq, res_line.zinr)]})
+                            zimmer = get_cache(
+                                Zimmer, {"zinr": [(eq, res_line.zinr)]})
                             do_it = zimmer.sleeping
 
                         if do_it and vhp_limited:
 
-                            reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+                            reservation = get_cache(
+                                Reservation, {"resnr": [(eq, res_line.resnr)]})
 
-                            segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+                            segment = get_cache(
+                                Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
                             do_it = None != segment and segment.vip_level == 0
 
                         if do_it:
-                            room_avail_list.room[i - 1] = room_avail_list.room[i - 1] - res_line.zimmeranz
-                            occ_room[i - 1] = occ_room[i - 1] + res_line.zimmeranz
+                            room_avail_list.room[i -
+                                                 1] = room_avail_list.room[i - 1] - res_line.zimmeranz
+                            occ_room[i - 1] = occ_room[i - 1] + \
+                                res_line.zimmeranz
 
                 for kontline in db_session.query(Kontline).filter(
-                         (Kontline.betriebsnr == 1) & (Kontline.ankunft <= datum) & (Kontline.abreise >= datum) & (Kontline.kontstatus == 1)).order_by(Kontline._recid).all():
+                        (Kontline.betriebsnr == 1) & (Kontline.ankunft <= datum) & (Kontline.abreise >= datum) & (Kontline.kontstatus == 1)).order_by(Kontline._recid).all():
 
-                    room_avail_list = query(room_avail_list_data, filters=(lambda room_avail_list: room_avail_list.sleeping and room_avail_list.zikatnr == kontline.zikatnr), first=True)
+                    room_avail_list = query(room_avail_list_data, filters=(
+                        lambda room_avail_list: room_avail_list.sleeping and room_avail_list.zikatnr == kontline.zikatnr), first=True)
 
                     if room_avail_list:
-                        room_avail_list.room[i - 1] = room_avail_list.room[i - 1] - kontline.zimmeranz
+                        room_avail_list.room[i -
+                                             1] = room_avail_list.room[i - 1] - kontline.zimmeranz
                         occ_room[i - 1] = occ_room[i - 1] + kontline.zimmeranz
                 i = i + 1
                 datum = datum + timedelta(days=1)
 
-            for i in range(1,30 + 1) :
+            for i in range(1, 30 + 1):
                 sum_list.summe[i - 1] = 0
 
                 for room_avail_list in query(room_avail_list_data, filters=(lambda room_avail_list: room_avail_list.sleeping)):
-                    sum_list.summe[i - 1] = sum_list.summe[i - 1] + room_avail_list.room[i - 1]
+                    sum_list.summe[i - 1] = sum_list.summe[i -
+                                                           1] + room_avail_list.room[i - 1]
 
             if mi_inactive:
                 i = 1
                 datum = curr_date
-                while i <= (num_day + 1) :
+                while i <= (num_day + 1):
 
                     for res_line in db_session.query(Res_line).filter(
-                             (Res_line.active_flag <= 1) & (Res_line.resstatus <= 6) & (Res_line.resstatus != 4) & (((Res_line.ankunft <= datum) & (Res_line.abreise > datum)) | ((Res_line.ankunft == datum) & (Res_line.abreise == datum))) & (Res_line.kontignr >= 0) & (Res_line.l_zuordnung[inc_value(2)] == 0) & (Res_line.zinr != "")).order_by(Res_line._recid).all():
+                            (Res_line.active_flag <= 1) & (Res_line.resstatus <= 6) & (Res_line.resstatus != 4) & (((Res_line.ankunft <= datum) & (Res_line.abreise > datum)) | ((Res_line.ankunft == datum) & (Res_line.abreise == datum))) & (Res_line.kontignr >= 0) & (Res_line.l_zuordnung[inc_value(2)] == 0) & (Res_line.zinr != "")).order_by(Res_line._recid).all():
 
-                        room_avail_list = query(room_avail_list_data, filters=(lambda room_avail_list: not room_avail_list.sleeping and room_avail_list.zikatnr == res_line.zikatnr), first=True)
+                        room_avail_list = query(room_avail_list_data, filters=(
+                            lambda room_avail_list: not room_avail_list.sleeping and room_avail_list.zikatnr == res_line.zikatnr), first=True)
 
                         if room_avail_list:
 
                             zimmer = db_session.query(Zimmer).filter(
-                                     (Zimmer.zinr == res_line.zinr) & not_ (Zimmer.sleeping)).first()
+                                (Zimmer.zinr == res_line.zinr) & not_(Zimmer.sleeping)).first()
 
                             if zimmer:
 
-                                reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+                                reservation = get_cache(
+                                    Reservation, {"resnr": [(eq, res_line.resnr)]})
 
-                                segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+                                segment = get_cache(
+                                    Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
 
                                 if segment and segment.vip_level == 0:
-                                    room_avail_list.room[i - 1] = room_avail_list.room[i - 1] - 1
+                                    room_avail_list.room[i -
+                                                         1] = room_avail_list.room[i - 1] - 1
                     i = i + 1
                     datum = datum + timedelta(days=1)
-                for i in range(1,30 + 1) :
+                for i in range(1, 30 + 1):
                     sum_list.summe[i - 1] = 0
 
                     for room_avail_list in query(room_avail_list_data, filters=(lambda room_avail_list: room_avail_list.sleeping)):
-                        sum_list.summe[i - 1] = sum_list.summe[i - 1] + room_avail_list.room[i - 1]
+                        sum_list.summe[i - 1] = sum_list.summe[i -
+                                                               1] + room_avail_list.room[i - 1]
             create_tentative()
             sum_list = Sum_list()
             sum_list_data.append(sum_list)
 
             sum_list.allot_flag = True
-            sum_list.bezeich = translateExtended ("Allotments", lvcarea, "")
-
+            sum_list.bezeich = translateExtended("Allotments", lvcarea, "")
 
             from_date = curr_date
             to_date = from_date + timedelta(days=num_day)
@@ -1317,60 +1590,71 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
             if co_date is not None and to_date > co_date:
                 to_date = co_date
             i = 1
-            for datum in date_range(from_date,to_date) :
+            for datum in date_range(from_date, to_date):
 
                 for t_kontline in query(t_kontline_data, filters=(lambda t_kontline: t_kontline.betriebsnr == 0 and t_kontline.ankunft <= datum and t_kontline.abreise >= datum and t_kontline.kontstat == 1)):
 
                     if datum >= (ci_date + timedelta(days=t_kontline.ruecktage)):
-                        sum_list.summe[i - 1] = sum_list.summe[i - 1] + t_kontline.zimmeranz
+                        sum_list.summe[i - 1] = sum_list.summe[i -
+                                                               1] + t_kontline.zimmeranz
 
-                        room_avail_list = query(room_avail_list_data, filters=(lambda room_avail_list: room_avail_list.zikatnr == t_kontline.zikatnr and room_avail_list.sleeping), first=True)
+                        room_avail_list = query(room_avail_list_data, filters=(
+                            lambda room_avail_list: room_avail_list.zikatnr == t_kontline.zikatnr and room_avail_list.sleeping), first=True)
 
                         if not room_avail_list:
 
-                            room_avail_list = query(room_avail_list_data, filters=(lambda room_avail_list: room_avail_list.sleeping), first=True)
+                            room_avail_list = query(room_avail_list_data, filters=(
+                                lambda room_avail_list: room_avail_list.sleeping), first=True)
 
                         if room_avail_list:
-                            room_avail_list.allotment[i - 1] = room_avail_list.allotment[i - 1] + t_kontline.zimmeranz
+                            room_avail_list.allotment[i -
+                                                      1] = room_avail_list.allotment[i - 1] + t_kontline.zimmeranz
                 i = i + 1
-            for i in range(1,30 + 1) :
-                sum_list.summe[i - 1] = sum_list.summe[i - 1] - res_allot[i - 1]
+            for i in range(1, 30 + 1):
+                sum_list.summe[i - 1] = sum_list.summe[i - 1] - \
+                    res_allot[i - 1]
 
                 if room_avail_list:
-                    room_avail_list.allotment[i - 1] = room_avail_list.allotment[i - 1] - res_allot[i - 1]
-            for i in range(1,30 + 1) :
+                    room_avail_list.allotment[i -
+                                              1] = room_avail_list.allotment[i - 1] - res_allot[i - 1]
+            for i in range(1, 30 + 1):
                 tmp_list[i - 1] = sum_list.summe[i - 1]
             sum_list = Sum_list()
             sum_list_data.append(sum_list)
 
-            sum_list.bezeich = translateExtended ("Avail After Allotm", lvcarea, "")
-            for i in range(1,30 + 1) :
+            sum_list.bezeich = translateExtended(
+                "Avail After Allotm", lvcarea, "")
+            for i in range(1, 30 + 1):
 
                 for room_avail_list in query(room_avail_list_data):
-                    sum_list.summe[i - 1] = sum_list.summe[i - 1] + room_avail_list.room[i - 1]
+                    sum_list.summe[i - 1] = sum_list.summe[i -
+                                                           1] + room_avail_list.room[i - 1]
 
                     if dispsort == 2:
-                        room_avail_list.room[i - 1] = room_avail_list.room[i - 1] - room_avail_list.allotment[i - 1]
+                        room_avail_list.room[i - 1] = room_avail_list.room[i -
+                                                                           1] - room_avail_list.allotment[i - 1]
                 sum_list.summe[i - 1] = sum_list.summe[i - 1] - tmp_list[i - 1]
-            for i in range(1,30 + 1) :
+            for i in range(1, 30 + 1):
                 tmp_list[i - 1] = sum_list.summe[i - 1]
             sum_list = Sum_list()
             sum_list_data.append(sum_list)
 
-            sum_list.bezeich = translateExtended ("room Occupied", lvcarea, "")
-            for i in range(1,30 + 1) :
+            sum_list.bezeich = translateExtended("room Occupied", lvcarea, "")
+            for i in range(1, 30 + 1):
                 sum_list.summe[i - 1] = occ_room[i - 1]
             sum_list = Sum_list()
             sum_list_data.append(sum_list)
 
-            sum_list.bezeich = translateExtended ("Total Active room", lvcarea, "")
-            for i in range(1,30 + 1) :
+            sum_list.bezeich = translateExtended(
+                "Total Active room", lvcarea, "")
+            for i in range(1, 30 + 1):
                 sum_list.summe[i - 1] = tot_room
             sum_list = Sum_list()
             sum_list_data.append(sum_list)
 
-            sum_list.bezeich = translateExtended ("Total Overbooking", lvcarea, "")
-            for i in range(1,30 + 1) :
+            sum_list.bezeich = translateExtended(
+                "Total Overbooking", lvcarea, "")
+            for i in range(1, 30 + 1):
                 anz = 0
 
                 if dispsort == 2 and tmp_list[i - 1] < 0:
@@ -1383,22 +1667,22 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
             sum_list = Sum_list()
             sum_list_data.append(sum_list)
 
-            sum_list.bezeich = translateExtended ("Out-of-Order", lvcarea, "")
-            for i in range(1,30 + 1) :
+            sum_list.bezeich = translateExtended("Out-of-Order", lvcarea, "")
+            for i in range(1, 30 + 1):
                 sum_list.summe[i - 1] = ooo_list[i - 1]
 
             if om_flag:
                 sum_list = Sum_list()
                 sum_list_data.append(sum_list)
 
-                sum_list.bezeich = translateExtended ("Off-Market", lvcarea, "")
-                for i in range(1,30 + 1) :
+                sum_list.bezeich = translateExtended("Off-Market", lvcarea, "")
+                for i in range(1, 30 + 1):
                     sum_list.summe[i - 1] = om_list[i - 1]
 
             for room_avail_list in query(room_avail_list_data):
-                for i in range(1,30 + 1) :
-                    room_avail_list.coom[i - 1] = to_string(room_avail_list.room[i - 1], "->>>,>>>,>>9")
-
+                for i in range(1, 30 + 1):
+                    room_avail_list.coom[i - 1] = to_string(
+                        room_avail_list.room[i - 1], "->>>,>>>,>>9")
 
     def create_browse1():
 
@@ -1406,63 +1690,67 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
         nonlocal pvilanguage, vhp_limited, op_type, printer_nr, call_from, adult_child_str, statsort, dispsort, curr_date, incl_tentative, mi_inactive, show_rate, indgastnr, qci_zinr
         nonlocal qci_zimmer
 
-
         nonlocal sum_list, room_avail_list, date_list, room_list, rate_list, created_list, t_kontline, argt_list, rmcat_list, tmp_resline, tmp_extra, temp_art, tmp_allotment, qci_zimmer, buff_ratelist
         nonlocal sum_list_data, room_avail_list_data, date_list_data, room_list_data, rate_list_data, created_list_data, t_kontline_data, argt_list_data, rmcat_list_data, tmp_resline_data, tmp_extra_data, temp_art_data, tmp_allotment_data
 
-        datum1:date = None
-        abreise1:date = None
-        do_it:bool = False
-        tmp_list:List[int] = create_empty_list(30,0)
-        avail_list:List[int] = create_empty_list(30,0)
-        om_flag:bool = False
+        datum1: date = None
+        abreise1: date = None
+        do_it: bool = False
+        tmp_list: List[int] = create_empty_list(30, 0)
+        avail_list: List[int] = create_empty_list(30, 0)
+        om_flag: bool = False
         room_avail_list = Room_avail_list()
         room_avail_list_data.append(room_avail_list)
 
-        room_avail_list.bezeich = translateExtended ("Total Active Rooms", lvcarea, "")
-        for i in range(1,30 + 1) :
+        room_avail_list.bezeich = translateExtended(
+            "Total Active Rooms", lvcarea, "")
+        for i in range(1, 30 + 1):
             room_avail_list.room[i - 1] = tot_room
             tmp_list[i - 1] = tot_room
         room_avail_list = Room_avail_list()
         room_avail_list_data.append(room_avail_list)
 
-        room_avail_list.bezeich = translateExtended ("Out-of-order", lvcarea, "")
+        room_avail_list.bezeich = translateExtended(
+            "Out-of-order", lvcarea, "")
 
         for outorder in db_session.query(Outorder).filter(
-                 (Outorder.betriebsnr <= 1)).order_by(Outorder._recid).all():
+                (Outorder.betriebsnr <= 1)).order_by(Outorder._recid).all():
 
-            zimmer = get_cache (Zimmer, {"zinr": [(eq, outorder.zinr)]})
+            zimmer = get_cache(Zimmer, {"zinr": [(eq, outorder.zinr)]})
 
             if zimmer.sleeping:
                 datum = curr_date
-                for i in range(1,30 + 1) :
+                for i in range(1, 30 + 1):
 
                     if datum >= outorder.gespstart and datum <= outorder.gespende:
-                        room_avail_list.room[i - 1] = room_avail_list.room[i - 1] + 1
+                        room_avail_list.room[i -
+                                             1] = room_avail_list.room[i - 1] + 1
                         tmp_list[i - 1] = tmp_list[i - 1] - 1
                     datum = datum + timedelta(days=1)
         room_avail_list = Room_avail_list()
         room_avail_list_data.append(room_avail_list)
 
-        room_avail_list.bezeich = translateExtended ("Occupied", lvcarea, "")
-        for i in range(1,30 + 1) :
+        room_avail_list.bezeich = translateExtended("Occupied", lvcarea, "")
+        for i in range(1, 30 + 1):
             avail_list[i - 1] = 0
 
         for res_line in db_session.query(Res_line).filter(
-                 (Res_line.resstatus == 6) & (Res_line.active_flag == 1) & (Res_line.abreise >= curr_date) & (Res_line.active_flag == 1) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line._recid).all():
+                (Res_line.resstatus == 6) & (Res_line.active_flag == 1) & (Res_line.abreise >= curr_date) & (Res_line.active_flag == 1) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line._recid).all():
 
             if not vhp_limited:
                 do_it = True
             else:
 
-                reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+                reservation = get_cache(
+                    Reservation, {"resnr": [(eq, res_line.resnr)]})
 
-                segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+                segment = get_cache(
+                    Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
                 do_it = None != segment and segment.vip_level == 0
 
             if do_it:
 
-                zimmer = get_cache (Zimmer, {"zinr": [(eq, res_line.zinr)]})
+                zimmer = get_cache(Zimmer, {"zinr": [(eq, res_line.zinr)]})
 
                 if zimmer.sleeping:
                     datum1 = curr_date + timedelta(days=num_day)
@@ -1474,8 +1762,9 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
                     if abreise1 < datum1:
                         datum1 = abreise1
                     i = 1
-                    for datum in date_range(curr_date,datum1) :
-                        room_avail_list.room[i - 1] = room_avail_list.room[i - 1] + 1
+                    for datum in date_range(curr_date, datum1):
+                        room_avail_list.room[i -
+                                             1] = room_avail_list.room[i - 1] + 1
                         tmp_list[i - 1] = tmp_list[i - 1] - 1
                         i = i + 1
                     # i = (res_line.abreise - curr_date + 1).days
@@ -1490,129 +1779,146 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
         room_avail_list = Room_avail_list()
         room_avail_list_data.append(room_avail_list)
 
-        room_avail_list.bezeich = translateExtended ("Rentable", lvcarea, "")
-        for i in range(1,30 + 1) :
+        room_avail_list.bezeich = translateExtended("Rentable", lvcarea, "")
+        for i in range(1, 30 + 1):
             room_avail_list.room[i - 1] = tmp_list[i - 1]
         room_avail_list = Room_avail_list()
         room_avail_list_data.append(room_avail_list)
 
-        room_avail_list.bezeich = translateExtended ("Guaranted", lvcarea, "")
+        room_avail_list.bezeich = translateExtended("Guaranted", lvcarea, "")
 
         for zimkateg in db_session.query(Zimkateg).order_by(Zimkateg._recid).all():
             i = 1
             datum = curr_date
-            while i <= (num_day + 1) :
+            while i <= (num_day + 1):
 
                 for res_line in db_session.query(Res_line).filter(
-                         (Res_line.active_flag == 0) & (Res_line.resstatus == 1) & (Res_line.zikatnr == zimkateg.zikatnr) & (((Res_line.ankunft <= datum) & (Res_line.abreise > datum)) | ((Res_line.ankunft == datum) & (Res_line.abreise == datum))) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line._recid).all():
+                        (Res_line.active_flag == 0) & (Res_line.resstatus == 1) & (Res_line.zikatnr == zimkateg.zikatnr) & (((Res_line.ankunft <= datum) & (Res_line.abreise > datum)) | ((Res_line.ankunft == datum) & (Res_line.abreise == datum))) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line._recid).all():
                     do_it = True
 
                     if res_line.zinr != "":
 
-                        zimmer = get_cache (Zimmer, {"zinr": [(eq, res_line.zinr)]})
+                        zimmer = get_cache(
+                            Zimmer, {"zinr": [(eq, res_line.zinr)]})
                         do_it = zimmer.sleeping
 
                     if do_it and vhp_limited:
 
-                        reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+                        reservation = get_cache(
+                            Reservation, {"resnr": [(eq, res_line.resnr)]})
 
-                        segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+                        segment = get_cache(
+                            Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
                         do_it = None != segment and segment.vip_level == 0
 
                     if do_it:
-                        room_avail_list.room[i - 1] = room_avail_list.room[i - 1] + res_line.zimmeranz
+                        room_avail_list.room[i -
+                                             1] = room_avail_list.room[i - 1] + res_line.zimmeranz
                         tmp_list[i - 1] = tmp_list[i - 1] - res_line.zimmeranz
                 i = i + 1
                 datum = datum + timedelta(days=1)
         room_avail_list = Room_avail_list()
         room_avail_list_data.append(room_avail_list)
 
-        room_avail_list.bezeich = translateExtended ("6 PM", lvcarea, "")
+        room_avail_list.bezeich = translateExtended("6 PM", lvcarea, "")
 
-        htparam = get_cache (Htparam, {"paramnr": [(eq, 297)]})
+        htparam = get_cache(Htparam, {"paramnr": [(eq, 297)]})
 
         if htparam.finteger != 0:
-            room_avail_list.bezeich = to_string(htparam.finteger) + " " + translateExtended ("PM", lvcarea, "")
+            room_avail_list.bezeich = to_string(
+                htparam.finteger) + " " + translateExtended("PM", lvcarea, "")
 
         for zimkateg in db_session.query(Zimkateg).order_by(Zimkateg._recid).all():
             i = 1
             datum = curr_date
-            while i <= (num_day + 1) :
+            while i <= (num_day + 1):
 
                 for res_line in db_session.query(Res_line).filter(
-                         (Res_line.active_flag == 0) & (Res_line.resstatus == 2) & (Res_line.zikatnr == zimkateg.zikatnr) & (((Res_line.ankunft <= datum) & (Res_line.abreise > datum)) | ((Res_line.ankunft == datum) & (Res_line.abreise == datum))) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line._recid).all():
+                        (Res_line.active_flag == 0) & (Res_line.resstatus == 2) & (Res_line.zikatnr == zimkateg.zikatnr) & (((Res_line.ankunft <= datum) & (Res_line.abreise > datum)) | ((Res_line.ankunft == datum) & (Res_line.abreise == datum))) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line._recid).all():
                     do_it = True
 
                     if res_line.zinr != "":
 
-                        zimmer = get_cache (Zimmer, {"zinr": [(eq, res_line.zinr)]})
+                        zimmer = get_cache(
+                            Zimmer, {"zinr": [(eq, res_line.zinr)]})
                         do_it = zimmer.sleeping
 
                     if do_it and vhp_limited:
 
-                        reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+                        reservation = get_cache(
+                            Reservation, {"resnr": [(eq, res_line.resnr)]})
 
-                        segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+                        segment = get_cache(
+                            Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
                         do_it = None != segment and segment.vip_level == 0
 
                     if do_it:
-                        room_avail_list.room[i - 1] = room_avail_list.room[i - 1] + res_line.zimmeranz
+                        room_avail_list.room[i -
+                                             1] = room_avail_list.room[i - 1] + res_line.zimmeranz
                         tmp_list[i - 1] = tmp_list[i - 1] - res_line.zimmeranz
                 i = i + 1
                 datum = datum + timedelta(days=1)
         room_avail_list = Room_avail_list()
         room_avail_list_data.append(room_avail_list)
 
-        room_avail_list.bezeich = translateExtended ("Oral Confirmed", lvcarea, "")
+        room_avail_list.bezeich = translateExtended(
+            "Oral Confirmed", lvcarea, "")
 
         for zimkateg in db_session.query(Zimkateg).order_by(Zimkateg._recid).all():
             i = 1
             datum = curr_date
-            while i <= (num_day + 1) :
+            while i <= (num_day + 1):
 
                 for res_line in db_session.query(Res_line).filter(
-                         (Res_line.active_flag == 0) & (Res_line.resstatus == 5) & (Res_line.zikatnr == zimkateg.zikatnr) & (((Res_line.ankunft <= datum) & (Res_line.abreise > datum)) | ((Res_line.ankunft == datum) & (Res_line.abreise == datum))) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line._recid).all():
+                        (Res_line.active_flag == 0) & (Res_line.resstatus == 5) & (Res_line.zikatnr == zimkateg.zikatnr) & (((Res_line.ankunft <= datum) & (Res_line.abreise > datum)) | ((Res_line.ankunft == datum) & (Res_line.abreise == datum))) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line._recid).all():
                     do_it = True
 
                     if res_line.zinr != "":
 
-                        zimmer = get_cache (Zimmer, {"zinr": [(eq, res_line.zinr)]})
+                        zimmer = get_cache(
+                            Zimmer, {"zinr": [(eq, res_line.zinr)]})
                         do_it = zimmer.sleeping
 
                     if do_it and vhp_limited:
 
-                        reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+                        reservation = get_cache(
+                            Reservation, {"resnr": [(eq, res_line.resnr)]})
 
-                        segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+                        segment = get_cache(
+                            Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
                         do_it = None != segment and segment.vip_level == 0
 
                     if do_it:
-                        room_avail_list.room[i - 1] = room_avail_list.room[i - 1] + res_line.zimmeranz
+                        room_avail_list.room[i -
+                                             1] = room_avail_list.room[i - 1] + res_line.zimmeranz
                         tmp_list[i - 1] = tmp_list[i - 1] - res_line.zimmeranz
                 i = i + 1
                 datum = datum + timedelta(days=1)
         room_avail_list = Room_avail_list()
         room_avail_list_data.append(room_avail_list)
 
-        room_avail_list.bezeich = translateExtended ("Global Reservation", lvcarea, "")
+        room_avail_list.bezeich = translateExtended(
+            "Global Reservation", lvcarea, "")
 
         for zimkateg in db_session.query(Zimkateg).order_by(Zimkateg._recid).all():
             i = 1
             datum = curr_date
-            while i <= (num_day + 1) :
+            while i <= (num_day + 1):
 
                 for kontline in db_session.query(Kontline).filter(
-                         (Kontline.kontignr > 0) & (Kontline.betriebsnr == 1) & (Kontline.ankunft <= datum) & (Kontline.abreise >= datum) & (Kontline.zikatnr == zimkateg.zikatnr) & (Kontline.kontstatus == 1)).order_by(Kontline._recid).all():
-                    room_avail_list.room[i - 1] = room_avail_list.room[i - 1] + kontline.zimmeranz
+                        (Kontline.kontignr > 0) & (Kontline.betriebsnr == 1) & (Kontline.ankunft <= datum) & (Kontline.abreise >= datum) & (Kontline.zikatnr == zimkateg.zikatnr) & (Kontline.kontstatus == 1)).order_by(Kontline._recid).all():
+                    room_avail_list.room[i -
+                                         1] = room_avail_list.room[i - 1] + kontline.zimmeranz
                     tmp_list[i - 1] = tmp_list[i - 1] - kontline.zimmeranz
 
                 for res_line in db_session.query(Res_line).filter(
-                         (Res_line.active_flag <= 1) & (Res_line.resstatus <= 6) & (Res_line.resstatus != 4) & (Res_line.zikatnr == zimkateg.zikatnr) & (((Res_line.ankunft <= datum) & (Res_line.abreise > datum)) | ((Res_line.ankunft == datum) & (Res_line.abreise == datum))) & (Res_line.kontignr < 0) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line._recid).all():
+                        (Res_line.active_flag <= 1) & (Res_line.resstatus <= 6) & (Res_line.resstatus != 4) & (Res_line.zikatnr == zimkateg.zikatnr) & (((Res_line.ankunft <= datum) & (Res_line.abreise > datum)) | ((Res_line.ankunft == datum) & (Res_line.abreise == datum))) & (Res_line.kontignr < 0) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line._recid).all():
                     do_it = True
 
                     if res_line.zinr != "":
 
-                        zimmer = get_cache (Zimmer, {"zinr": [(eq, res_line.zinr)]})
+                        zimmer = get_cache(
+                            Zimmer, {"zinr": [(eq, res_line.zinr)]})
                         do_it = zimmer.sleeping
 
                     if res_line.resstatus == 3 and not incl_tentative:
@@ -1620,13 +1926,16 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
 
                     if do_it and vhp_limited:
 
-                        reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+                        reservation = get_cache(
+                            Reservation, {"resnr": [(eq, res_line.resnr)]})
 
-                        segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+                        segment = get_cache(
+                            Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
                         do_it = None != segment and segment.vip_level == 0
 
                     if do_it:
-                        room_avail_list.room[i - 1] = room_avail_list.room[i - 1] - res_line.zimmeranz
+                        room_avail_list.room[i -
+                                             1] = room_avail_list.room[i - 1] - res_line.zimmeranz
                         tmp_list[i - 1] = tmp_list[i - 1] + res_line.zimmeranz
                 i = i + 1
                 datum = datum + timedelta(days=1)
@@ -1637,17 +1946,16 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
         room_avail_list_data.append(room_avail_list)
 
         room_avail_list.avail_flag = True
-        room_avail_list.bezeich = translateExtended ("Total Availability", lvcarea, "")
+        room_avail_list.bezeich = translateExtended(
+            "Total Availability", lvcarea, "")
 
-
-        for i in range(1,30 + 1) :
+        for i in range(1, 30 + 1):
             room_avail_list.room[i - 1] = tmp_list[i - 1]
         room_avail_list = Room_avail_list()
         room_avail_list_data.append(room_avail_list)
 
         room_avail_list.allot_flag = True
-        room_avail_list.bezeich = translateExtended ("Allotments", lvcarea, "")
-
+        room_avail_list.bezeich = translateExtended("Allotments", lvcarea, "")
 
         from_date = curr_date
         to_date = from_date + timedelta(days=num_day)
@@ -1655,74 +1963,78 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
         if co_date is not None and to_date > co_date:
             to_date = co_date
         i = 1
-        for datum in date_range(from_date,to_date) :
+        for datum in date_range(from_date, to_date):
 
             for kontline in db_session.query(Kontline).filter(
-                     (Kontline.betriebsnr == 0) & (Kontline.ankunft <= datum) & (Kontline.abreise >= datum) & (Kontline.kontstatus == 1)).order_by(Kontline._recid).all():
+                    (Kontline.betriebsnr == 0) & (Kontline.ankunft <= datum) & (Kontline.abreise >= datum) & (Kontline.kontstatus == 1)).order_by(Kontline._recid).all():
 
                 if datum >= (ci_date + timedelta(days=kontline.ruecktage)):
-                    room_avail_list.room[i - 1] = room_avail_list.room[i - 1] + kontline.zimmeranz
+                    room_avail_list.room[i -
+                                         1] = room_avail_list.room[i - 1] + kontline.zimmeranz
                     tmp_list[i - 1] = tmp_list[i - 1] - kontline.zimmeranz
             i = i + 1
-        for i in range(1,30 + 1) :
-            room_avail_list.room[i - 1] = room_avail_list.room[i - 1] - res_allot[i - 1]
+        for i in range(1, 30 + 1):
+            room_avail_list.room[i -
+                                 1] = room_avail_list.room[i - 1] - res_allot[i - 1]
             tmp_list[i - 1] = tmp_list[i - 1] + res_allot[i - 1]
         room_avail_list = Room_avail_list()
         room_avail_list_data.append(room_avail_list)
 
         room_avail_list.avail_flag = True
-        room_avail_list.bezeich = translateExtended ("Avail After Allotm", lvcarea, "")
+        room_avail_list.bezeich = translateExtended(
+            "Avail After Allotm", lvcarea, "")
 
-
-        for i in range(1,30 + 1) :
+        for i in range(1, 30 + 1):
             room_avail_list.room[i - 1] = tmp_list[i - 1]
 
         for room_avail_list in query(room_avail_list_data, filters=(lambda room_avail_list: room_avail_list.bezeich != "")):
-            for i in range(1,30 + 1) :
-                room_avail_list.coom[i - 1] = to_string(room_avail_list.room[i - 1], "->>>,>>>,>>9")
+            for i in range(1, 30 + 1):
+                room_avail_list.coom[i - 1] = to_string(
+                    room_avail_list.room[i - 1], "->>>,>>>,>>9")
         datum = curr_date
         sum_list = Sum_list()
         sum_list_data.append(sum_list)
 
-        sum_list.bezeich = translateExtended ("Tentative", lvcarea, "")
+        sum_list.bezeich = translateExtended("Tentative", lvcarea, "")
 
         for res_line in db_session.query(Res_line).filter(
-                 (Res_line.active_flag <= 1) & (Res_line.resstatus == 3) & (((Res_line.ankunft <= datum) & (Res_line.abreise > datum)) | ((Res_line.ankunft == datum) & (Res_line.abreise == datum))) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line._recid).all():
+                (Res_line.active_flag <= 1) & (Res_line.resstatus == 3) & (((Res_line.ankunft <= datum) & (Res_line.abreise > datum)) | ((Res_line.ankunft == datum) & (Res_line.abreise == datum))) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line._recid).all():
             i = 1
-            while i <= (num_day + 1) :
+            while i <= (num_day + 1):
                 sum_list.summe[i - 1] = sum_list.summe[i - 1] + 1
                 i = i + 1
         sum_list = Sum_list()
         sum_list_data.append(sum_list)
 
-        sum_list.bezeich = translateExtended ("Waiting List", lvcarea, "")
+        sum_list.bezeich = translateExtended("Waiting List", lvcarea, "")
 
         for zimkateg in db_session.query(Zimkateg).order_by(Zimkateg._recid).all():
             i = 1
             datum = curr_date
-            while i <= (num_day + 1) :
+            while i <= (num_day + 1):
 
                 for resplan in db_session.query(Resplan).filter(
-                         (Resplan.datum == datum) & (Resplan.zikatnr == zimkateg.zikatnr)).order_by(Resplan._recid).all():
-                    sum_list.summe[i - 1] = sum_list.summe[i - 1] + resplan.anzzim[3]
+                        (Resplan.datum == datum) & (Resplan.zikatnr == zimkateg.zikatnr)).order_by(Resplan._recid).all():
+                    sum_list.summe[i - 1] = sum_list.summe[i -
+                                                           1] + resplan.anzzim[3]
                 i = i + 1
                 datum = datum + timedelta(days=1)
         sum_list = Sum_list()
         sum_list_data.append(sum_list)
 
-        sum_list.bezeich = translateExtended ("Exp.Departure", lvcarea, "")
-        for i in range(1,30 + 1) :
+        sum_list.bezeich = translateExtended("Exp.Departure", lvcarea, "")
+        for i in range(1, 30 + 1):
             sum_list.summe[i - 1] = avail_list[i - 1]
         om_flag = False
         sum_list = Sum_list()
         sum_list_data.append(sum_list)
 
-        sum_list.bezeich = translateExtended ("Off-Market", lvcarea, "")
+        sum_list.bezeich = translateExtended("Off-Market", lvcarea, "")
 
         for outorder in db_session.query(Outorder).filter(
-                 (Outorder.betriebsnr == 2)).order_by(Outorder._recid).all():
+                (Outorder.betriebsnr == 2)).order_by(Outorder._recid).all():
             datum = curr_date
-            for i in range(1,30 + 1) :
+            for i in range(1, 30 + 1):
 
                 if datum >= outorder.gespstart and datum <= outorder.gespende:
                     sum_list.summe[i - 1] = sum_list.summe[i - 1] + 1
@@ -1732,28 +2044,23 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
         if not om_flag:
             sum_list_data.remove(sum_list)
 
-
     def clear_it():
 
         nonlocal room_list_data, sum_list_data, lvcarea, logid, logstr, cdstr, col_label, curr_day, datum, tot_room, i, ci_date, co_date, from_date, to_date, last_option, wlist, dlist, j, dd, mm, yyyy, num_day, htl_name, htl_adr, htl_tel, res_allot, week_list, rpt_title, occ_room, kontline, res_line, zimmer, paramtext, htparam, queasy, arrangement, zimkateg, artikel, fixleist, guest_pr, argt_line, genstat, reslin_queasy, zwkum, reservation, segment, outorder, resplan
         nonlocal pvilanguage, vhp_limited, op_type, printer_nr, call_from, adult_child_str, statsort, dispsort, curr_date, incl_tentative, mi_inactive, show_rate, indgastnr, qci_zinr
         nonlocal qci_zimmer
 
-
         nonlocal sum_list, room_avail_list, date_list, room_list, rate_list, created_list, t_kontline, argt_list, rmcat_list, tmp_resline, tmp_extra, temp_art, tmp_allotment, qci_zimmer, buff_ratelist
         nonlocal sum_list_data, room_avail_list_data, date_list_data, room_list_data, rate_list_data, created_list_data, t_kontline_data, argt_list_data, rmcat_list_data, tmp_resline_data, tmp_extra_data, temp_art_data, tmp_allotment_data
-
 
         sum_list_data.clear()
         room_avail_list_data.clear()
 
-
-    def check_argt_post(artnr:int, dept:int, fakt_modus:int, intervall:int, start_date:date, curr_date:date):
+    def check_argt_post(artnr: int, dept: int, fakt_modus: int, intervall: int, start_date: date, curr_date: date):
 
         nonlocal room_list_data, sum_list_data, lvcarea, logid, logstr, cdstr, col_label, curr_day, datum, tot_room, i, ci_date, co_date, from_date, to_date, last_option, wlist, dlist, j, dd, mm, yyyy, num_day, htl_name, htl_adr, htl_tel, res_allot, week_list, rpt_title, occ_room, kontline, res_line, zimmer, paramtext, htparam, queasy, arrangement, zimkateg, artikel, fixleist, guest_pr, argt_line, genstat, reslin_queasy, zwkum, reservation, segment, outorder, resplan
         nonlocal pvilanguage, vhp_limited, op_type, printer_nr, call_from, adult_child_str, statsort, dispsort, incl_tentative, mi_inactive, show_rate, indgastnr, qci_zinr
         nonlocal qci_zimmer
-
 
         nonlocal sum_list, room_avail_list, date_list, room_list, rate_list, created_list, t_kontline, argt_list, rmcat_list, tmp_resline, tmp_extra, temp_art, tmp_allotment, qci_zimmer, buff_ratelist
         nonlocal sum_list_data, room_avail_list_data, date_list_data, room_list_data, rate_list_data, created_list_data, t_kontline_data, argt_list_data, rmcat_list_data, tmp_resline_data, tmp_extra_data, temp_art_data, tmp_allotment_data
@@ -1762,7 +2069,6 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
 
         def generate_inner_output():
             return (post_it)
-
 
         if fakt_modus == 1:
             post_it = True
@@ -1794,50 +2100,49 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
 
         return generate_inner_output()
 
-
     logid = random.randint(1, 99999)
 
     if curr_date == None:
         cdstr = "NULL"
     else:
         cdstr = to_string(curr_date)
-    logstr = "logid=" + to_string(logid) + "|ACS=" + adult_child_str + "|CD=" + cdstr
+    logstr = "logid=" + to_string(logid) + "|ACS=" + \
+        adult_child_str + "|CD=" + cdstr
 
-
-    paramtext = get_cache (Paramtext, {"txtnr": [(eq, 200)]})
+    paramtext = get_cache(Paramtext, {"txtnr": [(eq, 200)]})
     htl_name = paramtext.ptexte
 
-    paramtext = get_cache (Paramtext, {"txtnr": [(eq, 201)]})
+    paramtext = get_cache(Paramtext, {"txtnr": [(eq, 201)]})
     htl_adr = paramtext.ptexte
 
-    paramtext = get_cache (Paramtext, {"txtnr": [(eq, 204)]})
+    paramtext = get_cache(Paramtext, {"txtnr": [(eq, 204)]})
     htl_tel = paramtext.ptexte
-    week_list[0] = translateExtended ("Monday ", lvcarea, "")
-    week_list[1] = translateExtended ("Tuesday ", lvcarea, "")
-    week_list[2] = translateExtended ("Wednesday ", lvcarea, "")
-    week_list[3] = translateExtended ("Thursday ", lvcarea, "")
-    week_list[4] = translateExtended ("Friday ", lvcarea, "")
-    week_list[5] = translateExtended ("Saturday ", lvcarea, "")
-    week_list[6] = translateExtended ("Sunday ", lvcarea, "")
+    week_list[0] = translateExtended("Monday ", lvcarea, "")
+    week_list[1] = translateExtended("Tuesday ", lvcarea, "")
+    week_list[2] = translateExtended("Wednesday ", lvcarea, "")
+    week_list[3] = translateExtended("Thursday ", lvcarea, "")
+    week_list[4] = translateExtended("Friday ", lvcarea, "")
+    week_list[5] = translateExtended("Saturday ", lvcarea, "")
+    week_list[6] = translateExtended("Sunday ", lvcarea, "")
 
     if curr_date == None:
 
         return generate_output()
 
-    htparam = get_cache (Htparam, {"paramnr": [(eq, 87)]})
+    htparam = get_cache(Htparam, {"paramnr": [(eq, 87)]})
     ci_date = htparam.fdate
     if num_entries(adult_child_str, ",") > 2:
-        mm = to_int(substring(entry(2, adult_child_str, ",") , 0, 2))
-        dd = to_int(substring(entry(2, adult_child_str, ",") , 2, 2))
-        yyyy = to_int(substring(entry(2, adult_child_str, ",") , 4, 4))
+        mm = to_int(substring(entry(2, adult_child_str, ","), 0, 2))
+        dd = to_int(substring(entry(2, adult_child_str, ","), 2, 2))
+        yyyy = to_int(substring(entry(2, adult_child_str, ","), 4, 4))
         co_date = date_mdy(mm, dd, yyyy) + timedelta(days=1)
 
         if (curr_date + 29) > co_date:
             num_day = (co_date - curr_date).days
     if qci_zinr != "":
-        qci_zimmer = get_cache (Zimmer, {"zinr": [(eq, qci_zinr)]})
+        qci_zimmer = get_cache(Zimmer, {"zinr": [(eq, qci_zinr)]})
     i = 1
-    while i <= (num_day + 1) :
+    while i <= (num_day + 1):
         date_list = Date_list()
         date_list_data.append(date_list)
 
@@ -1852,7 +2157,8 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
 
         for room_avail_list in query(room_avail_list_data):
 
-            queasy = get_cache (Queasy, {"key": [(eq, 325)],"number1": [(eq, room_avail_list.zikatnr)]})
+            queasy = get_cache(Queasy, {"key": [(eq, 325)], "number1": [
+                               (eq, room_avail_list.zikatnr)]})
 
             if queasy:
                 room_avail_list.sort_prior = queasy.number2
