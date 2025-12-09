@@ -6,6 +6,7 @@ from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Bill, Bill_line, Artikel, Guest, Counters, Res_line, Htparam, Billjournal, Debitor, Bediener, Res_history
+from sqlalchemy.orm.attributes import flag_modified
 
 spbill_list_data, Spbill_list = create_model("Spbill_list", {"selected":bool, "bl_recid":int}, {"selected": True})
 
@@ -143,6 +144,9 @@ def splitbill_updatebillbl(pvilanguage:int, j:int, recid_curr:int, recid_j:int, 
                 billi.mwst[98] = billi.mwst[98] - bill_line.fremdwbetrag
                 billj.mwst[98] = billj.mwst[98] + bill_line.fremdwbetrag
 
+                flag_modified(billi, "mwst")
+                flag_modified(billj, "mwst")
+
                 if bill_line.typ == 0:
                     bill_line.typ = billi.resnr
 
@@ -168,8 +172,8 @@ def splitbill_updatebillbl(pvilanguage:int, j:int, recid_curr:int, recid_j:int, 
                 billjournal.userinit = user_init
                 billjournal.bill_datum = bill_line.bill_datum
 
-
                 billjournal.bezeich = "*" + to_string(billi.rechnr) + "; " + to_string(htparam.fdate) + " " + translateExtended ("RmNo", lvcarea, "") + " " + billi.zinr
+
                 pass
                 pass
 
@@ -193,6 +197,8 @@ def splitbill_updatebillbl(pvilanguage:int, j:int, recid_curr:int, recid_j:int, 
                         debitor.rechnr = billj.rechnr
                         debitor.gastnr = billj.gastnr
                         debitor.name = gbuff.name
+
+                        db_session.flush()
 
                 bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})
 
