@@ -60,7 +60,6 @@ def prepare_mk_segmbl(gastnr: int):
     # for segment in db_session.query(Segment).filter(
     #          (Segment.vip_level == 0) & (num_entries(Segment.bezeich, "$$0") == 1)).order_by(Segment._recid).all():
     for segment in db_session.query(Segment).filter(Segment.vip_level == 0).order_by(Segment._recid).all():
-        # print("[LOG] num_entries(segment.bezeich, '$$0') : " + to_string(num_entries(segment.bezeich, "$$0")))
 
         if (num_entries(segment.bezeich, "$$0") == 1):
             hsegm_list = Hsegm_list()
@@ -76,12 +75,8 @@ def prepare_mk_segmbl(gastnr: int):
         gsegm_list = Gsegm_list()
         gsegm_list_data.append(gsegm_list)
 
-        print(f"[LOG] guest segment list data: {gsegm_list_data}")
-
         gsegm_list.segmentcode = segment.segmentcode
         gsegm_list.bezeich = segment.bezeich
-
-        print(f"[LOG] segmentcode: {segment.segmentcode} | {segment.bezeich}")
 
         if guestseg.reihenfolge == 1:
             gtitle = " " + segment.bezeich
@@ -96,7 +91,6 @@ def prepare_mk_segmbl(gastnr: int):
 
     gsegm_list = query(gsegm_list_data, filters=(lambda gsegm_list: (gsegm_list.segmentcode == vipnr1 or gsegm_list.segmentcode == vipnr2 or gsegm_list.segmentcode == vipnr3 or gsegm_list.segmentcode ==
                        vipnr4 or gsegm_list.segmentcode == vipnr5 or gsegm_list.segmentcode == vipnr6 or gsegm_list.segmentcode == vipnr7 or gsegm_list.segmentcode == vipnr8 or gsegm_list.segmentcode == vipnr9)), first=True)
-    print(f"[LOG] guest segment list: {gsegm_list}")
 
     if gsegm_list:
         vip_flag1 = True
