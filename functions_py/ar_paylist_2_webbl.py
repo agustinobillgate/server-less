@@ -5,7 +5,8 @@
 # bQ -> bq
 
 # yusufwijasena, 28/11/2025
-# - fix spacing on long string
+# - fixed spacing on long string
+# - added substring gastname & bill_rcv to 34 character 
 # ------------------------------------------
 
 from functions.additional_functions import *
@@ -487,8 +488,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debitor.gastnrmember)]})
 
                 if bguest:
-                    output_list.gastname = bguest.name + ", " + \
-                        bguest.vorname1 + bguest.anredefirma + " " + bguest.anrede1
+                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 32)
 
                 bediener = get_cache(
                     Bediener, {"nr": [(eq, debitor.bediener_nr)]})
@@ -531,7 +531,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debt.gastnrmember)]})
 
                 if t_guest:
-                    tstr = t_guest.name + "," + t_guest.vorname1 + " " + t_guest.anrede1
+                    tstr = substring(f"{t_guest.name}, {t_guest.vorname1}{t_guest.anrede1}", 0, 34)
                 else:
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
@@ -774,8 +774,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 else:
                     temp_anrede1 = ""
-                receiver = temp_name + ", " + temp_vorname1 + \
-                    " " + temp_anredefirma + temp_anrede1
+                receiver = substring(f"{temp_name}, {temp_vorname1} {temp_anredefirma}{temp_anrede1}", 0, 32)
                 output_list = Output_list()
                 output_list_data.append(output_list)
 
@@ -833,8 +832,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debitor.gastnrmember)]})
 
                 if bguest:
-                    output_list.gastname = bguest.name + ", " + \
-                        bguest.vorname1 + bguest.anredefirma + " " + bguest.anrede1
+                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 32)
 
                 bediener = get_cache(
                     Bediener, {"nr": [(eq, debitor.bediener_nr)]})
@@ -851,7 +849,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debt.gastnrmember)]})
 
                 if t_guest:
-                    tstr = t_guest.name + "," + t_guest.vorname1 + " " + t_guest.anrede1
+                    tstr = substring(f"{t_guest.name}, {t_guest.vorname1}{t_guest.anrede1}", 0, 34)
                 else:
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
@@ -1108,8 +1106,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 else:
                     temp_anrede1 = ""
-                receiver = temp_name + ", " + temp_vorname1 + \
-                    " " + temp_anredefirma + temp_anrede1
+                receiver = substring(f"{temp_name}, {temp_vorname1} {temp_anredefirma}{temp_anrede1}", 0, 32)
                 output_list = Output_list()
                 output_list_data.append(output_list)
 
@@ -1168,8 +1165,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debitor.gastnrmember)]})
 
                 if bguest:
-                    output_list.gastname = bguest.name + ", " + \
-                        bguest.vorname1 + bguest.anredefirma + " " + bguest.anrede1
+                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 32)
 
                 bediener = get_cache(
                     Bediener, {"nr": [(eq, debitor.bediener_nr)]})
@@ -1214,7 +1210,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debt.gastnrmember)]})
 
                 if t_guest:
-                    tstr = t_guest.name + "," + t_guest.vorname1 + " " + t_guest.anrede1
+                    tstr = substring(f"{t_guest.name}, {t_guest.vorname1}{t_guest.anrede1}", 0, 34)
                 else:
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
@@ -1461,8 +1457,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 else:
                     temp_anrede1 = ""
-                receiver = temp_name + ", " + temp_vorname1 + \
-                    " " + temp_anredefirma + temp_anrede1
+                receiver = substring(f"{temp_name}, {temp_vorname1} {temp_anredefirma}{temp_anrede1}", 0, 32)
                 output_list = Output_list()
                 output_list_data.append(output_list)
 
@@ -1521,8 +1516,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debitor.gastnrmember)]})
 
                 if bguest:
-                    output_list.gastname = bguest.name + ", " + \
-                        bguest.vorname1 + bguest.anredefirma + " " + bguest.anrede1
+                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 32)
 
                 bediener = get_cache(
                     Bediener, {"nr": [(eq, debitor.bediener_nr)]})
@@ -1567,7 +1561,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debt.gastnrmember)]})
 
                 if t_guest:
-                    tstr = t_guest.name + "," + t_guest.vorname1 + " " + t_guest.anrede1
+                    tstr = substring(f"{t_guest.name}, {t_guest.vorname1}{t_guest.anrede1}", 0, 34)
                 else:
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
@@ -1814,8 +1808,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 else:
                     temp_anrede1 = ""
-                receiver = temp_name + ", " + temp_vorname1 + \
-                    " " + temp_anredefirma + temp_anrede1
+                receiver = substring(f"{temp_name}, {temp_vorname1} {temp_anredefirma}{temp_anrede1}", 0, 32)
                 output_list = Output_list()
                 output_list_data.append(output_list)
 
@@ -1874,8 +1867,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debitor.gastnrmember)]})
 
                 if bguest:
-                    output_list.gastname = bguest.name + ", " + \
-                        bguest.vorname1 + bguest.anredefirma + " " + bguest.anrede1
+                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 32)
 
                 bediener = get_cache(
                     Bediener, {"nr": [(eq, debitor.bediener_nr)]})
@@ -1920,7 +1912,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debt.gastnrmember)]})
 
                 if t_guest:
-                    tstr = t_guest.name + "," + t_guest.vorname1 + " " + t_guest.anrede1
+                    tstr = substring(f"{t_guest.name}, {t_guest.vorname1}{t_guest.anrede1}", 0, 34)
                 else:
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
@@ -2163,8 +2155,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 else:
                     temp_anrede1 = ""
-                receiver = temp_name + ", " + temp_vorname1 + \
-                    " " + temp_anredefirma + temp_anrede1
+                receiver = substring(f"{temp_name}, {temp_vorname1} {temp_anredefirma}{temp_anrede1}", 0, 32)
                 output_list = Output_list()
                 output_list_data.append(output_list)
 
@@ -2223,8 +2214,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debitor.gastnrmember)]})
 
                 if bguest:
-                    output_list.gastname = bguest.name + ", " + \
-                        bguest.vorname1 + bguest.anredefirma + " " + bguest.anrede1
+                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 32)
 
                 bediener = get_cache(
                     Bediener, {"nr": [(eq, debitor.bediener_nr)]})
@@ -2269,7 +2259,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debt.gastnrmember)]})
 
                 if t_guest:
-                    tstr = t_guest.name + "," + t_guest.vorname1 + " " + t_guest.anrede1
+                    tstr = substring(f"{t_guest.name}, {t_guest.vorname1}{t_guest.anrede1}", 0, 34)
                 else:
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
@@ -2538,8 +2528,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 else:
                     temp_anrede1 = ""
-                receiver = temp_name + ", " + temp_vorname1 + \
-                    " " + temp_anredefirma + temp_anrede1
+                receiver = substring(f"{temp_name}, {temp_vorname1} {temp_anredefirma}{temp_anrede1}", 0, 32)
                 output_list = Output_list()
                 output_list_data.append(output_list)
 
@@ -2598,8 +2587,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debitor.gastnrmember)]})
 
                 if bguest:
-                    output_list.gastname = bguest.name + ", " + \
-                        bguest.vorname1 + bguest.anredefirma + " " + bguest.anrede1
+                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 32)
 
                 bediener = get_cache(
                     Bediener, {"nr": [(eq, debitor.bediener_nr)]})
@@ -2644,7 +2632,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debt.gastnrmember)]})
 
                 if t_guest:
-                    tstr = t_guest.name + "," + t_guest.vorname1 + " " + t_guest.anrede1
+                    tstr = substring(f"{t_guest.name}, {t_guest.vorname1}{t_guest.anrede1}", 0, 34)
                 else:
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
@@ -2915,8 +2903,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 else:
                     temp_anrede1 = ""
-                receiver = temp_name + ", " + temp_vorname1 + \
-                    " " + temp_anredefirma + temp_anrede1
+                receiver = substring(f"{temp_name}, {temp_vorname1} {temp_anredefirma}{temp_anrede1}", 0, 32)
                 output_list = Output_list()
                 output_list_data.append(output_list)
 
@@ -2975,8 +2962,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debitor.gastnrmember)]})
 
                 if bguest:
-                    output_list.gastname = bguest.name + ", " + \
-                        bguest.vorname1 + bguest.anredefirma + " " + bguest.anrede1
+                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 32)
 
                 bediener = get_cache(
                     Bediener, {"nr": [(eq, debitor.bediener_nr)]})
@@ -3021,7 +3007,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debt.gastnrmember)]})
 
                 if t_guest:
-                    tstr = t_guest.name + "," + t_guest.vorname1 + " " + t_guest.anrede1
+                    tstr = substring(f"{t_guest.name}, {t_guest.vorname1}{t_guest.anrede1}", 0, 34)
                 else:
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
@@ -3268,8 +3254,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 else:
                     temp_anrede1 = ""
-                receiver = temp_name + ", " + temp_vorname1 + \
-                    " " + temp_anredefirma + temp_anrede1
+                receiver = substring(f"{temp_name}, {temp_vorname1} {temp_anredefirma}{temp_anrede1}", 0, 32)
                 output_list = Output_list()
                 output_list_data.append(output_list)
 
@@ -3326,8 +3311,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debitor.gastnrmember)]})
 
                 if bguest:
-                    output_list.gastname = bguest.name + ", " + \
-                        bguest.vorname1 + bguest.anredefirma + " " + bguest.anrede1
+                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 32)
 
                 bediener = get_cache(
                     Bediener, {"nr": [(eq, debitor.bediener_nr)]})
@@ -3345,7 +3329,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debt.gastnrmember)]})
 
                 if t_guest:
-                    tstr = t_guest.name + "," + t_guest.vorname1 + " " + t_guest.anrede1
+                    tstr = substring(f"{t_guest.name}, {t_guest.vorname1}{t_guest.anrede1}", 0, 34)
                 else:
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
@@ -3609,8 +3593,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 else:
                     temp_anrede1 = ""
-                receiver = temp_name + ", " + temp_vorname1 + \
-                    " " + temp_anredefirma + temp_anrede1
+                receiver = substring(f"{temp_name}, {temp_vorname1} {temp_anredefirma}{temp_anrede1}", 0, 32)
                 output_list = Output_list()
                 output_list_data.append(output_list)
 
@@ -3667,8 +3650,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debitor.gastnrmember)]})
 
                 if bguest:
-                    output_list.gastname = bguest.name + ", " + \
-                        bguest.vorname1 + bguest.anredefirma + " " + bguest.anrede1
+                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 32)
 
                 bediener = get_cache(
                     Bediener, {"nr": [(eq, debitor.bediener_nr)]})
@@ -3686,7 +3668,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debt.gastnrmember)]})
 
                 if t_guest:
-                    tstr = t_guest.name + "," + t_guest.vorname1 + " " + t_guest.anrede1
+                    tstr = substring(f"{t_guest.name}, {t_guest.vorname1}{t_guest.anrede1}", 0, 34)
                 else:
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
@@ -3965,8 +3947,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 else:
                     temp_anrede1 = ""
-                receiver = temp_name + ", " + temp_vorname1 + \
-                    " " + temp_anredefirma + temp_anrede1
+                receiver = substring(f"{temp_name}, {temp_vorname1} {temp_anredefirma}{temp_anrede1}", 0, 32)
                 output_list = Output_list()
                 output_list_data.append(output_list)
 
@@ -4023,8 +4004,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debitor.gastnrmember)]})
 
                 if bguest:
-                    output_list.gastname = bguest.name + ", " + \
-                        bguest.vorname1 + bguest.anredefirma + " " + bguest.anrede1
+                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 32)
 
                 bediener = get_cache(
                     Bediener, {"nr": [(eq, debitor.bediener_nr)]})
@@ -4042,7 +4022,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debt.gastnrmember)]})
 
                 if t_guest:
-                    tstr = t_guest.name + "," + t_guest.vorname1 + " " + t_guest.anrede1
+                    tstr = substring(f"{t_guest.name}, {t_guest.vorname1}{t_guest.anrede1}", 0, 34)
                 else:
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
@@ -4305,8 +4285,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 else:
                     temp_anrede1 = ""
-                receiver = temp_name + ", " + temp_vorname1 + \
-                    " " + temp_anredefirma + temp_anrede1
+                receiver = substring(f"{temp_name}, {temp_vorname1} {temp_anredefirma}{temp_anrede1}", 0, 32)
                 output_list = Output_list()
                 output_list_data.append(output_list)
 
@@ -4363,8 +4342,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debitor.gastnrmember)]})
 
                 if bguest:
-                    output_list.gastname = bguest.name + ", " + \
-                        bguest.vorname1 + bguest.anredefirma + " " + bguest.anrede1
+                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 32)
 
                 bediener = get_cache(
                     Bediener, {"nr": [(eq, debitor.bediener_nr)]})
@@ -4382,7 +4360,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debt.gastnrmember)]})
 
                 if t_guest:
-                    tstr = t_guest.name + "," + t_guest.vorname1 + " " + t_guest.anrede1
+                    tstr = substring(f"{t_guest.name}, {t_guest.vorname1}{t_guest.anrede1}", 0, 34)
                 else:
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
@@ -4643,8 +4621,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 else:
                     temp_anrede1 = ""
-                receiver = temp_name + ", " + temp_vorname1 + \
-                    " " + temp_anredefirma + temp_anrede1
+                receiver = substring(f"{temp_name}, {temp_vorname1} {temp_anredefirma}{temp_anrede1}", 0, 32)
                 output_list = Output_list()
                 output_list_data.append(output_list)
 
@@ -4701,8 +4678,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debitor.gastnrmember)]})
 
                 if bguest:
-                    output_list.gastname = bguest.name + ", " + \
-                        bguest.vorname1 + bguest.anredefirma + " " + bguest.anrede1
+                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 32)
 
                 bediener = get_cache(
                     Bediener, {"nr": [(eq, debitor.bediener_nr)]})
@@ -4720,7 +4696,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debt.gastnrmember)]})
 
                 if t_guest:
-                    tstr = t_guest.name + "," + t_guest.vorname1 + " " + t_guest.anrede1
+                    tstr = substring(f"{t_guest.name}, {t_guest.vorname1}{t_guest.anrede1}", 0, 34)
                 else:
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
@@ -4983,8 +4959,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 else:
                     temp_anrede1 = ""
-                receiver = temp_name + ", " + temp_vorname1 + \
-                    " " + temp_anredefirma + temp_anrede1
+                receiver = substring(f"{temp_name}, {temp_vorname1} {temp_anredefirma}{temp_anrede1}", 0, 32)
                 output_list = Output_list()
                 output_list_data.append(output_list)
 
@@ -5036,8 +5011,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debitor.gastnrmember)]})
 
                 if bguest:
-                    output_list.gastname = bguest.name + ", " + \
-                        bguest.vorname1 + bguest.anredefirma + " " + bguest.anrede1
+                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 32)
 
                 bediener = get_cache(
                     Bediener, {"nr": [(eq, debitor.bediener_nr)]})
@@ -5055,7 +5029,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debt.gastnrmember)]})
 
                 if t_guest:
-                    tstr = t_guest.name + "," + t_guest.vorname1 + " " + t_guest.anrede1
+                    tstr = substring(f"{t_guest.name}, {t_guest.vorname1}{t_guest.anrede1}", 0, 34)
                 else:
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
@@ -5318,8 +5292,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 else:
                     temp_anrede1 = ""
-                receiver = temp_name + ", " + temp_vorname1 + \
-                    " " + temp_anredefirma + temp_anrede1
+                receiver = substring(f"{temp_name}, {temp_vorname1} {temp_anredefirma}{temp_anrede1}", 0, 32)
                 output_list = Output_list()
                 output_list_data.append(output_list)
 
@@ -5376,8 +5349,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debitor.gastnrmember)]})
 
                 if bguest:
-                    output_list.gastname = bguest.name + ", " + \
-                        bguest.vorname1 + bguest.anredefirma + " " + bguest.anrede1
+                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 32)
 
                 bediener = get_cache(
                     Bediener, {"nr": [(eq, debitor.bediener_nr)]})
@@ -5395,7 +5367,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debt.gastnrmember)]})
 
                 if t_guest:
-                    tstr = t_guest.name + "," + t_guest.vorname1 + " " + t_guest.anrede1
+                    tstr = substring(f"{t_guest.name}, {t_guest.vorname1}{t_guest.anrede1}", 0, 34)
                 else:
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
@@ -5658,8 +5630,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 else:
                     temp_anrede1 = ""
-                receiver = temp_name + ", " + temp_vorname1 + \
-                    " " + temp_anredefirma + temp_anrede1
+                receiver = substring(f"{temp_name}, {temp_vorname1} {temp_anredefirma}{temp_anrede1}", 0, 32)
                 output_list = Output_list()
                 output_list_data.append(output_list)
 
@@ -5716,8 +5687,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debitor.gastnrmember)]})
 
                 if bguest:
-                    output_list.gastname = bguest.name + ", " + \
-                        bguest.vorname1 + bguest.anredefirma + " " + bguest.anrede1
+                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 32)
 
                 bediener = get_cache(
                     Bediener, {"nr": [(eq, debitor.bediener_nr)]})
@@ -5735,7 +5705,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debt.gastnrmember)]})
 
                 if t_guest:
-                    tstr = t_guest.name + "," + t_guest.vorname1 + " " + t_guest.anrede1
+                    tstr = substring(f"{t_guest.name}, {t_guest.vorname1}{t_guest.anrede1}", 0, 34)
                 else:
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
@@ -5999,8 +5969,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 else:
                     temp_anrede1 = ""
-                receiver = temp_name + ", " + temp_vorname1 + \
-                    " " + temp_anredefirma + temp_anrede1
+                receiver = substring(f"{temp_name}, {temp_vorname1} {temp_anredefirma}{temp_anrede1}", 0, 32)
                 output_list = Output_list()
                 output_list_data.append(output_list)
 
@@ -6057,8 +6026,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debitor.gastnrmember)]})
 
                 if bguest:
-                    output_list.gastname = bguest.name + ", " + \
-                        bguest.vorname1 + bguest.anredefirma + " " + bguest.anrede1
+                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 32)
 
                 bediener = get_cache(
                     Bediener, {"nr": [(eq, debitor.bediener_nr)]})
@@ -6076,7 +6044,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debt.gastnrmember)]})
 
                 if t_guest:
-                    tstr = t_guest.name + "," + t_guest.vorname1 + " " + t_guest.anrede1
+                    tstr = substring(f"{t_guest.name}, {t_guest.vorname1}{t_guest.anrede1}", 0, 34)
                 else:
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
@@ -6340,8 +6308,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 else:
                     temp_anrede1 = ""
-                receiver = temp_name + ", " + temp_vorname1 + \
-                    " " + temp_anredefirma + temp_anrede1
+                receiver = substring(f"{temp_name}, {temp_vorname1} {temp_anredefirma}{temp_anrede1}", 0, 32)
                 output_list = Output_list()
                 output_list_data.append(output_list)
 
@@ -6398,8 +6365,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debitor.gastnrmember)]})
 
                 if bguest:
-                    output_list.gastname = bguest.name + ", " + \
-                        bguest.vorname1 + bguest.anredefirma + " " + bguest.anrede1
+                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 32)
 
                 bediener = get_cache(
                     Bediener, {"nr": [(eq, debitor.bediener_nr)]})
@@ -6417,7 +6383,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debt.gastnrmember)]})
 
                 if t_guest:
-                    tstr = t_guest.name + "," + t_guest.vorname1 + " " + t_guest.anrede1
+                    tstr = substring(f"{t_guest.name}, {t_guest.vorname1}{t_guest.anrede1}", 0, 34)
                 else:
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
@@ -6681,8 +6647,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 else:
                     temp_anrede1 = ""
-                receiver = temp_name + ", " + temp_vorname1 + \
-                    " " + temp_anredefirma + temp_anrede1
+                receiver = substring(f"{temp_name}, {temp_vorname1} {temp_anredefirma}{temp_anrede1}", 0, 32)
                 output_list = Output_list()
                 output_list_data.append(output_list)
 
@@ -6739,8 +6704,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debitor.gastnrmember)]})
 
                 if bguest:
-                    output_list.gastname = bguest.name + ", " + \
-                        bguest.vorname1 + bguest.anredefirma + " " + bguest.anrede1
+                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 32)
 
                 bediener = get_cache(
                     Bediener, {"nr": [(eq, debitor.bediener_nr)]})
@@ -6758,7 +6722,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debt.gastnrmember)]})
 
                 if t_guest:
-                    tstr = t_guest.name + "," + t_guest.vorname1 + " " + t_guest.anrede1
+                    tstr = substring(f"{t_guest.name}, {t_guest.vorname1}{t_guest.anrede1}", 0, 34)
                 else:
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
@@ -7022,8 +6986,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 else:
                     temp_anrede1 = ""
-                receiver = temp_name + ", " + temp_vorname1 + \
-                    " " + temp_anredefirma + temp_anrede1
+                receiver = substring(f"{temp_name}, {temp_vorname1} {temp_anredefirma}{temp_anrede1}", 0, 32)
                 output_list = Output_list()
                 output_list_data.append(output_list)
 
@@ -7080,8 +7043,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debitor.gastnrmember)]})
 
                 if bguest:
-                    output_list.gastname = bguest.name + ", " + \
-                        bguest.vorname1 + bguest.anredefirma + " " + bguest.anrede1
+                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 32)
 
                 bediener = get_cache(
                     Bediener, {"nr": [(eq, debitor.bediener_nr)]})
@@ -7099,7 +7061,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debt.gastnrmember)]})
 
                 if t_guest:
-                    tstr = t_guest.name + "," + t_guest.vorname1 + " " + t_guest.anrede1
+                    tstr = substring(f"{t_guest.name}, {t_guest.vorname1}{t_guest.anrede1}", 0, 34)
                 else:
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
@@ -7363,8 +7325,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 else:
                     temp_anrede1 = ""
-                receiver = temp_name + ", " + temp_vorname1 + \
-                    " " + temp_anredefirma + temp_anrede1
+                receiver = substring(f"{temp_name}, {temp_vorname1} {temp_anredefirma}{temp_anrede1}", 0, 32)
                 output_list = Output_list()
                 output_list_data.append(output_list)
 
@@ -7421,8 +7382,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debitor.gastnrmember)]})
 
                 if bguest:
-                    output_list.gastname = bguest.name + ", " + \
-                        bguest.vorname1 + bguest.anredefirma + " " + bguest.anrede1
+                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 32)
 
                 bediener = get_cache(
                     Bediener, {"nr": [(eq, debitor.bediener_nr)]})
@@ -7440,7 +7400,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debt.gastnrmember)]})
 
                 if t_guest:
-                    tstr = t_guest.name + "," + t_guest.vorname1 + " " + t_guest.anrede1
+                    tstr = substring(f"{t_guest.name}, {t_guest.vorname1}{t_guest.anrede1}", 0, 34)
                 else:
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
@@ -7704,8 +7664,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 else:
                     temp_anrede1 = ""
-                receiver = temp_name + ", " + temp_vorname1 + \
-                    " " + temp_anredefirma + temp_anrede1
+                receiver = substring(f"{temp_name}, {temp_vorname1} {temp_anredefirma}{temp_anrede1}", 0, 32)
                 output_list = Output_list()
                 output_list_data.append(output_list)
 
@@ -7761,8 +7720,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debitor.gastnrmember)]})
 
                 if bguest:
-                    output_list.gastname = bguest.name + ", " + \
-                        bguest.vorname1 + bguest.anredefirma + " " + bguest.anrede1
+                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 32)
 
                 bediener = get_cache(
                     Bediener, {"nr": [(eq, debitor.bediener_nr)]})
@@ -7780,7 +7738,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debt.gastnrmember)]})
 
                 if t_guest:
-                    tstr = t_guest.name + "," + t_guest.vorname1 + " " + t_guest.anrede1
+                    tstr = substring(f"{t_guest.name}, {t_guest.vorname1}{t_guest.anrede1}", 0, 34)
                 else:
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
@@ -8044,8 +8002,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 else:
                     temp_anrede1 = ""
-                receiver = temp_name + ", " + temp_vorname1 + \
-                    " " + temp_anredefirma + temp_anrede1
+                receiver = substring(f"{temp_name}, {temp_vorname1} {temp_anredefirma}{temp_anrede1}", 0, 32)
                 output_list = Output_list()
                 output_list_data.append(output_list)
 
@@ -8102,8 +8059,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debitor.gastnrmember)]})
 
                 if bguest:
-                    output_list.gastname = bguest.name + ", " + \
-                        bguest.vorname1 + bguest.anredefirma + " " + bguest.anrede1
+                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 32)
 
                 bediener = get_cache(
                     Bediener, {"nr": [(eq, debitor.bediener_nr)]})
@@ -8121,7 +8077,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debt.gastnrmember)]})
 
                 if t_guest:
-                    tstr = t_guest.name + "," + t_guest.vorname1 + " " + t_guest.anrede1
+                    tstr = substring(f"{t_guest.name}, {t_guest.vorname1}{t_guest.anrede1}", 0, 34)
                 else:
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
@@ -8385,8 +8341,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 else:
                     temp_anrede1 = ""
-                receiver = temp_name + ", " + temp_vorname1 + \
-                    " " + temp_anredefirma + temp_anrede1
+                receiver = substring(f"{temp_name}, {temp_vorname1} {temp_anredefirma}{temp_anrede1}", 0, 32)
                 output_list = Output_list()
                 output_list_data.append(output_list)
 
@@ -8443,8 +8398,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debitor.gastnrmember)]})
 
                 if bguest:
-                    output_list.gastname = bguest.name + ", " + \
-                        bguest.vorname1 + bguest.anredefirma + " " + bguest.anrede1
+                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 32)
 
                 bediener = get_cache(
                     Bediener, {"nr": [(eq, debitor.bediener_nr)]})
@@ -8462,7 +8416,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debt.gastnrmember)]})
 
                 if t_guest:
-                    tstr = t_guest.name + "," + t_guest.vorname1 + " " + t_guest.anrede1
+                    tstr = substring(f"{t_guest.name}, {t_guest.vorname1}{t_guest.anrede1}", 0, 34)
                 else:
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
@@ -8726,8 +8680,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 else:
                     temp_anrede1 = ""
-                receiver = temp_name + ", " + temp_vorname1 + \
-                    " " + temp_anredefirma + temp_anrede1
+                receiver = substring(f"{temp_name}, {temp_vorname1} {temp_anredefirma}{temp_anrede1}", 0, 32)
                 output_list = Output_list()
                 output_list_data.append(output_list)
 
@@ -8784,8 +8737,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debitor.gastnrmember)]})
 
                 if bguest:
-                    output_list.gastname = bguest.name + ", " + \
-                        bguest.vorname1 + bguest.anredefirma + " " + bguest.anrede1
+                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 32)
 
                 bediener = get_cache(
                     Bediener, {"nr": [(eq, debitor.bediener_nr)]})
@@ -8803,7 +8755,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debt.gastnrmember)]})
 
                 if t_guest:
-                    tstr = t_guest.name + "," + t_guest.vorname1 + " " + t_guest.anrede1
+                    tstr = substring(f"{t_guest.name}, {t_guest.vorname1}{t_guest.anrede1}", 0, 34)
                 else:
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
@@ -9083,8 +9035,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 else:
                     temp_anrede1 = ""
-                receiver = temp_name + ", " + temp_vorname1 + \
-                    " " + temp_anredefirma + temp_anrede1
+                receiver = substring(f"{temp_name}, {temp_vorname1} {temp_anredefirma}{temp_anrede1}", 0, 32)
                 output_list = Output_list()
                 output_list_data.append(output_list)
 
@@ -9141,8 +9092,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debitor.gastnrmember)]})
 
                 if bguest:
-                    output_list.gastname = bguest.name + ", " + \
-                        bguest.vorname1 + bguest.anredefirma + " " + bguest.anrede1
+                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 32)
 
                 bediener = get_cache(
                     Bediener, {"nr": [(eq, debitor.bediener_nr)]})
@@ -9160,7 +9110,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debt.gastnrmember)]})
 
                 if t_guest:
-                    tstr = t_guest.name + "," + t_guest.vorname1 + " " + t_guest.anrede1
+                    tstr = substring(f"{t_guest.name}, {t_guest.vorname1}{t_guest.anrede1}", 0, 34)
                 else:
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
@@ -9440,8 +9390,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 else:
                     temp_anrede1 = ""
-                receiver = temp_name + ", " + temp_vorname1 + \
-                    " " + temp_anredefirma + temp_anrede1
+                receiver = substring(f"{temp_name}, {temp_vorname1} {temp_anredefirma}{temp_anrede1}", 0, 32)
                 output_list = Output_list()
                 output_list_data.append(output_list)
 
@@ -9498,8 +9447,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debitor.gastnrmember)]})
 
                 if bguest:
-                    output_list.gastname = bguest.name + ", " + \
-                        bguest.vorname1 + bguest.anredefirma + " " + bguest.anrede1
+                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 32)
 
                 bediener = get_cache(
                     Bediener, {"nr": [(eq, debitor.bediener_nr)]})
@@ -9517,7 +9465,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debt.gastnrmember)]})
 
                 if t_guest:
-                    tstr = t_guest.name + "," + t_guest.vorname1 + " " + t_guest.anrede1
+                    tstr = substring(f"{t_guest.name}, {t_guest.vorname1}{t_guest.anrede1}", 0, 34)
                 else:
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
@@ -9639,7 +9587,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         t_ar_paylist.art_bezeich = output_list.art_bezeich
         t_ar_paylist.tbetrag = to_string(
             output_list.tbetrag, "->>>,>>>,>>>,>>9.99")
-        t_ar_paylist.gastname = output_list.gastname
+        t_ar_paylist.gastname = substring(output_list.gastname, 0, 30)
         t_ar_paylist.soa_inv = output_list.soa_inv
         t_ar_paylist.famt = output_list.famt
         t_ar_paylist.bill_num2 = to_string(output_list.bill_num)
