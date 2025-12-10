@@ -5,8 +5,6 @@ from decimal import Decimal
 from datetime import date
 from models import L_artikel, L_lieferant, L_ophis, L_op, L_ophhis, L_lager, Gl_acct, Gl_department, L_ophdr
 
-from functions import log_program_ruli
-
 def top10_incoming_outgoing_webbl(from_date:date, to_date:date, from_grp:int, to_grp:int, store:int, sorttype:int):
 
     prepare_cache ([L_artikel, L_ophis, L_op])

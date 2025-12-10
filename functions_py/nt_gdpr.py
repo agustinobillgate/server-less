@@ -507,12 +507,13 @@ def nt_gdpr():
                                 pass
                                 pass
 
-                    guestbook = get_cache (Guestbook, {"gastnr": [(eq, curr_gastnr)]})
+                    guestbook = db_session.query(Guestbook).filter(
+                             (Guestbook.gastnr == curr_gastnr)).first()
 
                     if guestbook:
-                        pass
+                        db_session.refresh(guestbook, with_for_update=True)
                         db_session.delete(guestbook)
-                        pass
+                        db_session.flush()
 
                     for bill in db_session.query(Bill).filter(
                              (Bill.resnr == res_line.resnr) & (Bill.reslinnr == res_line.reslinnr)).order_by(Bill._recid).all():

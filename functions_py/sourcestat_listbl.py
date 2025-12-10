@@ -7,7 +7,6 @@ from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Sourccod, Sources
-# from functions import log_program_rd
 
 def sourcestat_listbl(from_month:string, ci_date:date, sorttype:int, hide_zero:bool):
 

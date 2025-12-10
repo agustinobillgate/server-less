@@ -6,8 +6,6 @@ from datetime import date
 from sqlalchemy import func
 from models import Reservation, Zimkateg, Res_line, Guest, Reslin_queasy
 
-from functions import log_program
-
 def reactivate_2bl(fresnr:int, fdate:date, fname:string, comments:string):
 
     prepare_cache ([Reservation, Zimkateg, Res_line, Guest])

@@ -949,7 +949,8 @@ def nt_aiirevenue_manual_reupload(ci_date:date):
     reihenfolge = nightaudit.reihenfolge
 
     for nitehist in db_session.query(Nitehist).filter(
-             (Nitehist.datum == ci_date) & (Nitehist.reihenfolge == reihenfolge)).order_by(Nitehist._recid).all():
+             (Nitehist.datum == ci_date) & (Nitehist.reihenfolge == reihenfolge)).with_for_update().order_by(Nitehist._recid).all():
+        
         db_session.delete(nitehist)
 
     nitehist = get_cache (Nitehist, {"datum": [(eq, ci_date)],"reihenfolge": [(eq, reihenfolge)]})

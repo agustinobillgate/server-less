@@ -6,8 +6,6 @@ from functions.additional_functions import *
 from decimal import Decimal
 from models import Queasy, Bediener, Res_history, Paramtext
 
-from functions import log_program
-
 t_payload_list_data, T_payload_list = create_model("T_payload_list", {"hotel_code":string, "user_init":string, "case_type":int, "old_pin":string, "new_pin":string})
 
 def change_pin_screen_webbl(t_payload_list_data:[T_payload_list]):
