@@ -36,7 +36,7 @@ def prepare_glacct_adminbl():
 
 
     gl_acct = db_session.query(Gl_acct).filter(
-             (to_int(Gl_acct.fibukonto) == 0) & (Gl_acct.bezeich == "") & (Gl_acct.main_nr == 0)).first()
+             (to_int(Gl_acct.fibukonto) == 0) & (Gl_acct.bezeich == "") & (Gl_acct.main_nr == 0)).with_for_update().first()
 
     if gl_acct:
         db_session.delete(gl_acct)

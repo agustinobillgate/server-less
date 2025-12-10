@@ -5,8 +5,6 @@ from decimal import Decimal
 from datetime import date
 from models import Gl_acct, L_lager, L_ophdr, Gl_department, L_artikel, L_op, Parameters, Queasy, L_untergrup, Bediener
 
-from functions import log_program
-
 def stock_outlist_btn_go_cldbl(trans_code:string, from_grp:int, mi_alloc:bool, mi_article:bool, mi_docu:bool, mi_date:bool, mattype:int, from_lager:int, to_lager:int, from_date:date, to_date:date, from_art:int, to_art:int, show_price:bool, cost_acct:string, deptno:int):
 
     prepare_cache ([Gl_acct, L_lager, Gl_department, L_artikel, L_op, Queasy, L_untergrup])

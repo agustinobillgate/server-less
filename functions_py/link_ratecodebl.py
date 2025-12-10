@@ -57,7 +57,7 @@ def link_ratecodebl(child_code:string, parent_code:string, tb1_char3:string, in_
     ci_date = htparam.fdate
 
     for ratecode in db_session.query(Ratecode).filter(
-             (Ratecode.code == (child_code).lower())).order_by(Ratecode._recid).all():
+             (Ratecode.code == (child_code).lower())).with_for_update().order_by(Ratecode._recid).all():
 
         rbuff = get_cache (Ratecode, {"code": [(eq, parent_code)],"marknr": [(eq, ratecode.marknr)],"zikatnr": [(eq, ratecode.zikatnr)],"argtnr": [(eq, ratecode.argtnr)]})
 
@@ -65,7 +65,8 @@ def link_ratecodebl(child_code:string, parent_code:string, tb1_char3:string, in_
             db_session.delete(ratecode)
 
     for prtable in db_session.query(Prtable).filter(
-             (Prtable.prcode == (child_code).lower())).order_by(Prtable._recid).yield_per(100):
+             (Prtable.prcode == (child_code).lower())).order_by(Prtable._recid).all():
+        
         for curr_i in range(1,99 + 1) :
             curr_product = 0
             found_product = False
@@ -109,8 +110,9 @@ def link_ratecodebl(child_code:string, parent_code:string, tb1_char3:string, in_
                 product_list.market = prtable.marknr
                 product_list.i_product = prtable.product[curr_i - 1]
 
-
+        db_session.refresh(prtable, with_for_update=True)
         db_session.delete(prtable)
+        db_session.flush()
 
     for ratecode in db_session.query(Ratecode).filter(
              (Ratecode.code == (parent_code).lower()) & (Ratecode.endperiode >= ci_date)).order_by(Ratecode._recid).all():

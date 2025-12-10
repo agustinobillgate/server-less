@@ -12,8 +12,6 @@ from decimal import Decimal
 from datetime import date
 from models import History, Res_line, Bediener
 
-from functions import log_program
-
 def hk_rmchange_1bl(from_date:date, to_date:date):
 
     prepare_cache ([Res_line])
