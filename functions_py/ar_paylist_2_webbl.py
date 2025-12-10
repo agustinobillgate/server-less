@@ -9568,7 +9568,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         t_ar_paylist = T_ar_paylist()
         t_ar_paylist_data.append(t_ar_paylist)
         
-        log_program.write_log("LOG", f"output_str: {output_list.str}")
+        # log_program.write_log("LOG", f"output_str: {output_list.str}")
 
         t_ar_paylist.bill_date = substring(output_list.str, 0, 8)
         t_ar_paylist.bill_num = substring(output_list.str, 8, 11)
