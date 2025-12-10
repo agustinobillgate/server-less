@@ -5,6 +5,11 @@
 # - Added with_for_update all query 
 # ==========================================
 
+# ==========================================
+# Rulita, 09-12-2025
+# - Fix find last in python
+# ==========================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Guestseg, Guest, Segment
@@ -47,8 +52,10 @@ def create_gcfbl(gnat:string, gland:string, def_natcode:string, gastid:string, n
                 curr_gastnr = 0
 
         if curr_gastnr == 0:
-
-            guest = db_session.query(Guest).order_by(Guest._recid.desc()).first()
+            
+            # Rulita, 09-12-2025
+            # - Fix find last in python
+            guest = db_session.query(Guest).order_by(Guest.gastnr.desc()).first()
 
             if guest:
                 curr_gastnr = guest.gastnr + 1
