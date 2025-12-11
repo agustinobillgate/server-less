@@ -317,7 +317,7 @@ def foreign_list1_webbl(dtype:int, fdate:date, from_date:date, to_date:date, ci_
             genstat_obj_list = {}
             genstat = Genstat()
             guest = Guest()
-            log_program.write_log("rd", f"to_date : {to_date}")
+
             for genstat.resstatus, genstat.resnr, genstat.res_int, genstat.erwachs, genstat.gratis, genstat.kind1, genstat.kind2, genstat.kind3, genstat.zinr, genstat.gastnr, genstat.zipreis, genstat.res_date, genstat._recid, guest.nation1, guest.ausweis_nr1, guest.geburtdatum1, guest.adresse1, guest.wohnort, guest.land, guest.email_adr, guest.bemerkung, guest.telefon, guest._recid \
                 in db_session.query(Genstat.resstatus, Genstat.resnr, Genstat.res_int, Genstat.erwachs, Genstat.gratis, Genstat.kind1, Genstat.kind2, \
                     Genstat.kind3, Genstat.zinr, Genstat.gastnr, Genstat.zipreis, Genstat.res_date, Genstat._recid, Guest.nation1, Guest.ausweis_nr1, \
@@ -327,7 +327,7 @@ def foreign_list1_webbl(dtype:int, fdate:date, from_date:date, to_date:date, ci_
                      (Genstat.datum >= from_date) & 
                      (Genstat.datum <= to_date))\
                 .order_by(Guest.nation1, Genstat.zinr).all():
-                # log_program.write_log("rd", f"genstat : {genstat.res_date}")
+                
                 if genstat_obj_list.get(genstat._recid):
                     continue
                 else:

@@ -5,7 +5,6 @@
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Queasy
-from functions import log_program
 
 htlname_data, Htlname = create_model("Htlname", {"key":int, "number2":int, "number3":int, "date1":date, "date2":date, "date3":date, "deci1":Decimal, "deci2":Decimal, "deci3":Decimal, "logi3":bool, "betriebsnr":int, "number1": int, "char3":string, "char2":string, "char1":string, "logi1":bool, "logi2":bool})
 

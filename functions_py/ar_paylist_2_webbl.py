@@ -13,8 +13,6 @@ from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Htparam, Guest, Debitor, Artikel, Bill, Bediener, Waehrung
-from functions import log_program
-
 
 def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: int, from_date: date, to_date: date, from_art: int, to_art: int, mi_payment: bool, mi_transfer: bool, show_inv: bool, bill_name: string, bill_nr: int):
 
@@ -9567,8 +9565,6 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
     for output_list in query(output_list_data):
         t_ar_paylist = T_ar_paylist()
         t_ar_paylist_data.append(t_ar_paylist)
-        
-        # log_program.write_log("LOG", f"output_str: {output_list.str}")
 
         t_ar_paylist.bill_date = substring(output_list.str, 0, 8)
         t_ar_paylist.bill_num = substring(output_list.str, 8, 11)

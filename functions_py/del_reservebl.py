@@ -10,8 +10,6 @@ from decimal import Decimal
 from functions.del_reslinebl import del_reslinebl
 from models import Res_line, Bediener, Htparam
 
-from functions import log_program
-
 def del_reservebl(pvilanguage:int, res_mode:string, resnr:int, user_init:string, cancel_str:string):
     msg_str = ""
     del_mainres:bool = False

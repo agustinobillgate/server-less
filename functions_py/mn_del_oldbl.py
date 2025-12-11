@@ -39,15 +39,19 @@ def mn_del_oldbl(case_type:int):
             anz = 180
         curr_date = ci_date - timedelta(days=anz)
 
-        h_compli = get_cache (H_compli, {"datum": [(le, curr_date)]})
-        while None != h_compli:
-            i = i + 1
-            pass
-            db_session.delete(h_compli)
+        # h_compli = get_cache (H_compli, {"datum": [(le, curr_date)]})
+        # while None != h_compli:
+        #     i = i + 1
+        #     pass
+        #     db_session.delete(h_compli)
 
-            curr_recid = h_compli._recid
-            h_compli = db_session.query(H_compli).filter(
-                     (H_compli.datum <= curr_date) & (H_compli._recid > curr_recid)).first()
+        #     curr_recid = h_compli._recid
+        #     h_compli = db_session.query(H_compli).filter(
+        #              (H_compli.datum <= curr_date) & (H_compli._recid > curr_recid)).first()
+
+        for h_compli in db_session.query(H_compli).filter(H_compli.datum <= curr_date).with_for_update().all():   
+            i = i + 1
+            db_session.delete(h_compli)
 
 
     def del_old_workorder():
@@ -58,19 +62,27 @@ def mn_del_oldbl(case_type:int):
         qbuff = None
         Qbuff =  create_buffer("Qbuff",Queasy)
 
-        # queasy = get_cache (Queasy, {"key": [(eq, 28)],"number1": [(eq, 2)],"date1": [(lt, (ci_date - 60))]})
-        queasy = db_session.query(Queasy).filter(
-                 (Queasy.key == 28) & (Queasy.number1 == 2) & (Queasy.date1 < (ci_date - timedelta(days=60)))).order_by(Queasy._recid).first()
-        while None != queasy:
+        # queasy = db_session.query(Queasy).filter(
+        #          (Queasy.key == 28) & (Queasy.number1 == 2) & (Queasy.date1 < (ci_date - timedelta(days=60)))).order_by(Queasy._recid).first()
+        # while None != queasy:
+
+        #     qbuff = db_session.query(Qbuff).filter(
+        #                  (Qbuff._recid == queasy._recid)).first()
+        #     db_session.delete(qbuff)
+        #     pass
+
+        #     curr_recid = queasy._recid
+        #     queasy = db_session.query(Queasy).filter(
+        #              (Queasy.key == 28) & (Queasy.number1 == 2) & (Queasy.date1 < (ci_date - timedelta(days=60))) & (Queasy._recid > curr_recid)).first()
+
+        for queasy in db_session.query(Queasy).filter(
+                 (Queasy.key == 28) & (Queasy.number1 == 2) & (Queasy.date1 < (ci_date - timedelta(days=60)))).all():
 
             qbuff = db_session.query(Qbuff).filter(
-                         (Qbuff._recid == queasy._recid)).first()
+                         (Qbuff._recid == queasy._recid)).with_for_update().first()
+            
             db_session.delete(qbuff)
-            pass
-
-            curr_recid = queasy._recid
-            queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 28) & (Queasy.number1 == 2) & (Queasy.date1 < (ci_date - timedelta(days=60))) & (Queasy._recid > curr_recid)).first()
+            i = i + 1
 
 
     def del_old_global_allotment():
@@ -93,9 +105,9 @@ def mn_del_oldbl(case_type:int):
                 if not res_line:
 
                     kline = db_session.query(Kline).filter(
-                             (Kline._recid == kontline._recid)).first()
+                             (Kline._recid == kontline._recid)).with_for_update().first()
+                    
                     db_session.delete(kline)
-                    pass
 
             curr_recid = kontline._recid
             kontline = db_session.query(Kontline).filter(
@@ -124,12 +136,13 @@ def mn_del_oldbl(case_type:int):
         while None != l_quote:
             attach_num = to_int("-18" + to_string(l_quote._recid))
 
-            guestbook = get_cache (Guestbook, {"gastnr": [(eq, attach_num)],"reserve_int[0]": [(eq, to_int(l_quote._recid))]})
+            guestbook = db_session.query(Guestbook).filter(
+                         (Guestbook.gastnr == attach_num) & (Guestbook.reserve_int[0] == to_int(l_quote._recid))).first()
 
             if guestbook:
-                pass
+                db_session.refresh(guestbook, with_for_update=True)
                 db_session.delete(guestbook)
-                pass
+                db_session.flush()
 
             curr_recid = l_quote._recid
             l_quote = db_session.query(L_quote).filter(

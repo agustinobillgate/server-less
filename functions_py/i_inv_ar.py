@@ -71,7 +71,7 @@ def i_inv_ar():
         if debt:
 
             debt1 = db_session.query(Debt1).filter(
-                     (Debt1._recid == debt._recid)).first()
+                     (Debt1._recid == debt._recid)).with_for_update().first()
 
             if debt1:
                 db_session.delete(debt1)

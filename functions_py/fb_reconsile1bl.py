@@ -12,8 +12,6 @@ from datetime import date
 from functions.calc_servvat import calc_servvat
 from models import Htparam, H_artikel, Gl_acct, L_bestand, L_lager, L_artikel, L_op, L_ophdr, Gl_main, H_compli, Hoteldpt, Exrate, Artikel, H_cost, Umsatz
 
-from functions import log_program
-
 def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:date, to_date:date, date1:date, date2:date, mi_opt_chk:bool, double_currency:bool, exchg_rate:Decimal, foreign_nr:int):
 
     prepare_cache ([Htparam, H_artikel, Gl_acct, L_bestand, L_lager, L_artikel, L_op, Gl_main, H_compli, Hoteldpt, Exrate, Artikel, H_cost, Umsatz])
@@ -253,8 +251,6 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
                         (l_artikel.vk_preis - to_decimal(l_oh.val_anf_best) / to_decimal(l_oh.anz_anf_best) )
                     
                 if qty != 0:
-                    log_program.write_log(f"debug-data-oscar-{s_list.lager_nr}", f"|{wert}|{qty1}|{qty}")
-
                     s_list.end_wert =  to_decimal(s_list.end_wert) + (to_decimal(wert) * to_decimal(qty1)) / to_decimal(qty)
 
                 for l_op in db_session.query(L_op).filter((L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.artnr == l_artikel.artnr) & (L_op.op_art == 1) & (L_op.loeschflag <= 1) & (L_op.lager_nr == l_lager.lager_nr)).order_by(L_op.lscheinnr).all():

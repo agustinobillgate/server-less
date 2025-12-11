@@ -10,9 +10,6 @@ from decimal import Decimal
 from datetime import date
 from models import Htparam, Zimkateg, Res_line, Arrangement, Artikel, Argt_line, Reslin_queasy, Fixleist, Guest, Reservation, Segment, Ratecode, Mc_guest, Mc_types, Waehrung, Genstat, Bill, Master
 
-# For Debug
-# from functions import log_program_ruli
-
 def lunchdinner_list_webbl(v_key:int, fdate:date, incl_accom:bool, incl_guarantee:bool, show_lunchdinner_rate:bool):
 
     prepare_cache ([Htparam, Zimkateg, Arrangement, Artikel, Argt_line, Fixleist, Guest, Reservation, Segment, Ratecode, Mc_guest, Mc_types, Waehrung])

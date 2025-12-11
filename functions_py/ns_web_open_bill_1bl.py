@@ -174,6 +174,7 @@ def ns_web_open_bill_1bl(bil_recid: int, foreign_rate: bool, double_currency: bo
 
     if not bill:
         return generate_output()
+    
     telbill_flag, babill_flag, t_bill_data = get_output(read_bill2bl(
         5, bil_recid, None, None, None, None, None, None, None, None))
 

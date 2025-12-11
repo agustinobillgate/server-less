@@ -973,8 +973,10 @@ def nt_pjrmrecap():
         reihenfolge = nightaudit.reihenfolge
 
         for nitestor in db_session.query(Nitestor).filter(
-                 (Nitestor.night_type == night_type) & (Nitestor.reihenfolge == reihenfolge)).order_by(Nitestor._recid).all():
+                 (Nitestor.night_type == night_type) & (Nitestor.reihenfolge == reihenfolge)).with_for_update().order_by(Nitestor._recid).all():
+            
             db_session.delete(nitestor)
+
         create_zkstat()
         zkstat_list()
 

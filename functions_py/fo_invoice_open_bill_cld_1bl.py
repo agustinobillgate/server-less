@@ -94,7 +94,7 @@ def fo_invoice_open_bill_cld_1bl(bil_flag:int, bil_recid:int, room:string, vipfl
     htparam = get_cache (Htparam, {"paramnr": [(eq, 87)]})
     ci_date = htparam.fdate
 
-    bill = db_session.query(Bill).filter((Bill._recid == bil_recid) & (Bill.flag < 1)).first()
+    bill = db_session.query(Bill).filter((Bill._recid == bil_recid) & (((Bill.flag < 1) & (bil_flag == 0) | (bil_flag == 1)))).first()
 
     res_line = None
     if bill:
