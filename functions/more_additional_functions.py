@@ -11,6 +11,7 @@ import string
 from time import gmtime, strftime
 
 from decimal import ROUND_HALF_UP, Decimal, InvalidOperation
+from zoneinfo import ZoneInfo
 
 def num_to_string(value, fmt=""):
     fmt = (fmt or "").strip().strip("-")
@@ -222,3 +223,67 @@ def handling_negative(value, format):
     else:
         format = format.replace("-", "")
         return format_fixed_length(to_string(value, format).strip(), charNr, "right")
+    
+def datetime_tz(dt: datetime.datetime, tz_name: str=None) -> datetime.datetime:
+    """
+    Docstring for datetime_tz
+    by: Oscar
+
+    :param dt: for input datetime object
+    :type dt: datetime.datetime
+    :param tz_name: for the timezone name (e.g., 'America/New_York'); if None, use local timezone
+    :type tz_name: str (default None)
+    :return: timezone-aware datetime object
+    :rtype: datetime.datetime
+    """
+
+    if tz_name:
+        from pytz import timezone
+        local_tz = timezone(tz_name)
+    else:
+        local_tz = datetime.datetime.now().astimezone().tzinfo.key
+        local_tz = ZoneInfo(local_tz)
+
+    return dt.astimezone(local_tz)
+
+def safe_divide(numerator, denominator):
+    return (numerator / denominator) if denominator not in (0, None) else 0.00
+
+
+def formatting_int(data, format: str) -> str:
+    """
+    Docstring for formatting_int
+    for handling formatting integer with mask like '-' or '.'
+    by: Oscar
+
+    :param data: integer data to be formatted
+    :type data: int
+    :param format: format mask string
+    :type format: str
+    :return: data formatted according to the given mask
+    :rtype: str
+    """
+
+    if type(data) == str:
+        data = int(data)
+
+    digit_count = format.count('9')
+
+    number_str = str(data)
+    
+    if len(number_str) > digit_count:
+        raise ValueError(f"Number has too many digits for the given mask ({len(number_str)} > {digit_count})")
+
+    number_str = number_str.zfill(digit_count)
+    
+    result = ''
+    digit_index = 0
+
+    for char in format:
+        if char == '9':
+            result += number_str[digit_index]
+            digit_index += 1
+        else:
+            result += char
+
+    return result
