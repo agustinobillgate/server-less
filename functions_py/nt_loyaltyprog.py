@@ -3,6 +3,15 @@
 # Rd 15/8/2025
 # erwach -> erwachs
 #-----------------------------------------
+
+# ==========================================================
+# Rulita, 10-12-2025
+# - Added with_for_update before delete query
+
+# Rulita, 11-12-2025
+# - Fixing timezone calculation to use local timezone offset
+# ==========================================================
+
 from functions.additional_functions import *
 import decimal
 from datetime import date
@@ -10,6 +19,9 @@ from sqlalchemy import func
 from functions.htpint import htpint
 from functions.calc_servvat import calc_servvat
 from models import H_bill_line, Queasy, Nightaudit, Htparam, Nitehist, Guest, Res_line, Mc_guest, Reservation, Segment, Bill_line, Bill, Artikel, Zimkateg, Ratecode, H_bill, H_artikel
+
+from datetime import datetime, timezone, timedelta
+
 
 def nt_loyaltyprog():
     bill_datum:date = None
@@ -1722,7 +1734,7 @@ def nt_loyaltyprog():
         while None != nitehist:
 
             nbuff = db_session.query(Nbuff).filter(
-                         (Nbuff._recid == Nbuff._recid)).first()
+                         (Nbuff._recid == Nbuff._recid)).with_for_update().first()
             db_session.delete(nbuff)
             pass
 
@@ -1840,11 +1852,20 @@ def nt_loyaltyprog():
         hh = to_int(entry(0, to_string(tmp_time) , chr(58)))
         mm = to_int(entry(1, to_string(tmp_time) , chr(58)))
         ss = to_int(entry(2, to_string(tmp_time) , chr(58)))
-        tz = to_int(entry(1, to_string(get_current_time_in_seconds()ZONE, 'hh:mm:ss') , chr(58)))
-        dtstoredtime = DATETIME_TZ (m, d, yy, hh, mm, ss, 0, 0)
 
+        # Rulita, 11-12-2025
+        # - Fixing timezone calculation to use local timezone offset
+        # tz = to_int(entry(1, to_string(get_current_time_in_seconds(), 'hh:mm:ss') , chr(58)))
+        # dtstoredtime = DATETIME_TZ (m, d, yy, hh, mm, ss, 0, 0)
+        # newdatetime = DATETIME_TZ (dtstoredtime, - (tz * 60))
 
-        newdatetime = DATETIME_TZ (dtstoredtime, - (tz * 60))
+        _local_offset = datetime.now().astimezone().utcoffset()
+        tz = int((_local_offset.total_seconds() if _local_offset else 0) // 3600)
+
+        dtstoredtime = datetime(yy, m, d, hh, mm, ss, tzinfo=timezone.utc)
+
+        newdatetime = dtstoredtime - timedelta(minutes=tz * 60)
+
         out_date = date_mdy(entry(0, to_string(newdatetime) , chr(32)))
         out_time = entry(0, entry(1, to_string(newdatetime) , chr(32)) , chr(46))
 

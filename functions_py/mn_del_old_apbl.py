@@ -1,5 +1,10 @@
 #using conversion tools version: 1.0.0.117
 
+# =============================================
+# Rulita, 10-12-2025
+# - Added with_for_update before delete query
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -56,7 +61,7 @@ def mn_del_old_apbl():
             if total_saldo == 0:
 
                 for debt2 in db_session.query(Debt2).filter(
-                         (Debt2.counter == l_kredit.counter) & (Debt2.lscheinnr == l_kredit.lscheinnr)).order_by(Debt2._recid).all():
+                         (Debt2.counter == l_kredit.counter) & (Debt2.lscheinnr == l_kredit.lscheinnr)).order_by(Debt2._recid).with_for_update().all():
                     db_session.delete(debt2)
 
             curr_recid = l_kredit._recid

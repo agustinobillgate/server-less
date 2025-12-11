@@ -9,6 +9,11 @@
 # - last update from Malik: Setup Wizard
 # =============================================
 
+# =============================================
+# Rulita, 10-12-2025
+# - Added with_for_update before delete query
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Paramtext, Zimmer, Queasy, Zimkateg, Res_line, Htparam
@@ -181,7 +186,7 @@ def add_room_admin_setup_wizardbl(input_list_data: list[Input_list], input_zimme
         elif floor_mode.lower() == "chg":
             if input_zimmer.prev_etage != input_zimmer.etage:
                 bf_queasy = db_session.query(Bf_queasy).filter(
-                    (Bf_queasy.key == 25) & (Bf_queasy.number2 == input_zimmer.prev_etage) & (Bf_queasy.char1 == trim(input_zimmer.prev_zinr))).first()
+                    (Bf_queasy.key == 25) & (Bf_queasy.number2 == input_zimmer.prev_etage) & (Bf_queasy.char1 == trim(input_zimmer.prev_zinr))).with_for_update().first()
 
                 if bf_queasy:
                     db_session.delete(bf_queasy)
@@ -209,7 +214,7 @@ def add_room_admin_setup_wizardbl(input_list_data: list[Input_list], input_zimme
 
         elif floor_mode.lower() == "modify/create":
             bf_queasy = db_session.query(Bf_queasy).filter(
-                (Bf_queasy.key == 25) & (Bf_queasy.number2 == input_zimmer.prev_etage) & (Bf_queasy.char1 == trim(input_zimmer.prev_zinr))).first()
+                (Bf_queasy.key == 25) & (Bf_queasy.number2 == input_zimmer.prev_etage) & (Bf_queasy.char1 == trim(input_zimmer.prev_zinr))).with_for_update().first()
 
             if bf_queasy:
                 db_session.delete(bf_queasy)
@@ -376,7 +381,7 @@ def add_room_admin_setup_wizardbl(input_list_data: list[Input_list], input_zimme
 
         elif not zimmer and trim(input_zimmer.prev_zinr) != trim(input_zimmer.zinr):
             bf_zimmer = db_session.query(Bf_zimmer).filter(
-                (Bf_zimmer.zinr == trim(input_zimmer.prev_zinr))).first()
+                (Bf_zimmer.zinr == trim(input_zimmer.prev_zinr))).with_for_update().first()
 
             if bf_zimmer:
                 db_session.delete(bf_zimmer)

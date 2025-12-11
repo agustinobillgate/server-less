@@ -4,6 +4,12 @@
     Ticket ID: 20FD2B
         _remark_:   - only converted to python
 """
+
+# ===========================================
+# Rulita, 11-12-2025
+# - Added with_for_update before delete query
+# ===========================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from models import H_bill_line, H_artikel, H_bill, H_mjourn
@@ -116,7 +122,7 @@ def ts_splitbill_split_bill_webbl(rec_id: int, dept: int, price_decimal: int):
                 art_list_data.remove(art_list)
 
         for h_bill_line in db_session.query(H_bill_line).filter(
-                (H_bill_line.rechnr == h_bill.rechnr) & (H_bill_line.departement == dept)).order_by(H_bill_line._recid).all():
+                (H_bill_line.rechnr == h_bill.rechnr) & (H_bill_line.departement == dept)).order_by(H_bill_line._recid).with_for_update().all():
             h_artikel = get_cache(
                 H_artikel, {"artnr": [(eq, h_bill_line.artnr)], "departement": [(eq, h_bill_line.departement)]})
 

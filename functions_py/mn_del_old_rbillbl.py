@@ -3,6 +3,11 @@
 # Rd, 21/10/2025
 # =======================================
 
+# =============================================
+# Rulita, 10-12-2025
+# - Added with_for_update before delete query
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date, timedelta
@@ -45,7 +50,7 @@ def mn_del_old_rbillbl():
         while None != h_bill_line:
 
             lbuff = db_session.query(Lbuff).filter(
-                             (Lbuff._recid == h_bill_line._recid)).first()
+                             (Lbuff._recid == h_bill_line._recid)).with_for_update().first()
             db_session.delete(lbuff)
             pass
             i = i + 1
@@ -63,7 +68,7 @@ def mn_del_old_rbillbl():
             if not h_bill_line:
 
                 bbuff = db_session.query(Bbuff).filter(
-                             (Bbuff._recid == h_bill._recid)).first()
+                             (Bbuff._recid == h_bill._recid)).with_for_update().first()
                 db_session.delete(bbuff)
                 pass
                 i = i + 1
@@ -73,7 +78,7 @@ def mn_del_old_rbillbl():
                          (H_bill.flag == 1) & (H_bill.departement >= 1) & (H_bill._recid > curr_recid)).first()
 
         for queasy in db_session.query(Queasy).filter(
-                 (Queasy.key == 4)).order_by(Queasy._recid).all():
+                 (Queasy.key == 4)).order_by(Queasy._recid).with_for_update().all():
             db_session.delete(queasy)
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 87)]})

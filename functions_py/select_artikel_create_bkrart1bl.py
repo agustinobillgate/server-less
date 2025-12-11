@@ -1,5 +1,10 @@
 #using conversion tools version: 1.0.0.117
 
+# =============================================
+# Rulita, 10-12-2025
+# - Added with_for_update before delete query
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Bk_rart
@@ -23,7 +28,7 @@ def select_artikel_create_bkrart1bl(veran_nr:int, veran_seite:int, sub_group:int
         return {}
 
     for bk_rart in db_session.query(Bk_rart).filter(
-             (Bk_rart.veran_nr == veran_nr) & (Bk_rart.veran_seite == veran_seite) & (Bk_rart.zwkum == sub_group)).order_by(Bk_rart._recid).all():
+             (Bk_rart.veran_nr == veran_nr) & (Bk_rart.veran_seite == veran_seite) & (Bk_rart.zwkum == sub_group)).order_by(Bk_rart._recid).with_for_update().all():
         db_session.delete(bk_rart)
 
     for bkrart in query(bkrart_data, filters=(lambda bkrart: bkrart.veran_nr == veran_nr and bkrart.veran_seite == veran_seite and bkrart.zwkum == sub_group)):
@@ -45,5 +50,7 @@ def select_artikel_create_bkrart1bl(veran_nr:int, veran_seite:int, sub_group:int
         bk_rart.von_zeit = bkrart.von_zeit
         bk_rart.raum = bkrart.raum
         bk_rart.resstatus = bkrart.resstatus
+
+        db_session.flush()
 
     return generate_output()

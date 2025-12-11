@@ -5,6 +5,12 @@
         _remark_:   - fix python indentation
                     - only convert to py
 """
+
+# =============================================
+# Rulita, 10-12-2025
+# - Added with_for_update before delete query
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -100,7 +106,7 @@ def if_lodgiq_initialbl():
 
     for interface in db_session.query(Interface).filter(
             (Interface.key == 10) & 
-            (matches((Interface.parameters, "*new|init*")) | (matches(Interface.parameters, "*modify|init*")) | (matches(Interface.parameters, "*cancel|init*")))).order_by(Interface._recid).all():
+            (matches((Interface.parameters, "*new|init*")) | (matches(Interface.parameters, "*modify|init*")) | (matches(Interface.parameters, "*cancel|init*")))).order_by(Interface._recid).with_for_update().all():
         db_session.delete(interface)
     fdate = p_87 - timedelta(days=365)
     tdate = p_87 + timedelta(days=365)

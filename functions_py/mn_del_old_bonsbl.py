@@ -3,6 +3,12 @@
 # Rd, 21/10/2025
 # timedelta
 # =======================================
+
+# =============================================
+# Rulita, 10-12-2025
+# - Added with_for_update before delete query
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -47,7 +53,9 @@ def mn_del_old_bonsbl():
         if anz == 0:
             anz = 7
 
-        queasy = get_cache (Queasy, {"key": [(eq, 3)],"date1": [(lt, bill_date)]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 3)],"date1": [(lt, bill_date)]})
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 3) & (Queasy.date1 < bill_date)).with_for_update().first()
         while None != queasy:
             pass
             db_session.delete(queasy)
@@ -88,14 +96,14 @@ def mn_del_old_bonsbl():
             while None != queasy:
 
                 q251 = db_session.query(Q251).filter(
-                             (Q251.key == 251) & (Q251.number2 == to_int(queasy._recid))).first()
+                             (Q251.key == 251) & (Q251.number2 == to_int(queasy._recid))).with_for_update().first()
 
                 if q251:
                     db_session.delete(q251)
                     pass
 
                 qsy = db_session.query(Qsy).filter(
-                             (Qsy._recid == queasy._recid)).first()
+                             (Qsy._recid == queasy._recid)).with_for_update().first()
                 db_session.delete(qsy)
                 pass
 
@@ -110,7 +118,7 @@ def mn_del_old_bonsbl():
             while None != queasy:
 
                 qsy = db_session.query(Qsy).filter(
-                             (Qsy._recid == queasy._recid)).first()
+                             (Qsy._recid == queasy._recid)).with_for_update().first()
                 db_session.delete(qsy)
                 pass
 

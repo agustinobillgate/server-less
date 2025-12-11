@@ -11,6 +11,11 @@
             - change to_string() = str()
 """ 
 
+# =============================================
+# Rulita, 10-12-2025
+# - Added with_for_update before delete query
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from models import H_artikel, Wgrpdep, H_menu
@@ -63,7 +68,7 @@ def load_h_artikel2_1bl(case_type:int, dept:int, arttype:int, int1:int):
 
     if case_type == 1:
         for h_artikel in db_session.query(H_artikel).filter(
-            (H_artikel.departement == dept) & (H_artikel.artart == arttype) & (H_artikel.activeflag)).order_by(H_artikel._recid).all():
+            (H_artikel.departement == dept) & (H_artikel.artart == arttype) & (H_artikel.activeflag)).order_by(H_artikel._recid).with_for_update().all():
 
             if h_artikel.artnr == 0:
                 hart = db_session.query(Hart).filter(
@@ -107,7 +112,7 @@ def load_h_artikel2_1bl(case_type:int, dept:int, arttype:int, int1:int):
     elif case_type == 2:
 
         for h_artikel in db_session.query(H_artikel).filter(
-            (H_artikel.departement == dept) & (H_artikel.artart == arttype) & (H_artikel.activeflag)).order_by(H_artikel._recid).all():
+            (H_artikel.departement == dept) & (H_artikel.artart == arttype) & (H_artikel.activeflag)).order_by(H_artikel._recid).with_for_update().all():
 
             if h_artikel.artnr == 0:
 

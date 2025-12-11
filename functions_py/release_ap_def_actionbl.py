@@ -1,5 +1,11 @@
 #using conversion tools version: 1.0.0.119
 
+# =============================================
+# Rulita, 10-12-2025
+# - Added with_for_update before delete query
+# - Added flush 
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from models import L_kredit, Htparam
@@ -53,7 +59,7 @@ def release_ap_def_actionbl(pay_list_s_recid:int):
 
         db_session.refresh(debt, with_for_update=True)
         db_session.delete(debt)
-
+        db_session.flush()
         db_session.refresh(l_kredit, with_for_update=True)
         l_kredit.opart = 0
         
@@ -65,7 +71,7 @@ def release_ap_def_actionbl(pay_list_s_recid:int):
         if debt:
 
             for debt in db_session.query(Debt).filter(
-                     (Debt.counter == i_counter) & (Debt.zahlkonto > 0) & (Debt.opart == 2)).order_by(Debt._recid).all():
+                     (Debt.counter == i_counter) & (Debt.zahlkonto > 0) & (Debt.opart == 2)).order_by(Debt._recid).with_for_update().all():
                 debt.opart = 1
                 it_exist = True
         else:
@@ -76,6 +82,7 @@ def release_ap_def_actionbl(pay_list_s_recid:int):
 
         if not it_exist:
             l_kredit.counter = 0
+            db_session.flush()
         pass
 
     return generate_output()

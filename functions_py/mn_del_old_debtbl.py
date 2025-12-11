@@ -1,5 +1,10 @@
 #using conversion tools version: 1.0.0.117
 
+# =============================================
+# Rulita, 10-12-2025
+# - Added with_for_update before delete query
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -47,7 +52,7 @@ def mn_del_old_debtbl():
                 curr_counter = debitor.counter
 
                 for debt1 in db_session.query(Debt1).filter(
-                         (Debt1.counter == curr_counter)).order_by(Debt1._recid).all():
+                         (Debt1.counter == curr_counter)).order_by(Debt1._recid).with_for_update().all():
                     create_debthis(debt1._recid)
                     db_session.delete(debt1)
 

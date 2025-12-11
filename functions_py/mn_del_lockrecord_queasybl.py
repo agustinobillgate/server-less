@@ -1,5 +1,10 @@
 #using conversion tools version: 1.0.0.117
 
+# =============================================
+# Rulita, 10-12-2025
+# - Added with_for_update before delete query
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -40,7 +45,7 @@ def mn_del_lockrecord_queasybl(v_mode:int):
             v_time_msecond = entry(1, timestamp_str, " ")
 
         for queasy in db_session.query(Queasy).filter(
-                 (Queasy.key == 359) & (Queasy.number1 != 0) & (Queasy.number2 != 0) & (Queasy.number3 == 1)).order_by(Queasy.char3).all():
+                 (Queasy.key == 359) & (Queasy.number1 != 0) & (Queasy.number2 != 0) & (Queasy.number3 == 1)).order_by(Queasy.char3).with_for_update().all():
 
             if queasy.char3 != "" and num_entries(queasy.char3, " ") >= 1:
                 q_v_date = date_mdy(entry(0, queasy.char3, " "))

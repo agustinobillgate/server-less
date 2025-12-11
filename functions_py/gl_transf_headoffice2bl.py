@@ -2,6 +2,12 @@
 #---------------------------------------------------------------------
 # Rd, 24/11/2025, Update last counter dengan next_counter_for_update
 #---------------------------------------------------------------------
+
+# =============================================
+# Rulita, 10-12-2025
+# - Added with_for_update before delete query
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Gl_jouhdr, Gl_journal, Gl_htljournal, Counters
@@ -40,11 +46,11 @@ def gl_transf_headoffice2bl(lic_nr:string, t_gl_jouhdr_data:[T_gl_jouhdr], t_gl_
         if gl_htljournal:
 
             for gl_jouhdr in db_session.query(Gl_jouhdr).filter(
-                         (Gl_jouhdr.jnr == gl_htljournal.jnr)).order_by(Gl_jouhdr._recid).all():
+                         (Gl_jouhdr.jnr == gl_htljournal.jnr)).order_by(Gl_jouhdr._recid).with_for_update().all():
                 db_session.delete(gl_jouhdr)
 
             for gl_journal in db_session.query(Gl_journal).filter(
-                         (Gl_journal.jnr == gl_htljournal.jnr)).order_by(Gl_journal._recid).all():
+                         (Gl_journal.jnr == gl_htljournal.jnr)).order_by(Gl_journal._recid).with_for_update().all():
                 db_session.delete(gl_journal)
         else:
 

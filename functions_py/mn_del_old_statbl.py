@@ -1,5 +1,10 @@
 #using conversion tools version: 1.0.0.117
 
+# =============================================
+# Rulita, 10-12-2025
+# - Added with_for_update before delete query
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -121,7 +126,9 @@ def mn_del_old_statbl(case_type:int):
 
         for zimmer in db_session.query(Zimmer).order_by(Zimmer._recid).all():
 
-            zinrstat = get_cache (Zinrstat, {"datum": [(le, curr_date)],"zinr": [(eq, zimmer.zinr)]})
+            # zinrstat = get_cache (Zinrstat, {"datum": [(le, curr_date)],"zinr": [(eq, zimmer.zinr)]})
+            zinrstat = db_session.query(Zinrstat).filter(
+                     (Zinrstat.datum <= curr_date) & (Zinrstat.zinr == zimmer.zinr)).with_for_update().first()
             while None != zinrstat:
                 i = i + 1
                 pass
@@ -132,43 +139,43 @@ def mn_del_old_statbl(case_type:int):
                              (Zinrstat.datum <= curr_date) & (Zinrstat.zinr == zimmer.zinr) & (Zinrstat._recid > curr_recid)).first()
 
         for zinrstat in db_session.query(Zinrstat).filter(
-                     (Zinrstat.zinr == ("ooo").lower()) & (Zinrstat.datum <= (ci_date - timedelta(days=anz)))).order_by(Zinrstat._recid).all():
+                     (Zinrstat.zinr == ("ooo").lower()) & (Zinrstat.datum <= (ci_date - timedelta(days=anz)))).order_by(Zinrstat._recid).with_for_update().all():
             db_session.delete(zinrstat)
 
         for zinrstat in db_session.query(Zinrstat).filter(
-                     (Zinrstat.zinr == ("SegArr").lower()) & (Zinrstat.datum <= (ci_date - timedelta(days=anz)))).order_by(Zinrstat._recid).all():
+                     (Zinrstat.zinr == ("SegArr").lower()) & (Zinrstat.datum <= (ci_date - timedelta(days=anz)))).order_by(Zinrstat._recid).with_for_update().all():
             db_session.delete(zinrstat)
 
         for zinrstat in db_session.query(Zinrstat).filter(
-                     (Zinrstat.zinr == ("ArgArr").lower()) & (Zinrstat.datum <= (ci_date - timedelta(days=anz)))).order_by(Zinrstat._recid).all():
+                     (Zinrstat.zinr == ("ArgArr").lower()) & (Zinrstat.datum <= (ci_date - timedelta(days=anz)))).order_by(Zinrstat._recid).with_for_update().all():
             db_session.delete(zinrstat)
 
         for zinrstat in db_session.query(Zinrstat).filter(
-                     (Zinrstat.zinr == ("CatArr").lower()) & (Zinrstat.datum <= (ci_date - timedelta(days=anz)))).order_by(Zinrstat._recid).all():
+                     (Zinrstat.zinr == ("CatArr").lower()) & (Zinrstat.datum <= (ci_date - timedelta(days=anz)))).order_by(Zinrstat._recid).with_for_update().all():
             db_session.delete(zinrstat)
 
         for zinrstat in db_session.query(Zinrstat).filter(
-                     (Zinrstat.zinr == ("SegDep").lower()) & (Zinrstat.datum <= (ci_date - timedelta(days=anz)))).order_by(Zinrstat._recid).all():
+                     (Zinrstat.zinr == ("SegDep").lower()) & (Zinrstat.datum <= (ci_date - timedelta(days=anz)))).order_by(Zinrstat._recid).with_for_update().all():
             db_session.delete(zinrstat)
 
         for zinrstat in db_session.query(Zinrstat).filter(
-                     (Zinrstat.zinr == ("ArgDep").lower()) & (Zinrstat.datum <= (ci_date - timedelta(days=anz)))).order_by(Zinrstat._recid).all():
+                     (Zinrstat.zinr == ("ArgDep").lower()) & (Zinrstat.datum <= (ci_date - timedelta(days=anz)))).order_by(Zinrstat._recid).with_for_update().all():
             db_session.delete(zinrstat)
 
         for zinrstat in db_session.query(Zinrstat).filter(
-                     (Zinrstat.zinr == ("CatDep").lower()) & (Zinrstat.datum <= (ci_date - timedelta(days=anz)))).order_by(Zinrstat._recid).all():
+                     (Zinrstat.zinr == ("CatDep").lower()) & (Zinrstat.datum <= (ci_date - timedelta(days=anz)))).order_by(Zinrstat._recid).with_for_update().all():
             db_session.delete(zinrstat)
 
         for zinrstat in db_session.query(Zinrstat).filter(
-                     (Zinrstat.zinr == ("SegInh").lower()) & (Zinrstat.datum <= (ci_date - timedelta(days=anz)))).order_by(Zinrstat._recid).all():
+                     (Zinrstat.zinr == ("SegInh").lower()) & (Zinrstat.datum <= (ci_date - timedelta(days=anz)))).order_by(Zinrstat._recid).with_for_update().all():
             db_session.delete(zinrstat)
 
         for zinrstat in db_session.query(Zinrstat).filter(
-                     (Zinrstat.zinr == ("ArgInh").lower()) & (Zinrstat.datum <= (ci_date - timedelta(days=anz)))).order_by(Zinrstat._recid).all():
+                     (Zinrstat.zinr == ("ArgInh").lower()) & (Zinrstat.datum <= (ci_date - timedelta(days=anz)))).order_by(Zinrstat._recid).with_for_update().all():
             db_session.delete(zinrstat)
 
         for zinrstat in db_session.query(Zinrstat).filter(
-                     (Zinrstat.zinr == ("CatInh").lower()) & (Zinrstat.datum <= (ci_date - timedelta(days=anz)))).order_by(Zinrstat._recid).all():
+                     (Zinrstat.zinr == ("CatInh").lower()) & (Zinrstat.datum <= (ci_date - timedelta(days=anz)))).order_by(Zinrstat._recid).with_for_update().all():
             db_session.delete(zinrstat)
 
 
@@ -183,7 +190,9 @@ def mn_del_old_statbl(case_type:int):
 
         for zimkateg in db_session.query(Zimkateg).order_by(Zimkateg._recid).all():
 
-            zkstat = get_cache (Zkstat, {"datum": [(le, curr_date)],"zikatnr": [(eq, zimkateg.zikatnr)]})
+            # zkstat = get_cache (Zkstat, {"datum": [(le, curr_date)],"zikatnr": [(eq, zimkateg.zikatnr)]})
+            zkstat = db_session.query(Zkstat).filter(
+                     (Zkstat.datum <= curr_date) & (Zkstat.zikatnr == zimkateg.zikatnr)).with_for_update().first()
             while None != zkstat:
                 i = i + 1
                 pass
@@ -205,7 +214,9 @@ def mn_del_old_statbl(case_type:int):
 
         for sourccod in db_session.query(Sourccod).order_by(Sourccod._recid).all():
 
-            sources = get_cache (Sources, {"datum": [(le, curr_date)],"source_code": [(eq, sourccod.source_code)]})
+            # sources = get_cache (Sources, {"datum": [(le, curr_date)],"source_code": [(eq, sourccod.source_code)]})
+            sources = db_session.query(Sources).filter(
+                     (Sources.datum <= curr_date) & (Sources.source_code == sourccod.source_code)).with_for_update().first()
             while None != sources:
                 i = i + 1
                 pass
@@ -227,7 +238,9 @@ def mn_del_old_statbl(case_type:int):
 
         for segment in db_session.query(Segment).order_by(Segment._recid).all():
 
-            segmentstat = get_cache (Segmentstat, {"datum": [(le, curr_date)],"segmentcode": [(eq, segment.segmentcode)]})
+            # segmentstat = get_cache (Segmentstat, {"datum": [(le, curr_date)],"segmentcode": [(eq, segment.segmentcode)]})
+            segmentstat = db_session.query(Segmentstat).filter(
+                     (Segmentstat.datum <= curr_date) & (Segmentstat.segmentcode == segment.segmentcode)).with_for_update().first()
             while None != segmentstat:
                 i = i + 1
                 pass
@@ -248,7 +261,7 @@ def mn_del_old_statbl(case_type:int):
         curr_date = ci_date - timedelta(days=anz)
 
         for guest_queasy in db_session.query(Guest_queasy).filter(
-                 (Guest_queasy.betriebsnr == 0) & (Guest_queasy.key == ("msegm").lower()) & (Guest_queasy.date1 <= curr_date)).order_by(Guest_queasy._recid).all():
+                 (Guest_queasy.betriebsnr == 0) & (Guest_queasy.key == ("msegm").lower()) & (Guest_queasy.date1 <= curr_date)).order_by(Guest_queasy._recid).with_for_update().all():
             i = i + 1
             db_session.delete(guest_queasy)
 
@@ -264,7 +277,9 @@ def mn_del_old_statbl(case_type:int):
 
         for nation in db_session.query(Nation).order_by(Nation._recid).all():
 
-            nationstat = get_cache (Nationstat, {"datum": [(le, curr_date)],"nationnr": [(eq, nation.nationnr)]})
+            # nationstat = get_cache (Nationstat, {"datum": [(le, curr_date)],"nationnr": [(eq, nation.nationnr)]})
+            nationstat = db_session.query(Nationstat).filter(
+                     (Nationstat.datum <= curr_date) & (Nationstat.nationnr == nation.nationnr)).with_for_update().first()
             while None != nationstat:
                 i = i + 1
                 pass
@@ -287,11 +302,15 @@ def mn_del_old_statbl(case_type:int):
 
         for artikel in db_session.query(Artikel).order_by(Artikel.departement, Artikel.artnr).all():
 
-            umsatz = get_cache (Umsatz, {"datum": [(le, curr_date)],"artnr": [(eq, artikel.artnr)],"departement": [(eq, artikel.departement)]})
+            # umsatz = get_cache (Umsatz, {"datum": [(le, curr_date)],"artnr": [(eq, artikel.artnr)],"departement": [(eq, artikel.departement)]})
+            umsatz = db_session.query(Umsatz).filter(
+                     (Umsatz.datum <= curr_date) & (Umsatz.artnr == artikel.artnr) & (Umsatz.departement == artikel.departement)).with_for_update().first()
             while None != umsatz:
                 i = i + 1
 
-                kontplan = get_cache (Kontplan, {"betriebsnr": [(eq, umsatz.departement)],"kontignr": [(eq, umsatz.artnr)],"datum": [(eq, umsatz.datum)]})
+                # kontplan = get_cache (Kontplan, {"betriebsnr": [(eq, umsatz.departement)],"kontignr": [(eq, umsatz.artnr)],"datum": [(eq, umsatz.datum)]})
+                kontplan = db_session.query(Kontplan).filter(
+                         (Kontplan.betriebsnr == umsatz.departement) & (Kontplan.kontignr == umsatz.artnr) & (Kontplan.datum == umsatz.datum)).with_for_update().first()
 
                 if kontplan:
                     db_session.delete(kontplan)
@@ -302,7 +321,9 @@ def mn_del_old_statbl(case_type:int):
                 umsatz = db_session.query(Umsatz).filter(
                          (Umsatz.datum <= curr_date) & (Umsatz.artnr == artikel.artnr) & (Umsatz.departement == artikel.departement) & (Umsatz._recid > curr_recid)).first()
 
-            budget = get_cache (Budget, {"datum": [(le, curr_date)],"artnr": [(eq, artikel.artnr)],"departement": [(eq, artikel.departement)]})
+            # budget = get_cache (Budget, {"datum": [(le, curr_date)],"artnr": [(eq, artikel.artnr)],"departement": [(eq, artikel.departement)]})
+            budget = db_session.query(Budget).filter(
+                     (Budget.datum <= curr_date) & (Budget.artnr == artikel.artnr) & (Budget.departement == artikel.departement)).with_for_update().first()
             while None != budget:
                 j = j + 1
                 pass
@@ -313,7 +334,7 @@ def mn_del_old_statbl(case_type:int):
                          (Budget.datum <= curr_date) & (Budget.artnr == artikel.artnr) & (Budget.departement == artikel.departement) & (Budget._recid > curr_recid)).first()
 
         for uebertrag in db_session.query(Uebertrag).filter(
-                 (Uebertrag.datum < curr_date)).order_by(Uebertrag._recid).all():
+                 (Uebertrag.datum < curr_date)).order_by(Uebertrag._recid).with_for_update().all():
             db_session.delete(uebertrag)
 
 
@@ -328,7 +349,9 @@ def mn_del_old_statbl(case_type:int):
 
         for h_artikel in db_session.query(H_artikel).order_by(H_artikel.departement, H_artikel.artnr).all():
 
-            h_umsatz = get_cache (H_umsatz, {"datum": [(le, curr_date)],"artnr": [(eq, h_artikel.artnr)],"departement": [(eq, h_artikel.departement)]})
+            # h_umsatz = get_cache (H_umsatz, {"datum": [(le, curr_date)],"artnr": [(eq, h_artikel.artnr)],"departement": [(eq, h_artikel.departement)]})
+            h_umsatz = db_session.query(H_umsatz).filter(
+                     (H_umsatz.datum <= curr_date) & (H_umsatz.artnr == h_artikel.artnr) & (H_umsatz.departement == h_artikel.departement)).with_for_update().first()
             while None != h_umsatz:
                 i = i + 1
                 pass
@@ -348,7 +371,9 @@ def mn_del_old_statbl(case_type:int):
         i = 0
         curr_date = ci_date - timedelta(days=anz)
 
-        h_cost = get_cache (H_cost, {"datum": [(le, curr_date)]})
+        # h_cost = get_cache (H_cost, {"datum": [(le, curr_date)]})
+        h_cost = db_session.query(H_cost).filter(
+                 (H_cost.datum <= curr_date)).with_for_update().first()
         while None != h_cost:
             i = i + 1
             pass
@@ -368,7 +393,9 @@ def mn_del_old_statbl(case_type:int):
         i = 0
         curr_date = ci_date - timedelta(days=anz)
 
-        exrate = get_cache (Exrate, {"datum": [(le, curr_date)]})
+        # exrate = get_cache (Exrate, {"datum": [(le, curr_date)]})
+        exrate = db_session.query(Exrate).filter(
+                 (Exrate.datum <= curr_date)).with_for_update().first()
         while None != exrate:
             i = i + 1
             pass
@@ -385,9 +412,11 @@ def mn_del_old_statbl(case_type:int):
         nonlocal case_type
 
         for dml_art in db_session.query(Dml_art).filter(
-                 (Dml_art.datum <= (ci_date - timedelta(days=60)))).order_by(Dml_art._recid).all():
+                 (Dml_art.datum <= (ci_date - timedelta(days=60)))).order_by(Dml_art._recid).with_for_update().all():
 
-            queasy = get_cache (Queasy, {"key": [(eq, 202)],"number1": [(eq, 0)],"number2": [(eq, dml_art.artnr)],"date1": [(eq, dml_art.datum)]})
+            # queasy = get_cache (Queasy, {"key": [(eq, 202)],"number1": [(eq, 0)],"number2": [(eq, dml_art.artnr)],"date1": [(eq, dml_art.datum)]})
+            queasy = db_session.query(Queasy).filter(
+                     (Queasy.key == 202) & (Queasy.number1 == 0) & (Queasy.number2 == dml_art.artnr) & (Queasy.date1 == dml_art.datum)).with_for_update().first()
 
             if queasy:
                 pass
@@ -396,9 +425,11 @@ def mn_del_old_statbl(case_type:int):
             db_session.delete(dml_art)
 
         for dml_artdep in db_session.query(Dml_artdep).filter(
-                 (Dml_artdep.datum <= (ci_date - timedelta(days=60)))).order_by(Dml_artdep._recid).all():
+                 (Dml_artdep.datum <= (ci_date - timedelta(days=60)))).order_by(Dml_artdep._recid).with_for_update().all():
 
-            queasy = get_cache (Queasy, {"key": [(eq, 202)],"number1": [(eq, dml_artdep.departement)],"number2": [(eq, dml_artdep.artnr)],"date1": [(eq, dml_artdep.datum)]})
+            # queasy = get_cache (Queasy, {"key": [(eq, 202)],"number1": [(eq, dml_artdep.departement)],"number2": [(eq, dml_artdep.artnr)],"date1": [(eq, dml_artdep.datum)]})
+            queasy = db_session.query(Queasy).filter(
+                     (Queasy.key == 202) & (Queasy.number1 == dml_artdep.departement) & (Queasy.number2 == dml_artdep.artnr) & (Queasy.date1 == dml_artdep.datum)).with_for_update().first()
 
             if queasy:
                 pass

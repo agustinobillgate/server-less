@@ -1,5 +1,10 @@
 #using conversion tools version: 1.0.0.117
 
+# ===========================================
+# Rulita, 11-12-2025
+# - Added with_for_update before delete query
+# ===========================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Mast_art
@@ -25,7 +30,7 @@ def write_mast_artbl(case_type:int, resno:int, artikel_list_data:[Artikel_list])
     if case_type == 1:
 
         for mast_art in db_session.query(Mast_art).filter(
-                 (Mast_art.resnr == resno)).order_by(Mast_art._recid).all():
+                 (Mast_art.resnr == resno)).order_by(Mast_art._recid).with_for_update().all():
             db_session.delete(mast_art)
 
         # change query -> for loop

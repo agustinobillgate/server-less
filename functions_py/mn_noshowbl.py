@@ -8,6 +8,11 @@
 # Rd, 24/11/2025, Update last counter dengan next_counter_for_update
 #-----------------------------------------------
 
+# =============================================
+# Rulita, 10-12-2025
+# - Added with_for_update before delete query
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -73,7 +78,7 @@ def mn_noshowbl(pvilanguage:int):
                 res_recid1 = res_line._recid
 
                 for zimplan in db_session.query(Zimplan).filter(
-                             (Zimplan.zinr == res_line.zinr) & (Zimplan.datum >= ci_date) & (Zimplan.datum <= res_line.abreise) & (Zimplan.res_recid == res_recid1)).order_by(Zimplan._recid).all():
+                             (Zimplan.zinr == res_line.zinr) & (Zimplan.datum >= ci_date) & (Zimplan.datum <= res_line.abreise) & (Zimplan.res_recid == res_recid1)).order_by(Zimplan._recid).with_for_update().all():
                     db_session.delete(zimplan)
             check_noshow_deposit(res_line.resnr)
             pass

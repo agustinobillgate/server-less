@@ -1,5 +1,10 @@
 #using conversion tools version: 1.0.0.117
 
+# =============================================
+# Rulita, 10-12-2025
+# - Added with_for_update before delete query
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -40,7 +45,7 @@ def mn_del_old_callsbl():
             anz = anz2
 
         calls = db_session.query(Calls).filter(
-                 ((Calls.datum + timedelta(days=anz)) < ci_date) & (Calls.buchflag == 0) & (Calls.zeit >= 0) & (Calls.key <= 1)).first()
+                 ((Calls.datum + timedelta(days=anz)) < ci_date) & (Calls.buchflag == 0) & (Calls.zeit >= 0) & (Calls.key <= 1)).with_for_update().first()
         while None != calls:
 
             if (substring(calls.rufnummer, 0, 1) != ("0")  and (calls.datum + timedelta(days=anz2)) < ci_date) or (calls.datum + timedelta(days=anz1)) < ci_date:
@@ -53,7 +58,7 @@ def mn_del_old_callsbl():
                      ((Calls.datum + timedelta(days=anz)) < ci_date) & (Calls.buchflag == 0) & (Calls.zeit >= 0) & (Calls.key <= 1) & (Calls._recid > curr_recid)).first()
 
         calls = db_session.query(Calls).filter(
-                 ((Calls.datum + timedelta(days=anz)) < ci_date) & (Calls.buchflag == 1) & (Calls.zeit >= 0) & (Calls.key <= 1)).first()
+                 ((Calls.datum + timedelta(days=anz)) < ci_date) & (Calls.buchflag == 1) & (Calls.zeit >= 0) & (Calls.key <= 1)).with_for_update().first()
         while None != calls:
 
             if (substring(calls.rufnummer, 0, 1) != ("0")  and (calls.datum + timedelta(days=anz2)) < ci_date) or (calls.datum + timedelta(days=anz1)) < ci_date:

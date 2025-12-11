@@ -1,5 +1,10 @@
 #using conversion tools version: 1.0.0.117
 
+# =============================================
+# Rulita, 10-12-2025
+# - Added with_for_update before delete query
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -26,7 +31,9 @@ def mn_del_old_roomplanbl():
 
         anz:int = 0
 
-        resplan = get_cache (Resplan, {"datum": [(lt, ci_date)]})
+        # resplan = get_cache (Resplan, {"datum": [(lt, ci_date)]})
+        resplan = db_session.query(Resplan).filter(
+                 (Resplan.datum < ci_date)).with_for_update().first()
         while None != resplan:
             i = i + 1
             pass
@@ -37,7 +44,9 @@ def mn_del_old_roomplanbl():
             resplan = db_session.query(Resplan).filter(
                      (Resplan.datum < ci_date) & (Resplan._recid > curr_recid)).first()
 
-        zimplan = get_cache (Zimplan, {"datum": [(lt, ci_date)]})
+        # zimplan = get_cache (Zimplan, {"datum": [(lt, ci_date)]})
+        zimplan = db_session.query(Zimplan).filter(
+                 (Zimplan.datum < ci_date)).with_for_update().first()
         while None != zimplan:
             i = i + 1
             pass
