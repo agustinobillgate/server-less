@@ -3,6 +3,12 @@
 # Rd, 21/10/2025
 # time delta
 #------------------------------------------
+
+# =============================================
+# Rulita, 10-12-2025
+# - Added with_for_update before delete query
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date, timedelta
@@ -40,7 +46,7 @@ def mn_del_old_billjournalbl():
 
             # billjournal = get_cache (Billjournal, {"bill_datum": [(lt, (ci_date - anz))],"departement": [(eq, hoteldpt.num)],"zeit": [(ge, 0)],"subtime": [(ge, 0)]})
             billjournal = db_session.query(Billjournal).filter(
-                     (Billjournal.bill_datum < (ci_date - timedelta(days=anz))) & (Billjournal.departement == hoteldpt.num) & (Billjournal.zeit >= 0) & (Billjournal.subtime >= 0)).first()
+                     (Billjournal.bill_datum < (ci_date - timedelta(days=anz))) & (Billjournal.departement == hoteldpt.num) & (Billjournal.zeit >= 0) & (Billjournal.subtime >= 0)).with_for_update().first()
             
             while None != billjournal:
                 i = i + 1

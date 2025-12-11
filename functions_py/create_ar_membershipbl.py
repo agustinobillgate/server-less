@@ -2,6 +2,13 @@
 #---------------------------------------------------
 # Rd, 24/11/2025 , Update last counter dengan next_counter_for_update
 #---------------------------------------------------
+
+# =============================================
+# Rulita, 10-12-2025
+# - Added with_for_update before delete query
+# - Fixing error remarks not defined asume assign cl_histpay.remarks to cl_histpay.char2
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -312,7 +319,9 @@ def create_ar_membershipbl(guestno:int, init_fee:Decimal, mber_fee:Decimal, user
         guest = get_cache (Guest, {"gastnr": [(eq, gastnr)]})
         billname = guest.name + ", " + guest.vorname1 + " " + guest.anrede1 + guest.anredefirma
 
-        debt = get_cache (Debitor, {"artnr": [(eq, curr_art)],"rechnr": [(eq, rechnr)],"opart": [(eq, 0)],"rgdatum": [(eq, bill_date)],"counter": [(eq, 0)],"saldo": [(eq, saldo)]})
+        # debt = get_cache (Debitor, {"artnr": [(eq, curr_art)],"rechnr": [(eq, rechnr)],"opart": [(eq, 0)],"rgdatum": [(eq, bill_date)],"counter": [(eq, 0)],"saldo": [(eq, saldo)]})
+        debt = db_session.query(Debt).filter(
+            (Debt.artnr == curr_art) & (Debt.rechnr == rechnr) & (Debt.opart == 0) & (Debt.betriebsnr == 0) & (Debt.rgdatum == bill_date) & (Debt.counter == 0) & (Debt.saldo == saldo)).with_for_update().first()
 
         if debt:
             pass
@@ -373,7 +382,9 @@ def create_ar_membershipbl(guestno:int, init_fee:Decimal, mber_fee:Decimal, user
         cl_histpay.balance =  to_decimal("0")
         cl_histpay.remarks = user_init + " - " + "payment History"
         cl_histpay.deci1 =  to_decimal(init_fee)
-        cl_histpay.char2 = remarks
+        # Rulita, 10/12/2025
+        # Fixing error remarks not defined asume assign cl_histpay.remarks to cl_histpay.char2
+        cl_histpay.char2 = cl_histpay.remarks
 
         if bill:
             cl_histpay.rechnr = bill.rechnr

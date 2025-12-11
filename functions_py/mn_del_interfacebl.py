@@ -3,6 +3,12 @@
 # Rd, 21/10/2025
 # timedelta
 #------------------------------------------
+
+# =============================================
+# Rulita, 10-12-2025
+# - Added with_for_update before delete query
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date, timedelta
@@ -39,7 +45,7 @@ def mn_del_interfacebl(case_type:int):
         while None != interface:
 
             interf = db_session.query(Interf).filter(
-                         (Interf._recid == interface._recid)).first()
+                         (Interf._recid == interface._recid)).with_for_update().first()
             db_session.delete(interf)
             pass
 
@@ -53,7 +59,7 @@ def mn_del_interfacebl(case_type:int):
         while None != queasy:
 
             qsy = db_session.query(Qsy).filter(
-                         (Qsy._recid == queasy._recid)).first()
+                         (Qsy._recid == queasy._recid)).with_for_update().first()
             db_session.delete(qsy)
             pass
 
@@ -81,7 +87,7 @@ def mn_del_interfacebl(case_type:int):
         while None != queasy:
 
             qsy = db_session.query(Qsy).filter(
-                         (Qsy._recid == queasy._recid)).first()
+                         (Qsy._recid == queasy._recid)).with_for_update().first()
             db_session.delete(qsy)
             pass
 
@@ -95,7 +101,7 @@ def mn_del_interfacebl(case_type:int):
         while None != queasy:
 
             qsy = db_session.query(Qsy).filter(
-                         (Qsy._recid == queasy._recid)).first()
+                         (Qsy._recid == queasy._recid)).with_for_update().first()
             db_session.delete(qsy)
             pass
 
@@ -109,7 +115,7 @@ def mn_del_interfacebl(case_type:int):
         while None != queasy:
 
             qsy = db_session.query(Qsy).filter(
-                         (Qsy._recid == queasy._recid)).first()
+                         (Qsy._recid == queasy._recid)).with_for_update().first()
             db_session.delete(qsy)
             pass
 

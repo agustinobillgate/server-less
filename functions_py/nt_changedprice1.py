@@ -3,6 +3,12 @@
 # Rd, 21/10/2025
 # timedelta
 #------------------------------------------
+
+# =============================================
+# Rulita, 10-12-2025
+# - Added with_for_update before delete query
+# =============================================
+
 from functions.additional_functions import *
 from date import date, timedelta
 from decimal import Decimal
@@ -69,7 +75,7 @@ def nt_changedprice1():
             pass
 
             qbuff = db_session.query(Qbuff).filter(
-                     (Qbuff._recid == queasy._recid)).first()
+                     (Qbuff._recid == queasy._recid)).with_for_update().first()
             db_session.delete(qbuff)
             pass
 

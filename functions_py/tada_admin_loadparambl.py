@@ -1,5 +1,10 @@
 #using conversion tools version: 1.0.0.117
 
+# =============================================
+# Rulita, 10-12-2025
+# - Added with_for_update before delete query
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Queasy
@@ -280,42 +285,54 @@ def tada_admin_loadparambl(dept_no:int):
         queasy.char2 = ""
         queasy.betriebsnr = dept_no
 
-    queasy = get_cache (Queasy, {"key": [(eq, 270)],"number1": [(eq, 1)],"betriebsnr": [(eq, dept_no)],"number2": [(eq, 19)]})
+    # queasy = get_cache (Queasy, {"key": [(eq, 270)],"number1": [(eq, 1)],"betriebsnr": [(eq, dept_no)],"number2": [(eq, 19)]})
+    queasy = db_session.query(Queasy).filter(
+             (Queasy.key == 270) & (Queasy.number1 == 1) & (Queasy.betriebsnr == dept_no) & (Queasy.number2 == 19)).with_for_update().first()
 
     if not queasy:
         pass
     else:
         db_session.delete(queasy)
 
-    queasy = get_cache (Queasy, {"key": [(eq, 270)],"number1": [(eq, 1)],"betriebsnr": [(eq, dept_no)],"number2": [(eq, 20)]})
+    # queasy = get_cache (Queasy, {"key": [(eq, 270)],"number1": [(eq, 1)],"betriebsnr": [(eq, dept_no)],"number2": [(eq, 20)]})
+    queasy = db_session.query(Queasy).filter(
+             (Queasy.key == 270) & (Queasy.number1 == 1) & (Queasy.betriebsnr == dept_no) & (Queasy.number2 == 20)).with_for_update().first()
 
     if not queasy:
         pass
     else:
         db_session.delete(queasy)
 
-    queasy = get_cache (Queasy, {"key": [(eq, 270)],"number1": [(eq, 1)],"betriebsnr": [(eq, dept_no)],"number2": [(eq, 21)]})
+    # queasy = get_cache (Queasy, {"key": [(eq, 270)],"number1": [(eq, 1)],"betriebsnr": [(eq, dept_no)],"number2": [(eq, 21)]})
+    queasy = db_session.query(Queasy).filter(
+             (Queasy.key == 270) & (Queasy.number1 == 1) & (Queasy.betriebsnr == dept_no) & (Queasy.number2 == 21)).with_for_update().first()
 
     if not queasy:
         pass
     else:
         db_session.delete(queasy)
 
-    queasy = get_cache (Queasy, {"key": [(eq, 270)],"number1": [(eq, 1)],"betriebsnr": [(eq, dept_no)],"number2": [(eq, 22)]})
+    # queasy = get_cache (Queasy, {"key": [(eq, 270)],"number1": [(eq, 1)],"betriebsnr": [(eq, dept_no)],"number2": [(eq, 22)]})
+    queasy = db_session.query(Queasy).filter(
+             (Queasy.key == 270) & (Queasy.number1 == 1) & (Queasy.betriebsnr == dept_no) & (Queasy.number2 == 22)).with_for_update().first()
 
     if not queasy:
         pass
     else:
         db_session.delete(queasy)
 
-    queasy = get_cache (Queasy, {"key": [(eq, 270)],"number1": [(eq, 1)],"betriebsnr": [(eq, dept_no)],"number2": [(eq, 23)]})
+    # queasy = get_cache (Queasy, {"key": [(eq, 270)],"number1": [(eq, 1)],"betriebsnr": [(eq, dept_no)],"number2": [(eq, 23)]})
+    queasy = db_session.query(Queasy).filter(
+             (Queasy.key == 270) & (Queasy.number1 == 1) & (Queasy.betriebsnr == dept_no) & (Queasy.number2 == 23)).with_for_update().first()
 
     if not queasy:
         pass
     else:
         db_session.delete(queasy)
 
-    queasy = get_cache (Queasy, {"key": [(eq, 270)],"number1": [(eq, 1)],"betriebsnr": [(eq, dept_no)],"number2": [(eq, 24)]})
+    # queasy = get_cache (Queasy, {"key": [(eq, 270)],"number1": [(eq, 1)],"betriebsnr": [(eq, dept_no)],"number2": [(eq, 24)]})
+    queasy = db_session.query(Queasy).filter(
+             (Queasy.key == 270) & (Queasy.number1 == 1) & (Queasy.betriebsnr == dept_no) & (Queasy.number2 == 24)).with_for_update().first()
 
     if not queasy:
         pass

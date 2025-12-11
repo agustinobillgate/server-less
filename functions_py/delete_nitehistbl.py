@@ -1,5 +1,10 @@
 #using conversion tools version: 1.0.0.117
 
+# =============================================
+# Rulita, 10-12-2025
+# - Added with_for_update before delete query
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -28,7 +33,7 @@ def delete_nitehistbl(case_type:int, datum1:date, int1:int):
     if case_type == 1:
 
         for nitehist in db_session.query(Nitehist).filter(
-                 (Nitehist.datum == datum1) & (Nitehist.reihenfolge == int1)).order_by(Nitehist._recid).all():
+                 (Nitehist.datum == datum1) & (Nitehist.reihenfolge == int1)).order_by(Nitehist._recid).with_for_update().all():
             db_session.delete(nitehist)
             pass
             success_flag = True

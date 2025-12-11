@@ -3,6 +3,9 @@
 # ==========================================
 # Rulita, 09-10-2025
 # Tiket ID : 8CF423 | Recompile Program
+
+# Rulita, 10-12-2025
+# - Added with_for_update before delete query
 # ==========================================
 
 from functions.additional_functions import *
@@ -72,22 +75,23 @@ def del_room_admin_setup_wizard(input_list_data:[Input_list]):
         nonlocal input_list, output_zimmer, output_list, bf_zimmer
         nonlocal output_zimmer_data, output_list_data
 
-        queasy = get_cache (Queasy, {"key": [(eq, 25)],"number2": [(eq, zimmer.etage)],"char1": [(eq, zimmer.zinr)]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 25)],"number2": [(eq, zimmer.etage)],"char1": [(eq, zimmer.zinr)]})
+        queasy = db_session.query(Queasy).filter(
+            (Queasy.key == 25) & (Queasy.number2 == zimmer.etage) & (Queasy.char1 == zimmer.zinr)).with_for_update().first()
 
         if queasy:
             db_session.delete(queasy)
             pass
 
-        queasy = get_cache (Queasy, {"key": [(eq, 25)],"number2": [(eq, zimmer.etage)],"betriebsnr": [(ne, 0)]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 25)],"number2": [(eq, zimmer.etage)],"betriebsnr": [(ne, 0)]})
+        queasy = db_session.query(Queasy).filter(
+            (Queasy.key == 25) & (Queasy.number2 == zimmer.etage) & (Queasy.betriebsnr != 0)).with_for_update().first()
 
         if queasy:
-            pass
+            db_session.refresh(queasy, with_for_update=True)
             queasy.betriebsnr = 0
             queasy.logi1 = False
-
-
-            pass
-            pass
+            db_session.flush()
 
 
     input_list = query(input_list_data, first=True)
@@ -115,14 +119,18 @@ def del_room_admin_setup_wizard(input_list_data:[Input_list]):
             return generate_output()
         else:
 
-            zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, input_list.zikatnr)]})
+            # zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, input_list.zikatnr)]})
+            zimkateg = db_session.query(Zimkateg).filter(
+                     (Zimkateg.zikatnr == input_list.zikatnr)).with_for_update().first()
 
             if zimkateg:
                 zimkateg.maxzimanz = zimkateg.maxzimanz - 1
                 pass
                 pass
 
-            zimmer = get_cache (Zimmer, {"zinr": [(eq, input_list.zinr)]})
+            # zimmer = get_cache (Zimmer, {"zinr": [(eq, input_list.zinr)]})
+            zimmer = db_session.query(Zimmer).filter(
+                     (Zimmer.zinr == input_list.zinr)).with_for_update().first()
 
             if zimmer:
 

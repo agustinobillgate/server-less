@@ -7,6 +7,13 @@
                     - fix order_by(intdate, int_time) to (Interface.intdate, Interface.int_time)
                     - fix buffer buffzim
 """
+
+# =============================================
+# Rulita, 10-12-2025
+# - Added with_for_update before delete query
+# - Fixing issue order by missing name table interface intdate and int_time
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -253,8 +260,8 @@ def if_lodgiq_send_rsvbl(casetype: str):
                 # (Interface.key == 10) & (not_(matches(Interface.nebenstelle, "*$LODGIQ$*"))) & (matches((Interface.parameters, "*new|init*")))).order_by(intdate, int_time).all():
                 (Interface.key == 10) & (not_(matches(Interface.nebenstelle, "*$LODGIQ$*"))) & (matches((Interface.parameters, "*new|init*")))).order_by(Interface.intdate, Interface.int_time).all():
 
-            res_line = get_cache(Res_line, {"resnr": [(eq, interface.resnr)], "reslinnr": [(
-                eq, interface.reslinnr)], "resstatus": [(ne, 11), (ne, 13)], "l_zuordnung[2]": [(eq, 0)]})
+            # res_line = get_cache(Res_line, {"resnr": [(eq, interface.resnr)], "reslinnr": [(eq, interface.reslinnr)], "resstatus": [(ne, 11), (ne, 13)], "l_zuordnung[2]": [(eq, 0)]})
+            res_line = db_session.query(Res_line).filter(Res_line.resnr == interface.resnr, Res_line.reslinnr == interface.reslinnr, Res_line.resstatus != 11, Res_line.resstatus != 13, Res_line.l_zuordnung[inc_value(2)] == 0).with_for_update().first()
 
             if res_line:
                 bufguest = get_cache(
@@ -667,7 +674,7 @@ def if_lodgiq_send_rsvbl(casetype: str):
 
     elif casetype.lower() == "modify-initial":
         for interface in db_session.query(Interface).filter(
-                (Interface.key == 10) & (not_(matches(Interface.nebenstelle, "*$LODGIQ$*"))) & (matches((Interface.parameters, "*modify|init*")))).order_by(Interface.intdate, Interface.int_time).all():
+                (Interface.key == 10) & (not_(matches(Interface.nebenstelle, "*$LODGIQ$*"))) & (matches((Interface.parameters, "*modify|init*")))).order_by(Interface.intdate, Interface.int_time).with_for_update().all():
 
             res_line = get_cache(Res_line, {"resnr": [(eq, interface.resnr)], "reslinnr": [(
                 eq, interface.reslinnr)], "resstatus": [(ne, 11), (ne, 13)], "l_zuordnung[2]": [(eq, 0)]})
@@ -1078,7 +1085,7 @@ def if_lodgiq_send_rsvbl(casetype: str):
 
     elif casetype.lower() == "cancel-initial":
         for interface in db_session.query(Interface).filter(
-                (Interface.key == 10) & (not_(matches(Interface.nebenstelle, "*$IDEASV3$*"))) & (matches((Interface.parameters, "*cancel|init*")))).order_by(Interface.intdate, Interface.int_time).all():
+                (Interface.key == 10) & (not_(matches(Interface.nebenstelle, "*$IDEASV3$*"))) & (matches((Interface.parameters, "*cancel|init*")))).order_by(Interface.intdate, Interface.int_time).with_for_update().all():
             res_line = get_cache(Res_line, {"resnr": [(eq, interface.resnr)], "reslinnr": [(eq, interface.reslinnr)]})
 
             if res_line:
@@ -1273,7 +1280,7 @@ def if_lodgiq_send_rsvbl(casetype: str):
 
     elif casetype.lower() == "new":
         interface = db_session.query(Interface).filter(
-            (Interface.key == 10) & (not_(matches(Interface.nebenstelle, "*$IDEASV3$*"))) & (matches((Interface.parameters, "*insert*"))) | (matches(Interface.parameters, "*qci*"))) | (matches(Interface.parameters, "*new*")) | (matches(Interface.parameters, "*split*")).first()
+            (Interface.key == 10) & (not_(matches(Interface.nebenstelle, "*$IDEASV3$*"))) & (matches((Interface.parameters, "*insert*"))) | (matches(Interface.parameters, "*qci*"))) | (matches(Interface.parameters, "*new*")) | (matches(Interface.parameters, "*split*")).with_for_update().first()
         
         while interface is not None:
             res_line = get_cache(Res_line, {"resnr": [(eq, interface.resnr)], "reslinnr": [(
@@ -1680,7 +1687,7 @@ def if_lodgiq_send_rsvbl(casetype: str):
 
     elif casetype.lower() == "update":
         interface = db_session.query(Interface).filter(
-            (Interface.key == 10) & (not_(matches(Interface.nebenstelle, "*$IDEASV3$*"))) & (matches((Interface.parameters, "*modify*"))) | (matches(Interface.parameters, "*checkin*"))) | (matches(Interface.parameters, "*checkout*")).first()
+            (Interface.key == 10) & (not_(matches(Interface.nebenstelle, "*$IDEASV3$*"))) & (matches((Interface.parameters, "*modify*"))) | (matches(Interface.parameters, "*checkin*"))) | (matches(Interface.parameters, "*checkout*")).with_for_update().first()
         while interface is not None:
             res_line = get_cache(Res_line, {"resnr": [(eq, interface.resnr)], "reslinnr": [(
                 eq, interface.reslinnr)], "resstatus": [(ne, 11), (ne, 13)], "l_zuordnung[2]": [(eq, 0)]})
@@ -2094,7 +2101,7 @@ def if_lodgiq_send_rsvbl(casetype: str):
     elif casetype.lower() == ("cancel").lower():
 
         interface = db_session.query(Interface).filter(
-            (Interface.key == 10) & (not_(matches(Interface.nebenstelle, "*$IDEASV3$*"))) & (matches((Interface.parameters, "*cancel*"))) | (matches(Interface.parameters, "*delete*"))).first()
+            (Interface.key == 10) & (not_(matches(Interface.nebenstelle, "*$IDEASV3$*"))) & (matches((Interface.parameters, "*cancel*"))) | (matches(Interface.parameters, "*delete*"))).with_for_update().first()
         while interface is not None:
             res_line = get_cache(Res_line, {"resnr": [(eq, interface.resnr)], "reslinnr": [(eq, interface.reslinnr)]})
 

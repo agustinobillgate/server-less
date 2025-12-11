@@ -1,5 +1,10 @@
 #using conversion tools version: 1.0.0.119
 
+# =============================================
+# Rulita, 10-12-2025
+# - Added with_for_update before delete query
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -134,7 +139,7 @@ def if_crm_centralized_3bl(casetype:string, paramflag:string, notthisflag:string
     if casetype.lower()  == ("new").lower() :
 
         interface = db_session.query(Interface).filter(
-                 (Interface.key == 10) & (not_(matches(Interface.nebenstelle,"*" + paramflag + "*"))) & (not_(matches(Interface.nebenstelle,"*" + notthisflag + "*"))) & (matches((Interface.parameters,"*insert*"))) | (matches(Interface.parameters,"*qci*"))) | (matches(Interface.parameters,"*new*")) | (matches(Interface.parameters,"*split*")) & (not_(matches(Interface.parameters,"*|init*"))).order_by(Interface._recid.desc()).first()
+                 (Interface.key == 10) & (not_(matches(Interface.nebenstelle,"*" + paramflag + "*"))) & (not_(matches(Interface.nebenstelle,"*" + notthisflag + "*"))) & (matches((Interface.parameters,"*insert*"))) | (matches(Interface.parameters,"*qci*"))) | (matches(Interface.parameters,"*new*")) | (matches(Interface.parameters,"*split*")) & (not_(matches(Interface.parameters,"*|init*"))).order_by(Interface._recid.desc()).with_for_update().first()
 
         if interface:
 
@@ -476,7 +481,7 @@ def if_crm_centralized_3bl(casetype:string, paramflag:string, notthisflag:string
     elif casetype.lower()  == ("update").lower() :
 
         interface = db_session.query(Interface).filter(
-                 (Interface.key == 10) & (not_(matches(Interface.nebenstelle,"*" + paramflag + "*"))) & (not_(matches(Interface.nebenstelle,"*" + notthisflag + "*"))) & (matches((Interface.parameters,"*modify*"))) | (matches(Interface.parameters,"*checkin*"))) | (matches(Interface.parameters,"*checkout*")) & (not_(matches(Interface.parameters,"*|init*"))).order_by(Interface._recid.desc()).first()
+                 (Interface.key == 10) & (not_(matches(Interface.nebenstelle,"*" + paramflag + "*"))) & (not_(matches(Interface.nebenstelle,"*" + notthisflag + "*"))) & (matches((Interface.parameters,"*modify*"))) | (matches(Interface.parameters,"*checkin*"))) | (matches(Interface.parameters,"*checkout*")) & (not_(matches(Interface.parameters,"*|init*"))).order_by(Interface._recid.desc()).with_for_update().first()
 
         if interface:
 
@@ -903,7 +908,7 @@ def if_crm_centralized_3bl(casetype:string, paramflag:string, notthisflag:string
     elif casetype.lower()  == ("new-initial").lower() :
 
         for interface in db_session.query(Interface).filter(
-                 (Interface.key == 10) & (not_(matches(Interface.nebenstelle,"*" + paramflag + "*"))) & (not_(matches(Interface.nebenstelle,"*" + notthisflag + "*"))) & (matches((Interface.parameters,"*new|init*")))).order_by(intdate, int_time).all():
+                 (Interface.key == 10) & (not_(matches(Interface.nebenstelle,"*" + paramflag + "*"))) & (not_(matches(Interface.nebenstelle,"*" + notthisflag + "*"))) & (matches((Interface.parameters,"*new|init*")))).order_by(Interface.intdate, Interface.int_time).with_for_update().all():
             loop_count = loop_count + 1
 
             if loop_count > 5:
@@ -1246,7 +1251,7 @@ def if_crm_centralized_3bl(casetype:string, paramflag:string, notthisflag:string
     elif casetype.lower()  == ("update-initial").lower() :
 
         for interface in db_session.query(Interface).filter(
-                 (Interface.key == 10) & (not_(matches(Interface.nebenstelle,"*" + paramflag + "*"))) & (not_(matches(Interface.nebenstelle,"*" + notthisflag + "*"))) & (matches((Interface.parameters,"*modify|init*")))).order_by(intdate, int_time).all():
+                 (Interface.key == 10) & (not_(matches(Interface.nebenstelle,"*" + paramflag + "*"))) & (not_(matches(Interface.nebenstelle,"*" + notthisflag + "*"))) & (matches((Interface.parameters,"*modify|init*")))).order_by(Interface.intdate, Interface.int_time).with_for_update().all():
             loop_count = loop_count + 1
 
             if loop_count > 5:
@@ -1589,7 +1594,7 @@ def if_crm_centralized_3bl(casetype:string, paramflag:string, notthisflag:string
     elif casetype.lower()  == ("cancel-initial").lower() :
 
         for interface in db_session.query(Interface).filter(
-                 (Interface.key == 10) & (not_(matches(Interface.nebenstelle,"*" + paramflag + "*"))) & (not_(matches(Interface.nebenstelle,"*" + notthisflag + "*"))) & (matches((Interface.parameters,"*cancel|init*")))).order_by(intdate, int_time).all():
+                 (Interface.key == 10) & (not_(matches(Interface.nebenstelle,"*" + paramflag + "*"))) & (not_(matches(Interface.nebenstelle,"*" + notthisflag + "*"))) & (matches((Interface.parameters,"*cancel|init*")))).order_by(Interface.intdate, Interface.int_time).all():
             loop_count = loop_count + 1
 
             if loop_count > 5:

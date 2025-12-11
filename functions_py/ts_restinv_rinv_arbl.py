@@ -8,6 +8,11 @@
 # - fix htparam.flogical
 # ========================
 
+# =============================================
+# Rulita, 10-12-2025
+# - Added with_for_update before delete query
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -72,7 +77,7 @@ def ts_restinv_rinv_arbl(curr_art: int, curr_dept: int, zinr: string, gastnr: in
             " " + guest.anrede1 + guest.anredefirma
 
         debt = db_session.query(Debt).filter(
-            (Debt.artnr == curr_art) & (Debt.rechnr == rechnr) & (Debt.opart == 0) & (Debt.betriebsnr == curr_dept) & (Debt.rgdatum == bill_date) & (Debt.counter == 0) & (Debt.saldo == saldo)).first()
+            (Debt.artnr == curr_art) & (Debt.rechnr == rechnr) & (Debt.opart == 0) & (Debt.betriebsnr == curr_dept) & (Debt.rgdatum == bill_date) & (Debt.counter == 0) & (Debt.saldo == saldo)).with_for_update().first()
 
         if debt:
             db_session.delete(debt)

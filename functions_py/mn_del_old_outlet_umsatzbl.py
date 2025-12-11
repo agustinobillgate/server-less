@@ -3,6 +3,12 @@
 # Rd, 21/10/2025
 # timedelta
 # =======================================
+
+# =============================================
+# Rulita, 10-12-2025
+# - Added with_for_update before delete query
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date, timedelta
@@ -36,7 +42,9 @@ def mn_del_old_outlet_umsatzbl():
             for artikel in db_session.query(Artikel).filter(
                      (Artikel.departement == hoteldpt.num) & (Artikel.artart == 1) & (Artikel.activeflag)).order_by(Artikel._recid).all():
 
-                umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel.artnr)],"departement": [(eq, artikel.departement)],"datum": [(le, (billdate - timedelta(days=14)))]})
+                # umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel.artnr)],"departement": [(eq, artikel.departement)],"datum": [(le, (billdate - timedelta(days=14)))]})
+                umsatz = db_session.query(Umsatz).filter(
+                         (Umsatz.artnr == artikel.artnr) & (Umsatz.departement == artikel.departement) & (Umsatz.datum <= (billdate - timedelta(days=14)))).with_for_update().first()
                 while None != umsatz:
                     i = i + 1
                     pass

@@ -75,7 +75,9 @@ def mn_update_zistatusbl(pvilanguage:int):
                  (Zimmer.zistatus == 6) & (Zimmer.sleeping)).first()
         while None != zimmer:
 
-            outorder = get_cache (Outorder, {"zinr": [(eq, zimmer.zinr)],"gespende": [(lt, ci_date)]})
+            # outorder = get_cache (Outorder, {"zinr": [(eq, zimmer.zinr)],"gespende": [(lt, ci_date)]})
+            outorder = db_session.query(Outorder).filter(
+                     (Outorder.zinr == zimmer.zinr) & (Outorder.gespende < ci_date)).with_for_update().first()
 
             if outorder:
                 get_output(genoooroombl(outorder.zinr))
@@ -106,7 +108,9 @@ def mn_update_zistatusbl(pvilanguage:int):
 
         for zimmer in db_session.query(Zimmer).order_by(Zimmer._recid).all():
 
-            outorder = get_cache (Outorder, {"zinr": [(eq, zimmer.zinr)],"betriebsnr": [(gt, 1)]})
+            # outorder = get_cache (Outorder, {"zinr": [(eq, zimmer.zinr)],"betriebsnr": [(gt, 1)]})
+            outorder = db_session.query(Outorder).filter(
+                     (Outorder.zinr == zimmer.zinr) & (Outorder.betriebsnr > 1)).with_for_update().first()
             while None != outorder :
 
                 if outorder.gespende < ci_date:
@@ -158,7 +162,9 @@ def mn_update_zistatusbl(pvilanguage:int):
             zimmer = db_session.query(Zimmer).filter(
                      (Zimmer.features != "") & (Zimmer._recid > curr_recid)).first()
 
-        queasy = get_cache (Queasy, {"key": [(eq, 162)]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 162)]})
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 162)).with_for_update().first()
         while None != queasy:
 
             qbuff = db_session.query(Qbuff).filter(

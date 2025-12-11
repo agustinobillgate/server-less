@@ -3,6 +3,12 @@
 # Rd, 21/10/2025
 # timedelta
 # =======================================
+
+# =============================================
+# Rulita, 10-12-2025
+# - Added with_for_update before delete query
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date, timedelta
@@ -51,7 +57,7 @@ def mn_del_old_rjournalbl():
                 i = i + 1
 
                 jbuff = db_session.query(Jbuff).filter(
-                         (Jbuff._recid == h_journal._recid)).first()
+                         (Jbuff._recid == h_journal._recid)).with_for_update().first()
                 db_session.delete(jbuff)
                 pass
 
@@ -65,7 +71,7 @@ def mn_del_old_rjournalbl():
             j = j + 1
 
             qbuff = db_session.query(Qbuff).filter(
-                         (Qbuff._recid == h_queasy._recid)).first()
+                         (Qbuff._recid == h_queasy._recid)).with_for_update().first()
             db_session.delete(qbuff)
             pass
 
