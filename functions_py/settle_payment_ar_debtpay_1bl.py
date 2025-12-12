@@ -4,10 +4,11 @@ from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from functions.htpdate import htpdate
-from functions.i_inv_ar import *
+from functions.i_inv_ar import i_inv_ar
 from models import Bediener, Debitor, Htparam, Counters, Artikel, Billjournal
+from functions.more_additional_functions import safe_divide
 
-age_list_data, Age_list = create_model("Age_list", {"selected":bool, "ar_recid":int, "rechnr":int, "refno":int, "counters":int, "gastnr":int, "billname":string, "gastnrmember":int, "gastname":string, "zinr":string, "rgdatum":date, "user_init":string, "debt":Decimal, "debt_foreign":Decimal, "currency":string, "credit":Decimal, "tot_debt":Decimal, "vouc_nr":string, "prevdate":date, "remarks":string, "b_resname":string, "ci_date":date, "co_date":date})
+age_list_data, Age_list = create_model("Age_list", {"selected":string, "ar_recid":int, "rechnr":int, "refno":int, "counters":int, "gastnr":int, "billname":string, "gastnrmember":int, "gastname":string, "zinr":string, "rgdatum":date, "user_init":string, "debt":Decimal, "debt_foreign":Decimal, "currency":string, "credit":Decimal, "tot_debt":Decimal, "vouc_nr":string, "prevdate":date, "remarks":string, "b_resname":string, "ci_date":date, "co_date":date})
 pay_list_data, Pay_list = create_model("Pay_list", {"artnr":int, "bezeich":string, "proz":Decimal, "betrag":Decimal, "f_amt":Decimal, "currency":int, "curr_str":string, "bemerk":string, "remain_amt":Decimal, "fremain_amt":Decimal, "balance":Decimal})
 
 def settle_payment_ar_debtpay_1bl(age_list_data:[Age_list], pay_list_data:[Pay_list], pvilanguage:int, outstand1:Decimal, foutstand1:Decimal, outstand:Decimal, curr_art:int, rundung:int, foutstand:Decimal, pay_date:date, balance:Decimal, fbalance:Decimal, user_init:string):
@@ -20,6 +21,9 @@ def settle_payment_ar_debtpay_1bl(age_list_data:[Age_list], pay_list_data:[Pay_l
     bediener = debitor = htparam = counters = artikel = billjournal = None
 
     age_list = pay_list = None
+
+    for age_list in query(age_list_data):
+        age_list.selected = age_list.selected.strip().lower()
 
     db_session = local_storage.db_session
 
@@ -42,12 +46,13 @@ def settle_payment_ar_debtpay_1bl(age_list_data:[Age_list], pay_list_data:[Pay_l
 
         bill_date:date = None
         debt = None
-        Debt =  create_buffer("Debt",Debitor)
+        Debt =  create_buffer("Debt", Debitor)
 
         if pay_date == None:
             f_flag = 1
 
             return
+        
         bill_date = get_output(htpdate(110))
 
         if pay_date > bill_date:
@@ -64,7 +69,7 @@ def settle_payment_ar_debtpay_1bl(age_list_data:[Age_list], pay_list_data:[Pay_l
 
             return
 
-        for age_list in query(age_list_data, filters=(lambda age_list: age_list.selected  and age_list.tot_debt != 0)):
+        for age_list in query(age_list_data, filters=(lambda age_list: age_list.selected == "yes" and age_list.tot_debt != 0)):
 
             debt = get_cache (Debitor, {"_recid": [(eq, age_list.ar_recid)]})
 
@@ -103,12 +108,10 @@ def settle_payment_ar_debtpay_1bl(age_list_data:[Age_list], pay_list_data:[Pay_l
         if outstand == 0:
             ok = True
         else:
-
-            for age_list in query(age_list_data, filters=(lambda age_list: age_list.selected  and age_list.tot_debt != 0)):
+            for age_list in query(age_list_data, filters=(lambda age_list:  age_list.selected == "yes" and age_list.tot_debt != 0)):
                 anzahl = anzahl + 1
 
             if anzahl == 0:
-
                 return
 
             if anzahl == 1:
@@ -118,24 +121,22 @@ def settle_payment_ar_debtpay_1bl(age_list_data:[Age_list], pay_list_data:[Pay_l
                 settle_pay1()
 
                 return
-
         if ok:
-
             if anzahl != 1:
-
-                for age_list in query(age_list_data, filters=(lambda age_list: age_list.selected  and age_list.tot_debt != 0)):
+                for age_list in query(age_list_data, filters=(lambda age_list: age_list.selected == "yes" and age_list.tot_debt != 0)):
                     anzahl = anzahl + 1
 
 
             htparam = get_cache (Htparam, {"paramnr": [(eq, 110)]})
             bill_date = htparam.fdate
 
-            for age_list in query(age_list_data, filters=(lambda age_list: age_list.selected  and age_list.tot_debt != 0), sort_by=[("rechnr",False)]):
+            for age_list in query(age_list_data, filters=(lambda age_list: age_list.selected == "yes" and age_list.tot_debt != 0), sort_by=[("rechnr",False)]):
 
                 debitor = get_cache (Debitor, {"_recid": [(eq, age_list.ar_recid)]})
 
                 if debitor:
                     billname = debitor.name
+
                 saldo_i =  to_decimal(age_list.tot_debt)
                 fsaldo_i =  to_decimal(age_list.debt_foreign)
                 payment1 =  - to_decimal(saldo_i)
@@ -143,11 +144,11 @@ def settle_payment_ar_debtpay_1bl(age_list_data:[Age_list], pay_list_data:[Pay_l
 
                 if outstand >= - 0.01 and outstand <= 0.01:
                     debitor.opart = 2
-                count = debitor.counters
+
+                count = debitor.counter
 
                 if count == 0:
 
-                    # counters = get_cache (Counters, {"counter_no": [(eq, 5)]})
                     counters = db_session.query(Counters).filter(Counters.counter_no == 5).with_for_update().first()
 
                     if not counters:
@@ -157,15 +158,14 @@ def settle_payment_ar_debtpay_1bl(age_list_data:[Age_list], pay_list_data:[Pay_l
                         counters.counter_no = 5
                         counters.counter_bez = "Counter for A/R Payment"
 
-
-                    counters.counters = counters.counters + 1
-                    debitor.counters = counters.counters
-                    count = debitor.counters
+                    counters.counter = counters.counter + 1
+                    debitor.counter = counters.counter
+                    count = debitor.counter
 
                 elif count != 0 and (outstand >= - 0.01 and outstand <= 0.01):
 
                     for debit in db_session.query(Debit).filter(
-                             (Debit.opart >= 1) & (Debit.counters == count) & (Debit.rechnr == age_list.rechnr) & (Debit.artnr == curr_art) & (Debit.zahlkonto > 0)).order_by(Debit._recid).with_for_update().all():
+                             (Debit.opart >= 1) & (Debit.counter == count) & (Debit.rechnr == age_list.rechnr) & (Debit.artnr == curr_art) & (Debit.zahlkonto > 0)).order_by(Debit._recid).with_for_update().all():
                         
                         debit.opart = 2
                         payment1 =  to_decimal(payment1) - to_decimal(debit.saldo)
@@ -183,8 +183,8 @@ def settle_payment_ar_debtpay_1bl(age_list_data:[Age_list], pay_list_data:[Pay_l
                         counters.counter_bez = "Counter for Total A/R Payment"
 
 
-                    counters.counters = counters.counters + 1
-                    pay_count = counters.counters
+                    counters.counter = counters.counter + 1
+                    pay_count = counters.counter
 
                 for pay_list in query(pay_list_data):
 
@@ -195,29 +195,24 @@ def settle_payment_ar_debtpay_1bl(age_list_data:[Age_list], pay_list_data:[Pay_l
                         if pay_amount == 0:
                             pay_amount =  to_decimal(payment1)
                             fpay_amount =  to_decimal(fpayment1)
-
-
                     else:
-                        pay_amount =  to_decimal(saldo_i) / to_decimal(outstand1) * to_decimal(pay_list.betrag)
-                        fpay_amount =  to_decimal(fsaldo_i) / to_decimal(foutstand1) * to_decimal(pay_list.f_amt)
+                        pay_amount =  to_decimal(safe_divide(to_decimal(saldo_i), to_decimal(outstand1))) * to_decimal(pay_list.betrag)
+                        fpay_amount =  to_decimal(safe_divide(to_decimal(fsaldo_i), to_decimal(foutstand1))) * to_decimal(pay_list.f_amt)
 
                         if outstand == 0:
-
                             if round(payment1 - pay_amount, rundung) == 0:
                                 pay_amount =  to_decimal(payment1)
                         else:
-
                             if (pay_amount - pay_list.remain_amt) <= 0.05 or (pay_list.remain_amt - pay_amount) <= 0.05:
                                 pay_amount =  to_decimal(pay_list.remain_amt)
 
                         if foutstand == 0:
-
                             if round(fpayment1 - fpay_amount, rundung) == 0:
                                 fpay_amount =  to_decimal(fpayment1)
                         else:
-
                             if (fpay_amount - pay_list.fremain_amt) <= 0.05 or (pay_list.fremain_amt - fpay_amount) <= 0.05:
                                 fpay_amount =  to_decimal(pay_list.fremain_amt)
+
                     debit = Debitor()
                     db_session.add(debit)
 
@@ -229,7 +224,7 @@ def settle_payment_ar_debtpay_1bl(age_list_data:[Age_list], pay_list_data:[Pay_l
                     debit.saldo =  to_decimal(pay_amount)
                     debit.zahlkonto = pay_list.artnr
                     debit.betrieb_gastmem = pay_list.currency
-                    debit.counters = count
+                    debit.counter = count
                     debit.transzeit = get_current_time_in_seconds()
                     debit.rgdatum = pay_date
                     debit.bediener_nr = bediener.nr
@@ -240,6 +235,7 @@ def settle_payment_ar_debtpay_1bl(age_list_data:[Age_list], pay_list_data:[Pay_l
 
                     if fpay_amount != None:
                         debit.vesrdep =  to_decimal(fpay_amount)
+
                     pay_list.remain_amt =  to_decimal(pay_list.remain_amt) - to_decimal(pay_amount)
                     pay_list.fremain_amt =  to_decimal(pay_list.fremain_amt) - to_decimal(fpay_amount)
 
@@ -247,12 +243,13 @@ def settle_payment_ar_debtpay_1bl(age_list_data:[Age_list], pay_list_data:[Pay_l
                         debit.opart = 1
                     else:
                         debit.opart = 2
-                    debit.vesrdep =  to_decimal(age_list.debt_foreign) * to_decimal(pay_amount) / to_decimal(age_list.debt)
+
+                    debit.vesrdep =  to_decimal(age_list.debt_foreign) * to_decimal(safe_divide(to_decimal(pay_amount), to_decimal(age_list.debt)))
 
                     artikel = get_cache (Artikel, {"departement": [(eq, 0)],"artnr": [(eq, pay_list.artnr)]})
 
                     if artikel.artart == 2 or artikel.artart == 7:
-                        i_inv_ar.inv_ar(pay_list.artnr, age_list.zinr, age_list.gastnr, age_list.gastnrmember, age_list.rechnr, pay_amount, fpay_amount, pay_date, billname, user_init, pay_list.bemerk)
+                        get_output(i_inv_ar(pay_list.artnr, age_list.zinr, age_list.gastnr, age_list.gastnrmember, age_list.rechnr, pay_amount, fpay_amount, pay_date, billname, user_init, pay_list.bemerk))
 
                     billjournal = Billjournal()
                     db_session.add(billjournal)
@@ -292,20 +289,15 @@ def settle_payment_ar_debtpay_1bl(age_list_data:[Age_list], pay_list_data:[Pay_l
         remain_payment =  - to_decimal(balance)
         fremain_payment =  - to_decimal(fbalance)
 
-        for age_list in query(age_list_data, filters=(lambda age_list: age_list.selected  and age_list.tot_debt != 0), sort_by=[("tot_debt",False),("rechnr",False)]):
+        for age_list in query(age_list_data, filters=(lambda age_list: age_list.selected == "yes" and age_list.tot_debt != 0), sort_by=[("tot_debt",False),("rechnr",False)]):
 
             if age_list.tot_debt < remain_payment:
                 pay_count = full_payment(age_list.ar_recid, pay_count)
                 remain_payment =  to_decimal(remain_payment) - to_decimal(age_list.tot_debt)
                 fremain_payment =  to_decimal(fremain_payment) - to_decimal(age_list.debt_foreign)
-
-
             else:
-
                 if remain_payment != 0:
                     pay_count = partial_payment(age_list.ar_recid, - remain_payment, - fremain_payment, pay_count)
-
-                return
 
 
     def partial_payment(ar_recid:int, payment1:Decimal, fpayment1:Decimal, pay_count:int):
@@ -338,11 +330,12 @@ def settle_payment_ar_debtpay_1bl(age_list_data:[Age_list], pay_list_data:[Pay_l
 
         if debitor:
             billname = debitor.name
+
         saldo_i =  to_decimal(age_list.tot_debt)
         fsaldo_i =  to_decimal(age_list.debt_foreign)
 
 
-        count = debitor.counters
+        count = debitor.counter
 
         if count == 0:
 
@@ -355,10 +348,9 @@ def settle_payment_ar_debtpay_1bl(age_list_data:[Age_list], pay_list_data:[Pay_l
                 counters.counter_no = 5
                 counters.counter_bez = "Counter for A/R Payment"
 
-
-            counters.counters = counters.counters + 1
-            debitor.counters = counters.counters
-            count = debitor.counters
+            counters.counter = counters.counter + 1
+            debitor.counter = counters.counter
+            count = debitor.counter
 
         if pay_count == 0:
 
@@ -371,26 +363,24 @@ def settle_payment_ar_debtpay_1bl(age_list_data:[Age_list], pay_list_data:[Pay_l
                 counters.counter_no = 31
                 counters.counter_bez = "Counter for Total A/R Payment"
 
-
-            counters.counters = counters.counters + 1
-            pay_count = counters.counters
+            counters.counter = counters.counter + 1
+            pay_count = counters.counter
 
         for pay_list in query(pay_list_data):
 
             if pay_list.proz == 100 or balance == pay_list.betrag:
                 pay_amount =  to_decimal(payment1)
                 fpay_amount =  to_decimal(fpayment1)
-
-
             else:
-                pay_amount =  to_decimal(payment1) / to_decimal(balance) * to_decimal(pay_list.betrag)
-                fpay_amount =  to_decimal(fpayment1) / to_decimal(fbalance) * to_decimal(pay_list.f_amt)
+                pay_amount =  to_decimal(safe_divide(to_decimal(payment1), to_decimal(balance))) * to_decimal(pay_list.betrag)
+                fpay_amount =  to_decimal(safe_divide(to_decimal(fpayment1), to_decimal(fbalance))) * to_decimal(pay_list.f_amt)
 
             if (pay_amount - pay_list.remain_amt) <= 0.05 or (pay_list.remain_amt - pay_amount) <= 0.05:
                 pay_amount =  to_decimal(pay_list.remain_amt)
 
             if (fpay_amount - pay_list.fremain_amt) <= 0.05 or (pay_list.fremain_amt - fpay_amount) <= 0.05:
                 fpay_amount =  to_decimal(pay_list.fremain_amt)
+
             debit = Debitor()
             db_session.add(debit)
 
@@ -402,7 +392,7 @@ def settle_payment_ar_debtpay_1bl(age_list_data:[Age_list], pay_list_data:[Pay_l
             debit.saldo =  to_decimal(pay_amount)
             debit.zahlkonto = pay_list.artnr
             debit.betrieb_gastmem = pay_list.currency
-            debit.counters = count
+            debit.counter = count
             debit.transzeit = get_current_time_in_seconds()
             debit.rgdatum = pay_date
             debit.bediener_nr = bediener.nr
@@ -417,13 +407,14 @@ def settle_payment_ar_debtpay_1bl(age_list_data:[Age_list], pay_list_data:[Pay_l
 
             if fpay_amount != None:
                 debit.vesrdep =  to_decimal(fpay_amount)
+
             pay_list.remain_amt =  to_decimal(pay_list.remain_amt) - to_decimal(pay_amount)
             pay_list.fremain_amt =  to_decimal(pay_list.fremain_amt) - to_decimal(fpay_amount)
 
             artikel = get_cache (Artikel, {"departement": [(eq, 0)],"artnr": [(eq, pay_list.artnr)]})
 
             if artikel.artart == 2 or artikel.artart == 7:
-                i_inv_ar.inv_ar(pay_list.artnr, age_list.zinr, age_list.gastnr, age_list.gastnrmember, age_list.rechnr, pay_amount, fpay_amount, pay_date, billname, user_init, pay_list.bemerk)
+                get_output(i_inv_ar(pay_list.artnr, age_list.zinr, age_list.gastnr, age_list.gastnrmember, age_list.rechnr, pay_amount, fpay_amount, pay_date, billname, user_init, pay_list.bemerk))
 
             billjournal = Billjournal()
             db_session.add(billjournal)
@@ -477,14 +468,14 @@ def settle_payment_ar_debtpay_1bl(age_list_data:[Age_list], pay_list_data:[Pay_l
 
         if debitor:
             billname = debitor.name
+
         saldo_i =  to_decimal(age_list.tot_debt)
         fsaldo_i =  to_decimal(age_list.debt_foreign)
         payment1 =  - to_decimal(saldo_i)
         fpayment1 =  - to_decimal(fsaldo_i)
         debitor.opart = 2
 
-
-        count = debitor.counters
+        count = debitor.counter
 
         if count == 0:
 
@@ -497,20 +488,18 @@ def settle_payment_ar_debtpay_1bl(age_list_data:[Age_list], pay_list_data:[Pay_l
                 counters.counter_no = 5
                 counters.counter_bez = "Counter for A/R Payment"
 
-
-            counters.counters = counters.counters + 1
-            debitor.counters = counters.counters
-            count = debitor.counters
+            counters.counter = counters.counter + 1
+            debitor.counter = counters.counter
+            count = debitor.counter
 
         elif count != 0:
 
             for debit in db_session.query(Debit).filter(
-                     (Debit.opart >= 1) & (Debit.counters == count) & (Debit.rechnr == age_list.rechnr) & (Debit.artnr == curr_art) & (Debit.zahlkonto > 0)).order_by(Debit._recid).with_for_update().all():
+                     (Debit.opart >= 1) & (Debit.counter == count) & (Debit.rechnr == age_list.rechnr) & (Debit.artnr == curr_art) & (Debit.zahlkonto > 0)).order_by(Debit._recid).with_for_update().all():
                 
                 debit.opart = 2
                 payment1 =  to_decimal(payment1) - to_decimal(debit.saldo)
                 fpayment1 =  to_decimal(fpayment1) - to_decimal(debit.vesrdep)
-                
 
         if pay_count == 0:
 
@@ -523,20 +512,17 @@ def settle_payment_ar_debtpay_1bl(age_list_data:[Age_list], pay_list_data:[Pay_l
                 counters.counter_no = 31
                 counters.counter_bez = "Counter for Total A/R Payment"
 
-
-            counters.counters = counters.counters + 1
-            pay_count = counters.counters
+            counters.counter = counters.counter + 1
+            pay_count = counters.counter
 
         for pay_list in query(pay_list_data):
 
             if pay_list.proz == 100 or balance == pay_list.betrag:
                 pay_amount =  - to_decimal(saldo_i)
                 fpay_amount =  - to_decimal(fsaldo_i)
-
-
             else:
-                pay_amount =  - to_decimal(saldo_i) / to_decimal(balance) * to_decimal(pay_list.betrag)
-                fpay_amount =  - to_decimal(fsaldo_i) / to_decimal(fbalance) * to_decimal(pay_list.f_amt)
+                pay_amount =  - to_decimal(safe_divide(to_decimal(saldo_i), to_decimal(balance))) * to_decimal(pay_list.betrag)
+                fpay_amount =  - to_decimal(safe_divide(to_decimal(fsaldo_i), to_decimal(fbalance))) * to_decimal(pay_list.f_amt)
 
 
             debit = Debitor()
@@ -550,7 +536,7 @@ def settle_payment_ar_debtpay_1bl(age_list_data:[Age_list], pay_list_data:[Pay_l
             debit.saldo =  to_decimal(pay_amount)
             debit.zahlkonto = pay_list.artnr
             debit.betrieb_gastmem = pay_list.currency
-            debit.counters = count
+            debit.counter = count
             debit.transzeit = get_current_time_in_seconds()
             debit.rgdatum = pay_date
             debit.bediener_nr = bediener.nr
@@ -565,13 +551,14 @@ def settle_payment_ar_debtpay_1bl(age_list_data:[Age_list], pay_list_data:[Pay_l
 
             if fpay_amount != None:
                 debit.vesrdep =  to_decimal(fpay_amount)
+
             pay_list.remain_amt =  to_decimal(pay_list.remain_amt) - to_decimal(pay_amount)
             pay_list.fremain_amt =  to_decimal(pay_list.fremain_amt) - to_decimal(fpay_amount)
 
             artikel = get_cache (Artikel, {"departement": [(eq, 0)],"artnr": [(eq, pay_list.artnr)]})
 
             if artikel.artart == 2 or artikel.artart == 7:
-                i_inv_ar.inv_ar(pay_list.artnr, age_list.zinr, age_list.gastnr, age_list.gastnrmember, age_list.rechnr, pay_amount, fpay_amount, pay_date, billname, user_init, pay_list.bemerk)
+                get_output(i_inv_ar(pay_list.artnr, age_list.zinr, age_list.gastnr, age_list.gastnrmember, age_list.rechnr, pay_amount, fpay_amount, pay_date, billname, user_init, pay_list.bemerk))
 
             billjournal = Billjournal()
             db_session.add(billjournal)
@@ -598,7 +585,6 @@ def settle_payment_ar_debtpay_1bl(age_list_data:[Age_list], pay_list_data:[Pay_l
         nonlocal f_flag, msg_str, lvcarea, bediener, debitor, htparam, counters, artikel, billjournal
         nonlocal pvilanguage, outstand1, foutstand1, outstand, curr_art, rundung, foutstand, pay_date, fbalance, user_init
 
-
         nonlocal age_list, pay_list
 
         balance:Decimal = to_decimal("0.0")
@@ -621,18 +607,15 @@ def settle_payment_ar_debtpay_1bl(age_list_data:[Age_list], pay_list_data:[Pay_l
             if debitor:
                 balance1 =  to_decimal(debitor.saldo)
 
-
             balance2 =  to_decimal(balance1) + to_decimal(balance)
 
             if balance2 == 0.01:
-
                 debt = get_cache (Debitor, {"zahlkonto": [(gt, 0)],"rechnr": [(eq, age_list.rechnr)],"gastnr": [(eq, age_list.gastnr)],"gastnrmember": [(eq, age_list.gastnrmember)]})
 
                 if debt:
                     debt.saldo =  to_decimal(debt.saldo) + to_decimal(balance2)
 
             elif balance2 == -0.01:
-
                 debt = get_cache (Debitor, {"zahlkonto": [(gt, 0)],"rechnr": [(eq, age_list.rechnr)],"gastnr": [(eq, age_list.gastnr)],"gastnrmember": [(eq, age_list.gastnrmember)]})
 
                 if debt:
