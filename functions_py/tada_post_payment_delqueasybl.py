@@ -2,6 +2,12 @@
 #-------------------------------------------
 # Rd, 26/11/2025, with_for_update
 #-------------------------------------------
+
+# ===========================================
+# Rulita, 11-12-2025
+# - Added with_for_update before delete query
+# ===========================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from models import H_bill, Queasy, H_queasy

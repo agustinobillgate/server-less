@@ -9,8 +9,7 @@ from decimal import Decimal
 from datetime import date
 from models import Debitor, Htparam, Artikel, Guest, Waehrung, H_bill, Bill, Res_line
 
-from functions import log_program
-
+from functions.more_additional_functions import handling_negative, format_fixed_length
 
 def ar_age1_2_list_webbl(pvilanguage: int, case_type: int, mtd_flag: bool, to_date: date, fdate: date, tdate: date, from_art: int, to_art: int, from_name: string, to_name: string, disptype: int, mi_bill: bool, day1: int, day2: int, day3: int, detailed: bool, cvt_flag: bool, dollar_rate: Decimal):
 
@@ -189,6 +188,7 @@ def ar_age1_2_list_webbl(pvilanguage: int, case_type: int, mtd_flag: bool, to_da
 
         ledger.tot_debt = to_decimal(
             ledger.tot_debt) + to_decimal(age_list.tot_debt)
+        
         ledger.p_bal = to_decimal(ledger.p_bal) + to_decimal(age_list.p_bal)
         ledger.debit = to_decimal(ledger.debit) + to_decimal(age_list.debit)
         ledger.credit = to_decimal(ledger.credit) + to_decimal(age_list.credit)
@@ -226,35 +226,38 @@ def ar_age1_2_list_webbl(pvilanguage: int, case_type: int, mtd_flag: bool, to_da
         elif curr_name != age_list.gastname:
             if p_bal != 0 or debit != 0 or credit != 0:
                 if not long_digit:
-                    outlist = "  " + to_string(counter, ">>>9 ") + \
-                        to_string(gastname, "x(30)") + \
-                        to_string(billname, "x(30)") + \
-                        to_string(tot_debt, "->>,>>>,>>>,>>9.99") + \
-                        to_string(p_bal, "->>,>>>,>>>,>>9.99") + \
-                        to_string(debit, "->>,>>>,>>>,>>9.99") + \
-                        to_string(credit, "->>,>>>,>>>,>>9.99") + \
-                        to_string(debt0, "->>,>>>,>>>,>>9.99") + \
-                        to_string(debt1, "->>,>>>,>>>,>>9.99") + \
-                        to_string(debt2, "->>,>>>,>>>,>>9.99") + \
-                        to_string(debt3, "->>,>>>,>>>,>>9.99") + \
-                        to_string(credit_limit, "->>,>>>,>>>,>>9.99")
+                    outlist = "  " + \
+                        format_fixed_length(to_string(counter, ">>>9"), 4) + \
+                        format_fixed_length(gastname, 30) + \
+                        format_fixed_length(billname, 30) + \
+                        handling_negative(tot_debt, "->>,>>>,>>>,>>9.99") + \
+                        handling_negative(p_bal, "->>,>>>,>>>,>>9.99") + \
+                        handling_negative(debit, "->>,>>>,>>>,>>9.99") + \
+                        handling_negative(credit, "->>,>>>,>>>,>>9.99") + \
+                        handling_negative(debt0, "->>,>>>,>>>,>>9.99") + \
+                        handling_negative(debt1, "->>,>>>,>>>,>>9.99") + \
+                        handling_negative(debt2, "->>,>>>,>>>,>>9.99") + \
+                        handling_negative(debt3, "->>,>>>,>>>,>>9.99") + \
+                        handling_negative(credit_limit, "->>,>>>,>>>,>>9.99")
                 else:
-                    outlist = "  " + to_string(counter, ">>>9 ") + \
-                        to_string(gastname, "x(30)") + \
-                        to_string(billname, "x(30)") + \
-                        to_string(tot_debt, "->,>>>,>>>,>>>,>>9") + \
-                        to_string(p_bal, "->,>>>,>>>,>>>,>>9") + \
-                        to_string(debit, "->,>>>,>>>,>>>,>>9") + \
-                        to_string(credit, "->,>>>,>>>,>>>,>>9") + \
-                        to_string(debt0, "->,>>>,>>>,>>>,>>9") + \
-                        to_string(debt1, "->,>>>,>>>,>>>,>>9") + \
-                        to_string(debt2, "->,>>>,>>>,>>>,>>9") + \
-                        to_string(debt3, "->,>>>,>>>,>>>,>>9") + \
-                        to_string(credit_limit, "->,>>>,>>>,>>>,>>9")
+                    outlist = "  " + \
+                        format_fixed_length(to_string(counter, ">>>9"), 4) + \
+                        format_fixed_length(gastname, 30) + \
+                        format_fixed_length(billname, 30) + \
+                        handling_negative(tot_debt, "->,>>>,>>>,>>>,>>9") + \
+                        handling_negative(p_bal, "->,>>>,>>>,>>>,>>9") + \
+                        handling_negative(debit, "->,>>>,>>>,>>>,>>9") + \
+                        handling_negative(credit, "->,>>>,>>>,>>>,>>9") + \
+                        handling_negative(debt0, "->,>>>,>>>,>>>,>>9") + \
+                        handling_negative(debt1, "->,>>>,>>>,>>>,>>9") + \
+                        handling_negative(debt2, "->,>>>,>>>,>>>,>>9") + \
+                        handling_negative(debt3, "->,>>>,>>>,>>>,>>9") + \
+                        handling_negative(credit_limit, "->,>>>,>>>,>>>,>>9")
 
                 fill_in_list(True, age_list.fcurr, curr_rgdatum)
             else:
                 counter = counter - 1
+
             curr_rgdatum = age_list.rgdatum
             bill_number = age_list.rechnr
             inp_gastnr = age_list.gastnr
@@ -286,6 +289,7 @@ def ar_age1_2_list_webbl(pvilanguage: int, case_type: int, mtd_flag: bool, to_da
 
         if not detailed:
             curr_name = age_list.gastname
+
         age_list_data.remove(age_list)
 
     def fill_in_list(fill_billno: bool, currency: string, curr_rgdatum: date):
@@ -305,16 +309,17 @@ def ar_age1_2_list_webbl(pvilanguage: int, case_type: int, mtd_flag: bool, to_da
 
             if curr_rgdatum != None:
                 arage_list.strdate = to_string(curr_rgdatum, "99/99/99")
+
         arage_list.str = outlist
 
         if substring(outlist, 0, 5) == ("-----"):
             arage_list.rechnr = "---------"
             arage_list.strdate = "--------"
 
-        arage_list.age1 = substring(arage_list.str, 139, 18)
+        arage_list.age1 = substring(arage_list.str, 138, 18)
         arage_list.age2 = substring(arage_list.str, 156, 18)
-        arage_list.age3 = substring(arage_list.str, 171, 18)
-        arage_list.age4 = substring(arage_list.str, 187, 18)
+        arage_list.age3 = substring(arage_list.str, 174, 18)
+        arage_list.age4 = substring(arage_list.str, 192, 18)
         arage_list.curr = currency
 
     def age_list1():
@@ -355,12 +360,14 @@ def ar_age1_2_list_webbl(pvilanguage: int, case_type: int, mtd_flag: bool, to_da
 
         for artikel in db_session.query(Artikel).filter(
                 ((Artikel.artart == 2) | (Artikel.artart == 7) | (Artikel.artart == 14)) & (Artikel.artnr >= from_art) & (Artikel.artnr <= to_art) & (Artikel.departement == 0)).order_by(Artikel.artart, Artikel.artnr).all():
+            
             ledger = Ledger()
             ledger_data.append(ledger)
 
             ledger.artnr = artikel.artnr
             ledger.bezeich = to_string(
                 artikel.artnr) + "  -  " + artikel.bezeich
+            
         curr_art = 0
 
         for debitor in db_session.query(Debitor).filter(
@@ -420,7 +427,6 @@ def ar_age1_2_list_webbl(pvilanguage: int, case_type: int, mtd_flag: bool, to_da
                             if debitor.vesrdep != 0:
                                 age_list.tot_debt = to_decimal(
                                     age_list.tot_debt) + to_decimal(debitor.vesrdep)
-
                             else:
                                 age_list.tot_debt = to_decimal(
                                     age_list.tot_debt) + to_decimal((debitor.saldo) / to_decimal(dollar_rate))
@@ -441,7 +447,6 @@ def ar_age1_2_list_webbl(pvilanguage: int, case_type: int, mtd_flag: bool, to_da
                                 if debitor.vesrdep != 0:
                                     age_list.p_bal = to_decimal(
                                         age_list.p_bal) + to_decimal(debitor.vesrdep)
-
                                 else:
                                     age_list.p_bal = to_decimal(
                                         age_list.p_bal) + to_decimal((debitor.saldo) / to_decimal(dollar_rate))
@@ -463,7 +468,6 @@ def ar_age1_2_list_webbl(pvilanguage: int, case_type: int, mtd_flag: bool, to_da
                                 if debitor.vesrdep != 0:
                                     age_list.debit = to_decimal(
                                         age_list.debit) + to_decimal(debitor.vesrdep)
-
                                 else:
                                     age_list.debit = to_decimal(
                                         age_list.debit) + to_decimal((debitor.saldo) / to_decimal(dollar_rate))
@@ -488,7 +492,6 @@ def ar_age1_2_list_webbl(pvilanguage: int, case_type: int, mtd_flag: bool, to_da
                                 if debitor.vesrdep != 0:
                                     age_list.p_bal = to_decimal(
                                         age_list.p_bal) + to_decimal(debitor.vesrdep)
-
                                 else:
                                     age_list.p_bal = to_decimal(
                                         age_list.p_bal) + to_decimal((debitor.saldo) / to_decimal(dollar_rate))
@@ -514,7 +517,6 @@ def ar_age1_2_list_webbl(pvilanguage: int, case_type: int, mtd_flag: bool, to_da
                                     if debitor.vesrdep != 0:
                                         age_list.credit = to_decimal(
                                             age_list.credit) - to_decimal(debitor.vesrdep)
-
                                     else:
                                         age_list.credit = to_decimal(
                                             age_list.credit) - to_decimal((debitor.saldo) / to_decimal(dollar_rate))
@@ -745,34 +747,39 @@ def ar_age1_2_list_webbl(pvilanguage: int, case_type: int, mtd_flag: bool, to_da
             if counter > 0 and (p_bal != 0 or debit != 0 or credit != 0):
 
                 if not long_digit:
-                    outlist = "  " + to_string(counter, ">>>9 ") + \
-                        to_string(gastname, "x(30)") + \
-                        to_string(billname, "x(30)") + \
-                        to_string(tot_debt, "->>,>>>,>>>,>>9.99") + \
-                        to_string(p_bal, "->>,>>>,>>>,>>9.99") + \
-                        to_string(debit, "->>,>>>,>>>,>>9.99") + \
-                        to_string(credit, "->>,>>>,>>>,>>9.99") + \
-                        to_string(debt0, "->>,>>>,>>>,>>9.99") + \
-                        to_string(debt1, "->>,>>>,>>>,>>9.99") + \
-                        to_string(debt2, "->>,>>>,>>>,>>9.99") + \
-                        to_string(debt3, "->>,>>>,>>>,>>9.99") + \
-                        to_string(credit_limit, "->>,>>>,>>>,>>9.99")
+                    outlist = "  " + \
+                        format_fixed_length(to_string(counter, ">>>9"), 4) + \
+                        format_fixed_length(gastname, 30) + \
+                        format_fixed_length(billname, 30) + \
+                        handling_negative(tot_debt, "->>,>>>,>>>,>>9.99") + \
+                        handling_negative(p_bal, "->>,>>>,>>>,>>9.99") + \
+                        handling_negative(debit, "->>,>>>,>>>,>>9.99") + \
+                        handling_negative(credit, "->>,>>>,>>>,>>9.99") + \
+                        handling_negative(debt0, "->>,>>>,>>>,>>9.99") + \
+                        handling_negative(debt1, "->>,>>>,>>>,>>9.99") + \
+                        handling_negative(debt2, "->>,>>>,>>>,>>9.99") + \
+                        handling_negative(debt3, "->>,>>>,>>>,>>9.99") + \
+                        handling_negative(credit_limit, "->>,>>>,>>>,>>9.99")
                 else:
-                    outlist = "  " + to_string(counter, ">>>9 ") + \
-                        to_string(gastname, "x(30)") + \
-                        to_string(billname, "x(30)") + \
-                        to_string(tot_debt, "->,>>>,>>>,>>>,>>9") + \
-                        to_string(p_bal, "->,>>>,>>>,>>>,>>9") + \
-                        to_string(debit, "->,>>>,>>>,>>>,>>9") + \
-                        to_string(credit, "->,>>>,>>>,>>>,>>9") + \
-                        to_string(debt0, "->,>>>,>>>,>>>,>>9") + \
-                        to_string(debt1, "->,>>>,>>>,>>>,>>9") + \
-                        to_string(debt2, "->,>>>,>>>,>>>,>>9") + \
-                        to_string(debt3, "->,>>>,>>>,>>>,>>9") + \
-                        to_string(credit_limit, "->,>>>,>>>,>>>,>>9")
+                    outlist = "  " + \
+                        format_fixed_length(to_string(counter, ">>>9"), 4) + \
+                        format_fixed_length(gastname, 30) + \
+                        format_fixed_length(billname, 30) + \
+                        handling_negative(tot_debt, "->,>>>,>>>,>>>,>>9") + \
+                        handling_negative(p_bal, "->,>>>,>>>,>>>,>>9") + \
+                        handling_negative(debit, "->,>>>,>>>,>>>,>>9") + \
+                        handling_negative(credit, "->,>>>,>>>,>>>,>>9") + \
+                        handling_negative(debt0, "->,>>>,>>>,>>>,>>9") + \
+                        handling_negative(debt1, "->,>>>,>>>,>>>,>>9") + \
+                        handling_negative(debt2, "->,>>>,>>>,>>>,>>9") + \
+                        handling_negative(debt3, "->,>>>,>>>,>>>,>>9") + \
+                        handling_negative(credit_limit, "->,>>>,>>>,>>>,>>9")
+                    
                 fill_in_list(True, curr_fcurr, curr_rgdatum)
+
             else:
                 counter = counter - 1
+
             tmp_saldo = to_decimal(ledger.tot_debt)
 
             if tmp_saldo == 0:
@@ -781,36 +788,32 @@ def ar_age1_2_list_webbl(pvilanguage: int, case_type: int, mtd_flag: bool, to_da
             fill_in_list(False, "----", None)
 
             if not long_digit:
-                outlist = "       " + \
-                    to_string(translateExtended("T o t a l", lvcarea, ""), "x(30)") + \
-                    to_string(translateExtended("T o t a l", lvcarea, ""), "x(30)") +\
-                    to_string(ledger.tot_debt, "->>,>>>,>>>,>>9.99") + \
-                    to_string(ledger.p_bal, "->>,>>>,>>>,>>9.99") + \
-                    to_string(ledger.debit, "->>,>>>,>>>,>>9.99") + \
-                    to_string(ledger.credit, "->>,>>>,>>>,>>9.99") + \
-                    to_string(ledger.debt0, "->>,>>>,>>>,>>9.99") + \
-                    to_string(ledger.debt1, "->>,>>>,>>>,>>9.99") + \
-                    to_string(ledger.debt2, "->>,>>>,>>>,>>9.99") + \
-                    to_string(ledger.debt3, "->>,>>>,>>>,>>9.99")
+                outlist = "      " + \
+                    format_fixed_length(translateExtended("T o t a l", lvcarea, ""), 30) + \
+                    format_fixed_length(translateExtended("T o t a l", lvcarea, ""), 30) + \
+                    handling_negative(ledger.tot_debt, "->>,>>>,>>>,>>9.99") + \
+                    handling_negative(ledger.p_bal, "->>,>>>,>>>,>>9.99") + \
+                    handling_negative(ledger.debit, "->>,>>>,>>>,>>9.99") + \
+                    handling_negative(ledger.credit, "->>,>>>,>>>,>>9.99") + \
+                    handling_negative(ledger.debt0, "->>,>>>,>>>,>>9.99") + \
+                    handling_negative(ledger.debt1, "->>,>>>,>>>,>>9.99") + \
+                    handling_negative(ledger.debt2, "->>,>>>,>>>,>>9.99") + \
+                    handling_negative(ledger.debt3, "->>,>>>,>>>,>>9.99")
             else:
-                outlist = "       " + \
-                    to_string(translateExtended("T o t a l", lvcarea, ""), "x(30)") + \
-                    to_string(translateExtended("T o t a l", lvcarea, ""), "x(30)") + \
-                    to_string(ledger.tot_debt, "->,>>>,>>>,>>>,>>9") + \
-                    to_string(ledger.p_bal, "->,>>>,>>>,>>>,>>9") + \
-                    to_string(ledger.debit, "->,>>>,>>>,>>>,>>9") + \
-                    to_string(ledger.credit, "->,>>>,>>>,>>>,>>9") + \
-                    to_string(ledger.debt0, "->,>>>,>>>,>>>,>>9") + \
-                    to_string(ledger.debt1, "->,>>>,>>>,>>>,>>9") + \
-                    to_string(ledger.debt2, "->,>>>,>>>,>>>,>>9") + \
-                    to_string(ledger.debt3, "->,>>>,>>>,>>>,>>9")
+                outlist = "      " + \
+                    format_fixed_length(translateExtended("T o t a l", lvcarea, ""), 30) + \
+                    format_fixed_length(translateExtended("T o t a l", lvcarea, ""), 30) + \
+                    handling_negative(ledger.tot_debt, "->,>>>,>>>,>>>,>>9") + \
+                    handling_negative(ledger.p_bal, "->,>>>,>>>,>>>,>>9") + \
+                    handling_negative(ledger.debit, "->,>>>,>>>,>>>,>>9") + \
+                    handling_negative(ledger.credit, "->,>>>,>>>,>>>,>>9") + \
+                    handling_negative(ledger.debt0, "->,>>>,>>>,>>>,>>9") + \
+                    handling_negative(ledger.debt1, "->,>>>,>>>,>>>,>>9") + \
+                    handling_negative(ledger.debt2, "->,>>>,>>>,>>>,>>9") + \
+                    handling_negative(ledger.debt3, "->,>>>,>>>,>>>,>>9")
+                
             fill_in_list(False, "", None)
-            outlist = "       " + \
-                to_string(translateExtended("Statistic Percentage (%) :", lvcarea, ""), "x(30)") + \
-                to_string(translateExtended("Statistic Percentage (%) :", lvcarea, ""), "x(30)") + \
-                "            100.00"
-            for i in range(1, 55):
-                outlist = outlist + "       "
+            
             tot_debt0 = (to_decimal(ledger.debt0) /
                          to_decimal(tmp_saldo) * to_decimal("100"))
             tot_debt1 = (to_decimal(ledger.debt1) /
@@ -831,11 +834,16 @@ def ar_age1_2_list_webbl(pvilanguage: int, case_type: int, mtd_flag: bool, to_da
 
             if tot_debt3 == None:
                 tot_debt3 = to_decimal("0")
-            outlist = outlist + \
-                to_string(tot_debt0, "         ->,>>9.99") + \
-                to_string(tot_debt1, "         ->,>>9.99") + \
-                to_string(tot_debt2, "         ->,>>9.99") + \
-                to_string(tot_debt3, "         ->,>>9.99")
+
+            outlist = "      " + \
+                to_string(translateExtended("Statistic Percentage (%) :", lvcarea, ""), "x(30)") + \
+                to_string(translateExtended("Statistic Percentage (%) :", lvcarea, ""), "x(30)") + \
+                "            100.00" + (" ") * 54 + \
+                handling_negative(tot_debt0, "           ->>9.99") + \
+                handling_negative(tot_debt1, "           ->>9.99") + \
+                handling_negative(tot_debt2, "           ->>9.99") + \
+                handling_negative(tot_debt3, "           ->>9.99")
+            
             fill_in_list(False, "", None)
             outlist = ""
             fill_in_list(False, "", None)
@@ -843,36 +851,33 @@ def ar_age1_2_list_webbl(pvilanguage: int, case_type: int, mtd_flag: bool, to_da
         fill_in_list(False, "----", None)
 
         if not long_digit:
-            outlist = "       " + \
-                to_string(translateExtended("T O T A L A/R:", lvcarea, ""), "x(30)") + \
-                to_string(translateExtended("T O T A L A/R:", lvcarea, ""), "x(30)") + \
-                to_string(t_saldo, "->>,>>>,>>>,>>9.99") + \
-                to_string(t_prev, "->>,>>>,>>>,>>9.99") + \
-                to_string(t_debit, "->>,>>>,>>>,>>9.99") + \
-                to_string(t_credit, "->>,>>>,>>>,>>9.99") + \
-                to_string(t_debt0, "->>,>>>,>>>,>>9.99") + \
-                to_string(t_debt1, "->>,>>>,>>>,>>9.99") + \
-                to_string(t_debt2, "->>,>>>,>>>,>>9.99") + \
-                to_string(t_debt3, "->>,>>>,>>>,>>9.99")
+            outlist = "      " + \
+                format_fixed_length(translateExtended("T O T A L A/R:", lvcarea, ""), 30) + \
+                format_fixed_length(translateExtended("T O T A L A/R:", lvcarea, ""), 30) + \
+                handling_negative(t_saldo, "->>,>>>,>>>,>>9.99") + \
+                handling_negative(t_prev, "->>,>>>,>>>,>>9.99") + \
+                handling_negative(t_debit, "->>,>>>,>>>,>>9.99") + \
+                handling_negative(t_credit, "->>,>>>,>>>,>>9.99") + \
+                handling_negative(t_debt0, "->>,>>>,>>>,>>9.99") + \
+                handling_negative(t_debt1, "->>,>>>,>>>,>>9.99") + \
+                handling_negative(t_debt2, "->>,>>>,>>>,>>9.99") + \
+                handling_negative(t_debt3, "->>,>>>,>>>,>>9.99")
         else:
-            outlist = "       " + \
-                to_string(translateExtended("T O T A L A/R:", lvcarea, ""), "x(30)") + \
-                to_string(translateExtended("T O T A L A/R:", lvcarea, ""), "x(30)") + \
-                to_string(t_saldo, "->,>>>,>>>,>>>,>>9") + \
-                to_string(t_prev, "->,>>>,>>>,>>>,>>9") + \
-                to_string(t_debit, "->,>>>,>>>,>>>,>>9") + \
-                to_string(t_credit, "->,>>>,>>>,>>>,>>9") + \
-                to_string(t_debt0, "->,>>>,>>>,>>>,>>9") + \
-                to_string(t_debt1, "->,>>>,>>>,>>>,>>9") + \
-                to_string(t_debt2, "->,>>>,>>>,>>>,>>9") + \
-                to_string(t_debt3, "->,>>>,>>>,>>>,>>9")
+            outlist = "      " + \
+                format_fixed_length(translateExtended("T O T A L A/R:", lvcarea, ""), 30) + \
+                format_fixed_length(translateExtended("T O T A L A/R:", lvcarea, ""), 30) + \
+                handling_negative(t_saldo, "->,>>>,>>>,>>>,>>9") + \
+                handling_negative(t_prev, "->,>>>,>>>,>>>,>>9") + \
+                handling_negative(t_debit, "->,>>>,>>>,>>>,>>9") + \
+                handling_negative(t_credit, "->,>>>,>>>,>>>,>>9") + \
+                handling_negative(t_debt0, "->,>>>,>>>,>>>,>>9") + \
+                handling_negative(t_debt1, "->,>>>,>>>,>>>,>>9") + \
+                handling_negative(t_debt2, "->,>>>,>>>,>>>,>>9") + \
+                handling_negative(t_debt3, "->,>>>,>>>,>>>,>>9")
+            
         fill_in_list(False, "", None)
-        outlist = "       " + \
-            to_string(translateExtended("Statistic Percentage (%) :", lvcarea, ""), "x(30)") + \
-            to_string(translateExtended("Statistic Percentage (%) :", lvcarea, ""), "x(30)") + \
-            "            100.00"
-        for i in range(1, 55):
-            outlist = outlist + "       "
+
+        
         tot_debt0 = (to_decimal(t_debt0) /
                      to_decimal(t_saldo) * to_decimal("100"))
         tot_debt1 = (to_decimal(t_debt1) /
@@ -893,11 +898,16 @@ def ar_age1_2_list_webbl(pvilanguage: int, case_type: int, mtd_flag: bool, to_da
 
         if tot_debt3 == None:
             tot_debt3 = to_decimal("0")
-        outlist = outlist + \
-            to_string(tot_debt0, "           ->>9.99") + \
-            to_string(tot_debt1, "           ->>9.99") + \
-            to_string(tot_debt2, "           ->>9.99") + \
-            to_string(tot_debt3, "           ->>9.99")
+
+        outlist = "      " + \
+                to_string(translateExtended("Statistic Percentage (%) :", lvcarea, ""), "x(30)") + \
+                to_string(translateExtended("Statistic Percentage (%) :", lvcarea, ""), "x(30)") + \
+                "            100.00" + (" ") * 54 + \
+                handling_negative(tot_debt0, "           ->>9.99") + \
+                handling_negative(tot_debt1, "           ->>9.99") + \
+                handling_negative(tot_debt2, "           ->>9.99") + \
+                handling_negative(tot_debt3, "           ->>9.99")
+        
         fill_in_list(False, "", None)
         outlist = ""
         fill_in_list(False, "", None)
@@ -1351,72 +1361,75 @@ def ar_age1_2_list_webbl(pvilanguage: int, case_type: int, mtd_flag: bool, to_da
             if counter > 0 and (p_bal != 0 or debit != 0 or credit != 0):
 
                 if not long_digit:
-                    outlist = "  " + to_string(counter, ">>>9 ") + \
-                        to_string(gastname, "x(30)") + \
-                        to_string(billname, "x(30)") + \
-                        to_string(tot_debt, "->>,>>>,>>>,>>9.99") + \
-                        to_string(p_bal, "->>,>>>,>>>,>>9.99") + \
-                        to_string(debit, "->>,>>>,>>>,>>9.99") + \
-                        to_string(credit, "->>,>>>,>>>,>>9.99") + \
-                        to_string(debt0, "->>,>>>,>>>,>>9.99") + \
-                        to_string(debt1, "->>,>>>,>>>,>>9.99") + \
-                        to_string(debt2, "->>,>>>,>>>,>>9.99") + \
-                        to_string(debt3, "->>,>>>,>>>,>>9.99") + \
-                        to_string(credit_limit, "->>,>>>,>>>,>>9.99")
+                    outlist = "  " + \
+                        format_fixed_length(to_string(counter, ">>>9"), 4) + \
+                        format_fixed_length(gastname, 30) + \
+                        format_fixed_length(billname, 30) + \
+                        handling_negative(tot_debt, "->>,>>>,>>>,>>9.99") + \
+                        handling_negative(p_bal, "->>,>>>,>>>,>>9.99") + \
+                        handling_negative(debit, "->>,>>>,>>>,>>9.99") + \
+                        handling_negative(credit, "->>,>>>,>>>,>>9.99") + \
+                        handling_negative(debt0, "->>,>>>,>>>,>>9.99") + \
+                        handling_negative(debt1, "->>,>>>,>>>,>>9.99") + \
+                        handling_negative(debt2, "->>,>>>,>>>,>>9.99") + \
+                        handling_negative(debt3, "->>,>>>,>>>,>>9.99") + \
+                        handling_negative(credit_limit, "->>,>>>,>>>,>>9.99")
                 else:
-                    outlist = "  " + to_string(counter, ">>>9 ") + \
-                        to_string(gastname, "x(30)") + \
-                        to_string(billname, "x(30)") + \
-                        to_string(tot_debt, "->,>>>,>>>,>>>,>>9") + \
-                        to_string(p_bal, "->,>>>,>>>,>>>,>>9") + \
-                        to_string(debit, "->,>>>,>>>,>>>,>>9") + \
-                        to_string(credit, "->,>>>,>>>,>>>,>>9") + \
-                        to_string(debt0, "->,>>>,>>>,>>>,>>9") + \
-                        to_string(debt1, "->,>>>,>>>,>>>,>>9") + \
-                        to_string(debt2, "->,>>>,>>>,>>>,>>9") + \
-                        to_string(debt3, "->,>>>,>>>,>>>,>>9") + \
-                        to_string(credit_limit, "->,>>>,>>>,>>>,>>9")
+                    outlist = "  " + \
+                        format_fixed_length(to_string(counter, ">>>9"), 4) + \
+                        format_fixed_length(gastname, 30) + \
+                        format_fixed_length(billname, 30) + \
+                        handling_negative(tot_debt, "->,>>>,>>>,>>>,>>9") + \
+                        handling_negative(p_bal, "->,>>>,>>>,>>>,>>9") + \
+                        handling_negative(debit, "->,>>>,>>>,>>>,>>9") + \
+                        handling_negative(credit, "->,>>>,>>>,>>>,>>9") + \
+                        handling_negative(debt0, "->,>>>,>>>,>>>,>>9") + \
+                        handling_negative(debt1, "->,>>>,>>>,>>>,>>9") + \
+                        handling_negative(debt2, "->,>>>,>>>,>>>,>>9") + \
+                        handling_negative(debt3, "->,>>>,>>>,>>>,>>9") + \
+                        handling_negative(credit_limit, "->,>>>,>>>,>>>,>>9")
+                    
                 fill_in_list(True, curr_fcurr, curr_rgdatum)
+
             else:
                 counter = counter - 1
+
             tmp_saldo = to_decimal(ledger.tot_debt)
 
             if tmp_saldo == 0:
                 tmp_saldo = to_decimal("1")
+
             outlist = "-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"
             fill_in_list(False, "----", None)
 
             if not long_digit:
-                outlist = "       " + \
-                    to_string(translateExtended("T o t a l", lvcarea, ""), "x(30)") + \
-                    to_string(translateExtended("T o t a l", lvcarea, ""), "x(30)") + \
-                    to_string(ledger.tot_debt, "->>,>>>,>>>,>>9.99") + \
-                    to_string(ledger.p_bal, "->>,>>>,>>>,>>9.99") + \
-                    to_string(ledger.debit, "->>,>>>,>>>,>>9.99") + \
-                    to_string(ledger.credit, "->>,>>>,>>>,>>9.99") + \
-                    to_string(ledger.debt0, "->>,>>>,>>>,>>9.99") + \
-                    to_string(ledger.debt1, "->>,>>>,>>>,>>9.99") + \
-                    to_string(ledger.debt2, "->>,>>>,>>>,>>9.99") + \
-                    to_string(ledger.debt3, "->>,>>>,>>>,>>9.99")
+                outlist = "      " + \
+                    format_fixed_length(translateExtended("T o t a l", lvcarea, ""), 30) + \
+                    format_fixed_length(translateExtended("T o t a l", lvcarea, ""), 30) + \
+                    handling_negative(ledger.tot_debt, "->>,>>>,>>>,>>9.99") + \
+                    handling_negative(ledger.p_bal, "->>,>>>,>>>,>>9.99") + \
+                    handling_negative(ledger.debit, "->>,>>>,>>>,>>9.99") + \
+                    handling_negative(ledger.credit, "->>,>>>,>>>,>>9.99") + \
+                    handling_negative(ledger.debt0, "->>,>>>,>>>,>>9.99") + \
+                    handling_negative(ledger.debt1, "->>,>>>,>>>,>>9.99") + \
+                    handling_negative(ledger.debt2, "->>,>>>,>>>,>>9.99") + \
+                    handling_negative(ledger.debt3, "->>,>>>,>>>,>>9.99")
             else:
-                outlist = "       " + \
-                    to_string(translateExtended("T o t a l", lvcarea, ""), "x(30)") + \
-                    to_string(translateExtended("T o t a l", lvcarea, ""), "x(30)") + \
-                    to_string(ledger.tot_debt, "->,>>>,>>>,>>>,>>9") + \
-                    to_string(ledger.p_bal, "->,>>>,>>>,>>>,>>9") + \
-                    to_string(ledger.debit, "->,>>>,>>>,>>>,>>9") + \
-                    to_string(ledger.credit, "->,>>>,>>>,>>>,>>9") + \
-                    to_string(ledger.debt0, "->,>>>,>>>,>>>,>>9") + \
-                    to_string(ledger.debt1, "->,>>>,>>>,>>>,>>9") + \
-                    to_string(ledger.debt2, "->,>>>,>>>,>>>,>>9") + \
-                    to_string(ledger.debt3, "->,>>>,>>>,>>>,>>9")
+                outlist = "      " + \
+                    format_fixed_length(translateExtended("T o t a l", lvcarea, ""), 30) + \
+                    format_fixed_length(translateExtended("T o t a l", lvcarea, ""), 30) + \
+                    handling_negative(ledger.tot_debt, "->,>>>,>>>,>>>,>>9") + \
+                    handling_negative(ledger.p_bal, "->,>>>,>>>,>>>,>>9") + \
+                    handling_negative(ledger.debit, "->,>>>,>>>,>>>,>>9") + \
+                    handling_negative(ledger.credit, "->,>>>,>>>,>>>,>>9") + \
+                    handling_negative(ledger.debt0, "->,>>>,>>>,>>>,>>9") + \
+                    handling_negative(ledger.debt1, "->,>>>,>>>,>>>,>>9") + \
+                    handling_negative(ledger.debt2, "->,>>>,>>>,>>>,>>9") + \
+                    handling_negative(ledger.debt3, "->,>>>,>>>,>>>,>>9")
+                
             fill_in_list(False, "", None)
-            outlist = "       " + \
-                to_string(translateExtended("Statistic Percentage (%) :", lvcarea, ""), "x(30)") + \
-                to_string(translateExtended("Statistic Percentage (%) :", lvcarea, ""), "x(30)") + \
-                "            100.00"
-            for i in range(1, 55):
-                outlist = outlist + "       "
+
+           
             tot_debt0 = (to_decimal(ledger.debt0) /
                          to_decimal(tmp_saldo) * to_decimal("100"))
             tot_debt1 = (to_decimal(ledger.debt1) /
@@ -1437,48 +1450,50 @@ def ar_age1_2_list_webbl(pvilanguage: int, case_type: int, mtd_flag: bool, to_da
 
             if tot_debt3 == None:
                 tot_debt3 = to_decimal("0")
-            outlist = outlist + \
-                to_string(tot_debt0, "           ->>9.99") + \
-                to_string(tot_debt1, "           ->>9.99") + \
-                to_string(tot_debt2, "           ->>9.99") + \
-                to_string(tot_debt3, "           ->>9.99")
+
+            outlist = "      " + \
+                to_string(translateExtended("Statistic Percentage (%) :", lvcarea, ""), "x(30)") + \
+                to_string(translateExtended("Statistic Percentage (%) :", lvcarea, ""), "x(30)") + \
+                "            100.00" + (" ") * 54 + \
+                handling_negative(tot_debt0, "           ->>9.99") + \
+                handling_negative(tot_debt1, "           ->>9.99") + \
+                handling_negative(tot_debt2, "           ->>9.99") + \
+                handling_negative(tot_debt3, "           ->>9.99")
+            
             fill_in_list(False, "", None)
             outlist = ""
             fill_in_list(False, "", None)
+
         outlist = "-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"
         fill_in_list(False, "----", None)
 
         if not long_digit:
-            outlist = "       " + \
-                to_string(translateExtended("T O T A L A/R:", lvcarea, ""), "x(30)") + \
-                to_string(translateExtended("T O T A L A/R:", lvcarea, ""), "x(30)") + \
-                to_string(t_saldo, "->>,>>>,>>>,>>9.99") + \
-                to_string(t_prev, "->>,>>>,>>>,>>9.99") + \
-                to_string(t_debit, "->>,>>>,>>>,>>9.99") + \
-                to_string(t_credit, "->>,>>>,>>>,>>9.99") + \
-                to_string(t_debt0, "->>,>>>,>>>,>>9.99") + \
-                to_string(t_debt1, "->>,>>>,>>>,>>9.99") + \
-                to_string(t_debt2, "->>,>>>,>>>,>>9.99") + \
-                to_string(t_debt3, "->>,>>>,>>>,>>9.99")
+            outlist = "      " + \
+                format_fixed_length(translateExtended("T O T A L A/R:", lvcarea, ""), 30) + \
+                format_fixed_length(translateExtended("T O T A L A/R:", lvcarea, ""), 30) + \
+                handling_negative(t_saldo, "->>,>>>,>>>,>>9.99") + \
+                handling_negative(t_prev, "->>,>>>,>>>,>>9.99") + \
+                handling_negative(t_debit, "->>,>>>,>>>,>>9.99") + \
+                handling_negative(t_credit, "->>,>>>,>>>,>>9.99") + \
+                handling_negative(t_debt0, "->>,>>>,>>>,>>9.99") + \
+                handling_negative(t_debt1, "->>,>>>,>>>,>>9.99") + \
+                handling_negative(t_debt2, "->>,>>>,>>>,>>9.99") + \
+                handling_negative(t_debt3, "->>,>>>,>>>,>>9.99")
         else:
-            outlist = "       " + \
-                to_string(translateExtended("T O T A L A/R:", lvcarea, ""), "x(30)") + \
-                to_string(translateExtended("T O T A L A/R:", lvcarea, ""), "x(30)") + \
-                to_string(t_saldo, "->,>>>,>>>,>>>,>>9") + \
-                to_string(t_prev, "->,>>>,>>>,>>>,>>9") + \
-                to_string(t_debit, "->,>>>,>>>,>>>,>>9") + \
-                to_string(t_credit, "->,>>>,>>>,>>>,>>9") + \
-                to_string(t_debt0, "->,>>>,>>>,>>>,>>9") + \
-                to_string(t_debt1, "->,>>>,>>>,>>>,>>9") + \
-                to_string(t_debt2, "->,>>>,>>>,>>>,>>9") + \
-                to_string(t_debt3, "->,>>>,>>>,>>>,>>9")
+            outlist = "      " + \
+                format_fixed_length(translateExtended("T O T A L A/R:", lvcarea, ""), 30) + \
+                format_fixed_length(translateExtended("T O T A L A/R:", lvcarea, ""), 30) + \
+                handling_negative(t_saldo, "->,>>>,>>>,>>>,>>9") + \
+                handling_negative(t_prev, "->,>>>,>>>,>>>,>>9") + \
+                handling_negative(t_debit, "->,>>>,>>>,>>>,>>9") + \
+                handling_negative(t_credit, "->,>>>,>>>,>>>,>>9") + \
+                handling_negative(t_debt0, "->,>>>,>>>,>>>,>>9") + \
+                handling_negative(t_debt1, "->,>>>,>>>,>>>,>>9") + \
+                handling_negative(t_debt2, "->,>>>,>>>,>>>,>>9") + \
+                handling_negative(t_debt3, "->,>>>,>>>,>>>,>>9")
+            
         fill_in_list(False, "", None)
-        outlist = "       " + \
-            to_string(translateExtended("Statistic Percentage (%) :", lvcarea, ""), "x(30)") + \
-            to_string(translateExtended("Statistic Percentage (%) :", lvcarea, ""), "x(30)") + \
-            "            100.00"
-        for i in range(1, 55):
-            outlist = outlist + "       "
+
         tot_debt0 = (to_decimal(t_debt0) /
                      to_decimal(t_saldo) * to_decimal("100"))
         tot_debt1 = (to_decimal(t_debt1) /
@@ -1499,11 +1514,16 @@ def ar_age1_2_list_webbl(pvilanguage: int, case_type: int, mtd_flag: bool, to_da
 
         if tot_debt3 == None:
             tot_debt3 = to_decimal("0")
-        outlist = outlist + \
-            to_string(tot_debt0, "           ->>9.99") + \
-            to_string(tot_debt1, "           ->>9.99") + \
-            to_string(tot_debt2, "           ->>9.99") + \
-            to_string(tot_debt3, "           ->>9.99")
+
+        outlist = "      " + \
+                to_string(translateExtended("Statistic Percentage (%) :", lvcarea, ""), "x(30)") + \
+                to_string(translateExtended("Statistic Percentage (%) :", lvcarea, ""), "x(30)") + \
+                "            100.00" + (" ") * 54 + \
+                handling_negative(tot_debt0, "           ->>9.99") + \
+                handling_negative(tot_debt1, "           ->>9.99") + \
+                handling_negative(tot_debt2, "           ->>9.99") + \
+                handling_negative(tot_debt3, "           ->>9.99")
+        
         fill_in_list(False, "", None)
         outlist = ""
         fill_in_list(False, "", None)
@@ -1925,6 +1945,7 @@ def ar_age1_2_list_webbl(pvilanguage: int, case_type: int, mtd_flag: bool, to_da
 
             if not age_list:
                 continue
+
             outlist = "    " + ledger.bezeich.upper()
             fill_in_list(False, "", None)
             outlist = ""
@@ -1933,12 +1954,10 @@ def ar_age1_2_list_webbl(pvilanguage: int, case_type: int, mtd_flag: bool, to_da
             curr_gastnr = 0
 
             if mi_bill:
-
                 for age_list in query(age_list_data, filters=(lambda age_list: age_list.artnr == ledger.artnr), sort_by=[("rgdatum", False), ("gastname", False), ("rechnr", False)]):
                     create_output()
 
             else:
-
                 for age_list in query(age_list_data, filters=(lambda age_list: age_list.artnr == ledger.artnr), sort_by=[("gastname", False), ("rechnr", False)]):
                     create_output()
 
@@ -1946,73 +1965,73 @@ def ar_age1_2_list_webbl(pvilanguage: int, case_type: int, mtd_flag: bool, to_da
 
                 if not long_digit:
                     outlist = "  " + \
-                        to_string(counter, ">>>9 ") + \
-                        to_string(gastname, "x(30)") + \
-                        to_string(billname, "x(30)") + \
-                        to_string(tot_debt, "->>,>>>,>>>,>>9.99") + \
-                        to_string(p_bal, "->>,>>>,>>>,>>9.99") + \
-                        to_string(debit, "->>,>>>,>>>,>>9.99") + \
-                        to_string(credit, "->>,>>>,>>>,>>9.99") + \
-                        to_string(debt0, "->>,>>>,>>>,>>9.99") + \
-                        to_string(debt1, "->>,>>>,>>>,>>9.99") + \
-                        to_string(debt2, "->>,>>>,>>>,>>9.99") + \
-                        to_string(debt3, "->>,>>>,>>>,>>9.99") + \
-                        to_string(credit_limit, "->>,>>>,>>>,>>9.99")
+                        format_fixed_length(to_string(counter, ">>>9"), 4) + \
+                        format_fixed_length(gastname, 30) + \
+                        format_fixed_length(billname, 30) + \
+                        handling_negative(tot_debt, "->>,>>>,>>>,>>9.99") + \
+                        handling_negative(p_bal, "->>,>>>,>>>,>>9.99") + \
+                        handling_negative(debit, "->>,>>>,>>>,>>9.99") + \
+                        handling_negative(credit, "->>,>>>,>>>,>>9.99") + \
+                        handling_negative(debt0, "->>,>>>,>>>,>>9.99") + \
+                        handling_negative(debt1, "->>,>>>,>>>,>>9.99") + \
+                        handling_negative(debt2, "->>,>>>,>>>,>>9.99") + \
+                        handling_negative(debt3, "->>,>>>,>>>,>>9.99") + \
+                        handling_negative(credit_limit, "->>,>>>,>>>,>>9.99")
                 else:
                     outlist = "  " + \
-                        to_string(counter, ">>>9 ") + \
-                        to_string(gastname, "x(30)") + \
-                        to_string(billname, "x(30)") + \
-                        to_string(tot_debt, "->,>>>,>>>,>>>,>>9") + \
-                        to_string(p_bal, "->,>>>,>>>,>>>,>>9") + \
-                        to_string(debit, "->,>>>,>>>,>>>,>>9") + \
-                        to_string(credit, "->,>>>,>>>,>>>,>>9") + \
-                        to_string(debt0, "->,>>>,>>>,>>>,>>9") + \
-                        to_string(debt1, "->,>>>,>>>,>>>,>>9") + \
-                        to_string(debt2, "->,>>>,>>>,>>>,>>9") + \
-                        to_string(debt3, "->,>>>,>>>,>>>,>>9") + \
-                        to_string(credit_limit, "->,>>>,>>>,>>>,>>9")
+                        format_fixed_length(to_string(counter, ">>>9"), 4) + \
+                        format_fixed_length(gastname, 30) + \
+                        format_fixed_length(billname, 30) + \
+                        handling_negative(tot_debt, "->,>>>,>>>,>>>,>>9") + \
+                        handling_negative(p_bal, "->,>>>,>>>,>>>,>>9") + \
+                        handling_negative(debit, "->,>>>,>>>,>>>,>>9") + \
+                        handling_negative(credit, "->,>>>,>>>,>>>,>>9") + \
+                        handling_negative(debt0, "->,>>>,>>>,>>>,>>9") + \
+                        handling_negative(debt1, "->,>>>,>>>,>>>,>>9") + \
+                        handling_negative(debt2, "->,>>>,>>>,>>>,>>9") + \
+                        handling_negative(debt3, "->,>>>,>>>,>>>,>>9") + \
+                        handling_negative(credit_limit, "->,>>>,>>>,>>>,>>9")
+                    
                 fill_in_list(True, curr_fcurr, curr_rgdatum)
+
             else:
                 counter = counter - 1
+
             tmp_saldo = to_decimal(ledger.tot_debt)
 
             if tmp_saldo == 0:
                 tmp_saldo = to_decimal("1")
+
             outlist = "-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"
             fill_in_list(False, "----", None)
 
             if not long_digit:
-                outlist = "       " + \
-                    to_string(translateExtended("T o t a l", lvcarea, ""), "x(30)") + \
-                    to_string(translateExtended("T o t a l", lvcarea, ""), "x(30)") + \
-                    to_string(ledger.tot_debt, "->>,>>>,>>>,>>9.99") + \
-                    to_string(ledger.p_bal, "->>,>>>,>>>,>>9.99") + \
-                    to_string(ledger.debit, "->>,>>>,>>>,>>9.99") + \
-                    to_string(ledger.credit, "->>,>>>,>>>,>>9.99") + \
-                    to_string(ledger.debt0, "->>,>>>,>>>,>>9.99") + \
-                    to_string(ledger.debt1, "->>,>>>,>>>,>>9.99") + \
-                    to_string(ledger.debt2, "->>,>>>,>>>,>>9.99") + \
-                    to_string(ledger.debt3, "->>,>>>,>>>,>>9.99")
+                outlist = "      " + \
+                    format_fixed_length(translateExtended("T o t a l", lvcarea, ""), 30) + \
+                    format_fixed_length(translateExtended("T o t a l", lvcarea, ""), 30) + \
+                    handling_negative(ledger.tot_debt, "->>,>>>,>>>,>>9.99") + \
+                    handling_negative(ledger.p_bal, "->>,>>>,>>>,>>9.99") + \
+                    handling_negative(ledger.debit, "->>,>>>,>>>,>>9.99") + \
+                    handling_negative(ledger.credit, "->>,>>>,>>>,>>9.99") + \
+                    handling_negative(ledger.debt0, "->>,>>>,>>>,>>9.99") + \
+                    handling_negative(ledger.debt1, "->>,>>>,>>>,>>9.99") + \
+                    handling_negative(ledger.debt2, "->>,>>>,>>>,>>9.99") + \
+                    handling_negative(ledger.debt3, "->>,>>>,>>>,>>9.99")
             else:
-                outlist = "       " + \
-                    to_string(translateExtended("T o t a l", lvcarea, ""), "x(30)") + \
-                    to_string(translateExtended("T o t a l", lvcarea, ""), "x(30)") + \
-                    to_string(ledger.tot_debt, "->,>>>,>>>,>>>,>>9") + \
-                    to_string(ledger.p_bal, "->,>>>,>>>,>>>,>>9") + \
-                    to_string(ledger.debit, "->,>>>,>>>,>>>,>>9") + \
-                    to_string(ledger.credit, "->,>>>,>>>,>>>,>>9") + \
-                    to_string(ledger.debt0, "->,>>>,>>>,>>>,>>9") + \
-                    to_string(ledger.debt1, "->,>>>,>>>,>>>,>>9") + \
-                    to_string(ledger.debt2, "->,>>>,>>>,>>>,>>9") + \
-                    to_string(ledger.debt3, "->,>>>,>>>,>>>,>>9")
+                outlist = "      " + \
+                    format_fixed_length(translateExtended("T o t a l", lvcarea, ""), 30) + \
+                    format_fixed_length(translateExtended("T o t a l", lvcarea, ""), 30) + \
+                    handling_negative(ledger.tot_debt, "->,>>>,>>>,>>>,>>9") + \
+                    handling_negative(ledger.p_bal, "->,>>>,>>>,>>>,>>9") + \
+                    handling_negative(ledger.debit, "->,>>>,>>>,>>>,>>9") + \
+                    handling_negative(ledger.credit, "->,>>>,>>>,>>>,>>9") + \
+                    handling_negative(ledger.debt0, "->,>>>,>>>,>>>,>>9") + \
+                    handling_negative(ledger.debt1, "->,>>>,>>>,>>>,>>9") + \
+                    handling_negative(ledger.debt2, "->,>>>,>>>,>>>,>>9") + \
+                    handling_negative(ledger.debt3, "->,>>>,>>>,>>>,>>9")
+                
             fill_in_list(False, "", None)
-            outlist = "       " + \
-                to_string(translateExtended("Statistic Percentage (%) :", lvcarea, ""), "x(30)") + \
-                to_string(translateExtended("Statistic Percentage (%) :", lvcarea, ""), "x(30)") + \
-                "            100.00"
-            for i in range(1, 55):
-                outlist = outlist + "       "
+
             tot_debt0 = (to_decimal(ledger.debt0) /
                          to_decimal(tmp_saldo) * to_decimal("100"))
             tot_debt1 = (to_decimal(ledger.debt1) /
@@ -2033,11 +2052,16 @@ def ar_age1_2_list_webbl(pvilanguage: int, case_type: int, mtd_flag: bool, to_da
 
             if tot_debt3 == None:
                 tot_debt3 = to_decimal("0")
-            outlist = outlist + \
-                to_string(tot_debt0, "           ->>9.99") + \
-                to_string(tot_debt1, "           ->>9.99") + \
-                to_string(tot_debt2, "           ->>9.99") + \
-                to_string(tot_debt3, "           ->>9.99")
+
+            outlist = "      " + \
+                to_string(translateExtended("Statistic Percentage (%) :", lvcarea, ""), "x(30)") + \
+                to_string(translateExtended("Statistic Percentage (%) :", lvcarea, ""), "x(30)") + \
+                "            100.00" + (" ") * 54 + \
+                handling_negative(tot_debt0, "           ->>9.99") + \
+                handling_negative(tot_debt1, "           ->>9.99") + \
+                handling_negative(tot_debt2, "           ->>9.99") + \
+                handling_negative(tot_debt3, "           ->>9.99")
+            
             fill_in_list(False, "", None)
             outlist = ""
             fill_in_list(False, "", None)
@@ -2045,35 +2069,32 @@ def ar_age1_2_list_webbl(pvilanguage: int, case_type: int, mtd_flag: bool, to_da
         fill_in_list(False, "----", None)
 
         if not long_digit:
-            outlist = "       " + \
-                to_string(translateExtended("T O T A L A/R:", lvcarea, ""), "x(30)") + \
-                to_string(translateExtended("T O T A L A/R:", lvcarea, ""), "x(30)") + \
-                to_string(t_saldo, "->>,>>>,>>>,>>9.99") + to_string(t_prev, "->>,>>>,>>>,>>9.99") +\
-                to_string(t_debit, "->>,>>>,>>>,>>9.99") + \
-                to_string(t_credit, "->>,>>>,>>>,>>9.99") + \
-                to_string(t_debt0, "->>,>>>,>>>,>>9.99") + \
-                to_string(t_debt1, "->>,>>>,>>>,>>9.99") + \
-                to_string(t_debt2, "->>,>>>,>>>,>>9.99") + \
-                to_string(t_debt3, "->>,>>>,>>>,>>9.99")
+            outlist = "      " + \
+                format_fixed_length(translateExtended("T O T A L A/R:", lvcarea, ""), 30) + \
+                format_fixed_length(translateExtended("T O T A L A/R:", lvcarea, ""), 30) + \
+                handling_negative(t_saldo, "->>,>>>,>>>,>>9.99") + \
+                handling_negative(t_prev, "->>,>>>,>>>,>>9.99") + \
+                handling_negative(t_debit, "->>,>>>,>>>,>>9.99") + \
+                handling_negative(t_credit, "->>,>>>,>>>,>>9.99") + \
+                handling_negative(t_debt0, "->>,>>>,>>>,>>9.99") + \
+                handling_negative(t_debt1, "->>,>>>,>>>,>>9.99") + \
+                handling_negative(t_debt2, "->>,>>>,>>>,>>9.99") + \
+                handling_negative(t_debt3, "->>,>>>,>>>,>>9.99")
         else:
-            outlist = "       " + \
-                to_string(translateExtended("T O T A L A/R:", lvcarea, ""), "x(30)") + \
-                to_string(translateExtended("T O T A L A/R:", lvcarea, ""), "x(30)") + \
-                to_string(t_saldo, "->,>>>,>>>,>>>,>>9") + \
-                to_string(t_prev, "->,>>>,>>>,>>>,>>9") + \
-                to_string(t_debit, "->,>>>,>>>,>>>,>>9") + \
-                to_string(t_credit, "->,>>>,>>>,>>>,>>9") + \
-                to_string(t_debt0, "->,>>>,>>>,>>>,>>9") + \
-                to_string(t_debt1, "->,>>>,>>>,>>>,>>9") + \
-                to_string(t_debt2, "->,>>>,>>>,>>>,>>9") + \
-                to_string(t_debt3, "->,>>>,>>>,>>>,>>9")
+            outlist = "      " + \
+                format_fixed_length(translateExtended("T O T A L A/R:", lvcarea, ""), 30) + \
+                format_fixed_length(translateExtended("T O T A L A/R:", lvcarea, ""), 30) + \
+                handling_negative(t_saldo, "->,>>>,>>>,>>>,>>9") + \
+                handling_negative(t_prev, "->,>>>,>>>,>>>,>>9") + \
+                handling_negative(t_debit, "->,>>>,>>>,>>>,>>9") + \
+                handling_negative(t_credit, "->,>>>,>>>,>>>,>>9") + \
+                handling_negative(t_debt0, "->,>>>,>>>,>>>,>>9") + \
+                handling_negative(t_debt1, "->,>>>,>>>,>>>,>>9") + \
+                handling_negative(t_debt2, "->,>>>,>>>,>>>,>>9") + \
+                handling_negative(t_debt3, "->,>>>,>>>,>>>,>>9")
+            
         fill_in_list(False, "", None)
-        outlist = "       " + \
-            to_string(translateExtended("Statistic Percentage (%) :", lvcarea, ""), "x(30)") + \
-            to_string(translateExtended("Statistic Percentage (%) :", lvcarea, ""), "x(30)") + \
-            "            100.00"
-        for i in range(1, 55):
-            outlist = outlist + "       "
+
         tot_debt0 = (to_decimal(t_debt0) /
                      to_decimal(t_saldo) * to_decimal("100"))
         tot_debt1 = (to_decimal(t_debt1) /
@@ -2094,11 +2115,16 @@ def ar_age1_2_list_webbl(pvilanguage: int, case_type: int, mtd_flag: bool, to_da
 
         if tot_debt3 == None:
             tot_debt3 = to_decimal("0")
-        outlist = outlist + \
-            to_string(tot_debt0, "           ->>9.99") + \
-            to_string(tot_debt1, "           ->>9.99") + \
-            to_string(tot_debt2, "           ->>9.99") + \
-            to_string(tot_debt3, "           ->>9.99")
+
+        outlist = "      " + \
+                to_string(translateExtended("Statistic Percentage (%) :", lvcarea, ""), "x(30)") + \
+                to_string(translateExtended("Statistic Percentage (%) :", lvcarea, ""), "x(30)") + \
+                "            100.00" + (" ") * 54 + \
+                handling_negative(tot_debt0, "           ->>9.99") + \
+                handling_negative(tot_debt1, "           ->>9.99") + \
+                handling_negative(tot_debt2, "           ->>9.99") + \
+                handling_negative(tot_debt3, "           ->>9.99")
+        
         fill_in_list(False, "", None)
         outlist = ""
         fill_in_list(False, "", None)
@@ -2536,6 +2562,7 @@ def ar_age1_2_list_webbl(pvilanguage: int, case_type: int, mtd_flag: bool, to_da
 
             if not age_list:
                 continue
+
             outlist = "    " + ledger.bezeich.upper()
 
             if not mtd_flag and case_type != 1:
@@ -2544,47 +2571,48 @@ def ar_age1_2_list_webbl(pvilanguage: int, case_type: int, mtd_flag: bool, to_da
 
             if not mtd_flag and case_type != 1:
                 fill_in_list(False, "", None)
+
             counter = 0
             curr_gastnr = 0
 
             if mi_bill:
-
                 for age_list in query(age_list_data, filters=(lambda age_list: age_list.artnr == ledger.artnr), sort_by=[("rgdatum", False), ("gastname", False)]):
                     create_output()
 
             else:
-
                 for age_list in query(age_list_data, filters=(lambda age_list: age_list.artnr == ledger.artnr), sort_by=[("gastname", False), ("rechnr", False)]):
                     create_output()
 
             if counter > 0 and (p_bal != 0 or debit != 0 or credit != 0):
 
                 if not long_digit:
-                    outlist = "  " + to_string(counter, ">>>9 ") + \
-                        to_string(gastname, "x(30)") + \
-                        to_string(billname, "x(30)") + \
-                        to_string(tot_debt, "->>,>>>,>>>,>>9.99") + \
-                        to_string(p_bal, "->>,>>>,>>>,>>9.99") + \
-                        to_string(debit, "->>,>>>,>>>,>>9.99") + \
-                        to_string(credit, "->>,>>>,>>>,>>9.99") + \
-                        to_string(debt0, "->>,>>>,>>>,>>9.99") + \
-                        to_string(debt1, "->>,>>>,>>>,>>9.99") + \
-                        to_string(debt2, "->>,>>>,>>>,>>9.99") + \
-                        to_string(debt3, "->>,>>>,>>>,>>9.99") + \
-                        to_string(credit_limit, "->>,>>>,>>>,>>9.99")
+                    outlist = "  " + \
+                        format_fixed_length(to_string(counter, ">>>9"), 4) + \
+                        format_fixed_length(gastname, 30) + \
+                        format_fixed_length(billname, 30) + \
+                        handling_negative(tot_debt, "->>,>>>,>>>,>>9.99") + \
+                        handling_negative(p_bal, "->>,>>>,>>>,>>9.99") + \
+                        handling_negative(debit, "->>,>>>,>>>,>>9.99") + \
+                        handling_negative(credit, "->>,>>>,>>>,>>9.99") + \
+                        handling_negative(debt0, "->>,>>>,>>>,>>9.99") + \
+                        handling_negative(debt1, "->>,>>>,>>>,>>9.99") + \
+                        handling_negative(debt2, "->>,>>>,>>>,>>9.99") + \
+                        handling_negative(debt3, "->>,>>>,>>>,>>9.99") + \
+                        handling_negative(credit_limit, "->>,>>>,>>>,>>9.99")
                 else:
-                    outlist = "  " + to_string(counter, ">>>9 ") + \
-                        to_string(gastname, "x(30)") + \
-                        to_string(billname, "x(30)") + \
-                        to_string(tot_debt, "->,>>>,>>>,>>>,>>9") + \
-                        to_string(p_bal, "->,>>>,>>>,>>>,>>9") + \
-                        to_string(debit, "->,>>>,>>>,>>>,>>9") + \
-                        to_string(credit, "->,>>>,>>>,>>>,>>9") + \
-                        to_string(debt0, "->,>>>,>>>,>>>,>>9") + \
-                        to_string(debt1, "->,>>>,>>>,>>>,>>9") + \
-                        to_string(debt2, "->,>>>,>>>,>>>,>>9") + \
-                        to_string(debt3, "->,>>>,>>>,>>>,>>9") + \
-                        to_string(credit_limit, "->,>>>,>>>,>>>,>>9")
+                    outlist = "  " + \
+                        format_fixed_length(to_string(counter, ">>>9"), 4) + \
+                        format_fixed_length(gastname, 30) + \
+                        format_fixed_length(billname, 30) + \
+                        handling_negative(tot_debt, "->,>>>,>>>,>>>,>>9") + \
+                        handling_negative(p_bal, "->,>>>,>>>,>>>,>>9") + \
+                        handling_negative(debit, "->,>>>,>>>,>>>,>>9") + \
+                        handling_negative(credit, "->,>>>,>>>,>>>,>>9") + \
+                        handling_negative(debt0, "->,>>>,>>>,>>>,>>9") + \
+                        handling_negative(debt1, "->,>>>,>>>,>>>,>>9") + \
+                        handling_negative(debt2, "->,>>>,>>>,>>>,>>9") + \
+                        handling_negative(debt3, "->,>>>,>>>,>>>,>>9") + \
+                        handling_negative(credit_limit, "->,>>>,>>>,>>>,>>9")
 
                 if not mtd_flag and case_type != 1:
                     fill_in_list(True, curr_fcurr, curr_rgdatum)
@@ -2600,38 +2628,33 @@ def ar_age1_2_list_webbl(pvilanguage: int, case_type: int, mtd_flag: bool, to_da
                 fill_in_list(False, "----", None)
 
             if not long_digit:
-                outlist = "       " + \
-                    to_string(translateExtended("T o t a l", lvcarea, ""), "x(30)") + \
-                    to_string(translateExtended("T o t a l", lvcarea, ""), "x(30)") + \
-                    to_string(ledger.tot_debt, "->>,>>>,>>>,>>9.99") + \
-                    to_string(ledger.p_bal, "->>,>>>,>>>,>>9.99") + \
-                    to_string(ledger.debit, "->>,>>>,>>>,>>9.99") + \
-                    to_string(ledger.credit, "->>,>>>,>>>,>>9.99") + \
-                    to_string(ledger.debt0, "->>,>>>,>>>,>>9.99") + \
-                    to_string(ledger.debt1, "->>,>>>,>>>,>>9.99") + \
-                    to_string(ledger.debt2, "->>,>>>,>>>,>>9.99") + \
-                    to_string(ledger.debt3, "->>,>>>,>>>,>>9.99")
+                outlist = "      " + \
+                    format_fixed_length(translateExtended("T o t a l", lvcarea, ""), 30) + \
+                    format_fixed_length(translateExtended("T o t a l", lvcarea, ""), 30) + \
+                    handling_negative(ledger.tot_debt, "->>,>>>,>>>,>>9.99") + \
+                    handling_negative(ledger.p_bal, "->>,>>>,>>>,>>9.99") + \
+                    handling_negative(ledger.debit, "->>,>>>,>>>,>>9.99") + \
+                    handling_negative(ledger.credit, "->>,>>>,>>>,>>9.99") + \
+                    handling_negative(ledger.debt0, "->>,>>>,>>>,>>9.99") + \
+                    handling_negative(ledger.debt1, "->>,>>>,>>>,>>9.99") + \
+                    handling_negative(ledger.debt2, "->>,>>>,>>>,>>9.99") + \
+                    handling_negative(ledger.debt3, "->>,>>>,>>>,>>9.99")
             else:
-                outlist = "       " + \
-                    to_string(translateExtended("T o t a l", lvcarea, ""), "x(30)") + \
-                    to_string(translateExtended("T o t a l", lvcarea, ""), "x(30)") + \
-                    to_string(ledger.tot_debt, "->,>>>,>>>,>>>,>>9") + \
-                    to_string(ledger.p_bal, "->,>>>,>>>,>>>,>>9") + \
-                    to_string(ledger.debit, "->,>>>,>>>,>>>,>>9") + \
-                    to_string(ledger.credit, "->,>>>,>>>,>>>,>>9") + \
-                    to_string(ledger.debt0, "->,>>>,>>>,>>>,>>9") + \
-                    to_string(ledger.debt1, "->,>>>,>>>,>>>,>>9") + \
-                    to_string(ledger.debt2, "->,>>>,>>>,>>>,>>9") + \
-                    to_string(ledger.debt3, "->,>>>,>>>,>>>,>>9")
+                outlist = "      " + \
+                    format_fixed_length(translateExtended("T o t a l", lvcarea, ""), 30) + \
+                    format_fixed_length(translateExtended("T o t a l", lvcarea, ""), 30) + \
+                    handling_negative(ledger.tot_debt, "->,>>>,>>>,>>>,>>9") + \
+                    handling_negative(ledger.p_bal, "->,>>>,>>>,>>>,>>9") + \
+                    handling_negative(ledger.debit, "->,>>>,>>>,>>>,>>9") + \
+                    handling_negative(ledger.credit, "->,>>>,>>>,>>>,>>9") + \
+                    handling_negative(ledger.debt0, "->,>>>,>>>,>>>,>>9") + \
+                    handling_negative(ledger.debt1, "->,>>>,>>>,>>>,>>9") + \
+                    handling_negative(ledger.debt2, "->,>>>,>>>,>>>,>>9") + \
+                    handling_negative(ledger.debt3, "->,>>>,>>>,>>>,>>9")
 
             if not mtd_flag and case_type != 1:
                 fill_in_list(False, "", None)
-            outlist = "       " + \
-                to_string(translateExtended("Statistic Percentage (%) :", lvcarea, ""), "x(30)") + \
-                to_string(translateExtended("Statistic Percentage (%) :", lvcarea, ""), "x(30)") + \
-                " 100.00"
-            for i in range(1, 55):
-                outlist = outlist + "       "
+
             tot_debt0 = (to_decimal(ledger.debt0) /
                          to_decimal(tmp_saldo) * to_decimal("100"))
             tot_debt1 = (to_decimal(ledger.debt1) /
@@ -2652,11 +2675,15 @@ def ar_age1_2_list_webbl(pvilanguage: int, case_type: int, mtd_flag: bool, to_da
 
             if tot_debt3 == None:
                 tot_debt3 = to_decimal("0")
-            outlist = outlist + \
-                to_string(tot_debt0, "         ->,>>9.99") + \
-                to_string(tot_debt1, "         ->,>>9.99") + \
-                to_string(tot_debt2, "         ->,>>9.99") + \
-                to_string(tot_debt3, "         ->,>>9.99")
+
+            outlist = "      " + \
+                to_string(translateExtended("Statistic Percentage (%) :", lvcarea, ""), "x(30)") + \
+                to_string(translateExtended("Statistic Percentage (%) :", lvcarea, ""), "x(30)") + \
+                "            100.00" + (" ") * 54 + \
+                handling_negative(tot_debt0, "           ->>9.99") + \
+                handling_negative(tot_debt1, "           ->>9.99") + \
+                handling_negative(tot_debt2, "           ->>9.99") + \
+                handling_negative(tot_debt3, "           ->>9.99")
 
             if not mtd_flag and case_type != 1:
                 fill_in_list(False, "", None)
@@ -2664,43 +2691,40 @@ def ar_age1_2_list_webbl(pvilanguage: int, case_type: int, mtd_flag: bool, to_da
 
             if not mtd_flag and case_type != 1:
                 fill_in_list(False, "", None)
+
         outlist = "-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"
 
         if not mtd_flag and case_type != 1:
             fill_in_list(False, "----", None)
 
         if not long_digit:
-            outlist = "       " + \
-                to_string(translateExtended("T O T A L A/R:", lvcarea, ""), "x(30)") + \
-                to_string(translateExtended("T O T A L A/R:", lvcarea, ""), "x(30)") + \
-                to_string(t_saldo, "->>,>>>,>>>,>>9.99") + to_string(t_prev, "->>,>>>,>>>,>>9.99") +\
-                to_string(t_debit, "->>,>>>,>>>,>>9.99") + \
-                to_string(t_credit, "->>,>>>,>>>,>>9.99") + \
-                to_string(t_debt0, "->>,>>>,>>>,>>9.99") + \
-                to_string(t_debt1, "->>,>>>,>>>,>>9.99") + \
-                to_string(t_debt2, "->>,>>>,>>>,>>9.99") + \
-                to_string(t_debt3, "->>,>>>,>>>,>>9.99")
+            outlist = "      " + \
+                format_fixed_length(translateExtended("T O T A L A/R:", lvcarea, ""), 30) + \
+                format_fixed_length(translateExtended("T O T A L A/R:", lvcarea, ""), 30) + \
+                handling_negative(t_saldo, "->>,>>>,>>>,>>9.99") + \
+                handling_negative(t_prev, "->>,>>>,>>>,>>9.99") +\
+                handling_negative(t_debit, "->>,>>>,>>>,>>9.99") + \
+                handling_negative(t_credit, "->>,>>>,>>>,>>9.99") + \
+                handling_negative(t_debt0, "->>,>>>,>>>,>>9.99") + \
+                handling_negative(t_debt1, "->>,>>>,>>>,>>9.99") + \
+                handling_negative(t_debt2, "->>,>>>,>>>,>>9.99") + \
+                handling_negative(t_debt3, "->>,>>>,>>>,>>9.99")
         else:
-            outlist = "       " + \
-                to_string(translateExtended("T O T A L A/R:", lvcarea, ""), "x(30)") + \
-                to_string(translateExtended("T O T A L A/R:", lvcarea, ""), "x(30)") + \
-                to_string(t_saldo, "->,>>>,>>>,>>>,>>9") + \
-                to_string(t_prev, "->,>>>,>>>,>>>,>>9") + \
-                to_string(t_debit, "->,>>>,>>>,>>>,>>9") + \
-                to_string(t_credit, "->,>>>,>>>,>>>,>>9") + \
-                to_string(t_debt0, "->,>>>,>>>,>>>,>>9") + \
-                to_string(t_debt1, "->,>>>,>>>,>>>,>>9") + \
-                to_string(t_debt2, "->,>>>,>>>,>>>,>>9") + \
-                to_string(t_debt3, "->,>>>,>>>,>>>,>>9")
+            outlist = "      " + \
+                format_fixed_length(translateExtended("T O T A L A/R:", lvcarea, ""), 30) + \
+                format_fixed_length(translateExtended("T O T A L A/R:", lvcarea, ""), 30) + \
+                handling_negative(t_saldo, "->,>>>,>>>,>>>,>>9") + \
+                handling_negative(t_prev, "->,>>>,>>>,>>>,>>9") + \
+                handling_negative(t_debit, "->,>>>,>>>,>>>,>>9") + \
+                handling_negative(t_credit, "->,>>>,>>>,>>>,>>9") + \
+                handling_negative(t_debt0, "->,>>>,>>>,>>>,>>9") + \
+                handling_negative(t_debt1, "->,>>>,>>>,>>>,>>9") + \
+                handling_negative(t_debt2, "->,>>>,>>>,>>>,>>9") + \
+                handling_negative(t_debt3, "->,>>>,>>>,>>>,>>9")
 
         if not mtd_flag and case_type != 1:
             fill_in_list(False, "", None)
-        outlist = "       " + \
-            to_string(translateExtended("Statistic Percentage (%) :", lvcarea, ""), "x(30)") + \
-            to_string(translateExtended("Statistic Percentage (%) :", lvcarea, ""), "x(30)") + \
-            "            100.00"
-        for i in range(1, 55):
-            outlist = outlist + "       "
+
         tot_debt0 = (to_decimal(t_debt0) /
                      to_decimal(t_saldo) * to_decimal("100"))
         tot_debt1 = (to_decimal(t_debt1) /
@@ -2721,14 +2745,19 @@ def ar_age1_2_list_webbl(pvilanguage: int, case_type: int, mtd_flag: bool, to_da
 
         if tot_debt3 == None:
             tot_debt3 = to_decimal("0")
-        outlist = outlist + \
-            to_string(tot_debt0, "           ->>9.99") + \
-            to_string(tot_debt1, "           ->>9.99") + \
-            to_string(tot_debt2, "           ->>9.99") + \
-            to_string(tot_debt3, "           ->>9.99")
+
+        outlist = "      " + \
+                to_string(translateExtended("Statistic Percentage (%) :", lvcarea, ""), "x(30)") + \
+                to_string(translateExtended("Statistic Percentage (%) :", lvcarea, ""), "x(30)") + \
+                "            100.00" + (" ") * 54 + \
+                handling_negative(tot_debt0, "           ->>9.99") + \
+                handling_negative(tot_debt1, "           ->>9.99") + \
+                handling_negative(tot_debt2, "           ->>9.99") + \
+                handling_negative(tot_debt3, "           ->>9.99")
 
         if not mtd_flag and case_type != 1:
             fill_in_list(False, "", None)
+
         outlist = ""
 
         if not mtd_flag and case_type != 1:
@@ -2813,7 +2842,7 @@ def ar_age1_2_list_webbl(pvilanguage: int, case_type: int, mtd_flag: bool, to_da
     arage_balance_list_data.clear()
 
     for arage_list in query(arage_list_data):
-        if substring(arage_list.str, 0, 7) != ("-------"):
+        if substring(arage_list.str, 0, 6) != ("------"):
             arage_balance_list = Arage_balance_list()
             arage_balance_list_data.append(arage_balance_list)
 
@@ -2827,15 +2856,14 @@ def ar_age1_2_list_webbl(pvilanguage: int, case_type: int, mtd_flag: bool, to_da
             arage_balance_list.age4 = arage_list.age4
             arage_balance_list.rechnr = arage_list.rechnr
             
-            # log_program.write_log("LOG", f"arange_list.str: {arage_list.str}")
             arage_balance_list.num = substring(arage_list.str, 0, 6)
             arage_balance_list.cust_nm = substring(arage_list.str, 6, 30)
-            arage_balance_list.bill_nm = substring(arage_list.str, 56, 30)
-            arage_balance_list.p_bal = substring(arage_list.str, 85, 18)
-            arage_balance_list.debit = substring(arage_list.str, 105, 18)
-            arage_balance_list.credit = substring(arage_list.str, 123, 18)
-            arage_balance_list.end_bal = substring(arage_list.str, 67, 18)
-            arage_balance_list.creditlimit_str = substring(arage_list.str, 203, 18)            
+            arage_balance_list.bill_nm = substring(arage_list.str, 36, 30)
+            arage_balance_list.p_bal = substring(arage_list.str, 84, 18)
+            arage_balance_list.debit = substring(arage_list.str, 102, 18)
+            arage_balance_list.credit = substring(arage_list.str, 120, 18)
+            arage_balance_list.end_bal = substring(arage_list.str, 66, 18)
+            arage_balance_list.creditlimit_str = substring(arage_list.str, 210, 18)            
 
     arage_balance_list = query(arage_balance_list_data, first=True)
 
@@ -2845,5 +2873,3 @@ def ar_age1_2_list_webbl(pvilanguage: int, case_type: int, mtd_flag: bool, to_da
     else:
 
         return generate_output()
-
-    return generate_output()

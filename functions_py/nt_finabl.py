@@ -13,6 +13,9 @@
 # Rahman, 06-11-2025
 #   - fixing space on long string
 #   - fixing ("string").lower() to only lowercase string
+
+# Rulita, 10-12-2025
+# - Added with_for_update before delete query
 # =================================================
 
 from functions.additional_functions import *
@@ -1170,7 +1173,7 @@ def nt_finabl():
         reihenfolge = nightaudit.reihenfolge
 
         for nitestor in db_session.query(Nitestor).filter(
-                 (Nitestor.night_type == night_type) & (Nitestor.reihenfolge == reihenfolge)).order_by(Nitestor._recid).all():
+                 (Nitestor.night_type == night_type) & (Nitestor.reihenfolge == reihenfolge)).order_by(Nitestor._recid).with_for_update().all():
             db_session.delete(nitestor)
         create_fina()
         umsatz_list()

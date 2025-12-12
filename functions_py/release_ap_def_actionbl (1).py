@@ -4,7 +4,7 @@ from functions.additional_functions import *
 import decimal
 from models import L_kredit, Htparam
 
-def release_ap_def_actionbl (1)(pay_list_s_recid:int):
+def release_ap_def_actionbl(pay_list_s_recid:int):
     success_flag = False
     i_counter:int = 0
     it_exist:bool = False

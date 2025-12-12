@@ -3,6 +3,12 @@
 # Rd, 21/10/2025
 # time delta
 #------------------------------------------
+
+# =============================================
+# Rulita, 10-12-2025
+# - Added with_for_update before delete query
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date, timedelta
@@ -38,12 +44,12 @@ def mn_del_old_billsbl():
 
         # bill = get_cache (Bill, {"flag": [(eq, 1)],"datum": [(lt, (ci_date -    timedelta(days=anz)))]}, order_by="datum", first=True)
         bill = db_session.query(Bill).filter(
-                 (Bill.flag == 1) & (Bill.datum < (ci_date - timedelta(days=anz)))).order_by(Bill.datum, Bill._recid).first()
+                 (Bill.flag == 1) & (Bill.datum < (ci_date - timedelta(days=anz)))).order_by(Bill.datum, Bill._recid).with_for_update().first()
         while None != bill:
             i = i + 1
 
             for bill_line in db_session.query(Bill_line).filter(
-                     (Bill_line.rechnr == bill.rechnr)).order_by(Bill_line._recid).all():
+                     (Bill_line.rechnr == bill.rechnr)).order_by(Bill_line._recid).with_for_update().all():
 
                 if bill.rechnr != 0:
                     create_blinehis()

@@ -2,6 +2,12 @@
 #----------------------------------------
 # Rd, 24/11/2025, Update last counter dengan next_counter_for_update
 #----------------------------------------
+
+# =============================================
+# Rulita, 10-12-2025
+# - Added with_for_update before delete query
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -108,7 +114,9 @@ def fo_invoice_update_bill2bl(pvilanguage:int, b_rechnr:int, b_artnr:int, bil_fl
 
         if debt:
 
-            debt1 = get_cache (Debitor, {"_recid": [(eq, debt._recid)]})
+            # debt1 = get_cache (Debitor, {"_recid": [(eq, debt._recid)]})
+            debt1 = db_session.query(Debitor).filter(
+                     (Debitor._recid == debt._recid)).with_for_update().first()
 
             if debt1:
                 db_session.delete(debt1)

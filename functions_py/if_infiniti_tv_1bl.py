@@ -4,6 +4,9 @@
 # Rulita, 19/08/2025
 # New Compile program IF Invinity IPTV
 # ticket: 9DAA21
+
+# Rulita, 10-12-2025
+# - Added with_for_update before delete query
 #--------------------------------------------
 
 from functions.additional_functions import *
@@ -120,7 +123,7 @@ def if_infiniti_tv_1bl():
 
 
     interface = db_session.query(Interface).filter(
-             ((Interface.key == 3)) & (matches((Interface.parameters,"*Checkin*")) | (matches(Interface.parameters,"*Checkout*")) | (matches(Interface.parameters,"*Move in*")) | (matches(Interface.parameters,"*Move out*")) | (matches(Interface.parameters,"*Change Guestname*")) | (matches(Interface.parameters,"*DataExchange*")))).first()
+             ((Interface.key == 3)) & (matches((Interface.parameters,"*Checkin*")) | (matches(Interface.parameters,"*Checkout*")) | (matches(Interface.parameters,"*Move in*")) | (matches(Interface.parameters,"*Move out*")) | (matches(Interface.parameters,"*Change Guestname*")) | (matches(Interface.parameters,"*DataExchange*")))).with_for_update().first()
     while None != interface:
 
         t_guest = query(t_guest_data, filters=(lambda t_guest: t_guest.roomnr == interface.zinr), first=True)

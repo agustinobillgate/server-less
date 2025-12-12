@@ -10,6 +10,11 @@
             - matches, argument missing for parameter "pattern"
 """
 
+# =============================================
+# Rulita, 10-12-2025
+# - Added with_for_update before delete query
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -84,7 +89,7 @@ def if_lgtv_v2bl():
                     t_list.parameters = interface.parameters  # type: ignore
 
                     if guest.nation1.lower() == ("USA").lower():
-                        t_list.gastlang = "en_US"  # type: ignore
+                        t_list.gastlang = "en_US"  
 
                     elif guest.nation1.lower() == ("NLD").lower():
                         t_list.gastlang = "nl_NL"  # type: ignore
@@ -262,7 +267,7 @@ def if_lgtv_v2bl():
     #     matches((Interface.parameters,"*Checkin*"))
 
     interface = db_session.query(Interface).filter(
-        (Interface.key == 3) & (matches(Interface.parameters, "*Checkin*") | (matches(Interface.parameters, "*Checkout*")) | (matches(Interface.parameters, "*Move in*")) | (matches(Interface.parameters, "*Move out*")) | (matches(Interface.parameters, "*Change Guestname*")))).first()
+        (Interface.key == 3) & (matches(Interface.parameters, "*Checkin*") | (matches(Interface.parameters, "*Checkout*")) | (matches(Interface.parameters, "*Move in*")) | (matches(Interface.parameters, "*Move out*")) | (matches(Interface.parameters, "*Change Guestname*")))).with_for_update().first()
     while None != interface:
 
         t_list = query(t_list_data, filters=(

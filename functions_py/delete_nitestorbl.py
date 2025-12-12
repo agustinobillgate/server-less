@@ -1,5 +1,10 @@
 #using conversion tools version: 1.0.0.117
 
+# =============================================
+# Rulita, 10-12-2025
+# - Added with_for_update before delete query
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Nitestor
@@ -20,7 +25,7 @@ def delete_nitestorbl(case_type:int, int1:int, int2:int):
     if case_type == 1:
 
         for nitestor in db_session.query(Nitestor).filter(
-                 (Nitestor.night_type == int1) & (Nitestor.reihenfolge == int2)).order_by(Nitestor._recid).all():
+                 (Nitestor.night_type == int1) & (Nitestor.reihenfolge == int2)).order_by(Nitestor._recid).with_for_update().all():
             db_session.delete(nitestor)
             pass
             success_flag = True

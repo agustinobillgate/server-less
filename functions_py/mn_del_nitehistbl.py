@@ -5,6 +5,11 @@
 # mnstart_arch -> diremark, khusus Archi
 #------------------------------------------
 
+# =============================================
+# Rulita, 10-12-2025
+# - Added with_for_update before delete query
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -63,7 +68,7 @@ def mn_del_nitehistbl():
                 return
 
             nbuff = db_session.query(Nbuff).filter(
-                            (Nbuff._recid == nitehist._recid)).first()
+                            (Nbuff._recid == nitehist._recid)).with_for_update().first()
             db_session.delete(nbuff)
             pass
 
@@ -84,7 +89,7 @@ def mn_del_nitehistbl():
                 return
 
             nbuff = db_session.query(Nbuff).filter(
-                         (Nbuff._recid == nitehist._recid)).first()
+                         (Nbuff._recid == nitehist._recid)).with_for_update().first()
             db_session.delete(nbuff)
             pass
 

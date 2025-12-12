@@ -1,11 +1,14 @@
 #using conversion tools version: 1.0.0.117
 
-# =========================================
+# ===========================================
 # Rulita, 23-10-2025 
 # Issue : 
 # - New compile program
 # - Fix space in string
-# =========================================
+
+# Rulita, 10-12-2025
+# - Added with_for_update before delete query
+# ===========================================
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -340,7 +343,7 @@ def nt_foumszbl():
         reihenfolge = nightaudit.reihenfolge
 
         for nitestor in db_session.query(Nitestor).filter(
-                 (Nitestor.night_type == night_type) & (Nitestor.reihenfolge == reihenfolge)).order_by(Nitestor._recid).all():
+                 (Nitestor.night_type == night_type) & (Nitestor.reihenfolge == reihenfolge)).order_by(Nitestor._recid).with_for_update().all():
             db_session.delete(nitestor)
         create_umsatz()
         umsatz_list()

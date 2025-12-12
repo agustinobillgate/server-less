@@ -4,6 +4,11 @@
 # options -> arrangement.options
 #------------------------------------------
 
+# ===========================================
+# Rulita, 10-12-2025
+# - Added with_for_update before delete query
+# ===========================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date, timedelta
@@ -963,7 +968,9 @@ def prepare_mn_startbl(case_type:int, pvilanguage:int):
 
         i:int = 0
 
-        resplan = get_cache (Resplan, {"datum": [(ge, ci_date)]})
+        # resplan = get_cache (Resplan, {"datum": [(ge, ci_date)]})
+        resplan = db_session.query(Resplan).filter(
+                 (Resplan.datum >= ci_date)).order_by(Resplan._recid).with_for_update().first()
 
         na_list = query(na_list_data, filters=(lambda na_list: na_list.reihenfolge == 1), first=True)
         while None != resplan:
@@ -977,7 +984,9 @@ def prepare_mn_startbl(case_type:int, pvilanguage:int):
             resplan = db_session.query(Resplan).filter(
                      (Resplan.datum >= ci_date) & (Resplan._recid > curr_recid)).first()
 
-        zimplan = get_cache (Zimplan, {"datum": [(ge, ci_date)]})
+        # zimplan = get_cache (Zimplan, {"datum": [(ge, ci_date)]})
+        zimplan = db_session.query(Zimplan).filter(
+                 (Zimplan.datum >= ci_date)).order_by(Zimplan._recid).with_for_update().first()
         while None != zimplan:
             i = i + 1
             na_list.anz = na_list.anz + 1
@@ -1221,7 +1230,7 @@ def prepare_mn_startbl(case_type:int, pvilanguage:int):
 
                     # outorder = get_cache (Outorder, {"zinr": [(eq, zimmer.zinr)]})
                     outorder = db_session.query(Outorder).filter(
-                             (Outorder.zinr == zimmer.zinr)).first()
+                             (Outorder.zinr == zimmer.zinr)).with_for_update().first()
 
                     if outorder:
                         db_session.delete(outorder)

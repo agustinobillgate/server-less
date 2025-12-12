@@ -2,6 +2,12 @@
 #-------------------------------------------------------
 # Rd, 28/11/2025, with_for_update added
 #-------------------------------------------------------
+
+# ===========================================
+# Rulita, 11-12-2025
+# - Added with_for_update before delete query
+# ===========================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -232,7 +238,7 @@ def ts_splitbill_update_billbl(rec_id_h_bill:int, rec_id_h_artikel:int, h_artart
         billname = guest.name + ", " + guest.vorname1 + " " + guest.anrede1 + guest.anredefirma
 
         debt = db_session.query(Debt).filter(
-                 (Debt.artnr == curr_art) & (Debt.rechnr == rechnr) & (Debt.opart == 0) & (Debt.betriebsnr == curr_dept) & (Debt.rgdatum == bill_date) & (Debt.counter == 0) & (Debt.saldo == saldo)).first()
+                 (Debt.artnr == curr_art) & (Debt.rechnr == rechnr) & (Debt.opart == 0) & (Debt.betriebsnr == curr_dept) & (Debt.rgdatum == bill_date) & (Debt.counter == 0) & (Debt.saldo == saldo)).with_for_update().first()
 
         if debt:
             pass

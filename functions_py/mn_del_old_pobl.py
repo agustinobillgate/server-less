@@ -3,6 +3,13 @@
 # Rd, 21/10/2025
 # timedelta
 #------------------------------------------
+
+# =============================================
+# Rulita, 10-12-2025
+# - Added with_for_update before delete query
+# - Fixing do loop l_order
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date, timedelta
@@ -41,11 +48,15 @@ def mn_del_old_pobl():
         else:
             anz = 60
 
+        # Rulita, 10-12-2025
+        # - Fixing do loop l_order
         # l_order = get_cache (L_order, {"loeschflag": [(ge, 1)],"pos": [(eq, 0)]})
-        recs = db_session.query(L_order).filter(
-                 (L_order.loeschflag >= 1) & (L_order.pos == 0)).order_by(L_order._recid).all()
-        for l_order in recs:
-
+        l_order = db_session.query(L_order).filter(
+                 (L_order.loeschflag >= 1) & (L_order.pos == 0)).order_by(L_order._recid).with_for_update().first()
+        # recs = db_session.query(L_order).filter(
+        #          (L_order.loeschflag >= 1) & (L_order.pos == 0)).order_by(L_order._recid).all()
+        # for l_order in recs:
+        while None != l_order:
             # if (l_order.lieferdatum_eff + anz) < ci_date:
             if l_order.lieferdatum_eff is None:
                 continue
@@ -53,10 +64,12 @@ def mn_del_old_pobl():
                 i = i + 1
 
                 for l_od in db_session.query(L_od).filter(
-                             (L_od.docu_nr == l_order.docu_nr) & (L_od.pos > 0)).order_by(L_od._recid).all():
+                             (L_od.docu_nr == l_order.docu_nr) & (L_od.pos > 0)).order_by(L_od._recid).with_for_update().all():
                     db_session.delete(l_od)
 
-                l_orderhdr = get_cache (L_orderhdr, {"docu_nr": [(eq, l_order.docu_nr)]})
+                # l_orderhdr = get_cache (L_orderhdr, {"docu_nr": [(eq, l_order.docu_nr)]})
+                l_orderhdr = db_session.query(L_orderhdr).filter(
+                         (L_orderhdr.docu_nr == l_order.docu_nr)).with_for_update().first()
 
                 if l_orderhdr:
                     db_session.delete(l_orderhdr)
