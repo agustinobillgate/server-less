@@ -6,13 +6,17 @@
 
 # yusufwijasena, 28/11/2025
 # - fixed spacing on long string
-# - added substring gastname & bill_rcv to 34 character 
+# - added substring gastname, bill_rcv, * receiver to 34, 32, & 30 character 
+# - adjusted substring value
 # ------------------------------------------
 
 from functions.additional_functions import *
+from functions.more_additional_functions import handling_negative
 from decimal import Decimal
 from datetime import date
 from models import Htparam, Guest, Debitor, Artikel, Bill, Bediener, Waehrung
+
+from functions import log_program
 
 def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: int, from_date: date, to_date: date, from_art: int, to_art: int, mi_payment: bool, mi_transfer: bool, show_inv: bool, bill_name: string, bill_nr: int):
 
@@ -97,7 +101,6 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         nonlocal r_no, s_list_data, t_list_data, t_ar_paylist_data, long_digit, htparam, guest, debitor, artikel, bill, bediener, waehrung
         nonlocal comment, cledger, ccard, last_sort, from_date, to_date, from_art, to_art, mi_payment, mi_transfer, show_inv, bill_name, bill_nr
         nonlocal bguest, bdebitor
-
         nonlocal s_list, t_list, output_list, t_ar_paylist, bguest, bdebitor, tbuff, bq
         nonlocal s_list_data, t_list_data, output_list_data, t_ar_paylist_data
                 
@@ -311,21 +314,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
-                    for i in range(1, 58 + 1):
-                        output_list.str = output_list.str + "   "
+                    for i in range(1, 56):
+                        output_list.str = output_list.str + " "
                     output_list.pay_amt = to_decimal(tot_saldo)
                     output_list.pay_famt = to_decimal(tot_foreign)
 
                     if not long_digit:
-                        output_list.str = output_list.str + "T O T A L " +\
-                            to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                            fill(" ", 78) +\
-                            to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+                        output_list.str = output_list.str + "  T O T A L" +\
+                            handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                            fill(" ", 79) +\
+                            handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
                     else:
-                        output_list.str = output_list.str + "T O T A L " +\
-                            to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                            fill(" ", 78) +\
-                            to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+                        output_list.str = output_list.str + "  T O T A L" +\
+                            handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                            fill(" ", 79) +\
+                            handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
@@ -345,23 +348,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                             output_list = Output_list()
                             output_list_data.append(output_list)
 
-                            for i in range(1, 58 + 1):
-                                output_list.str = output_list.str + "   "
+                            for i in range(1, 56):
+                                output_list.str = output_list.str + " "
                             output_list.pay_amt = to_decimal(tot_saldo)
                             output_list.pay_famt = to_decimal(tot_foreign)
 
                             if not long_digit:
-                                output_list.str = output_list.str + "T O T A L " +\
-                                    to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                                    fill(" ", 78) +\
-                                    to_string(
-                                        tot_foreign, " ->>,>>>,>>>,>>9.99")
+                                output_list.str = output_list.str + "  T O T A L" +\
+                                    handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                                    fill(" ", 79) +\
+                                    handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
                             else:
-                                output_list.str = output_list.str + "T O T A L " +\
-                                    to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                                    fill(" ", 78) +\
-                                    to_string(
-                                        tot_foreign, "   ->>>,>>>,>>>,>>9")
+                                output_list.str = output_list.str + "  T O T A L" +\
+                                    handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                                    fill(" ", 79) +\
+                                    handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
                             output_list = Output_list()
                             output_list_data.append(output_list)
 
@@ -370,21 +371,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
-                        for i in range(1, 58 + 1):
-                            output_list.str = output_list.str + "   "
+                        for i in range(1, 56):
+                            output_list.str = output_list.str + " "
                         output_list.pay_amt = to_decimal(t_credit)
                         output_list.pay_famt = to_decimal(t_famt)
 
                         if not long_digit:
-                            output_list.str = output_list.str + "Sub-Total " +\
-                                to_string(t_credit, "->,>>>,>>>,>>9.99") +\
-                                fill(" ", 78) +\
-                                to_string(t_famt, "->>,>>>,>>>,>>9.99")
+                            output_list.str = output_list.str + "  Sub-Total" +\
+                                handling_negative(t_credit, "->,>>>,>>>,>>9.99") +\
+                                fill(" ", 79) +\
+                                handling_negative(t_famt, "->>,>>>,>>>,>>9.99")
                         else:
-                            output_list.str = output_list.str + "Sub-Total " +\
-                                to_string(t_credit, " ->>>,>>>,>>>,>>9") +\
-                                fill(" ", 78) +\
-                                to_string(t_famt, "  ->>>,>>>,>>>,>>9")
+                            output_list.str = output_list.str + "  Sub-Total" +\
+                                handling_negative(t_credit, " ->>>,>>>,>>>,>>9") +\
+                                fill(" ", 79) +\
+                                handling_negative(t_famt, "  ->>>,>>>,>>>,>>9")
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
@@ -463,18 +464,18 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 if not long_digit:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
-                        to_string(receiver, "x(32)") +\
-                        to_string(debt.saldo, "->,>>>,>>>,>>9.99") +\
-                        to_string(debitor.saldo, "->,>>>,>>>,>>9.99") +\
+                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        substring(to_string(receiver, "x(32)"), 0, 32) +\
+                        handling_negative(debt.saldo, "->,>>>,>>>,>>9.99") +\
+                        handling_negative(debitor.saldo, "->,>>>,>>>,>>9.99") +\
                         to_string(art.bezeich, "x(34)") +\
                         to_string(debitor.rgdatum)
                 else:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
-                        to_string(receiver, "x(32)") +\
-                        to_string(debt.saldo, " ->>>,>>>,>>>,>>9") +\
-                        to_string(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
+                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        substring(to_string(receiver, "x(32)"), 0, 32) +\
+                        handling_negative(debt.saldo, " ->>>,>>>,>>>,>>9") +\
+                        handling_negative(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
                         to_string(art.bezeich, "x(34)") +\
                         to_string(debitor.rgdatum)
                 output_list.bill_num = debitor.rechnr
@@ -486,7 +487,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debitor.gastnrmember)]})
 
                 if bguest:
-                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 32)
+                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 30)
 
                 bediener = get_cache(
                     Bediener, {"nr": [(eq, debitor.bediener_nr)]})
@@ -495,7 +496,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list.str = output_list.str + \
                         to_string(bediener.userinit, "x(3)")
                 else:
-                    output_list.str = output_list.str + "   "
+                    output_list.str = output_list.str + " "
                     
                 output_list.str = output_list.str + to_string(debitor.vesrcod, "x(34)")
                 t_credit = to_decimal(t_credit) + to_decimal(debitor.saldo)
@@ -514,7 +515,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                     s_list.artnr = art.artnr
                     s_list.bezeich = art.bezeich
-                output_list.str = output_list.str + to_string(debitor.vesrdep, "->>,>>>,>>>,>>9.99")
+                output_list.str = output_list.str + handling_negative(debitor.vesrdep, "->>,>>>,>>>,>>9.99")
 
                 waehrung = get_cache(
                     Waehrung, {"waehrungsnr": [(eq, debitor.betrieb_gastmem)]})
@@ -533,9 +534,9 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                 else:
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
-                output_list.str = output_list.str + to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                output_list.str = output_list.str + handling_negative(debitor.vesrdep, "->,>>>,>>>,>>9.99")
                 output_list.str = output_list.str + to_string(debitor.zahlkonto, ">>>>9")
-                output_list.str = output_list.str + to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                output_list.str = output_list.str + handling_negative(debitor.vesrdep, "->,>>>,>>>,>>9.99")
                 output_list.str = output_list.str + to_string(artikel.bezeich, "x(40)")
 
                 s_list.betrag = to_decimal(
@@ -543,71 +544,69 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 58 + 1):
-            output_list.str = output_list.str + "   "
+        for i in range(1, 56):
+            output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(tot_saldo)
         output_list.pay_famt = to_decimal(tot_foreign)
 
         if not long_digit:
-            output_list.str = output_list.str + "T O T A L " +\
-                to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "  T O T A L" +\
+                handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "T O T A L " +\
-                to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "  T O T A L" +\
+                handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
         output_list = Output_list()
         output_list_data.append(output_list)
 
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 58 + 1):
-            output_list.str = output_list.str + "   "
+        for i in range(1, 56):
+            output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(t_credit)
         output_list.pay_famt = to_decimal(t_famt)
 
         if not long_digit:
-            output_list.str = output_list.str + "Sub-Total " +\
-                to_string(t_credit, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(t_famt, "->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "  Sub-Total" +\
+                handling_negative(t_credit, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(t_famt, "->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "Sub-Total " +\
-                to_string(t_credit, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(t_famt, "  ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "  Sub-Total" +\
+                handling_negative(t_credit, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(t_famt, "  ->>>,>>>,>>>,>>9")
         output_list = Output_list()
         output_list_data.append(output_list)
 
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 56 + 1):
+        for i in range(1, 56):
             output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(tot_credit)
         output_list.pay_famt = to_decimal(tot_famt)
 
         if not long_digit:
-            output_list.str = output_list.str + "Grand TOTAL " +\
-                to_string(tot_credit, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(tot_famt, "->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "Grand TOTAL" +\
+                handling_negative(tot_credit, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(tot_famt, "->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "Grand TOTAL " +\
-                to_string(tot_credit, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(tot_famt, "  ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "Grand TOTAL" +\
+                handling_negative(tot_credit, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(tot_famt, "  ->>>,>>>,>>>,>>9")
         create_tot_payment()
 
     def create_list1a():
-
         nonlocal r_no, s_list_data, t_list_data, t_ar_paylist_data, long_digit, htparam, guest, debitor, artikel, bill, bediener, waehrung
         nonlocal comment, cledger, ccard, last_sort, from_date, to_date, from_art, to_art, mi_payment, mi_transfer, show_inv, bill_name, bill_nr
         nonlocal bguest, bdebitor
-
         nonlocal s_list, t_list, output_list, t_ar_paylist, bguest, bdebitor, tbuff, bq
         nonlocal s_list_data, t_list_data, output_list_data, t_ar_paylist_data
 
@@ -685,21 +684,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
-                    for i in range(1, 58 + 1):
-                        output_list.str = output_list.str + "   "
+                    for i in range(1, 56):
+                        output_list.str = output_list.str + " "
                     output_list.pay_amt = to_decimal(tot_saldo)
                     output_list.pay_famt = to_decimal(tot_foreign)
 
                     if not long_digit:
-                        output_list.str = output_list.str + "T O T A L " +\
-                            to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                            fill(" ", 78) +\
-                            to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+                        output_list.str = output_list.str + "  T O T A L" +\
+                            handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                            fill(" ", 79) +\
+                            handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
                     else:
-                        output_list.str = output_list.str + "T O T A L " +\
-                            to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                            fill(" ", 78) +\
-                            to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+                        output_list.str = output_list.str + "  T O T A L" +\
+                            handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                            fill(" ", 79) +\
+                            handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
@@ -717,21 +716,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
-                        for i in range(1, 58 + 1):
-                            output_list.str = output_list.str + "   "
+                        for i in range(1, 56):
+                            output_list.str = output_list.str + " "
                         output_list.pay_amt = to_decimal(t_credit)
                         output_list.pay_famt = to_decimal(t_famt)
 
                         if not long_digit:
-                            output_list.str = output_list.str + "Sub-Total " +\
-                                to_string(t_credit, "->,>>>,>>>,>>9.99") +\
-                                fill(" ", 78) +\
-                                to_string(t_famt, "->>,>>>,>>>,>>9.99")
+                            output_list.str = output_list.str + "  Sub-Total" +\
+                                handling_negative(t_credit, "->,>>>,>>>,>>9.99") +\
+                                fill(" ", 79) +\
+                                handling_negative(t_famt, "->>,>>>,>>>,>>9.99")
                         else:
-                            output_list.str = output_list.str + "Sub-Total " +\
-                                to_string(t_credit, " ->>>,>>>,>>>,>>9") +\
-                                fill(" ", 78) +\
-                                to_string(t_famt, "  ->>>,>>>,>>>,>>9")
+                            output_list.str = output_list.str + "  Sub-Total" +\
+                                handling_negative(t_credit, " ->>>,>>>,>>>,>>9") +\
+                                fill(" ", 79) +\
+                                handling_negative(t_famt, "  ->>>,>>>,>>>,>>9")
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
@@ -786,18 +785,18 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 if not long_digit:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
-                        to_string(receiver, "x(32)") +\
-                        to_string(debt.saldo, "->,>>>,>>>,>>9.99") +\
-                        to_string(debitor.saldo, "->,>>>,>>>,>>9.99") +\
+                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        substring(to_string(receiver, "x(32)"), 0, 32) +\
+                        handling_negative(debt.saldo, "->,>>>,>>>,>>9.99") +\
+                        handling_negative(debitor.saldo, "->,>>>,>>>,>>9.99") +\
                         to_string(art.bezeich, "x(34)") +\
                         to_string(debitor.rgdatum)
                 else:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
-                        to_string(receiver, "x(32)") +\
-                        to_string(debt.saldo, " ->>>,>>>,>>>,>>9") +\
-                        to_string(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
+                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        substring(to_string(receiver, "x(32)"), 0, 32) +\
+                        handling_negative(debt.saldo, " ->>>,>>>,>>>,>>9") +\
+                        handling_negative(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
                         to_string(art.bezeich, "x(34)") +\
                         to_string(debitor.rgdatum)
 
@@ -830,7 +829,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debitor.gastnrmember)]})
 
                 if bguest:
-                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 32)
+                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 30)
 
                 bediener = get_cache(
                     Bediener, {"nr": [(eq, debitor.bediener_nr)]})
@@ -839,7 +838,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list.str = output_list.str + \
                         to_string(bediener.userinit, "x(3)")
                 else:
-                    output_list.str = output_list.str + "   "
+                    output_list.str = output_list.str + " "
                 output_list.str = output_list.str + to_string(debitor.vesrcod, "x(34)")
                 output_list.str = output_list.str + to_string(" ", "x(22)")
 
@@ -851,9 +850,9 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                 else:
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
-                output_list.str = output_list.str + to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                output_list.str = output_list.str + handling_negative(debitor.vesrdep, "->,>>>,>>>,>>9.99")
                 output_list.str = output_list.str + to_string(debitor.zahlkonto, ">>>>9")
-                output_list.str = output_list.str + to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                output_list.str = output_list.str + handling_negative(debitor.vesrdep, "->,>>>,>>>,>>9.99")
                 output_list.str = output_list.str + to_string(artikel.bezeich, "x(40)")
 
                 t_credit = to_decimal(t_credit) + to_decimal(debitor.saldo)
@@ -878,63 +877,63 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 58 + 1):
-            output_list.str = output_list.str + "   "
+        for i in range(1, 56):
+            output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(tot_saldo)
         output_list.pay_famt = to_decimal(tot_foreign)
 
         if not long_digit:
-            output_list.str = output_list.str + "T O T A L " +\
-                to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "  T O T A L" +\
+                handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "T O T A L " +\
-                to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "  T O T A L" +\
+                handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
         output_list = Output_list()
         output_list_data.append(output_list)
 
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 58 + 1):
-            output_list.str = output_list.str + "   "
+        for i in range(1, 56):
+            output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(t_credit)
         output_list.pay_famt = to_decimal(t_famt)
 
         if not long_digit:
-            output_list.str = output_list.str + "Sub-Total " +\
-                to_string(t_credit, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(t_famt, "->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "  Sub-Total" +\
+                handling_negative(t_credit, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(t_famt, "->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "Sub-Total " +\
-                to_string(t_credit, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(t_famt, "  ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "  Sub-Total" +\
+                handling_negative(t_credit, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(t_famt, "  ->>>,>>>,>>>,>>9")
         output_list = Output_list()
         output_list_data.append(output_list)
 
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 56 + 1):
+        for i in range(1, 56):
             output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(tot_credit)
         output_list.pay_famt = to_decimal(tot_famt)
 
         if not long_digit:
-            output_list.str = output_list.str + "Grand TOTAL " +\
-                to_string(tot_credit, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(tot_famt, "->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "Grand TOTAL" +\
+                handling_negative(tot_credit, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(tot_famt, "->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "Grand TOTAL " +\
-                to_string(tot_credit, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(tot_famt, "->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "Grand TOTAL" +\
+                handling_negative(tot_credit, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(tot_famt, "->>,>>>,>>>,>>9.99")
 
     def create_list1b():
         nonlocal r_no, s_list_data, t_list_data, t_ar_paylist_data, long_digit, htparam, guest, debitor, artikel, bill, bediener, waehrung
@@ -1017,21 +1016,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
-                    for i in range(1, 58 + 1):
-                        output_list.str = output_list.str + "   "
+                    for i in range(1, 56):
+                        output_list.str = output_list.str + " "
                     output_list.pay_amt = to_decimal(tot_saldo)
                     output_list.pay_famt = to_decimal(tot_foreign)
 
                     if not long_digit:
-                        output_list.str = output_list.str + "T O T A L " +\
-                            to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                            fill(" ", 78) +\
-                            to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+                        output_list.str = output_list.str + "  T O T A L" +\
+                            handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                            fill(" ", 79) +\
+                            handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
                     else:
-                        output_list.str = output_list.str + "T O T A L " +\
-                            to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                            fill(" ", 78) +\
-                            to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+                        output_list.str = output_list.str + "  T O T A L" +\
+                            handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                            fill(" ", 79) +\
+                            handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
@@ -1049,21 +1048,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
-                        for i in range(1, 58 + 1):
-                            output_list.str = output_list.str + "   "
+                        for i in range(1, 56):
+                            output_list.str = output_list.str + " "
                         output_list.pay_amt = to_decimal(t_credit)
                         output_list.pay_famt = to_decimal(t_famt)
 
                         if not long_digit:
-                            output_list.str = output_list.str + "Sub-Total " +\
-                                to_string(t_credit, "->,>>>,>>>,>>9.99") +\
-                                fill(" ", 78) +\
-                                to_string(t_famt, "->>,>>>,>>>,>>9.99")
+                            output_list.str = output_list.str + "  Sub-Total" +\
+                                handling_negative(t_credit, "->,>>>,>>>,>>9.99") +\
+                                fill(" ", 79) +\
+                                handling_negative(t_famt, "->>,>>>,>>>,>>9.99")
                         else:
-                            output_list.str = output_list.str + "Sub-Total " +\
-                                to_string(t_credit, " ->>>,>>>,>>>,>>9") +\
-                                fill(" ", 78) +\
-                                to_string(t_famt, "  ->>>,>>>,>>>,>>9")
+                            output_list.str = output_list.str + "  Sub-Total" +\
+                                handling_negative(t_credit, " ->>>,>>>,>>>,>>9") +\
+                                fill(" ", 79) +\
+                                handling_negative(t_famt, "  ->>>,>>>,>>>,>>9")
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
@@ -1140,18 +1139,18 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 if not long_digit:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
-                        to_string(receiver, "x(32)") +\
-                        to_string(debt.saldo, "->,>>>,>>>,>>9.99") +\
-                        to_string(debitor.saldo, "->,>>>,>>>,>>9.99") +\
+                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        substring(to_string(receiver, "x(32)"), 0, 32) +\
+                        handling_negative(debt.saldo, "->,>>>,>>>,>>9.99") +\
+                        handling_negative(debitor.saldo, "->,>>>,>>>,>>9.99") +\
                         to_string(art.bezeich, "x(34)") +\
                         to_string(debitor.rgdatum)
                 else:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
-                        to_string(receiver, "x(32)") +\
-                        to_string(debt.saldo, " ->>>,>>>,>>>,>>9") +\
-                        to_string(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
+                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        substring(to_string(receiver, "x(32)"), 0, 32) +\
+                        handling_negative(debt.saldo, " ->>>,>>>,>>>,>>9") +\
+                        handling_negative(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
                         to_string(art.bezeich, "x(34)") +\
                         to_string(debitor.rgdatum)
                 output_list.bill_num = debitor.rechnr
@@ -1163,7 +1162,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debitor.gastnrmember)]})
 
                 if bguest:
-                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 32)
+                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 30)
 
                 bediener = get_cache(
                     Bediener, {"nr": [(eq, debitor.bediener_nr)]})
@@ -1172,7 +1171,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list.str = output_list.str + \
                         to_string(bediener.userinit, "x(3)")
                 else:
-                    output_list.str = output_list.str + "   "
+                    output_list.str = output_list.str + " "
                 output_list.str = output_list.str + \
                     to_string(debitor.vesrcod, "x(34)")
                 t_credit = to_decimal(t_credit) + to_decimal(debitor.saldo)
@@ -1192,8 +1191,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                     s_list.artnr = art.artnr
                     s_list.bezeich = art.bezeich
-                output_list.str = output_list.str + \
-                    to_string(debitor.vesrdep, "->>,>>>,>>>,>>9.99")
+                output_list.str = output_list.str + handling_negative(debitor.vesrdep, "->>,>>>,>>>,>>9.99")
 
                 waehrung = get_cache(
                     Waehrung, {"waehrungsnr": [(eq, debitor.betrieb_gastmem)]})
@@ -1202,7 +1200,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list.str = output_list.str + \
                         to_string(waehrung.wabkurz, "x(4)")
                 else:
-                    output_list.str = output_list.str + "   "
+                    output_list.str = output_list.str + " "
 
                 t_guest = get_cache(
                     Guest, {"gastnr": [(eq, debt.gastnrmember)]})
@@ -1213,11 +1211,11 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
                 output_list.str = output_list.str + \
-                    to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                    handling_negative(debitor.vesrdep, "->,>>>,>>>,>>9.99")
                 output_list.str = output_list.str + \
                     to_string(debitor.zahlkonto, ">>>>9")
                 output_list.str = output_list.str + \
-                    to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                    handling_negative(debitor.vesrdep, "->,>>>,>>>,>>9.99")
                 output_list.str = output_list.str + \
                     to_string(artikel.bezeich, "x(40)")
 
@@ -1226,71 +1224,69 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 58 + 1):
-            output_list.str = output_list.str + "   "
+        for i in range(1, 56):
+            output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(tot_saldo)
         output_list.pay_famt = to_decimal(tot_foreign)
 
         if not long_digit:
-            output_list.str = output_list.str + "T O T A L " +\
-                to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "  T O T A L" +\
+                handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "T O T A L " +\
-                to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "  T O T A L" +\
+                handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
         output_list = Output_list()
         output_list_data.append(output_list)
 
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 58 + 1):
-            output_list.str = output_list.str + "   "
+        for i in range(1, 56):
+            output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(t_credit)
         output_list.pay_famt = to_decimal(t_famt)
 
         if not long_digit:
-            output_list.str = output_list.str + "Sub-Total " +\
-                to_string(t_credit, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(t_famt, "->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "  Sub-Total" +\
+                handling_negative(t_credit, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(t_famt, "->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "Sub-Total " +\
-                to_string(t_credit, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(t_famt, "  ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "  Sub-Total" +\
+                handling_negative(t_credit, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(t_famt, "  ->>>,>>>,>>>,>>9")
         output_list = Output_list()
         output_list_data.append(output_list)
 
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 56 + 1):
+        for i in range(1, 56):
             output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(tot_credit)
         output_list.pay_famt = to_decimal(tot_famt)
 
         if not long_digit:
-            output_list.str = output_list.str + "Grand TOTAL " +\
-                to_string(tot_credit, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(tot_famt, "->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "Grand TOTAL" +\
+                handling_negative(tot_credit, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(tot_famt, "->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "Grand TOTAL " +\
-                to_string(tot_credit, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(tot_famt, "  ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "Grand TOTAL" +\
+                handling_negative(tot_credit, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(tot_famt, "  ->>>,>>>,>>>,>>9")
         create_tot_payment()
 
     def create_list1c():
-
         nonlocal r_no, s_list_data, t_list_data, t_ar_paylist_data, long_digit, htparam, guest, debitor, artikel, bill, bediener, waehrung
         nonlocal comment, cledger, ccard, last_sort, from_date, to_date, from_art, to_art, mi_payment, mi_transfer, show_inv, bill_name, bill_nr
         nonlocal bguest, bdebitor
-
         nonlocal s_list, t_list, output_list, t_ar_paylist, bguest, bdebitor, tbuff, bq
         nonlocal s_list_data, t_list_data, output_list_data, t_ar_paylist_data
 
@@ -1368,21 +1364,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
-                    for i in range(1, 58 + 1):
-                        output_list.str = output_list.str + "   "
+                    for i in range(1, 56):
+                        output_list.str = output_list.str + " "
                     output_list.pay_amt = to_decimal(tot_saldo)
                     output_list.pay_famt = to_decimal(tot_foreign)
 
                     if not long_digit:
-                        output_list.str = output_list.str + "T O T A L " +\
-                            to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                            fill(" ", 78) +\
-                            to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+                        output_list.str = output_list.str + "  T O T A L" +\
+                            handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                            fill(" ", 79) +\
+                            handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
                     else:
-                        output_list.str = output_list.str + "T O T A L " +\
-                            to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                            fill(" ", 78) +\
-                            to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+                        output_list.str = output_list.str + "  T O T A L" +\
+                            handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                            fill(" ", 79) +\
+                            handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
@@ -1400,21 +1396,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
-                        for i in range(1, 58 + 1):
-                            output_list.str = output_list.str + "   "
+                        for i in range(1, 56):
+                            output_list.str = output_list.str + " "
                         output_list.pay_amt = to_decimal(t_credit)
                         output_list.pay_famt = to_decimal(t_famt)
 
                         if not long_digit:
-                            output_list.str = output_list.str + "Sub-Total " +\
-                                to_string(t_credit, "->,>>>,>>>,>>9.99") +\
-                                fill(" ", 78) +\
-                                to_string(t_famt, "->>,>>>,>>>,>>9.99")
+                            output_list.str = output_list.str + "  Sub-Total" +\
+                                handling_negative(t_credit, "->,>>>,>>>,>>9.99") +\
+                                fill(" ", 79) +\
+                                handling_negative(t_famt, "->>,>>>,>>>,>>9.99")
                         else:
-                            output_list.str = output_list.str + "Sub-Total " +\
-                                to_string(t_credit, " ->>>,>>>,>>>,>>9") +\
-                                fill(" ", 78) +\
-                                to_string(t_famt, "  ->>>,>>>,>>>,>>9")
+                            output_list.str = output_list.str + "  Sub-Total" +\
+                                handling_negative(t_credit, " ->>>,>>>,>>>,>>9") +\
+                                fill(" ", 79) +\
+                                handling_negative(t_famt, "  ->>>,>>>,>>>,>>9")
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
@@ -1491,18 +1487,18 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 if not long_digit:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
-                        to_string(receiver, "x(32)") +\
-                        to_string(debt.saldo, "->,>>>,>>>,>>9.99") +\
-                        to_string(debitor.saldo, "->,>>>,>>>,>>9.99") +\
+                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        substring(to_string(receiver, "x(32)"), 0, 32) +\
+                        handling_negative(debt.saldo, "->,>>>,>>>,>>9.99") +\
+                        handling_negative(debitor.saldo, "->,>>>,>>>,>>9.99") +\
                         to_string(art.bezeich, "x(34)") +\
                         to_string(debitor.rgdatum)
                 else:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
-                        to_string(receiver, "x(32)") +\
-                        to_string(debt.saldo, " ->>>,>>>,>>>,>>9") +\
-                        to_string(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
+                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        substring(to_string(receiver, "x(32)"), 0, 32) +\
+                        handling_negative(debt.saldo, " ->>>,>>>,>>>,>>9") +\
+                        handling_negative(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
                         to_string(art.bezeich, "x(34)") +\
                         to_string(debitor.rgdatum)
                 output_list.bill_num = debitor.rechnr
@@ -1514,7 +1510,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debitor.gastnrmember)]})
 
                 if bguest:
-                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 32)
+                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 30)
 
                 bediener = get_cache(
                     Bediener, {"nr": [(eq, debitor.bediener_nr)]})
@@ -1523,7 +1519,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list.str = output_list.str + \
                         to_string(bediener.userinit, "x(3)")
                 else:
-                    output_list.str = output_list.str + "   "
+                    output_list.str = output_list.str + " "
                 output_list.str = output_list.str + \
                     to_string(debitor.vesrcod, "x(34)")
                 t_credit = to_decimal(t_credit) + to_decimal(debitor.saldo)
@@ -1553,7 +1549,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list.str = output_list.str + \
                         to_string(waehrung.wabkurz, "x(4)")
                 else:
-                    output_list.str = output_list.str + "   "
+                    output_list.str = output_list.str + " "
 
                 t_guest = get_cache(
                     Guest, {"gastnr": [(eq, debt.gastnrmember)]})
@@ -1564,11 +1560,11 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
                 output_list.str = output_list.str + \
-                    to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                    handling_negative(debitor.vesrdep, "->,>>>,>>>,>>9.99")
                 output_list.str = output_list.str + \
                     to_string(debitor.zahlkonto, ">>>>9")
                 output_list.str = output_list.str + \
-                    to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                    handling_negative(debitor.vesrdep, "->,>>>,>>>,>>9.99")
                 output_list.str = output_list.str + \
                     to_string(artikel.bezeich, "x(40)")
 
@@ -1577,71 +1573,69 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 58 + 1):
-            output_list.str = output_list.str + "   "
+        for i in range(1, 56):
+            output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(tot_saldo)
         output_list.pay_famt = to_decimal(tot_foreign)
 
         if not long_digit:
-            output_list.str = output_list.str + "T O T A L " +\
-                to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "  T O T A L" +\
+                handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "T O T A L " +\
-                to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "  T O T A L" +\
+                handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
         output_list = Output_list()
         output_list_data.append(output_list)
 
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 58 + 1):
-            output_list.str = output_list.str + "   "
+        for i in range(1, 56):
+            output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(t_credit)
         output_list.pay_famt = to_decimal(t_famt)
 
         if not long_digit:
-            output_list.str = output_list.str + "Sub-Total " +\
-                to_string(t_credit, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(t_famt, "->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "  Sub-Total" +\
+                handling_negative(t_credit, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(t_famt, "->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "Sub-Total " +\
-                to_string(t_credit, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(t_famt, "  ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "  Sub-Total" +\
+                handling_negative(t_credit, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(t_famt, "  ->>>,>>>,>>>,>>9")
         output_list = Output_list()
         output_list_data.append(output_list)
 
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 56 + 1):
+        for i in range(1, 56):
             output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(tot_credit)
         output_list.pay_famt = to_decimal(tot_famt)
 
         if not long_digit:
-            output_list.str = output_list.str + "Grand TOTAL " +\
-                to_string(tot_credit, "->,>>>,>>>,>>9.99") +\
+            output_list.str = output_list.str + "Grand TOTAL" +\
+                handling_negative(tot_credit, "->,>>>,>>>,>>9.99") +\
                 fill(" ", 78) + \
-                to_string(tot_famt, "->>,>>>,>>>,>>9.99")
+                handling_negative(tot_famt, "->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "Grand TOTAL " +\
-                to_string(tot_credit, " ->>>,>>>,>>>,>>9") +\
+            output_list.str = output_list.str + "Grand TOTAL" +\
+                handling_negative(tot_credit, " ->>>,>>>,>>>,>>9") +\
                 fill(" ", 78) + \
-                to_string(tot_famt, "  ->>>,>>>,>>>,>>9")
+                handling_negative(tot_famt, "  ->>>,>>>,>>>,>>9")
         create_tot_payment()
 
     def create_list1d():
-
         nonlocal r_no, s_list_data, t_list_data, t_ar_paylist_data, long_digit, htparam, guest, debitor, artikel, bill, bediener, waehrung
         nonlocal comment, cledger, ccard, last_sort, from_date, to_date, from_art, to_art, mi_payment, mi_transfer, show_inv, bill_name, bill_nr
         nonlocal bguest, bdebitor
-
         nonlocal s_list, t_list, output_list, t_ar_paylist, bguest, bdebitor, tbuff, bq
         nonlocal s_list_data, t_list_data, output_list_data, t_ar_paylist_data
 
@@ -1719,21 +1713,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
-                    for i in range(1, 58 + 1):
-                        output_list.str = output_list.str + "   "
+                    for i in range(1, 56):
+                        output_list.str = output_list.str + " "
                     output_list.pay_amt = to_decimal(tot_saldo)
                     output_list.pay_famt = to_decimal(tot_foreign)
 
                     if not long_digit:
-                        output_list.str = output_list.str + "T O T A L " +\
-                            to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                            fill(" ", 78) +\
-                            to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+                        output_list.str = output_list.str + "  T O T A L" +\
+                            handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                            fill(" ", 79) +\
+                            handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
                     else:
-                        output_list.str = output_list.str + "T O T A L " +\
-                            to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                            fill(" ", 78) +\
-                            to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+                        output_list.str = output_list.str + "  T O T A L" +\
+                            handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                            fill(" ", 79) +\
+                            handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
@@ -1751,21 +1745,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
-                        for i in range(1, 58 + 1):
-                            output_list.str = output_list.str + "   "
+                        for i in range(1, 56):
+                            output_list.str = output_list.str + " "
                         output_list.pay_amt = to_decimal(t_credit)
                         output_list.pay_famt = to_decimal(t_famt)
 
                         if not long_digit:
-                            output_list.str = output_list.str + "Sub-Total " +\
-                                to_string(t_credit, "->,>>>,>>>,>>9.99") +\
-                                fill(" ", 78) +\
-                                to_string(t_famt, "->>,>>>,>>>,>>9.99")
+                            output_list.str = output_list.str + "  Sub-Total" +\
+                                handling_negative(t_credit, "->,>>>,>>>,>>9.99") +\
+                                fill(" ", 79) +\
+                                handling_negative(t_famt, "->>,>>>,>>>,>>9.99")
                         else:
-                            output_list.str = output_list.str + "Sub-Total " +\
-                                to_string(t_credit, " ->>>,>>>,>>>,>>9") +\
-                                fill(" ", 78) +\
-                                to_string(t_famt, "  ->>>,>>>,>>>,>>9")
+                            output_list.str = output_list.str + "  Sub-Total" +\
+                                handling_negative(t_credit, " ->>>,>>>,>>>,>>9") +\
+                                fill(" ", 79) +\
+                                handling_negative(t_famt, "  ->>>,>>>,>>>,>>9")
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
@@ -1842,18 +1836,18 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 if not long_digit:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
-                        to_string(receiver, "x(32)") +\
-                        to_string(debt.saldo, "->,>>>,>>>,>>9.99") +\
-                        to_string(debitor.saldo, "->,>>>,>>>,>>9.99") +\
+                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        substring(to_string(receiver, "x(32)"), 0, 32) +\
+                        handling_negative(debt.saldo, "->,>>>,>>>,>>9.99") +\
+                        handling_negative(debitor.saldo, "->,>>>,>>>,>>9.99") +\
                         to_string(art.bezeich, "x(34)") +\
                         to_string(debitor.rgdatum)
                 else:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
-                        to_string(receiver, "x(32)") +\
-                        to_string(debt.saldo, " ->>>,>>>,>>>,>>9") +\
-                        to_string(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
+                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        substring(to_string(receiver, "x(32)"), 0, 32) +\
+                        handling_negative(debt.saldo, " ->>>,>>>,>>>,>>9") +\
+                        handling_negative(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
                         to_string(art.bezeich, "x(34)") +\
                         to_string(debitor.rgdatum)
                 output_list.bill_num = debitor.rechnr
@@ -1865,7 +1859,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debitor.gastnrmember)]})
 
                 if bguest:
-                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 32)
+                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 30)
 
                 bediener = get_cache(
                     Bediener, {"nr": [(eq, debitor.bediener_nr)]})
@@ -1874,7 +1868,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list.str = output_list.str + \
                         to_string(bediener.userinit, "x(3)")
                 else:
-                    output_list.str = output_list.str + "   "
+                    output_list.str = output_list.str + " "
                 output_list.str = output_list.str + \
                     to_string(debitor.vesrcod, "x(34)")
                 t_credit = to_decimal(t_credit) + to_decimal(debitor.saldo)
@@ -1904,7 +1898,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list.str = output_list.str + \
                         to_string(waehrung.wabkurz, "x(4)")
                 else:
-                    output_list.str = output_list.str + "   "
+                    output_list.str = output_list.str + " "
 
                 t_guest = get_cache(
                     Guest, {"gastnr": [(eq, debt.gastnrmember)]})
@@ -1914,9 +1908,9 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                 else:
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
-                output_list.str = output_list.str + to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                output_list.str = output_list.str + handling_negative(debitor.vesrdep, "->,>>>,>>>,>>9.99")
                 output_list.str = output_list.str + to_string(debitor.zahlkonto, ">>>>9")
-                output_list.str = output_list.str + to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                output_list.str = output_list.str + handling_negative(debitor.vesrdep, "->,>>>,>>>,>>9.99")
                 output_list.str = output_list.str + to_string(artikel.bezeich, "x(40)")
 
                 s_list.betrag = to_decimal(
@@ -1924,63 +1918,63 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 58 + 1):
-            output_list.str = output_list.str + "   "
+        for i in range(1, 56):
+            output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(tot_saldo)
         output_list.pay_famt = to_decimal(tot_foreign)
 
         if not long_digit:
-            output_list.str = output_list.str + "T O T A L " +\
-                to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "  T O T A L" +\
+                handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "T O T A L " +\
-                to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "  T O T A L" +\
+                handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
         output_list = Output_list()
         output_list_data.append(output_list)
 
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 58 + 1):
-            output_list.str = output_list.str + "   "
+        for i in range(1, 56):
+            output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(t_credit)
         output_list.pay_famt = to_decimal(t_famt)
 
         if not long_digit:
-            output_list.str = output_list.str + "Sub-Total " +\
-                to_string(t_credit, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(t_famt, "->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "  Sub-Total" +\
+                handling_negative(t_credit, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(t_famt, "->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "Sub-Total " +\
-                to_string(t_credit, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(t_famt, "  ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "  Sub-Total" +\
+                handling_negative(t_credit, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(t_famt, "  ->>>,>>>,>>>,>>9")
         output_list = Output_list()
         output_list_data.append(output_list)
 
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 56 + 1):
+        for i in range(1, 56):
             output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(tot_credit)
         output_list.pay_famt = to_decimal(tot_famt)
 
         if not long_digit:
-            output_list.str = output_list.str + "Grand TOTAL " +\
-                to_string(tot_credit, "->,>>>,>>>,>>9.99") +\
+            output_list.str = output_list.str + "Grand TOTAL" +\
+                handling_negative(tot_credit, "->,>>>,>>>,>>9.99") +\
                 fill(" ", 78) + \
-                to_string(tot_famt, "->>,>>>,>>>,>>9.99")
+                handling_negative(tot_famt, "->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "Grand TOTAL " +\
-                to_string(tot_credit, " ->>>,>>>,>>>,>>9") +\
+            output_list.str = output_list.str + "Grand TOTAL" +\
+                handling_negative(tot_credit, " ->>>,>>>,>>>,>>9") +\
                 fill(" ", 78) + \
-                to_string(tot_famt, "  ->>>,>>>,>>>,>>9")
+                handling_negative(tot_famt, "  ->>>,>>>,>>>,>>9")
         create_tot_payment()
 
     def create_list1e():
@@ -2066,21 +2060,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
-                    for i in range(1, 58 + 1):
-                        output_list.str = output_list.str + "   "
+                    for i in range(1, 56):
+                        output_list.str = output_list.str + " "
                     output_list.pay_amt = to_decimal(tot_saldo)
                     output_list.pay_famt = to_decimal(tot_foreign)
 
                     if not long_digit:
-                        output_list.str = output_list.str + "T O T A L " +\
-                            to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                            fill(" ", 78) +\
-                            to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+                        output_list.str = output_list.str + "  T O T A L" +\
+                            handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                            fill(" ", 79) +\
+                            handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
                     else:
-                        output_list.str = output_list.str + "T O T A L " +\
-                            to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                            fill(" ", 78) +\
-                            to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+                        output_list.str = output_list.str + "  T O T A L" +\
+                            handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                            fill(" ", 79) +\
+                            handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
@@ -2098,21 +2092,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
-                        for i in range(1, 58 + 1):
-                            output_list.str = output_list.str + "   "
+                        for i in range(1, 56):
+                            output_list.str = output_list.str + " "
                         output_list.pay_amt = to_decimal(t_credit)
                         output_list.pay_famt = to_decimal(t_famt)
 
                         if not long_digit:
-                            output_list.str = output_list.str + "Sub-Total " +\
-                                to_string(t_credit, "->,>>>,>>>,>>9.99") +\
-                                fill(" ", 78) +\
-                                to_string(t_famt, "->>,>>>,>>>,>>9.99")
+                            output_list.str = output_list.str + "  Sub-Total" +\
+                                handling_negative(t_credit, "->,>>>,>>>,>>9.99") +\
+                                fill(" ", 79) +\
+                                handling_negative(t_famt, "->>,>>>,>>>,>>9.99")
                         else:
-                            output_list.str = output_list.str + "Sub-Total " +\
-                                to_string(t_credit, " ->>>,>>>,>>>,>>9") +\
-                                fill(" ", 78) +\
-                                to_string(t_famt, "  ->>>,>>>,>>>,>>9")
+                            output_list.str = output_list.str + "  Sub-Total" +\
+                                handling_negative(t_credit, " ->>>,>>>,>>>,>>9") +\
+                                fill(" ", 79) +\
+                                handling_negative(t_famt, "  ->>>,>>>,>>>,>>9")
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
@@ -2189,18 +2183,18 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 if not long_digit:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
-                        to_string(receiver, "x(32)") +\
-                        to_string(debt.saldo, "->,>>>,>>>,>>9.99") +\
-                        to_string(debitor.saldo, "->,>>>,>>>,>>9.99") +\
+                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        substring(to_string(receiver, "x(32)"), 0, 32) +\
+                        handling_negative(debt.saldo, "->,>>>,>>>,>>9.99") +\
+                        handling_negative(debitor.saldo, "->,>>>,>>>,>>9.99") +\
                         to_string(art.bezeich, "x(34)") +\
                         to_string(debitor.rgdatum)
                 else:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
-                        to_string(receiver, "x(32)") +\
-                        to_string(debt.saldo, " ->>>,>>>,>>>,>>9") +\
-                        to_string(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
+                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        substring(to_string(receiver, "x(32)"), 0, 32) +\
+                        handling_negative(debt.saldo, " ->>>,>>>,>>>,>>9") +\
+                        handling_negative(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
                         to_string(art.bezeich, "x(34)") +\
                         to_string(debitor.rgdatum)
                 output_list.bill_num = debitor.rechnr
@@ -2212,7 +2206,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debitor.gastnrmember)]})
 
                 if bguest:
-                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 32)
+                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 30)
 
                 bediener = get_cache(
                     Bediener, {"nr": [(eq, debitor.bediener_nr)]})
@@ -2221,7 +2215,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list.str = output_list.str + \
                         to_string(bediener.userinit, "x(3)")
                 else:
-                    output_list.str = output_list.str + "   "
+                    output_list.str = output_list.str + " "
                 output_list.str = output_list.str + \
                     to_string(debitor.vesrcod, "x(34)")
                 t_credit = to_decimal(t_credit) + to_decimal(debitor.saldo)
@@ -2261,9 +2255,9 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                 else:
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
-                output_list.str = output_list.str + to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                output_list.str = output_list.str + handling_negative(debitor.vesrdep, "->,>>>,>>>,>>9.99")
                 output_list.str = output_list.str + to_string(debitor.zahlkonto, ">>>>9")
-                output_list.str = output_list.str + to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                output_list.str = output_list.str + handling_negative(debitor.vesrdep, "->,>>>,>>>,>>9.99")
                 output_list.str = output_list.str + to_string(artikel.bezeich, "x(40)")
 
                 s_list.betrag = to_decimal(
@@ -2271,71 +2265,69 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 58 + 1):
-            output_list.str = output_list.str + "   "
+        for i in range(1, 56):
+            output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(tot_saldo)
         output_list.pay_famt = to_decimal(tot_foreign)
 
         if not long_digit:
-            output_list.str = output_list.str + "T O T A L " +\
-                to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "  T O T A L" +\
+                handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "T O T A L " +\
-                to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "  T O T A L" +\
+                handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
         output_list = Output_list()
         output_list_data.append(output_list)
 
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 58 + 1):
-            output_list.str = output_list.str + "   "
+        for i in range(1, 56):
+            output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(t_credit)
         output_list.pay_famt = to_decimal(t_famt)
 
         if not long_digit:
-            output_list.str = output_list.str + "Sub-Total " +\
-                to_string(t_credit, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(t_famt, "->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "  Sub-Total" +\
+                handling_negative(t_credit, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(t_famt, "->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "Sub-Total " +\
-                to_string(t_credit, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(t_famt, "  ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "  Sub-Total" +\
+                handling_negative(t_credit, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(t_famt, "  ->>>,>>>,>>>,>>9")
         output_list = Output_list()
         output_list_data.append(output_list)
 
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 56 + 1):
+        for i in range(1, 56):
             output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(tot_credit)
         output_list.pay_famt = to_decimal(tot_famt)
 
         if not long_digit:
-            output_list.str = output_list.str + "Grand TOTAL " +\
-                to_string(tot_credit, "->,>>>,>>>,>>9.99") +\
+            output_list.str = output_list.str + "Grand TOTAL" +\
+                handling_negative(tot_credit, "->,>>>,>>>,>>9.99") +\
                 fill(" ", 78) + \
-                to_string(tot_famt, "->>,>>>,>>>,>>9.99")
+                handling_negative(tot_famt, "->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "Grand TOTAL " +\
-                to_string(tot_credit, " ->>>,>>>,>>>,>>9") +\
+            output_list.str = output_list.str + "Grand TOTAL" +\
+                handling_negative(tot_credit, " ->>>,>>>,>>>,>>9") +\
                 fill(" ", 78) + \
-                to_string(tot_famt, "  ->>>,>>>,>>>,>>9")
+                handling_negative(tot_famt, "  ->>>,>>>,>>>,>>9")
         create_tot_payment()
 
     def create_list1f():
-
         nonlocal r_no, s_list_data, t_list_data, t_ar_paylist_data, long_digit, htparam, guest, debitor, artikel, bill, bediener, waehrung
         nonlocal comment, cledger, ccard, last_sort, from_date, to_date, from_art, to_art, mi_payment, mi_transfer, show_inv, bill_name, bill_nr
         nonlocal bguest, bdebitor
-
         nonlocal s_list, t_list, output_list, t_ar_paylist, bguest, bdebitor, tbuff, bq
         nonlocal s_list_data, t_list_data, output_list_data, t_ar_paylist_data
 
@@ -2413,21 +2405,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
-                    for i in range(1, 58 + 1):
-                        output_list.str = output_list.str + "   "
+                    for i in range(1, 56):
+                        output_list.str = output_list.str + " "
                     output_list.pay_amt = to_decimal(tot_saldo)
                     output_list.pay_famt = to_decimal(tot_foreign)
 
                     if not long_digit:
-                        output_list.str = output_list.str + "T O T A L " +\
-                            to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                            fill(" ", 78) +\
-                            to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+                        output_list.str = output_list.str + "  T O T A L" +\
+                            handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                            fill(" ", 79) +\
+                            handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
                     else:
-                        output_list.str = output_list.str + "T O T A L " +\
-                            to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                            fill(" ", 78) +\
-                            to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+                        output_list.str = output_list.str + "  T O T A L" +\
+                            handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                            fill(" ", 79) +\
+                            handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
@@ -2447,21 +2439,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                             output_list = Output_list()
                             output_list_data.append(output_list)
 
-                            for i in range(1, 58 + 1):
-                                output_list.str = output_list.str + "   "
+                            for i in range(1, 56):
+                                output_list.str = output_list.str + " "
                             output_list.pay_amt = to_decimal(tot_saldo)
                             output_list.pay_famt = to_decimal(tot_foreign)
 
                             if not long_digit:
-                                output_list.str = output_list.str + "T O T A L " +\
-                                    to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                                    fill(" ", 78) +\
-                                    to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+                                output_list.str = output_list.str + "  T O T A L" +\
+                                    handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                                    fill(" ", 79) +\
+                                    handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
                             else:
-                                output_list.str = output_list.str + "T O T A L " +\
-                                    to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                                    fill(" ", 78) +\
-                                    to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+                                output_list.str = output_list.str + "  T O T A L" +\
+                                    handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                                    fill(" ", 79) +\
+                                    handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
                             output_list = Output_list()
                             output_list_data.append(output_list)
 
@@ -2470,21 +2462,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
-                        for i in range(1, 58 + 1):
-                            output_list.str = output_list.str + "   "
+                        for i in range(1, 56):
+                            output_list.str = output_list.str + " "
                         output_list.pay_amt = to_decimal(t_credit)
                         output_list.pay_famt = to_decimal(t_famt)
 
                         if not long_digit:
-                            output_list.str = output_list.str + "Sub-Total " +\
-                                to_string(t_credit, "->,>>>,>>>,>>9.99") +\
-                                fill(" ", 78) +\
-                                to_string(t_famt, "->>,>>>,>>>,>>9.99")
+                            output_list.str = output_list.str + "  Sub-Total" +\
+                                handling_negative(t_credit, "->,>>>,>>>,>>9.99") +\
+                                fill(" ", 79) +\
+                                handling_negative(t_famt, "->>,>>>,>>>,>>9.99")
                         else:
-                            output_list.str = output_list.str + "Sub-Total " +\
-                                to_string(t_credit, " ->>>,>>>,>>>,>>9") +\
-                                fill(" ", 78) +\
-                                to_string(t_famt, "  ->>>,>>>,>>>,>>9")
+                            output_list.str = output_list.str + "  Sub-Total" +\
+                                handling_negative(t_credit, " ->>>,>>>,>>>,>>9") +\
+                                fill(" ", 79) +\
+                                handling_negative(t_famt, "  ->>>,>>>,>>>,>>9")
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
@@ -2562,18 +2554,18 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 if not long_digit:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
-                        to_string(receiver, "x(32)") +\
-                        to_string(debt.saldo, "->,>>>,>>>,>>9.99") +\
-                        to_string(debitor.saldo, "->,>>>,>>>,>>9.99") +\
+                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        substring(to_string(receiver, "x(32)"), 0, 32) +\
+                        handling_negative(debt.saldo, "->,>>>,>>>,>>9.99") +\
+                        handling_negative(debitor.saldo, "->,>>>,>>>,>>9.99") +\
                         to_string(art.bezeich, "x(34)") +\
                         to_string(debitor.rgdatum)
                 else:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
-                        to_string(receiver, "x(32)") +\
-                        to_string(debt.saldo, " ->>>,>>>,>>>,>>9") +\
-                        to_string(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
+                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        substring(to_string(receiver, "x(32)"), 0, 32) +\
+                        handling_negative(debt.saldo, " ->>>,>>>,>>>,>>9") +\
+                        handling_negative(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
                         to_string(art.bezeich, "x(34)") +\
                         to_string(debitor.rgdatum)
                 output_list.bill_num = debitor.rechnr
@@ -2585,7 +2577,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debitor.gastnrmember)]})
 
                 if bguest:
-                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 32)
+                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 30)
 
                 bediener = get_cache(
                     Bediener, {"nr": [(eq, debitor.bediener_nr)]})
@@ -2594,7 +2586,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list.str = output_list.str + \
                         to_string(bediener.userinit, "x(3)")
                 else:
-                    output_list.str = output_list.str + "   "
+                    output_list.str = output_list.str + " "
                 output_list.str = output_list.str + \
                     to_string(debitor.vesrcod, "x(34)")
                 t_credit = to_decimal(t_credit) + to_decimal(debitor.saldo)
@@ -2635,11 +2627,11 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
                 output_list.str = output_list.str + \
-                    to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                    handling_negative(debitor.vesrdep, "->,>>>,>>>,>>9.99")
                 output_list.str = output_list.str + \
                     to_string(debitor.zahlkonto, ">>>>9")
                 output_list.str = output_list.str + \
-                    to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                    handling_negative(debitor.vesrdep, "->,>>>,>>>,>>9.99")
                 output_list.str = output_list.str + \
                     to_string(artikel.bezeich, "x(40)")
 
@@ -2648,63 +2640,63 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 58 + 1):
-            output_list.str = output_list.str + "   "
+        for i in range(1, 56):
+            output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(tot_saldo)
         output_list.pay_famt = to_decimal(tot_foreign)
 
         if not long_digit:
-            output_list.str = output_list.str + "T O T A L " +\
-                to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "  T O T A L" +\
+                handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "T O T A L " +\
-                to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "  T O T A L" +\
+                handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
         output_list = Output_list()
         output_list_data.append(output_list)
 
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 58 + 1):
-            output_list.str = output_list.str + "   "
+        for i in range(1, 56):
+            output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(t_credit)
         output_list.pay_famt = to_decimal(t_famt)
 
         if not long_digit:
-            output_list.str = output_list.str + "Sub-Total " +\
-                to_string(t_credit, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(t_famt, "->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "  Sub-Total" +\
+                handling_negative(t_credit, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(t_famt, "->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "Sub-Total " +\
-                to_string(t_credit, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(t_famt, "  ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "  Sub-Total" +\
+                handling_negative(t_credit, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(t_famt, "  ->>>,>>>,>>>,>>9")
         output_list = Output_list()
         output_list_data.append(output_list)
 
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 56 + 1):
+        for i in range(1, 56):
             output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(tot_credit)
         output_list.pay_famt = to_decimal(tot_famt)
 
         if not long_digit:
-            output_list.str = output_list.str + "Grand TOTAL " +\
-                to_string(tot_credit, "->,>>>,>>>,>>9.99") +\
+            output_list.str = output_list.str + "Grand TOTAL" +\
+                handling_negative(tot_credit, "->,>>>,>>>,>>9.99") +\
                 fill(" ", 78) + \
-                to_string(tot_famt, "->>,>>>,>>>,>>9.99")
+                handling_negative(tot_famt, "->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "Grand TOTAL " +\
-                to_string(tot_credit, " ->>>,>>>,>>>,>>9") +\
+            output_list.str = output_list.str + "Grand TOTAL" +\
+                handling_negative(tot_credit, " ->>>,>>>,>>>,>>9") +\
                 fill(" ", 78) + \
-                to_string(tot_famt, "  ->>>,>>>,>>>,>>9")
+                handling_negative(tot_famt, "  ->>>,>>>,>>>,>>9")
         create_tot_payment()
 
     def create_list1fs():
@@ -2788,21 +2780,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
-                    for i in range(1, 58 + 1):
-                        output_list.str = output_list.str + "   "
+                    for i in range(1, 56):
+                        output_list.str = output_list.str + " "
                     output_list.pay_amt = to_decimal(tot_saldo)
                     output_list.pay_famt = to_decimal(tot_foreign)
 
                     if not long_digit:
-                        output_list.str = output_list.str + "T O T A L " +\
-                            to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                            fill(" ", 78) +\
-                            to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+                        output_list.str = output_list.str + "  T O T A L" +\
+                            handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                            fill(" ", 79) +\
+                            handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
                     else:
-                        output_list.str = output_list.str + "T O T A L " +\
-                            to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                            fill(" ", 78) +\
-                            to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+                        output_list.str = output_list.str + "  T O T A L" +\
+                            handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                            fill(" ", 79) +\
+                            handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
@@ -2822,21 +2814,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                             output_list = Output_list()
                             output_list_data.append(output_list)
 
-                            for i in range(1, 58 + 1):
-                                output_list.str = output_list.str + "   "
+                            for i in range(1, 56):
+                                output_list.str = output_list.str + " "
                             output_list.pay_amt = to_decimal(tot_saldo)
                             output_list.pay_famt = to_decimal(tot_foreign)
 
                             if not long_digit:
-                                output_list.str = output_list.str + "T O T A L " +\
-                                    to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                                    fill(" ", 78) +\
-                                    to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+                                output_list.str = output_list.str + "  T O T A L" +\
+                                    handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                                    fill(" ", 79) +\
+                                    handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
                             else:
-                                output_list.str = output_list.str + "T O T A L " +\
-                                    to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                                    fill(" ", 78) +\
-                                    to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+                                output_list.str = output_list.str + "  T O T A L" +\
+                                    handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                                    fill(" ", 79) +\
+                                    handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
                             output_list = Output_list()
                             output_list_data.append(output_list)
 
@@ -2845,21 +2837,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
-                        for i in range(1, 58 + 1):
-                            output_list.str = output_list.str + "   "
+                        for i in range(1, 56):
+                            output_list.str = output_list.str + " "
                         output_list.pay_amt = to_decimal(t_credit)
                         output_list.pay_famt = to_decimal(t_famt)
 
                         if not long_digit:
-                            output_list.str = output_list.str + "Sub-Total " +\
-                                to_string(t_credit, "->,>>>,>>>,>>9.99") +\
-                                fill(" ", 78) +\
-                                to_string(t_famt, "->>,>>>,>>>,>>9.99")
+                            output_list.str = output_list.str + "  Sub-Total" +\
+                                handling_negative(t_credit, "->,>>>,>>>,>>9.99") +\
+                                fill(" ", 79) +\
+                                handling_negative(t_famt, "->>,>>>,>>>,>>9.99")
                         else:
-                            output_list.str = output_list.str + "Sub-Total " +\
-                                to_string(t_credit, " ->>>,>>>,>>>,>>9") +\
-                                fill(" ", 78) +\
-                                to_string(t_famt, "  ->>>,>>>,>>>,>>9")
+                            output_list.str = output_list.str + "  Sub-Total" +\
+                                handling_negative(t_credit, " ->>>,>>>,>>>,>>9") +\
+                                fill(" ", 79) +\
+                                handling_negative(t_famt, "  ->>>,>>>,>>>,>>9")
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
@@ -2937,18 +2929,18 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 if not long_digit:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
-                        to_string(receiver, "x(32)") +\
-                        to_string(debt.saldo, "->,>>>,>>>,>>9.99") +\
-                        to_string(debitor.saldo, "->,>>>,>>>,>>9.99") +\
+                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        substring(to_string(receiver, "x(32)"), 0, 32) +\
+                        handling_negative(debt.saldo, "->,>>>,>>>,>>9.99") +\
+                        handling_negative(debitor.saldo, "->,>>>,>>>,>>9.99") +\
                         to_string(art.bezeich, "x(34)") +\
                         to_string(debitor.rgdatum)
                 else:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
-                        to_string(receiver, "x(32)") +\
-                        to_string(debt.saldo, " ->>>,>>>,>>>,>>9") +\
-                        to_string(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
+                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        substring(to_string(receiver, "x(32)"), 0, 32) +\
+                        handling_negative(debt.saldo, " ->>>,>>>,>>>,>>9") +\
+                        handling_negative(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
                         to_string(art.bezeich, "x(34)") +\
                         to_string(debitor.rgdatum)
                 output_list.bill_num = debitor.rechnr
@@ -2960,7 +2952,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debitor.gastnrmember)]})
 
                 if bguest:
-                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 32)
+                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 30)
 
                 bediener = get_cache(
                     Bediener, {"nr": [(eq, debitor.bediener_nr)]})
@@ -2969,7 +2961,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list.str = output_list.str + \
                         to_string(bediener.userinit, "x(3)")
                 else:
-                    output_list.str = output_list.str + "   "
+                    output_list.str = output_list.str + " "
                 output_list.str = output_list.str + \
                     to_string(debitor.vesrcod, "x(34)")
                 t_credit = to_decimal(t_credit) + to_decimal(debitor.saldo)
@@ -3010,11 +3002,11 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
                 output_list.str = output_list.str + \
-                    to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                    handling_negative(debitor.vesrdep, "->,>>>,>>>,>>9.99")
                 output_list.str = output_list.str + \
                     to_string(debitor.zahlkonto, ">>>>9")
                 output_list.str = output_list.str + \
-                    to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                    handling_negative(debitor.vesrdep, "->,>>>,>>>,>>9.99")
                 output_list.str = output_list.str + \
                     to_string(artikel.bezeich, "x(40)")
 
@@ -3023,71 +3015,69 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 58 + 1):
-            output_list.str = output_list.str + "   "
+        for i in range(1, 56):
+            output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(tot_saldo)
         output_list.pay_famt = to_decimal(tot_foreign)
 
         if not long_digit:
-            output_list.str = output_list.str + "T O T A L " +\
-                to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "  T O T A L" +\
+                handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "T O T A L " +\
-                to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "  T O T A L" +\
+                handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
         output_list = Output_list()
         output_list_data.append(output_list)
 
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 58 + 1):
-            output_list.str = output_list.str + "   "
+        for i in range(1, 56):
+            output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(t_credit)
         output_list.pay_famt = to_decimal(t_famt)
 
         if not long_digit:
-            output_list.str = output_list.str + "Sub-Total " +\
-                to_string(t_credit, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(t_famt, "->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "  Sub-Total" +\
+                handling_negative(t_credit, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(t_famt, "->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "Sub-Total " +\
-                to_string(t_credit, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(t_famt, "  ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "  Sub-Total" +\
+                handling_negative(t_credit, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(t_famt, "  ->>>,>>>,>>>,>>9")
         output_list = Output_list()
         output_list_data.append(output_list)
 
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 56 + 1):
+        for i in range(1, 56):
             output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(tot_credit)
         output_list.pay_famt = to_decimal(tot_famt)
 
         if not long_digit:
-            output_list.str = output_list.str + "Grand TOTAL " +\
-                to_string(tot_credit, "->,>>>,>>>,>>9.99") +\
+            output_list.str = output_list.str + "Grand TOTAL" +\
+                handling_negative(tot_credit, "->,>>>,>>>,>>9.99") +\
                 fill(" ", 78) + \
-                to_string(tot_famt, "->>,>>>,>>>,>>9.99")
+                handling_negative(tot_famt, "->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "Grand TOTAL " +\
-                to_string(tot_credit, " ->>>,>>>,>>>,>>9") +\
+            output_list.str = output_list.str + "Grand TOTAL" +\
+                handling_negative(tot_credit, " ->>>,>>>,>>>,>>9") +\
                 fill(" ", 78) + \
-                to_string(tot_famt, "  ->>>,>>>,>>>,>>9")
+                handling_negative(tot_famt, "  ->>>,>>>,>>>,>>9")
         create_tot_payment()
 
     def create_list2():
-
         nonlocal r_no, s_list_data, t_list_data, t_ar_paylist_data, long_digit, htparam, guest, debitor, artikel, bill, bediener, waehrung
         nonlocal comment, cledger, ccard, last_sort, from_date, to_date, from_art, to_art, mi_payment, mi_transfer, show_inv, bill_name, bill_nr
         nonlocal bguest, bdebitor
-
         nonlocal s_list, t_list, output_list, t_ar_paylist, bguest, bdebitor, tbuff, bq
         nonlocal s_list_data, t_list_data, output_list_data, t_ar_paylist_data
 
@@ -3165,21 +3155,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
-                    for i in range(1, 58 + 1):
-                        output_list.str = output_list.str + "   "
+                    for i in range(1, 56):
+                        output_list.str = output_list.str + " "
                     output_list.pay_amt = to_decimal(tot_saldo)
                     output_list.pay_famt = to_decimal(tot_foreign)
 
                     if not long_digit:
-                        output_list.str = output_list.str + "T O T A L " +\
-                            to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                            fill(" ", 78) +\
-                            to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+                        output_list.str = output_list.str + "  T O T A L" +\
+                            handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                            fill(" ", 79) +\
+                            handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
                     else:
-                        output_list.str = output_list.str + "T O T A L " +\
-                            to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                            fill(" ", 78) +\
-                            to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+                        output_list.str = output_list.str + "  T O T A L" +\
+                            handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                            fill(" ", 79) +\
+                            handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
@@ -3197,21 +3187,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
-                        for i in range(1, 58 + 1):
-                            output_list.str = output_list.str + "   "
+                        for i in range(1, 56):
+                            output_list.str = output_list.str + " "
                         output_list.pay_amt = to_decimal(t_credit)
                         output_list.pay_famt = to_decimal(t_famt)
 
                         if not long_digit:
-                            output_list.str = output_list.str + "Sub-Total " +\
-                                to_string(t_credit, "->,>>>,>>>,>>9.99") +\
-                                fill(" ", 78) +\
-                                to_string(t_famt, "->>,>>>,>>>,>>9.99")
+                            output_list.str = output_list.str + "  Sub-Total" +\
+                                handling_negative(t_credit, "->,>>>,>>>,>>9.99") +\
+                                fill(" ", 79) +\
+                                handling_negative(t_famt, "->>,>>>,>>>,>>9.99")
                         else:
-                            output_list.str = output_list.str + "Sub-Total " +\
-                                to_string(t_credit, " ->>>,>>>,>>>,>>9") +\
-                                fill(" ", 78) +\
-                                to_string(t_famt, "  ->>>,>>>,>>>,>>9")
+                            output_list.str = output_list.str + "  Sub-Total" +\
+                                handling_negative(t_credit, " ->>>,>>>,>>>,>>9") +\
+                                fill(" ", 79) +\
+                                handling_negative(t_famt, "  ->>>,>>>,>>>,>>9")
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
@@ -3286,18 +3276,18 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 if not long_digit:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
-                        to_string(receiver, "x(32)") +\
-                        to_string(debt.saldo, "->,>>>,>>>,>>9.99") +\
-                        to_string(debitor.saldo, "->,>>>,>>>,>>9.99") +\
+                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        substring(to_string(receiver, "x(32)"), 0, 32) +\
+                        handling_negative(debt.saldo, "->,>>>,>>>,>>9.99") +\
+                        handling_negative(debitor.saldo, "->,>>>,>>>,>>9.99") +\
                         to_string(art.bezeich, "x(34)") +\
                         to_string(debitor.rgdatum)
                 else:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
-                        to_string(receiver, "x(32)") +\
-                        to_string(debt.saldo, " ->>>,>>>,>>>,>>9") +\
-                        to_string(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
+                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        substring(to_string(receiver, "x(32)"), 0, 32) +\
+                        handling_negative(debt.saldo, " ->>>,>>>,>>>,>>9") +\
+                        handling_negative(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
                         to_string(art.bezeich, "x(34)") +\
                         to_string(debitor.rgdatum)
                 output_list.bill_num = debitor.rechnr
@@ -3309,7 +3299,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debitor.gastnrmember)]})
 
                 if bguest:
-                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 32)
+                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 30)
 
                 bediener = get_cache(
                     Bediener, {"nr": [(eq, debitor.bediener_nr)]})
@@ -3318,7 +3308,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list.str = output_list.str + \
                         to_string(bediener.userinit, "x(3)")
                 else:
-                    output_list.str = output_list.str + "   "
+                    output_list.str = output_list.str + " "
                 output_list.str = output_list.str + \
                     to_string(debitor.vesrcod, "x(34)")
                 output_list.str = output_list.str + to_string(" ", "x(22)")
@@ -3332,11 +3322,11 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
                 output_list.str = output_list.str + \
-                    to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                    handling_negative(debitor.vesrdep, "->,>>>,>>>,>>9.99")
                 output_list.str = output_list.str + \
                     to_string(debitor.zahlkonto, ">>>>9")
                 output_list.str = output_list.str + \
-                    to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                    handling_negative(debitor.vesrdep, "->,>>>,>>>,>>9.99")
                 output_list.str = output_list.str + \
                     to_string(artikel.bezeich, "x(40)")
 
@@ -3362,71 +3352,69 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 58 + 1):
-            output_list.str = output_list.str + "   "
+        for i in range(1, 56):
+            output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(tot_saldo)
         output_list.pay_famt = to_decimal(tot_foreign)
 
         if not long_digit:
-            output_list.str = output_list.str + "T O T A L " +\
-                to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "  T O T A L" +\
+                handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "T O T A L " +\
-                to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "  T O T A L" +\
+                handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
         output_list = Output_list()
         output_list_data.append(output_list)
 
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 58 + 1):
-            output_list.str = output_list.str + "   "
+        for i in range(1, 56):
+            output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(t_credit)
         output_list.pay_famt = to_decimal(t_famt)
 
         if not long_digit:
-            output_list.str = output_list.str + "Sub-Total " +\
-                to_string(t_credit, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(t_famt, "->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "  Sub-Total" +\
+                handling_negative(t_credit, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(t_famt, "->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "Sub-Total " +\
-                to_string(t_credit, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(t_famt, "  ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "  Sub-Total" +\
+                handling_negative(t_credit, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(t_famt, "  ->>>,>>>,>>>,>>9")
         output_list = Output_list()
         output_list_data.append(output_list)
 
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 56 + 1):
+        for i in range(1, 56):
             output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(tot_credit)
         output_list.pay_famt = to_decimal(tot_famt)
 
         if not long_digit:
-            output_list.str = output_list.str + "Grand TOTAL " +\
-                to_string(tot_credit, "->,>>>,>>>,>>9.99") +\
+            output_list.str = output_list.str + "Grand TOTAL" +\
+                handling_negative(tot_credit, "->,>>>,>>>,>>9.99") +\
                 fill(" ", 78) + \
-                to_string(tot_famt, "->>,>>>,>>>,>>9.99")
+                handling_negative(tot_famt, "->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "Grand TOTAL " +\
-                to_string(tot_credit, " ->>>,>>>,>>>,>>9") +\
+            output_list.str = output_list.str + "Grand TOTAL" +\
+                handling_negative(tot_credit, " ->>>,>>>,>>>,>>9") +\
                 fill(" ", 78) + \
-                to_string(tot_famt, "  ->>>,>>>,>>>,>>9")
+                handling_negative(tot_famt, "  ->>>,>>>,>>>,>>9")
         create_tot_payment()
 
     def create_list2a():
-
         nonlocal r_no, s_list_data, t_list_data, t_ar_paylist_data, long_digit, htparam, guest, debitor, artikel, bill, bediener, waehrung
         nonlocal comment, cledger, ccard, last_sort, from_date, to_date, from_art, to_art, mi_payment, mi_transfer, show_inv, bill_name, bill_nr
         nonlocal bguest, bdebitor
-
         nonlocal s_list, t_list, output_list, t_ar_paylist, bguest, bdebitor, tbuff, bq
         nonlocal s_list_data, t_list_data, output_list_data, t_ar_paylist_data
 
@@ -3504,21 +3492,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
-                    for i in range(1, 58 + 1):
-                        output_list.str = output_list.str + "   "
+                    for i in range(1, 56):
+                        output_list.str = output_list.str + " "
                     output_list.pay_amt = to_decimal(tot_saldo)
                     output_list.pay_famt = to_decimal(tot_foreign)
 
                     if not long_digit:
-                        output_list.str = output_list.str + "T O T A L " +\
-                            to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                            fill(" ", 78) +\
-                            to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+                        output_list.str = output_list.str + "  T O T A L" +\
+                            handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                            fill(" ", 79) +\
+                            handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
                     else:
-                        output_list.str = output_list.str + "T O T A L " +\
-                            to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                            fill(" ", 78) +\
-                            to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+                        output_list.str = output_list.str + "  T O T A L" +\
+                            handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                            fill(" ", 79) +\
+                            handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
@@ -3536,21 +3524,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
-                        for i in range(1, 58 + 1):
-                            output_list.str = output_list.str + "   "
+                        for i in range(1, 56):
+                            output_list.str = output_list.str + " "
                         output_list.pay_amt = to_decimal(t_credit)
                         output_list.pay_famt = to_decimal(t_famt)
 
                         if not long_digit:
-                            output_list.str = output_list.str + "Sub-Total " +\
-                                to_string(t_credit, "->,>>>,>>>,>>9.99") +\
-                                fill(" ", 78) +\
-                                to_string(t_famt, "->>,>>>,>>>,>>9.99")
+                            output_list.str = output_list.str + "  Sub-Total" +\
+                                handling_negative(t_credit, "->,>>>,>>>,>>9.99") +\
+                                fill(" ", 79) +\
+                                handling_negative(t_famt, "->>,>>>,>>>,>>9.99")
                         else:
-                            output_list.str = output_list.str + "Sub-Total " +\
-                                to_string(t_credit, " ->>>,>>>,>>>,>>9") +\
-                                fill(" ", 78) +\
-                                to_string(t_famt, "  ->>>,>>>,>>>,>>9")
+                            output_list.str = output_list.str + "  Sub-Total" +\
+                                handling_negative(t_credit, " ->>>,>>>,>>>,>>9") +\
+                                fill(" ", 79) +\
+                                handling_negative(t_famt, "  ->>>,>>>,>>>,>>9")
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
@@ -3625,18 +3613,18 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 if not long_digit:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
-                        to_string(receiver, "x(32)") +\
-                        to_string(debt.saldo, "->,>>>,>>>,>>9.99") +\
-                        to_string(debitor.saldo, "->,>>>,>>>,>>9.99") +\
+                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        substring(to_string(receiver, "x(32)"), 0, 32) +\
+                        handling_negative(debt.saldo, "->,>>>,>>>,>>9.99") +\
+                        handling_negative(debitor.saldo, "->,>>>,>>>,>>9.99") +\
                         to_string(art.bezeich, "x(34)") +\
                         to_string(debitor.rgdatum)
                 else:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
-                        to_string(receiver, "x(32)") +\
-                        to_string(debt.saldo, " ->>>,>>>,>>>,>>9") +\
-                        to_string(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
+                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        substring(to_string(receiver, "x(32)"), 0, 32) +\
+                        handling_negative(debt.saldo, " ->>>,>>>,>>>,>>9") +\
+                        handling_negative(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
                         to_string(art.bezeich, "x(34)") +\
                         to_string(debitor.rgdatum)
                 output_list.bill_num = debitor.rechnr
@@ -3648,7 +3636,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debitor.gastnrmember)]})
 
                 if bguest:
-                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 32)
+                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 30)
 
                 bediener = get_cache(
                     Bediener, {"nr": [(eq, debitor.bediener_nr)]})
@@ -3657,7 +3645,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list.str = output_list.str + \
                         to_string(bediener.userinit, "x(3)")
                 else:
-                    output_list.str = output_list.str + "   "
+                    output_list.str = output_list.str + " "
                 output_list.str = output_list.str + \
                     to_string(debitor.vesrcod, "x(34)")
                 output_list.str = output_list.str + to_string(" ", "x(22)")
@@ -3671,11 +3659,11 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
                 output_list.str = output_list.str + \
-                    to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                    handling_negative(debitor.vesrdep, "->,>>>,>>>,>>9.99")
                 output_list.str = output_list.str + \
                     to_string(debitor.zahlkonto, ">>>>9")
                 output_list.str = output_list.str + \
-                    to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                    handling_negative(debitor.vesrdep, "->,>>>,>>>,>>9.99")
                 output_list.str = output_list.str + \
                     to_string(artikel.bezeich, "x(40)")
 
@@ -3701,70 +3689,68 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 58 + 1):
-            output_list.str = output_list.str + "   "
+        for i in range(1, 56):
+            output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(tot_saldo)
         output_list.pay_famt = to_decimal(tot_foreign)
 
         if not long_digit:
-            output_list.str = output_list.str + "T O T A L " +\
-                to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "  T O T A L" +\
+                handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "T O T A L " +\
-                to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "  T O T A L" +\
+                handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
         output_list = Output_list()
         output_list_data.append(output_list)
 
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 58 + 1):
-            output_list.str = output_list.str + "   "
+        for i in range(1, 56):
+            output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(t_credit)
         output_list.pay_famt = to_decimal(t_famt)
 
         if not long_digit:
-            output_list.str = output_list.str + "Sub-Total " +\
-                to_string(t_credit, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(t_famt, "->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "  Sub-Total" +\
+                handling_negative(t_credit, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(t_famt, "->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "Sub-Total " +\
-                to_string(t_credit, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(t_famt, "  ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "  Sub-Total" +\
+                handling_negative(t_credit, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(t_famt, "  ->>>,>>>,>>>,>>9")
         output_list = Output_list()
         output_list_data.append(output_list)
 
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 56 + 1):
+        for i in range(1, 56):
             output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(tot_credit)
         output_list.pay_famt = to_decimal(tot_famt)
 
         if not long_digit:
-            output_list.str = output_list.str + "Grand TOTAL " +\
-                to_string(tot_credit, "->,>>>,>>>,>>9.99") +\
+            output_list.str = output_list.str + "Grand TOTAL" +\
+                handling_negative(tot_credit, "->,>>>,>>>,>>9.99") +\
                 fill(" ", 78) + \
-                to_string(tot_famt, "->>,>>>,>>>,>>9.99")
+                handling_negative(tot_famt, "->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "Grand TOTAL " +\
-                to_string(tot_credit, " ->>>,>>>,>>>,>>9") +\
+            output_list.str = output_list.str + "Grand TOTAL" +\
+                handling_negative(tot_credit, " ->>>,>>>,>>>,>>9") +\
                 fill(" ", 78) + \
-                to_string(tot_famt, "  ->>>,>>>,>>>,>>9")
+                handling_negative(tot_famt, "  ->>>,>>>,>>>,>>9")
 
     def create_list3():
-
         nonlocal r_no, s_list_data, t_list_data, t_ar_paylist_data, long_digit, htparam, guest, debitor, artikel, bill, bediener, waehrung
         nonlocal comment, cledger, ccard, last_sort, from_date, to_date, from_art, to_art, mi_payment, mi_transfer, show_inv, bill_name, bill_nr
         nonlocal bguest, bdebitor
-
         nonlocal s_list, t_list, output_list, t_ar_paylist, bguest, bdebitor, tbuff, bq
         nonlocal s_list_data, t_list_data, output_list_data, t_ar_paylist_data
 
@@ -3832,21 +3818,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
-                    for i in range(1, 58 + 1):
-                        output_list.str = output_list.str + "   "
+                    for i in range(1, 56):
+                        output_list.str = output_list.str + " "
                     output_list.pay_amt = to_decimal(tot_saldo)
                     output_list.pay_famt = to_decimal(tot_foreign)
 
                     if not long_digit:
-                        output_list.str = output_list.str + "T O T A L " +\
-                            to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                            fill(" ", 78) +\
-                            to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+                        output_list.str = output_list.str + "  T O T A L" +\
+                            handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                            fill(" ", 79) +\
+                            handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
                     else:
-                        output_list.str = output_list.str + "T O T A L " +\
-                            to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                            fill(" ", 78) +\
-                            to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+                        output_list.str = output_list.str + "  T O T A L" +\
+                            handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                            fill(" ", 79) +\
+                            handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
@@ -3866,21 +3852,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                             output_list = Output_list()
                             output_list_data.append(output_list)
 
-                            for i in range(1, 58 + 1):
-                                output_list.str = output_list.str + "   "
+                            for i in range(1, 56):
+                                output_list.str = output_list.str + " "
                             output_list.pay_amt = to_decimal(tot_saldo)
                             output_list.pay_famt = to_decimal(tot_foreign)
 
                             if not long_digit:
-                                output_list.str = output_list.str + "T O T A L " +\
-                                    to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                                    fill(" ", 78) +\
-                                    to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+                                output_list.str = output_list.str + "  T O T A L" +\
+                                    handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                                    fill(" ", 79) +\
+                                    handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
                             else:
-                                output_list.str = output_list.str + "T O T A L " +\
-                                    to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                                    fill(" ", 78) +\
-                                    to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+                                output_list.str = output_list.str + "  T O T A L" +\
+                                    handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                                    fill(" ", 79) +\
+                                    handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
                             output_list = Output_list()
                             output_list_data.append(output_list)
 
@@ -3889,21 +3875,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
-                        for i in range(1, 58 + 1):
-                            output_list.str = output_list.str + "   "
+                        for i in range(1, 56):
+                            output_list.str = output_list.str + " "
                         output_list.pay_amt = to_decimal(t_credit)
                         output_list.pay_famt = to_decimal(t_famt)
 
                         if not long_digit:
-                            output_list.str = output_list.str + "Sub-Total " +\
-                                to_string(t_credit, "->,>>>,>>>,>>9.99") +\
-                                fill(" ", 78) +\
-                                to_string(t_famt, "->>,>>>,>>>,>>9.99")
+                            output_list.str = output_list.str + "  Sub-Total" +\
+                                handling_negative(t_credit, "->,>>>,>>>,>>9.99") +\
+                                fill(" ", 79) +\
+                                handling_negative(t_famt, "->>,>>>,>>>,>>9.99")
                         else:
-                            output_list.str = output_list.str + "Sub-Total " +\
-                                to_string(t_credit, " ->>>,>>>,>>>,>>9") +\
-                                fill(" ", 78) +\
-                                to_string(t_famt, "  ->>>,>>>,>>>,>>9")
+                            output_list.str = output_list.str + "  Sub-Total" +\
+                                handling_negative(t_credit, " ->>>,>>>,>>>,>>9") +\
+                                fill(" ", 79) +\
+                                handling_negative(t_famt, "  ->>>,>>>,>>>,>>9")
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
@@ -3979,18 +3965,18 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 if not long_digit:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
-                        to_string(receiver, "x(32)") +\
-                        to_string(debt.saldo, "->,>>>,>>>,>>9.99") +\
-                        to_string(debitor.saldo, "->,>>>,>>>,>>9.99") +\
+                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        substring(to_string(receiver, "x(32)"), 0, 32) +\
+                        handling_negative(debt.saldo, "->,>>>,>>>,>>9.99") +\
+                        handling_negative(debitor.saldo, "->,>>>,>>>,>>9.99") +\
                         to_string(art.bezeich, "x(34)") +\
                         to_string(debitor.rgdatum)
                 else:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
-                        to_string(receiver, "x(32)") +\
-                        to_string(debt.saldo, " ->>>,>>>,>>>,>>9") +\
-                        to_string(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
+                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        substring(to_string(receiver, "x(32)"), 0, 32) +\
+                        handling_negative(debt.saldo, " ->>>,>>>,>>>,>>9") +\
+                        handling_negative(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
                         to_string(art.bezeich, "x(34)") +\
                         to_string(debitor.rgdatum)
                 output_list.bill_num = debitor.rechnr
@@ -4002,7 +3988,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debitor.gastnrmember)]})
 
                 if bguest:
-                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 32)
+                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 30)
 
                 bediener = get_cache(
                     Bediener, {"nr": [(eq, debitor.bediener_nr)]})
@@ -4011,7 +3997,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list.str = output_list.str + \
                         to_string(bediener.userinit, "x(3)")
                 else:
-                    output_list.str = output_list.str + "   "
+                    output_list.str = output_list.str + " "
                 output_list.str = output_list.str + \
                     to_string(debitor.vesrcod, "x(34)")
                 output_list.str = output_list.str + to_string(" ", "x(22)")
@@ -4025,11 +4011,11 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
                 output_list.str = output_list.str + \
-                    to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                    handling_negative(debitor.vesrdep, "->,>>>,>>>,>>9.99")
                 output_list.str = output_list.str + \
                     to_string(debitor.zahlkonto, ">>>>9")
                 output_list.str = output_list.str + \
-                    to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                    handling_negative(debitor.vesrdep, "->,>>>,>>>,>>9.99")
                 output_list.str = output_list.str + \
                     to_string(artikel.bezeich, "x(40)")
 
@@ -4055,71 +4041,69 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 58 + 1):
-            output_list.str = output_list.str + "   "
+        for i in range(1, 56):
+            output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(tot_saldo)
         output_list.pay_famt = to_decimal(tot_foreign)
 
         if not long_digit:
-            output_list.str = output_list.str + "T O T A L " +\
-                to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "  T O T A L" +\
+                handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "T O T A L " +\
-                to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "  T O T A L" +\
+                handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
         output_list = Output_list()
         output_list_data.append(output_list)
 
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 58 + 1):
-            output_list.str = output_list.str + "   "
+        for i in range(1, 56):
+            output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(t_credit)
         output_list.pay_famt = to_decimal(t_famt)
 
         if not long_digit:
-            output_list.str = output_list.str + "Sub-Total " +\
-                to_string(t_credit, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(t_famt, "->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "  Sub-Total" +\
+                handling_negative(t_credit, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(t_famt, "->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "Sub-Total " +\
-                to_string(t_credit, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(t_famt, "  ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "  Sub-Total" +\
+                handling_negative(t_credit, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(t_famt, "  ->>>,>>>,>>>,>>9")
         output_list = Output_list()
         output_list_data.append(output_list)
 
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 56 + 1):
+        for i in range(1, 56):
             output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(tot_credit)
         output_list.pay_famt = to_decimal(tot_famt)
 
         if not long_digit:
-            output_list.str = output_list.str + "Grand TOTAL " +\
-                to_string(tot_credit, "->,>>>,>>>,>>9.99") +\
+            output_list.str = output_list.str + "Grand TOTAL" +\
+                handling_negative(tot_credit, "->,>>>,>>>,>>9.99") +\
                 fill(" ", 78) + \
-                to_string(tot_famt, "->>,>>>,>>>,>>9.99")
+                handling_negative(tot_famt, "->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "Grand TOTAL " +\
-                to_string(tot_credit, " ->>>,>>>,>>>,>>9") +\
+            output_list.str = output_list.str + "Grand TOTAL" +\
+                handling_negative(tot_credit, " ->>>,>>>,>>>,>>9") +\
                 fill(" ", 78) + \
-                to_string(tot_famt, "  ->>>,>>>,>>>,>>9")
+                handling_negative(tot_famt, "  ->>>,>>>,>>>,>>9")
         create_tot_payment()
 
     def create_list3a():
-
         nonlocal r_no, s_list_data, t_list_data, t_ar_paylist_data, long_digit, htparam, guest, debitor, artikel, bill, bediener, waehrung
         nonlocal comment, cledger, ccard, last_sort, from_date, to_date, from_art, to_art, mi_payment, mi_transfer, show_inv, bill_name, bill_nr
         nonlocal bguest, bdebitor
-
         nonlocal s_list, t_list, output_list, t_ar_paylist, bguest, bdebitor, tbuff, bq
         nonlocal s_list_data, t_list_data, output_list_data, t_ar_paylist_data
 
@@ -4197,21 +4181,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
-                    for i in range(1, 58 + 1):
-                        output_list.str = output_list.str + "   "
+                    for i in range(1, 56):
+                        output_list.str = output_list.str + " "
                     output_list.pay_amt = to_decimal(tot_saldo)
                     output_list.pay_famt = to_decimal(tot_foreign)
 
                     if not long_digit:
-                        output_list.str = output_list.str + "T O T A L " +\
-                            to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                            fill(" ", 78) +\
-                            to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+                        output_list.str = output_list.str + "  T O T A L" +\
+                            handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                            fill(" ", 79) +\
+                            handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
                     else:
-                        output_list.str = output_list.str + "T O T A L " +\
-                            to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                            fill(" ", 78) +\
-                            to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+                        output_list.str = output_list.str + "  T O T A L" +\
+                            handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                            fill(" ", 79) +\
+                            handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
@@ -4228,21 +4212,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
-                        for i in range(1, 58 + 1):
-                            output_list.str = output_list.str + "   "
+                        for i in range(1, 56):
+                            output_list.str = output_list.str + " "
                         output_list.pay_amt = to_decimal(t_credit)
                         output_list.pay_famt = to_decimal(t_famt)
 
                         if not long_digit:
-                            output_list.str = output_list.str + "Sub-Total " +\
-                                to_string(t_credit, "->,>>>,>>>,>>9.99") +\
-                                fill(" ", 78) +\
-                                to_string(t_famt, "->>,>>>,>>>,>>9.99")
+                            output_list.str = output_list.str + "  Sub-Total" +\
+                                handling_negative(t_credit, "->,>>>,>>>,>>9.99") +\
+                                fill(" ", 79) +\
+                                handling_negative(t_famt, "->>,>>>,>>>,>>9.99")
                         else:
-                            output_list.str = output_list.str + "Sub-Total " +\
-                                to_string(t_credit, " ->>>,>>>,>>>,>>9") +\
-                                fill(" ", 78) +\
-                                to_string(t_famt, "  ->>>,>>>,>>>,>>9")
+                            output_list.str = output_list.str + "  Sub-Total" +\
+                                handling_negative(t_credit, " ->>>,>>>,>>>,>>9") +\
+                                fill(" ", 79) +\
+                                handling_negative(t_famt, "  ->>>,>>>,>>>,>>9")
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
@@ -4317,18 +4301,18 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 if not long_digit:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
-                        to_string(receiver, "x(32)") +\
-                        to_string(debt.saldo, "->,>>>,>>>,>>9.99") +\
-                        to_string(debitor.saldo, "->,>>>,>>>,>>9.99") +\
+                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        substring(to_string(receiver, "x(32)"), 0, 32) +\
+                        handling_negative(debt.saldo, "->,>>>,>>>,>>9.99") +\
+                        handling_negative(debitor.saldo, "->,>>>,>>>,>>9.99") +\
                         to_string(art.bezeich, "x(34)") +\
                         to_string(debitor.rgdatum)
                 else:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
-                        to_string(receiver, "x(32)") +\
-                        to_string(debt.saldo, " ->>>,>>>,>>>,>>9") +\
-                        to_string(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
+                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        substring(to_string(receiver, "x(32)"), 0, 32) +\
+                        handling_negative(debt.saldo, " ->>>,>>>,>>>,>>9") +\
+                        handling_negative(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
                         to_string(art.bezeich, "x(34)") +\
                         to_string(debitor.rgdatum)
                 output_list.bill_num = debitor.rechnr
@@ -4340,7 +4324,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debitor.gastnrmember)]})
 
                 if bguest:
-                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 32)
+                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 30)
 
                 bediener = get_cache(
                     Bediener, {"nr": [(eq, debitor.bediener_nr)]})
@@ -4349,7 +4333,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list.str = output_list.str + \
                         to_string(bediener.userinit, "x(3)")
                 else:
-                    output_list.str = output_list.str + "   "
+                    output_list.str = output_list.str + " "
                 output_list.str = output_list.str + \
                     to_string(debitor.vesrcod, "x(34)")
                 output_list.str = output_list.str + to_string(" ", "x(22)")
@@ -4363,11 +4347,11 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
                 output_list.str = output_list.str + \
-                    to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                    handling_negative(debitor.vesrdep, "->,>>>,>>>,>>9.99")
                 output_list.str = output_list.str + \
                     to_string(debitor.zahlkonto, ">>>>9")
                 output_list.str = output_list.str + \
-                    to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                    handling_negative(debitor.vesrdep, "->,>>>,>>>,>>9.99")
                 output_list.str = output_list.str + \
                     to_string(artikel.bezeich, "x(40)")
 
@@ -4391,63 +4375,63 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 58 + 1):
-            output_list.str = output_list.str + "   "
+        for i in range(1, 56):
+            output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(tot_saldo)
         output_list.pay_famt = to_decimal(tot_foreign)
 
         if not long_digit:
-            output_list.str = output_list.str + "T O T A L " +\
-                to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "  T O T A L" +\
+                handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "T O T A L " +\
-                to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "  T O T A L" +\
+                handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
         output_list = Output_list()
         output_list_data.append(output_list)
 
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 58 + 1):
-            output_list.str = output_list.str + "   "
+        for i in range(1, 56):
+            output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(t_credit)
         output_list.pay_famt = to_decimal(t_famt)
 
         if not long_digit:
-            output_list.str = output_list.str + "Sub-Total " +\
-                to_string(t_credit, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(t_famt, "->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "  Sub-Total" +\
+                handling_negative(t_credit, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(t_famt, "->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "Sub-Total " +\
-                to_string(t_credit, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(t_famt, "  ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "  Sub-Total" +\
+                handling_negative(t_credit, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(t_famt, "  ->>>,>>>,>>>,>>9")
         output_list = Output_list()
         output_list_data.append(output_list)
 
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 56 + 1):
+        for i in range(1, 56):
             output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(tot_credit)
         output_list.pay_famt = to_decimal(tot_famt)
 
         if not long_digit:
-            output_list.str = output_list.str + "Grand TOTAL " +\
-                to_string(tot_credit, "->,>>>,>>>,>>9.99") +\
+            output_list.str = output_list.str + "Grand TOTAL" +\
+                handling_negative(tot_credit, "->,>>>,>>>,>>9.99") +\
                 fill(" ", 78) + \
-                to_string(tot_famt, "->>,>>>,>>>,>>9.99")
+                handling_negative(tot_famt, "->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "Grand TOTAL " +\
-                to_string(tot_credit, " ->>>,>>>,>>>,>>9") +\
+            output_list.str = output_list.str + "Grand TOTAL" +\
+                handling_negative(tot_credit, " ->>>,>>>,>>>,>>9") +\
                 fill(" ", 78) + \
-                to_string(tot_famt, "  ->>>,>>>,>>>,>>9")
+                handling_negative(tot_famt, "  ->>>,>>>,>>>,>>9")
 
     def create_list11():
 
@@ -4532,21 +4516,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
-                    for i in range(1, 58 + 1):
-                        output_list.str = output_list.str + "   "
+                    for i in range(1, 56):
+                        output_list.str = output_list.str + " "
                     output_list.pay_amt = to_decimal(tot_saldo)
                     output_list.pay_famt = to_decimal(tot_foreign)
 
                     if not long_digit:
-                        output_list.str = output_list.str + "T O T A L " +\
-                            to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                            fill(" ", 78) +\
-                            to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+                        output_list.str = output_list.str + "  T O T A L" +\
+                            handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                            fill(" ", 79) +\
+                            handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
                     else:
-                        output_list.str = output_list.str + "T O T A L " +\
-                            to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                            fill(" ", 78) +\
-                            to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+                        output_list.str = output_list.str + "  T O T A L" +\
+                            handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                            fill(" ", 79) +\
+                            handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
@@ -4564,21 +4548,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
-                        for i in range(1, 58 + 1):
-                            output_list.str = output_list.str + "   "
+                        for i in range(1, 56):
+                            output_list.str = output_list.str + " "
                         output_list.pay_amt = to_decimal(t_credit)
                         output_list.pay_famt = to_decimal(t_famt)
 
                         if not long_digit:
-                            output_list.str = output_list.str + "Sub-Total " +\
-                                to_string(t_credit, "->,>>>,>>>,>>9.99") +\
-                                fill(" ", 78) +\
-                                to_string(t_famt, "->>,>>>,>>>,>>9.99")
+                            output_list.str = output_list.str + "  Sub-Total" +\
+                                handling_negative(t_credit, "->,>>>,>>>,>>9.99") +\
+                                fill(" ", 79) +\
+                                handling_negative(t_famt, "->>,>>>,>>>,>>9.99")
                         else:
-                            output_list.str = output_list.str + "Sub-Total " +\
-                                to_string(t_credit, " ->>>,>>>,>>>,>>9") +\
-                                fill(" ", 78) +\
-                                to_string(t_famt, "  ->>>,>>>,>>>,>>9")
+                            output_list.str = output_list.str + "  Sub-Total" +\
+                                handling_negative(t_credit, " ->>>,>>>,>>>,>>9") +\
+                                fill(" ", 79) +\
+                                handling_negative(t_famt, "  ->>>,>>>,>>>,>>9")
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
@@ -4653,18 +4637,18 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 if not long_digit:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
-                        to_string(receiver, "x(32)") +\
-                        to_string(debt.saldo, "->,>>>,>>>,>>9.99") +\
-                        to_string(debitor.saldo, "->,>>>,>>>,>>9.99") +\
+                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        substring(to_string(receiver, "x(32)"), 0, 32) +\
+                        handling_negative(debt.saldo, "->,>>>,>>>,>>9.99") +\
+                        handling_negative(debitor.saldo, "->,>>>,>>>,>>9.99") +\
                         to_string(art.bezeich, "x(34)") +\
                         to_string(debitor.rgdatum)
                 else:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
-                        to_string(receiver, "x(32)") +\
-                        to_string(debt.saldo, " ->>>,>>>,>>>,>>9") +\
-                        to_string(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
+                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        substring(to_string(receiver, "x(32)"), 0, 32) +\
+                        handling_negative(debt.saldo, " ->>>,>>>,>>>,>>9") +\
+                        handling_negative(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
                         to_string(art.bezeich, "x(34)") +\
                         to_string(debitor.rgdatum)
                 output_list.bill_num = debitor.rechnr
@@ -4676,7 +4660,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debitor.gastnrmember)]})
 
                 if bguest:
-                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 32)
+                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 30)
 
                 bediener = get_cache(
                     Bediener, {"nr": [(eq, debitor.bediener_nr)]})
@@ -4685,7 +4669,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list.str = output_list.str + \
                         to_string(bediener.userinit, "x(3)")
                 else:
-                    output_list.str = output_list.str + "   "
+                    output_list.str = output_list.str + " "
                 output_list.str = output_list.str + \
                     to_string(debitor.vesrcod, "x(34)")
                 output_list.str = output_list.str + to_string(" ", "x(22)")
@@ -4699,11 +4683,11 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
                 output_list.str = output_list.str + \
-                    to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                    handling_negative(debitor.vesrdep, "->,>>>,>>>,>>9.99")
                 output_list.str = output_list.str + \
                     to_string(debitor.zahlkonto, ">>>>9")
                 output_list.str = output_list.str + \
-                    to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                    handling_negative(debitor.vesrdep, "->,>>>,>>>,>>9.99")
                 output_list.str = output_list.str + \
                     to_string(artikel.bezeich, "x(40)")
 
@@ -4729,70 +4713,68 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 58 + 1):
-            output_list.str = output_list.str + "   "
+        for i in range(1, 56):
+            output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(tot_saldo)
         output_list.pay_famt = to_decimal(tot_foreign)
 
         if not long_digit:
-            output_list.str = output_list.str + "T O T A L " +\
-                to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "  T O T A L" +\
+                handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "T O T A L " +\
-                to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "  T O T A L" +\
+                handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
         output_list = Output_list()
         output_list_data.append(output_list)
 
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 58 + 1):
-            output_list.str = output_list.str + "   "
+        for i in range(1, 56):
+            output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(t_credit)
         output_list.pay_famt = to_decimal(t_famt)
 
         if not long_digit:
-            output_list.str = output_list.str + "Sub-Total " +\
-                to_string(t_credit, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(t_famt, "->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "  Sub-Total" +\
+                handling_negative(t_credit, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(t_famt, "->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "Sub-Total " +\
-                to_string(t_credit, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(t_famt, "  ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "  Sub-Total" +\
+                handling_negative(t_credit, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(t_famt, "  ->>>,>>>,>>>,>>9")
         output_list = Output_list()
         output_list_data.append(output_list)
 
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 56 + 1):
+        for i in range(1, 56):
             output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(tot_credit)
         output_list.pay_famt = to_decimal(tot_famt)
 
         if not long_digit:
-            output_list.str = output_list.str + "Grand TOTAL " +\
-                to_string(tot_credit, "->,>>>,>>>,>>9.99") +\
+            output_list.str = output_list.str + "Grand TOTAL" +\
+                handling_negative(tot_credit, "->,>>>,>>>,>>9.99") +\
                 fill(" ", 78) + \
-                to_string(tot_famt, "->>,>>>,>>>,>>9.99")
+                handling_negative(tot_famt, "->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "Grand TOTAL " +\
-                to_string(tot_credit, " ->>>,>>>,>>>,>>9") +\
+            output_list.str = output_list.str + "Grand TOTAL" +\
+                handling_negative(tot_credit, " ->>>,>>>,>>>,>>9") +\
                 fill(" ", 78) + \
-                to_string(tot_famt, "  ->>>,>>>,>>>,>>9")
+                handling_negative(tot_famt, "  ->>>,>>>,>>>,>>9")
 
     def create_list21():
-
         nonlocal r_no, s_list_data, t_list_data, t_ar_paylist_data, long_digit, htparam, guest, debitor, artikel, bill, bediener, waehrung
         nonlocal comment, cledger, ccard, last_sort, from_date, to_date, from_art, to_art, mi_payment, mi_transfer, show_inv, bill_name, bill_nr
         nonlocal bguest, bdebitor
-
         nonlocal s_list, t_list, output_list, t_ar_paylist, bguest, bdebitor, tbuff, bq
         nonlocal s_list_data, t_list_data, output_list_data, t_ar_paylist_data
 
@@ -4870,21 +4852,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
-                    for i in range(1, 58 + 1):
-                        output_list.str = output_list.str + "   "
+                    for i in range(1, 56):
+                        output_list.str = output_list.str + " "
                     output_list.pay_amt = to_decimal(tot_saldo)
                     output_list.pay_famt = to_decimal(tot_foreign)
 
                     if not long_digit:
-                        output_list.str = output_list.str + "T O T A L " +\
-                            to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                            fill(" ", 78) +\
-                            to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+                        output_list.str = output_list.str + "  T O T A L" +\
+                            handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                            fill(" ", 79) +\
+                            handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
                     else:
-                        output_list.str = output_list.str + "T O T A L " +\
-                            to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                            fill(" ", 78) +\
-                            to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+                        output_list.str = output_list.str + "  T O T A L" +\
+                            handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                            fill(" ", 79) +\
+                            handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
@@ -4902,21 +4884,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
-                        for i in range(1, 58 + 1):
-                            output_list.str = output_list.str + "   "
+                        for i in range(1, 56):
+                            output_list.str = output_list.str + " "
                         output_list.pay_amt = to_decimal(t_credit)
                         output_list.pay_famt = to_decimal(t_famt)
 
                         if not long_digit:
-                            output_list.str = output_list.str + "Sub-Total " +\
-                                to_string(t_credit, "->,>>>,>>>,>>9.99") +\
-                                fill(" ", 78) +\
-                                to_string(t_famt, "->>,>>>,>>>,>>9.99")
+                            output_list.str = output_list.str + "  Sub-Total" +\
+                                handling_negative(t_credit, "->,>>>,>>>,>>9.99") +\
+                                fill(" ", 79) +\
+                                handling_negative(t_famt, "->>,>>>,>>>,>>9.99")
                         else:
-                            output_list.str = output_list.str + "Sub-Total " +\
-                                to_string(t_credit, " ->>>,>>>,>>>,>>9") +\
-                                fill(" ", 78) +\
-                                to_string(t_famt, "  ->>>,>>>,>>>,>>9")
+                            output_list.str = output_list.str + "  Sub-Total" +\
+                                handling_negative(t_credit, " ->>>,>>>,>>>,>>9") +\
+                                fill(" ", 79) +\
+                                handling_negative(t_famt, "  ->>>,>>>,>>>,>>9")
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
@@ -4991,10 +4973,10 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 if not long_digit:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
-                        to_string(receiver, "x(32)") +\
-                        to_string(debt.saldo, "->,>>>,>>>,>>9.99") +\
-                        to_string(debitor.saldo, "->,>>>,>>>,>>9.99") +\
+                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        substring(to_string(receiver, "x(32)"), 0, 32) +\
+                        handling_negative(debt.saldo, "->,>>>,>>>,>>9.99") +\
+                        handling_negative(debitor.saldo, "->,>>>,>>>,>>9.99") +\
                         to_string(art.bezeich, "x(34)") +\
                         to_string(debitor.rgdatum)
                 else:
@@ -5009,7 +4991,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debitor.gastnrmember)]})
 
                 if bguest:
-                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 32)
+                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 30)
 
                 bediener = get_cache(
                     Bediener, {"nr": [(eq, debitor.bediener_nr)]})
@@ -5018,7 +5000,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list.str = output_list.str + \
                         to_string(bediener.userinit, "x(3)")
                 else:
-                    output_list.str = output_list.str + "   "
+                    output_list.str = output_list.str + " "
                 output_list.str = output_list.str + \
                     to_string(debitor.vesrcod, "x(34)")
                 output_list.str = output_list.str + to_string(" ", "x(22)")
@@ -5032,11 +5014,11 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
                 output_list.str = output_list.str + \
-                    to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                    handling_negative(debitor.vesrdep, "->,>>>,>>>,>>9.99")
                 output_list.str = output_list.str + \
                     to_string(debitor.zahlkonto, ">>>>9")
                 output_list.str = output_list.str + \
-                    to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                    handling_negative(debitor.vesrdep, "->,>>>,>>>,>>9.99")
                 output_list.str = output_list.str + \
                     to_string(artikel.bezeich, "x(40)")
 
@@ -5062,70 +5044,68 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 58 + 1):
-            output_list.str = output_list.str + "   "
+        for i in range(1, 56):
+            output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(tot_saldo)
         output_list.pay_famt = to_decimal(tot_foreign)
 
         if not long_digit:
-            output_list.str = output_list.str + "T O T A L " +\
-                to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "  T O T A L" +\
+                handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "T O T A L " +\
-                to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "  T O T A L" +\
+                handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
         output_list = Output_list()
         output_list_data.append(output_list)
 
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 58 + 1):
-            output_list.str = output_list.str + "   "
+        for i in range(1, 56):
+            output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(t_credit)
         output_list.pay_famt = to_decimal(t_famt)
 
         if not long_digit:
-            output_list.str = output_list.str + "Sub-Total " +\
-                to_string(t_credit, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(t_famt, "->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "  Sub-Total" +\
+                handling_negative(t_credit, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(t_famt, "->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "Sub-Total " +\
-                to_string(t_credit, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(t_famt, "  ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "  Sub-Total" +\
+                handling_negative(t_credit, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(t_famt, "  ->>>,>>>,>>>,>>9")
         output_list = Output_list()
         output_list_data.append(output_list)
 
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 56 + 1):
+        for i in range(1, 56):
             output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(tot_credit)
         output_list.pay_famt = to_decimal(tot_famt)
 
         if not long_digit:
-            output_list.str = output_list.str + "Grand TOTAL " +\
-                to_string(tot_credit, "->,>>>,>>>,>>9.99") +\
+            output_list.str = output_list.str + "Grand TOTAL" +\
+                handling_negative(tot_credit, "->,>>>,>>>,>>9.99") +\
                 fill(" ", 78) + \
-                to_string(tot_famt, "->>,>>>,>>>,>>9.99")
+                handling_negative(tot_famt, "->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "Grand TOTAL " +\
-                to_string(tot_credit, " ->>>,>>>,>>>,>>9") +\
+            output_list.str = output_list.str + "Grand TOTAL" +\
+                handling_negative(tot_credit, " ->>>,>>>,>>>,>>9") +\
                 fill(" ", 78) + \
-                to_string(tot_famt, "  ->>>,>>>,>>>,>>9")
+                handling_negative(tot_famt, "  ->>>,>>>,>>>,>>9")
 
     def create_list31():
-
         nonlocal r_no, s_list_data, t_list_data, t_ar_paylist_data, long_digit, htparam, guest, debitor, artikel, bill, bediener, waehrung
         nonlocal comment, cledger, ccard, last_sort, from_date, to_date, from_art, to_art, mi_payment, mi_transfer, show_inv, bill_name, bill_nr
         nonlocal bguest, bdebitor
-
         nonlocal s_list, t_list, output_list, t_ar_paylist, bguest, bdebitor, tbuff, bq
         nonlocal s_list_data, t_list_data, output_list_data, t_ar_paylist_data
 
@@ -5203,21 +5183,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
-                    for i in range(1, 58 + 1):
-                        output_list.str = output_list.str + "   "
+                    for i in range(1, 56):
+                        output_list.str = output_list.str + " "
                     output_list.pay_amt = to_decimal(tot_saldo)
                     output_list.pay_famt = to_decimal(tot_foreign)
 
                     if not long_digit:
-                        output_list.str = output_list.str + "T O T A L " +\
-                            to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                            fill(" ", 78) +\
-                            to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+                        output_list.str = output_list.str + "  T O T A L" +\
+                            handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                            fill(" ", 79) +\
+                            handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
                     else:
-                        output_list.str = output_list.str + "T O T A L " +\
-                            to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                            fill(" ", 78) +\
-                            to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+                        output_list.str = output_list.str + "  T O T A L" +\
+                            handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                            fill(" ", 79) +\
+                            handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
@@ -5235,21 +5215,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
-                        for i in range(1, 58 + 1):
-                            output_list.str = output_list.str + "   "
+                        for i in range(1, 56):
+                            output_list.str = output_list.str + " "
                         output_list.pay_amt = to_decimal(t_credit)
                         output_list.pay_famt = to_decimal(t_famt)
 
                         if not long_digit:
-                            output_list.str = output_list.str + "Sub-Total " +\
-                                to_string(t_credit, "->,>>>,>>>,>>9.99") +\
-                                fill(" ", 78) +\
-                                to_string(t_famt, "->>,>>>,>>>,>>9.99")
+                            output_list.str = output_list.str + "  Sub-Total" +\
+                                handling_negative(t_credit, "->,>>>,>>>,>>9.99") +\
+                                fill(" ", 79) +\
+                                handling_negative(t_famt, "->>,>>>,>>>,>>9.99")
                         else:
-                            output_list.str = output_list.str + "Sub-Total " +\
-                                to_string(t_credit, " ->>>,>>>,>>>,>>9") +\
-                                fill(" ", 78) +\
-                                to_string(t_famt, "  ->>>,>>>,>>>,>>9")
+                            output_list.str = output_list.str + "  Sub-Total" +\
+                                handling_negative(t_credit, " ->>>,>>>,>>>,>>9") +\
+                                fill(" ", 79) +\
+                                handling_negative(t_famt, "  ->>>,>>>,>>>,>>9")
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
@@ -5324,18 +5304,18 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 if not long_digit:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
-                        to_string(receiver, "x(32)") +\
-                        to_string(debt.saldo, "->,>>>,>>>,>>9.99") +\
-                        to_string(debitor.saldo, "->,>>>,>>>,>>9.99") +\
+                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        substring(to_string(receiver, "x(32)"), 0, 32) +\
+                        handling_negative(debt.saldo, "->,>>>,>>>,>>9.99") +\
+                        handling_negative(debitor.saldo, "->,>>>,>>>,>>9.99") +\
                         to_string(art.bezeich, "x(34)") +\
                         to_string(debitor.rgdatum)
                 else:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
-                        to_string(receiver, "x(32)") +\
-                        to_string(debt.saldo, " ->>>,>>>,>>>,>>9") +\
-                        to_string(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
+                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        substring(to_string(receiver, "x(32)"), 0, 32) +\
+                        handling_negative(debt.saldo, " ->>>,>>>,>>>,>>9") +\
+                        handling_negative(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
                         to_string(art.bezeich, "x(34)") +\
                         to_string(debitor.rgdatum)
                 output_list.bill_num = debitor.rechnr
@@ -5347,7 +5327,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debitor.gastnrmember)]})
 
                 if bguest:
-                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 32)
+                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 30)
 
                 bediener = get_cache(
                     Bediener, {"nr": [(eq, debitor.bediener_nr)]})
@@ -5356,7 +5336,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list.str = output_list.str + \
                         to_string(bediener.userinit, "x(3)")
                 else:
-                    output_list.str = output_list.str + "   "
+                    output_list.str = output_list.str + " "
                 output_list.str = output_list.str + \
                     to_string(debitor.vesrcod, "x(34)")
                 output_list.str = output_list.str + to_string(" ", "x(22)")
@@ -5370,11 +5350,11 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
                 output_list.str = output_list.str + \
-                    to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                    handling_negative(debitor.vesrdep, "->,>>>,>>>,>>9.99")
                 output_list.str = output_list.str + \
                     to_string(debitor.zahlkonto, ">>>>9")
                 output_list.str = output_list.str + \
-                    to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                    handling_negative(debitor.vesrdep, "->,>>>,>>>,>>9.99")
                 output_list.str = output_list.str + \
                     to_string(artikel.bezeich, "x(40)")
 
@@ -5400,70 +5380,68 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 58 + 1):
-            output_list.str = output_list.str + "   "
+        for i in range(1, 56):
+            output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(tot_saldo)
         output_list.pay_famt = to_decimal(tot_foreign)
 
         if not long_digit:
-            output_list.str = output_list.str + "T O T A L " +\
-                to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "  T O T A L" +\
+                handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "T O T A L " +\
-                to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "  T O T A L" +\
+                handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
         output_list = Output_list()
         output_list_data.append(output_list)
 
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 58 + 1):
-            output_list.str = output_list.str + "   "
+        for i in range(1, 56):
+            output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(t_credit)
         output_list.pay_famt = to_decimal(t_famt)
 
         if not long_digit:
-            output_list.str = output_list.str + "Sub-Total " +\
-                to_string(t_credit, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(t_famt, "->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "  Sub-Total" +\
+                handling_negative(t_credit, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(t_famt, "->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "Sub-Total " +\
-                to_string(t_credit, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(t_famt, "  ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "  Sub-Total" +\
+                handling_negative(t_credit, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(t_famt, "  ->>>,>>>,>>>,>>9")
         output_list = Output_list()
         output_list_data.append(output_list)
 
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 56 + 1):
+        for i in range(1, 56):
             output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(tot_credit)
         output_list.pay_famt = to_decimal(tot_famt)
 
         if not long_digit:
-            output_list.str = output_list.str + "Grand TOTAL " +\
-                to_string(tot_credit, "->,>>>,>>>,>>9.99") +\
+            output_list.str = output_list.str + "Grand TOTAL" +\
+                handling_negative(tot_credit, "->,>>>,>>>,>>9.99") +\
                 fill(" ", 78) + \
-                to_string(tot_famt, "->>,>>>,>>>,>>9.99")
+                handling_negative(tot_famt, "->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "Grand TOTAL " +\
-                to_string(tot_credit, " ->>>,>>>,>>>,>>9") +\
+            output_list.str = output_list.str + "Grand TOTAL" +\
+                handling_negative(tot_credit, " ->>>,>>>,>>>,>>9") +\
                 fill(" ", 78) + \
-                to_string(tot_famt, "  ->>>,>>>,>>>,>>9")
+                handling_negative(tot_famt, "  ->>>,>>>,>>>,>>9")
 
     def create_list2b():
-
         nonlocal r_no, s_list_data, t_list_data, t_ar_paylist_data, long_digit, htparam, guest, debitor, artikel, bill, bediener, waehrung
         nonlocal comment, cledger, ccard, last_sort, from_date, to_date, from_art, to_art, mi_payment, mi_transfer, show_inv, bill_name, bill_nr
         nonlocal bguest, bdebitor
-
         nonlocal s_list, t_list, output_list, t_ar_paylist, bguest, bdebitor, tbuff, bq
         nonlocal s_list_data, t_list_data, output_list_data, t_ar_paylist_data
 
@@ -5541,21 +5519,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
-                    for i in range(1, 58 + 1):
-                        output_list.str = output_list.str + "   "
+                    for i in range(1, 56):
+                        output_list.str = output_list.str + " "
                     output_list.pay_amt = to_decimal(tot_saldo)
                     output_list.pay_famt = to_decimal(tot_foreign)
 
                     if not long_digit:
-                        output_list.str = output_list.str + "T O T A L " +\
-                            to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                            fill(" ", 78) +\
-                            to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+                        output_list.str = output_list.str + "  T O T A L" +\
+                            handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                            fill(" ", 79) +\
+                            handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
                     else:
-                        output_list.str = output_list.str + "T O T A L " +\
-                            to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                            fill(" ", 78) +\
-                            to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+                        output_list.str = output_list.str + "  T O T A L" +\
+                            handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                            fill(" ", 79) +\
+                            handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
@@ -5573,21 +5551,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
-                        for i in range(1, 58 + 1):
-                            output_list.str = output_list.str + "   "
+                        for i in range(1, 56):
+                            output_list.str = output_list.str + " "
                         output_list.pay_amt = to_decimal(t_credit)
                         output_list.pay_famt = to_decimal(t_famt)
 
                         if not long_digit:
-                            output_list.str = output_list.str + "Sub-Total " +\
-                                to_string(t_credit, "->,>>>,>>>,>>9.99") +\
-                                fill(" ", 78) +\
-                                to_string(t_famt, "->>,>>>,>>>,>>9.99")
+                            output_list.str = output_list.str + "  Sub-Total" +\
+                                handling_negative(t_credit, "->,>>>,>>>,>>9.99") +\
+                                fill(" ", 79) +\
+                                handling_negative(t_famt, "->>,>>>,>>>,>>9.99")
                         else:
-                            output_list.str = output_list.str + "Sub-Total " +\
-                                to_string(t_credit, " ->>>,>>>,>>>,>>9") +\
-                                fill(" ", 78) +\
-                                to_string(t_famt, "  ->>>,>>>,>>>,>>9")
+                            output_list.str = output_list.str + "  Sub-Total" +\
+                                handling_negative(t_credit, " ->>>,>>>,>>>,>>9") +\
+                                fill(" ", 79) +\
+                                handling_negative(t_famt, "  ->>>,>>>,>>>,>>9")
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
@@ -5662,18 +5640,18 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 if not long_digit:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
-                        to_string(receiver, "x(32)") +\
-                        to_string(debt.saldo, "->,>>>,>>>,>>9.99") +\
-                        to_string(debitor.saldo, "->,>>>,>>>,>>9.99") +\
+                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        substring(to_string(receiver, "x(32)"), 0, 32) +\
+                        handling_negative(debt.saldo, "->,>>>,>>>,>>9.99") +\
+                        handling_negative(debitor.saldo, "->,>>>,>>>,>>9.99") +\
                         to_string(art.bezeich, "x(34)") +\
                         to_string(debitor.rgdatum)
                 else:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
-                        to_string(receiver, "x(32)") +\
-                        to_string(debt.saldo, " ->>>,>>>,>>>,>>9") +\
-                        to_string(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
+                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        substring(to_string(receiver, "x(32)"), 0, 32) +\
+                        handling_negative(debt.saldo, " ->>>,>>>,>>>,>>9") +\
+                        handling_negative(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
                         to_string(art.bezeich, "x(34)") +\
                         to_string(debitor.rgdatum)
                 output_list.bill_num = debitor.rechnr
@@ -5685,7 +5663,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debitor.gastnrmember)]})
 
                 if bguest:
-                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 32)
+                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 30)
 
                 bediener = get_cache(
                     Bediener, {"nr": [(eq, debitor.bediener_nr)]})
@@ -5694,7 +5672,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list.str = output_list.str + \
                         to_string(bediener.userinit, "x(3)")
                 else:
-                    output_list.str = output_list.str + "   "
+                    output_list.str = output_list.str + " "
                 output_list.str = output_list.str + \
                     to_string(debitor.vesrcod, "x(34)")
                 output_list.str = output_list.str + to_string(" ", "x(22)")
@@ -5708,11 +5686,11 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
                 output_list.str = output_list.str + \
-                    to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                    handling_negative(debitor.vesrdep, "->,>>>,>>>,>>9.99")
                 output_list.str = output_list.str + \
                     to_string(debitor.zahlkonto, ">>>>9")
                 output_list.str = output_list.str + \
-                    to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                    handling_negative(debitor.vesrdep, "->,>>>,>>>,>>9.99")
                 output_list.str = output_list.str + \
                     to_string(artikel.bezeich, "x(40)")
 
@@ -5738,71 +5716,69 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 58 + 1):
-            output_list.str = output_list.str + "   "
+        for i in range(1, 56):
+            output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(tot_saldo)
         output_list.pay_famt = to_decimal(tot_foreign)
 
         if not long_digit:
-            output_list.str = output_list.str + "T O T A L " +\
-                to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "  T O T A L" +\
+                handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "T O T A L " +\
-                to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "  T O T A L" +\
+                handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
         output_list = Output_list()
         output_list_data.append(output_list)
 
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 58 + 1):
-            output_list.str = output_list.str + "   "
+        for i in range(1, 56):
+            output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(t_credit)
         output_list.pay_famt = to_decimal(t_famt)
 
         if not long_digit:
-            output_list.str = output_list.str + "Sub-Total " +\
-                to_string(t_credit, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(t_famt, "->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "  Sub-Total" +\
+                handling_negative(t_credit, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(t_famt, "->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "Sub-Total " +\
-                to_string(t_credit, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(t_famt, "  ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "  Sub-Total" +\
+                handling_negative(t_credit, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(t_famt, "  ->>>,>>>,>>>,>>9")
         output_list = Output_list()
         output_list_data.append(output_list)
 
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 56 + 1):
+        for i in range(1, 56):
             output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(tot_credit)
         output_list.pay_famt = to_decimal(tot_famt)
 
         if not long_digit:
-            output_list.str = output_list.str + "Grand TOTAL " +\
-                to_string(tot_credit, "->,>>>,>>>,>>9.99") +\
+            output_list.str = output_list.str + "Grand TOTAL" +\
+                handling_negative(tot_credit, "->,>>>,>>>,>>9.99") +\
                 fill(" ", 78) + \
-                to_string(tot_famt, "->>,>>>,>>>,>>9.99")
+                handling_negative(tot_famt, "->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "Grand TOTAL " +\
-                to_string(tot_credit, " ->>>,>>>,>>>,>>9") +\
+            output_list.str = output_list.str + "Grand TOTAL" +\
+                handling_negative(tot_credit, " ->>>,>>>,>>>,>>9") +\
                 fill(" ", 78) + \
-                to_string(tot_famt, "  ->>>,>>>,>>>,>>9")
+                handling_negative(tot_famt, "  ->>>,>>>,>>>,>>9")
         create_tot_payment()
 
     def create_list2c():
-
         nonlocal r_no, s_list_data, t_list_data, t_ar_paylist_data, long_digit, htparam, guest, debitor, artikel, bill, bediener, waehrung
         nonlocal comment, cledger, ccard, last_sort, from_date, to_date, from_art, to_art, mi_payment, mi_transfer, show_inv, bill_name, bill_nr
         nonlocal bguest, bdebitor
-
         nonlocal s_list, t_list, output_list, t_ar_paylist, bguest, bdebitor, tbuff, bq
         nonlocal s_list_data, t_list_data, output_list_data, t_ar_paylist_data
 
@@ -5880,21 +5856,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
-                    for i in range(1, 58 + 1):
-                        output_list.str = output_list.str + "   "
+                    for i in range(1, 56):
+                        output_list.str = output_list.str + " "
                     output_list.pay_amt = to_decimal(tot_saldo)
                     output_list.pay_famt = to_decimal(tot_foreign)
 
                     if not long_digit:
-                        output_list.str = output_list.str + "T O T A L " +\
-                            to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                            fill(" ", 78) +\
-                            to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+                        output_list.str = output_list.str + "  T O T A L" +\
+                            handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                            fill(" ", 79) +\
+                            handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
                     else:
-                        output_list.str = output_list.str + "T O T A L " +\
-                            to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                            fill(" ", 78) +\
-                            to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+                        output_list.str = output_list.str + "  T O T A L" +\
+                            handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                            fill(" ", 79) +\
+                            handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
@@ -5912,21 +5888,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
-                        for i in range(1, 58 + 1):
-                            output_list.str = output_list.str + "   "
+                        for i in range(1, 56):
+                            output_list.str = output_list.str + " "
                         output_list.pay_amt = to_decimal(t_credit)
                         output_list.pay_famt = to_decimal(t_famt)
 
                         if not long_digit:
-                            output_list.str = output_list.str + "Sub-Total " +\
-                                to_string(t_credit, "->,>>>,>>>,>>9.99") +\
-                                fill(" ", 78) +\
-                                to_string(t_famt, "->>,>>>,>>>,>>9.99")
+                            output_list.str = output_list.str + "  Sub-Total" +\
+                                handling_negative(t_credit, "->,>>>,>>>,>>9.99") +\
+                                fill(" ", 79) +\
+                                handling_negative(t_famt, "->>,>>>,>>>,>>9.99")
                         else:
-                            output_list.str = output_list.str + "Sub-Total " +\
-                                to_string(t_credit, " ->>>,>>>,>>>,>>9") +\
-                                fill(" ", 78) +\
-                                to_string(t_famt, "  ->>>,>>>,>>>,>>9")
+                            output_list.str = output_list.str + "  Sub-Total" +\
+                                handling_negative(t_credit, " ->>>,>>>,>>>,>>9") +\
+                                fill(" ", 79) +\
+                                handling_negative(t_famt, "  ->>>,>>>,>>>,>>9")
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
@@ -6001,18 +5977,18 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 if not long_digit:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
-                        to_string(receiver, "x(32)") +\
-                        to_string(debt.saldo, "->,>>>,>>>,>>9.99") +\
-                        to_string(debitor.saldo, "->,>>>,>>>,>>9.99") +\
+                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        substring(to_string(receiver, "x(32)"), 0, 32) +\
+                        handling_negative(debt.saldo, "->,>>>,>>>,>>9.99") +\
+                        handling_negative(debitor.saldo, "->,>>>,>>>,>>9.99") +\
                         to_string(art.bezeich, "x(34)") +\
                         to_string(debitor.rgdatum)
                 else:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
-                        to_string(receiver, "x(32)") +\
-                        to_string(debt.saldo, " ->>>,>>>,>>>,>>9") +\
-                        to_string(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
+                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        substring(to_string(receiver, "x(32)"), 0, 32) +\
+                        handling_negative(debt.saldo, " ->>>,>>>,>>>,>>9") +\
+                        handling_negative(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
                         to_string(art.bezeich, "x(34)") +\
                         to_string(debitor.rgdatum)
                 output_list.bill_num = debitor.rechnr
@@ -6024,7 +6000,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debitor.gastnrmember)]})
 
                 if bguest:
-                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 32)
+                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 30)
 
                 bediener = get_cache(
                     Bediener, {"nr": [(eq, debitor.bediener_nr)]})
@@ -6033,7 +6009,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list.str = output_list.str + \
                         to_string(bediener.userinit, "x(3)")
                 else:
-                    output_list.str = output_list.str + "   "
+                    output_list.str = output_list.str + " "
                 output_list.str = output_list.str + \
                     to_string(debitor.vesrcod, "x(34)")
                 output_list.str = output_list.str + to_string(" ", "x(22)")
@@ -6047,11 +6023,11 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
                 output_list.str = output_list.str + \
-                    to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                    handling_negative(debitor.vesrdep, "->,>>>,>>>,>>9.99")
                 output_list.str = output_list.str + \
                     to_string(debitor.zahlkonto, ">>>>9")
                 output_list.str = output_list.str + \
-                    to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                    handling_negative(debitor.vesrdep, "->,>>>,>>>,>>9.99")
                 output_list.str = output_list.str + \
                     to_string(artikel.bezeich, "x(40)")
 
@@ -6077,71 +6053,69 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 58 + 1):
-            output_list.str = output_list.str + "   "
+        for i in range(1, 56):
+            output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(tot_saldo)
         output_list.pay_famt = to_decimal(tot_foreign)
 
         if not long_digit:
-            output_list.str = output_list.str + "T O T A L " +\
-                to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "  T O T A L" +\
+                handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "T O T A L " +\
-                to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "  T O T A L" +\
+                handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
         output_list = Output_list()
         output_list_data.append(output_list)
 
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 58 + 1):
-            output_list.str = output_list.str + "   "
+        for i in range(1, 56):
+            output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(t_credit)
         output_list.pay_famt = to_decimal(t_famt)
 
         if not long_digit:
-            output_list.str = output_list.str + "Sub-Total " +\
-                to_string(t_credit, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(t_famt, "->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "  Sub-Total" +\
+                handling_negative(t_credit, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(t_famt, "->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "Sub-Total " +\
-                to_string(t_credit, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(t_famt, "  ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "  Sub-Total" +\
+                handling_negative(t_credit, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(t_famt, "  ->>>,>>>,>>>,>>9")
         output_list = Output_list()
         output_list_data.append(output_list)
 
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 56 + 1):
+        for i in range(1, 56):
             output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(tot_credit)
         output_list.pay_famt = to_decimal(tot_famt)
 
         if not long_digit:
-            output_list.str = output_list.str + "Grand TOTAL " +\
-                to_string(tot_credit, "->,>>>,>>>,>>9.99") +\
+            output_list.str = output_list.str + "Grand TOTAL" +\
+                handling_negative(tot_credit, "->,>>>,>>>,>>9.99") +\
                 fill(" ", 78) + \
-                to_string(tot_famt, "->>,>>>,>>>,>>9.99")
+                handling_negative(tot_famt, "->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "Grand TOTAL " +\
-                to_string(tot_credit, " ->>>,>>>,>>>,>>9") +\
+            output_list.str = output_list.str + "Grand TOTAL" +\
+                handling_negative(tot_credit, " ->>>,>>>,>>>,>>9") +\
                 fill(" ", 78) + \
-                to_string(tot_famt, "  ->>>,>>>,>>>,>>9")
+                handling_negative(tot_famt, "  ->>>,>>>,>>>,>>9")
         create_tot_payment()
 
     def create_list2d():
-
         nonlocal r_no, s_list_data, t_list_data, t_ar_paylist_data, long_digit, htparam, guest, debitor, artikel, bill, bediener, waehrung
         nonlocal comment, cledger, ccard, last_sort, from_date, to_date, from_art, to_art, mi_payment, mi_transfer, show_inv, bill_name, bill_nr
         nonlocal bguest, bdebitor
-
         nonlocal s_list, t_list, output_list, t_ar_paylist, bguest, bdebitor, tbuff, bq
         nonlocal s_list_data, t_list_data, output_list_data, t_ar_paylist_data
 
@@ -6219,21 +6193,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
-                    for i in range(1, 58 + 1):
-                        output_list.str = output_list.str + "   "
+                    for i in range(1, 56):
+                        output_list.str = output_list.str + " "
                     output_list.pay_amt = to_decimal(tot_saldo)
                     output_list.pay_famt = to_decimal(tot_foreign)
 
                     if not long_digit:
-                        output_list.str = output_list.str + "T O T A L " +\
-                            to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                            fill(" ", 78) +\
-                            to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+                        output_list.str = output_list.str + "  T O T A L" +\
+                            handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                            fill(" ", 79) +\
+                            handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
                     else:
-                        output_list.str = output_list.str + "T O T A L " +\
-                            to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                            fill(" ", 78) +\
-                            to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+                        output_list.str = output_list.str + "  T O T A L" +\
+                            handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                            fill(" ", 79) +\
+                            handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
@@ -6251,21 +6225,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
-                        for i in range(1, 58 + 1):
-                            output_list.str = output_list.str + "   "
+                        for i in range(1, 56):
+                            output_list.str = output_list.str + " "
                         output_list.pay_amt = to_decimal(t_credit)
                         output_list.pay_famt = to_decimal(t_famt)
 
                         if not long_digit:
-                            output_list.str = output_list.str + "Sub-Total " +\
-                                to_string(t_credit, "->,>>>,>>>,>>9.99") +\
-                                fill(" ", 78) +\
-                                to_string(t_famt, "->>,>>>,>>>,>>9.99")
+                            output_list.str = output_list.str + "  Sub-Total" +\
+                                handling_negative(t_credit, "->,>>>,>>>,>>9.99") +\
+                                fill(" ", 79) +\
+                                handling_negative(t_famt, "->>,>>>,>>>,>>9.99")
                         else:
-                            output_list.str = output_list.str + "Sub-Total " +\
-                                to_string(t_credit, " ->>>,>>>,>>>,>>9") +\
-                                fill(" ", 78) +\
-                                to_string(t_famt, "  ->>>,>>>,>>>,>>9")
+                            output_list.str = output_list.str + "  Sub-Total" +\
+                                handling_negative(t_credit, " ->>>,>>>,>>>,>>9") +\
+                                fill(" ", 79) +\
+                                handling_negative(t_famt, "  ->>>,>>>,>>>,>>9")
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
@@ -6340,18 +6314,18 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 if not long_digit:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
-                        to_string(receiver, "x(32)") +\
-                        to_string(debt.saldo, "->,>>>,>>>,>>9.99") +\
-                        to_string(debitor.saldo, "->,>>>,>>>,>>9.99") +\
+                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        substring(to_string(receiver, "x(32)"), 0, 32) +\
+                        handling_negative(debt.saldo, "->,>>>,>>>,>>9.99") +\
+                        handling_negative(debitor.saldo, "->,>>>,>>>,>>9.99") +\
                         to_string(art.bezeich, "x(34)") +\
                         to_string(debitor.rgdatum)
                 else:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
-                        to_string(receiver, "x(32)") +\
-                        to_string(debt.saldo, " ->>>,>>>,>>>,>>9") +\
-                        to_string(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
+                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        substring(to_string(receiver, "x(32)"), 0, 32) +\
+                        handling_negative(debt.saldo, " ->>>,>>>,>>>,>>9") +\
+                        handling_negative(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
                         to_string(art.bezeich, "x(34)") +\
                         to_string(debitor.rgdatum)
                 output_list.bill_num = debitor.rechnr
@@ -6363,7 +6337,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debitor.gastnrmember)]})
 
                 if bguest:
-                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 32)
+                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 30)
 
                 bediener = get_cache(
                     Bediener, {"nr": [(eq, debitor.bediener_nr)]})
@@ -6372,7 +6346,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list.str = output_list.str + \
                         to_string(bediener.userinit, "x(3)")
                 else:
-                    output_list.str = output_list.str + "   "
+                    output_list.str = output_list.str + " "
                 output_list.str = output_list.str + \
                     to_string(debitor.vesrcod, "x(34)")
                 output_list.str = output_list.str + to_string(" ", "x(22)")
@@ -6386,11 +6360,11 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
                 output_list.str = output_list.str + \
-                    to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                    handling_negative(debitor.vesrdep, "->,>>>,>>>,>>9.99")
                 output_list.str = output_list.str + \
                     to_string(debitor.zahlkonto, ">>>>9")
                 output_list.str = output_list.str + \
-                    to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                    handling_negative(debitor.vesrdep, "->,>>>,>>>,>>9.99")
                 output_list.str = output_list.str + \
                     to_string(artikel.bezeich, "x(40)")
 
@@ -6416,71 +6390,69 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 58 + 1):
-            output_list.str = output_list.str + "   "
+        for i in range(1, 56):
+            output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(tot_saldo)
         output_list.pay_famt = to_decimal(tot_foreign)
 
         if not long_digit:
-            output_list.str = output_list.str + "T O T A L " +\
-                to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "  T O T A L" +\
+                handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "T O T A L " +\
-                to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "  T O T A L" +\
+                handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
         output_list = Output_list()
         output_list_data.append(output_list)
 
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 58 + 1):
-            output_list.str = output_list.str + "   "
+        for i in range(1, 56):
+            output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(t_credit)
         output_list.pay_famt = to_decimal(t_famt)
 
         if not long_digit:
-            output_list.str = output_list.str + "Sub-Total " +\
-                to_string(t_credit, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(t_famt, "->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "  Sub-Total" +\
+                handling_negative(t_credit, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(t_famt, "->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "Sub-Total " +\
-                to_string(t_credit, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(t_famt, "  ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "  Sub-Total" +\
+                handling_negative(t_credit, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(t_famt, "  ->>>,>>>,>>>,>>9")
         output_list = Output_list()
         output_list_data.append(output_list)
 
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 56 + 1):
+        for i in range(1, 56):
             output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(tot_credit)
         output_list.pay_famt = to_decimal(tot_famt)
 
         if not long_digit:
-            output_list.str = output_list.str + "Grand TOTAL " +\
-                to_string(tot_credit, "->,>>>,>>>,>>9.99") +\
+            output_list.str = output_list.str + "Grand TOTAL" +\
+                handling_negative(tot_credit, "->,>>>,>>>,>>9.99") +\
                 fill(" ", 78) + \
-                to_string(tot_famt, "->>,>>>,>>>,>>9.99")
+                handling_negative(tot_famt, "->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "Grand TOTAL " +\
-                to_string(tot_credit, " ->>>,>>>,>>>,>>9") +\
+            output_list.str = output_list.str + "Grand TOTAL" +\
+                handling_negative(tot_credit, " ->>>,>>>,>>>,>>9") +\
                 fill(" ", 78) + \
-                to_string(tot_famt, "->>,>>>,>>>,>>9.99")
+                handling_negative(tot_famt, "->>,>>>,>>>,>>9.99")
         create_tot_payment()
 
     def create_list2e():
-
         nonlocal r_no, s_list_data, t_list_data, t_ar_paylist_data, long_digit, htparam, guest, debitor, artikel, bill, bediener, waehrung
         nonlocal comment, cledger, ccard, last_sort, from_date, to_date, from_art, to_art, mi_payment, mi_transfer, show_inv, bill_name, bill_nr
         nonlocal bguest, bdebitor
-
         nonlocal s_list, t_list, output_list, t_ar_paylist, bguest, bdebitor, tbuff, bq
         nonlocal s_list_data, t_list_data, output_list_data, t_ar_paylist_data
 
@@ -6558,21 +6530,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
-                    for i in range(1, 58 + 1):
-                        output_list.str = output_list.str + "   "
+                    for i in range(1, 56):
+                        output_list.str = output_list.str + " "
                     output_list.pay_amt = to_decimal(tot_saldo)
                     output_list.pay_famt = to_decimal(tot_foreign)
 
                     if not long_digit:
-                        output_list.str = output_list.str + "T O T A L " +\
-                            to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                            fill(" ", 78) +\
-                            to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+                        output_list.str = output_list.str + "  T O T A L" +\
+                            handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                            fill(" ", 79) +\
+                            handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
                     else:
-                        output_list.str = output_list.str + "T O T A L " +\
-                            to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                            fill(" ", 78) +\
-                            to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+                        output_list.str = output_list.str + "  T O T A L" +\
+                            handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                            fill(" ", 79) +\
+                            handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
@@ -6590,21 +6562,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
-                        for i in range(1, 58 + 1):
-                            output_list.str = output_list.str + "   "
+                        for i in range(1, 56):
+                            output_list.str = output_list.str + " "
                         output_list.pay_amt = to_decimal(tot_saldo)
                         output_list.pay_famt = to_decimal(t_famt)
 
                         if not long_digit:
-                            output_list.str = output_list.str + "Sub-Total " +\
-                                to_string(t_credit, "->,>>>,>>>,>>9.99") +\
-                                fill(" ", 78) +\
-                                to_string(t_famt, "->>,>>>,>>>,>>9.99")
+                            output_list.str = output_list.str + "  Sub-Total" +\
+                                handling_negative(t_credit, "->,>>>,>>>,>>9.99") +\
+                                fill(" ", 79) +\
+                                handling_negative(t_famt, "->>,>>>,>>>,>>9.99")
                         else:
-                            output_list.str = output_list.str + "Sub-Total " +\
-                                to_string(t_credit, " ->>>,>>>,>>>,>>9") +\
-                                fill(" ", 78) +\
-                                to_string(t_famt, "  ->>>,>>>,>>>,>>9")
+                            output_list.str = output_list.str + "  Sub-Total" +\
+                                handling_negative(t_credit, " ->>>,>>>,>>>,>>9") +\
+                                fill(" ", 79) +\
+                                handling_negative(t_famt, "  ->>>,>>>,>>>,>>9")
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
@@ -6679,18 +6651,18 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 if not long_digit:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
-                        to_string(receiver, "x(32)") +\
-                        to_string(debt.saldo, "->,>>>,>>>,>>9.99") +\
-                        to_string(debitor.saldo, "->,>>>,>>>,>>9.99") +\
+                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        substring(to_string(receiver, "x(32)"), 0, 32) +\
+                        handling_negative(debt.saldo, "->,>>>,>>>,>>9.99") +\
+                        handling_negative(debitor.saldo, "->,>>>,>>>,>>9.99") +\
                         to_string(art.bezeich, "x(34)") +\
                         to_string(debitor.rgdatum)
                 else:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
-                        to_string(receiver, "x(32)") +\
-                        to_string(debt.saldo, " ->>>,>>>,>>>,>>9") +\
-                        to_string(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
+                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        substring(to_string(receiver, "x(32)"), 0, 32) +\
+                        handling_negative(debt.saldo, " ->>>,>>>,>>>,>>9") +\
+                        handling_negative(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
                         to_string(art.bezeich, "x(34)") +\
                         to_string(debitor.rgdatum)
                 output_list.bill_num = debitor.rechnr
@@ -6702,7 +6674,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debitor.gastnrmember)]})
 
                 if bguest:
-                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 32)
+                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 30)
 
                 bediener = get_cache(
                     Bediener, {"nr": [(eq, debitor.bediener_nr)]})
@@ -6711,7 +6683,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list.str = output_list.str + \
                         to_string(bediener.userinit, "x(3)")
                 else:
-                    output_list.str = output_list.str + "   "
+                    output_list.str = output_list.str + " "
                 output_list.str = output_list.str + \
                     to_string(debitor.vesrcod, "x(34)")
                 output_list.str = output_list.str + to_string(" ", "x(22)")
@@ -6725,11 +6697,11 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
                 output_list.str = output_list.str + \
-                    to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                    handling_negative(debitor.vesrdep, "->,>>>,>>>,>>9.99")
                 output_list.str = output_list.str + \
                     to_string(debitor.zahlkonto, ">>>>9")
                 output_list.str = output_list.str + \
-                    to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                    handling_negative(debitor.vesrdep, "->,>>>,>>>,>>9.99")
                 output_list.str = output_list.str + \
                     to_string(artikel.bezeich, "x(40)")
 
@@ -6755,71 +6727,69 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 58 + 1):
-            output_list.str = output_list.str + "   "
+        for i in range(1, 56):
+            output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(tot_saldo)
         output_list.pay_famt = to_decimal(tot_foreign)
 
         if not long_digit:
-            output_list.str = output_list.str + "T O T A L " +\
-                to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "  T O T A L" +\
+                handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "T O T A L " +\
-                to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "  T O T A L" +\
+                handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
         output_list = Output_list()
         output_list_data.append(output_list)
 
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 58 + 1):
-            output_list.str = output_list.str + "   "
+        for i in range(1, 56):
+            output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(t_credit)
         output_list.pay_famt = to_decimal(t_famt)
 
         if not long_digit:
-            output_list.str = output_list.str + "Sub-Total " +\
-                to_string(t_credit, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(t_famt, "->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "  Sub-Total" +\
+                handling_negative(t_credit, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(t_famt, "->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "Sub-Total " +\
-                to_string(t_credit, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(t_famt, "  ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "  Sub-Total" +\
+                handling_negative(t_credit, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(t_famt, "  ->>>,>>>,>>>,>>9")
         output_list = Output_list()
         output_list_data.append(output_list)
 
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 56 + 1):
+        for i in range(1, 56):
             output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(tot_credit)
         output_list.pay_famt = to_decimal(tot_famt)
 
         if not long_digit:
-            output_list.str = output_list.str + "Grand TOTAL " +\
-                to_string(tot_credit, "->,>>>,>>>,>>9.99") +\
+            output_list.str = output_list.str + "Grand TOTAL" +\
+                handling_negative(tot_credit, "->,>>>,>>>,>>9.99") +\
                 fill(" ", 78) + \
-                to_string(tot_famt, "->>,>>>,>>>,>>9.99")
+                handling_negative(tot_famt, "->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "Grand TOTAL " +\
-                to_string(tot_credit, " ->>>,>>>,>>>,>>9") +\
+            output_list.str = output_list.str + "Grand TOTAL" +\
+                handling_negative(tot_credit, " ->>>,>>>,>>>,>>9") +\
                 fill(" ", 78) + \
-                to_string(tot_famt, "->>,>>>,>>>,>>9.99")
+                handling_negative(tot_famt, "->>,>>>,>>>,>>9.99")
         create_tot_payment()
 
     def create_list2f():
-
         nonlocal r_no, s_list_data, t_list_data, t_ar_paylist_data, long_digit, htparam, guest, debitor, artikel, bill, bediener, waehrung
         nonlocal comment, cledger, ccard, last_sort, from_date, to_date, from_art, to_art, mi_payment, mi_transfer, show_inv, bill_name, bill_nr
         nonlocal bguest, bdebitor
-
         nonlocal s_list, t_list, output_list, t_ar_paylist, bguest, bdebitor, tbuff, bq
         nonlocal s_list_data, t_list_data, output_list_data, t_ar_paylist_data
 
@@ -6897,21 +6867,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
-                    for i in range(1, 58 + 1):
-                        output_list.str = output_list.str + "   "
+                    for i in range(1, 56):
+                        output_list.str = output_list.str + " "
                     output_list.pay_amt = to_decimal(tot_saldo)
                     output_list.pay_famt = to_decimal(tot_foreign)
 
                     if not long_digit:
-                        output_list.str = output_list.str + "T O T A L " +\
-                            to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                            fill(" ", 78) +\
-                            to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+                        output_list.str = output_list.str + "  T O T A L" +\
+                            handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                            fill(" ", 79) +\
+                            handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
                     else:
-                        output_list.str = output_list.str + "T O T A L " +\
-                            to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                            fill(" ", 78) +\
-                            to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+                        output_list.str = output_list.str + "  T O T A L" +\
+                            handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                            fill(" ", 79) +\
+                            handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
@@ -6929,21 +6899,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
-                        for i in range(1, 58 + 1):
-                            output_list.str = output_list.str + "   "
+                        for i in range(1, 56):
+                            output_list.str = output_list.str + " "
                         output_list.pay_amt = to_decimal(t_credit)
                         output_list.pay_famt = to_decimal(t_famt)
 
                         if not long_digit:
-                            output_list.str = output_list.str + "Sub-Total " +\
-                                to_string(t_credit, "->,>>>,>>>,>>9.99") +\
-                                fill(" ", 78) +\
-                                to_string(t_famt, "->>,>>>,>>>,>>9.99")
+                            output_list.str = output_list.str + "  Sub-Total" +\
+                                handling_negative(t_credit, "->,>>>,>>>,>>9.99") +\
+                                fill(" ", 79) +\
+                                handling_negative(t_famt, "->>,>>>,>>>,>>9.99")
                         else:
-                            output_list.str = output_list.str + "Sub-Total " +\
-                                to_string(t_credit, " ->>>,>>>,>>>,>>9") +\
-                                fill(" ", 78) +\
-                                to_string(t_famt, "  ->>>,>>>,>>>,>>9")
+                            output_list.str = output_list.str + "  Sub-Total" +\
+                                handling_negative(t_credit, " ->>>,>>>,>>>,>>9") +\
+                                fill(" ", 79) +\
+                                handling_negative(t_famt, "  ->>>,>>>,>>>,>>9")
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
@@ -7018,18 +6988,18 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 if not long_digit:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
-                        to_string(receiver, "x(32)") +\
-                        to_string(debt.saldo, "->,>>>,>>>,>>9.99") +\
-                        to_string(debitor.saldo, "->,>>>,>>>,>>9.99") +\
+                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        substring(to_string(receiver, "x(32)"), 0, 32) +\
+                        handling_negative(debt.saldo, "->,>>>,>>>,>>9.99") +\
+                        handling_negative(debitor.saldo, "->,>>>,>>>,>>9.99") +\
                         to_string(art.bezeich, "x(34)") +\
                         to_string(debitor.rgdatum)
                 else:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
-                        to_string(receiver, "x(32)") +\
-                        to_string(debt.saldo, " ->>>,>>>,>>>,>>9") +\
-                        to_string(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
+                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        substring(to_string(receiver, "x(32)"), 0, 32) +\
+                        handling_negative(debt.saldo, " ->>>,>>>,>>>,>>9") +\
+                        handling_negative(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
                         to_string(art.bezeich, "x(34)") +\
                         to_string(debitor.rgdatum)
                 output_list.bill_num = debitor.rechnr
@@ -7041,7 +7011,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debitor.gastnrmember)]})
 
                 if bguest:
-                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 32)
+                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 30)
 
                 bediener = get_cache(
                     Bediener, {"nr": [(eq, debitor.bediener_nr)]})
@@ -7050,7 +7020,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list.str = output_list.str + \
                         to_string(bediener.userinit, "x(3)")
                 else:
-                    output_list.str = output_list.str + "   "
+                    output_list.str = output_list.str + " "
                 output_list.str = output_list.str + \
                     to_string(debitor.vesrcod, "x(34)")
                 output_list.str = output_list.str + to_string(" ", "x(22)")
@@ -7064,11 +7034,11 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
                 output_list.str = output_list.str + \
-                    to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                    handling_negative(debitor.vesrdep, "->,>>>,>>>,>>9.99")
                 output_list.str = output_list.str + \
                     to_string(debitor.zahlkonto, ">>>>9")
                 output_list.str = output_list.str + \
-                    to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                    handling_negative(debitor.vesrdep, "->,>>>,>>>,>>9.99")
                 output_list.str = output_list.str + \
                     to_string(artikel.bezeich, "x(40)")
 
@@ -7094,71 +7064,69 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 58 + 1):
-            output_list.str = output_list.str + "   "
+        for i in range(1, 56):
+            output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(tot_saldo)
         output_list.pay_famt = to_decimal(tot_foreign)
 
         if not long_digit:
-            output_list.str = output_list.str + "T O T A L " +\
-                to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "  T O T A L" +\
+                handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "T O T A L " +\
-                to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "  T O T A L" +\
+                handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
         output_list = Output_list()
         output_list_data.append(output_list)
 
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 58 + 1):
-            output_list.str = output_list.str + "   "
+        for i in range(1, 56):
+            output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(t_credit)
         output_list.pay_famt = to_decimal(t_famt)
 
         if not long_digit:
-            output_list.str = output_list.str + "Sub-Total " +\
-                to_string(t_credit, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(t_famt, "->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "  Sub-Total" +\
+                handling_negative(t_credit, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(t_famt, "->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "Sub-Total " +\
-                to_string(t_credit, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(t_famt, "  ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "  Sub-Total" +\
+                handling_negative(t_credit, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(t_famt, "  ->>>,>>>,>>>,>>9")
         output_list = Output_list()
         output_list_data.append(output_list)
 
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 56 + 1):
+        for i in range(1, 56):
             output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(tot_credit)
         output_list.pay_famt = to_decimal(tot_famt)
 
         if not long_digit:
-            output_list.str = output_list.str + "Grand TOTAL " +\
-                to_string(tot_credit, "->,>>>,>>>,>>9.99") +\
+            output_list.str = output_list.str + "Grand TOTAL" +\
+                handling_negative(tot_credit, "->,>>>,>>>,>>9.99") +\
                 fill(" ", 78) + \
-                to_string(tot_famt, "->>,>>>,>>>,>>9.99")
+                handling_negative(tot_famt, "->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "Grand TOTAL " +\
-                to_string(tot_credit, " ->>>,>>>,>>>,>>9") +\
+            output_list.str = output_list.str + "Grand TOTAL" +\
+                handling_negative(tot_credit, " ->>>,>>>,>>>,>>9") +\
                 fill(" ", 78) + \
-                to_string(tot_famt, "  ->>>,>>>,>>>,>>9")
+                handling_negative(tot_famt, "  ->>>,>>>,>>>,>>9")
         create_tot_payment()
 
     def create_list2fs():
-
         nonlocal r_no, s_list_data, t_list_data, t_ar_paylist_data, long_digit, htparam, guest, debitor, artikel, bill, bediener, waehrung
         nonlocal comment, cledger, ccard, last_sort, from_date, to_date, from_art, to_art, mi_payment, mi_transfer, show_inv, bill_name, bill_nr
         nonlocal bguest, bdebitor
-
         nonlocal s_list, t_list, output_list, t_ar_paylist, bguest, bdebitor, tbuff, bq
         nonlocal s_list_data, t_list_data, output_list_data, t_ar_paylist_data
 
@@ -7236,21 +7204,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
-                    for i in range(1, 58 + 1):
-                        output_list.str = output_list.str + "   "
+                    for i in range(1, 56):
+                        output_list.str = output_list.str + " "
                     output_list.pay_amt = to_decimal(tot_saldo)
                     output_list.pay_famt = to_decimal(tot_foreign)
 
                     if not long_digit:
-                        output_list.str = output_list.str + "T O T A L " +\
-                            to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                            fill(" ", 78) +\
-                            to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+                        output_list.str = output_list.str + "  T O T A L" +\
+                            handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                            fill(" ", 79) +\
+                            handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
                     else:
-                        output_list.str = output_list.str + "T O T A L " +\
-                            to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                            fill(" ", 78) +\
-                            to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+                        output_list.str = output_list.str + "  T O T A L" +\
+                            handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                            fill(" ", 79) +\
+                            handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
@@ -7268,21 +7236,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
-                        for i in range(1, 58 + 1):
-                            output_list.str = output_list.str + "   "
+                        for i in range(1, 56):
+                            output_list.str = output_list.str + " "
                         output_list.pay_amt = to_decimal(t_credit)
                         output_list.pay_famt = to_decimal(t_famt)
 
                         if not long_digit:
-                            output_list.str = output_list.str + "Sub-Total " +\
-                                to_string(t_credit, "->,>>>,>>>,>>9.99") +\
-                                fill(" ", 78) +\
-                                to_string(t_famt, "->>,>>>,>>>,>>9.99")
+                            output_list.str = output_list.str + "  Sub-Total" +\
+                                handling_negative(t_credit, "->,>>>,>>>,>>9.99") +\
+                                fill(" ", 79) +\
+                                handling_negative(t_famt, "->>,>>>,>>>,>>9.99")
                         else:
-                            output_list.str = output_list.str + "Sub-Total " +\
-                                to_string(t_credit, " ->>>,>>>,>>>,>>9") +\
-                                fill(" ", 78) +\
-                                to_string(t_famt, "  ->>>,>>>,>>>,>>9")
+                            output_list.str = output_list.str + "  Sub-Total" +\
+                                handling_negative(t_credit, " ->>>,>>>,>>>,>>9") +\
+                                fill(" ", 79) +\
+                                handling_negative(t_famt, "  ->>>,>>>,>>>,>>9")
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
@@ -7357,18 +7325,18 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 if not long_digit:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
-                        to_string(receiver, "x(32)") +\
-                        to_string(debt.saldo, "->,>>>,>>>,>>9.99") +\
-                        to_string(debitor.saldo, "->,>>>,>>>,>>9.99") +\
+                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        substring(to_string(receiver, "x(32)"), 0, 32) +\
+                        handling_negative(debt.saldo, "->,>>>,>>>,>>9.99") +\
+                        handling_negative(debitor.saldo, "->,>>>,>>>,>>9.99") +\
                         to_string(art.bezeich, "x(34)") +\
                         to_string(debitor.rgdatum)
                 else:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
-                        to_string(receiver, "x(32)") +\
-                        to_string(debt.saldo, " ->>>,>>>,>>>,>>9") +\
-                        to_string(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
+                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        substring(to_string(receiver, "x(32)"), 0, 32) +\
+                        handling_negative(debt.saldo, " ->>>,>>>,>>>,>>9") +\
+                        handling_negative(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
                         to_string(art.bezeich, "x(34)") +\
                         to_string(debitor.rgdatum)
                 output_list.bill_num = debitor.rechnr
@@ -7380,7 +7348,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debitor.gastnrmember)]})
 
                 if bguest:
-                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 32)
+                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 30)
 
                 bediener = get_cache(
                     Bediener, {"nr": [(eq, debitor.bediener_nr)]})
@@ -7389,7 +7357,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list.str = output_list.str + \
                         to_string(bediener.userinit, "x(3)")
                 else:
-                    output_list.str = output_list.str + "   "
+                    output_list.str = output_list.str + " "
                 output_list.str = output_list.str + \
                     to_string(debitor.vesrcod, "x(34)")
                 output_list.str = output_list.str + to_string(" ", "x(22)")
@@ -7403,11 +7371,11 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
                 output_list.str = output_list.str + \
-                    to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                    handling_negative(debitor.vesrdep, "->,>>>,>>>,>>9.99")
                 output_list.str = output_list.str + \
                     to_string(debitor.zahlkonto, ">>>>9")
                 output_list.str = output_list.str + \
-                    to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                    handling_negative(debitor.vesrdep, "->,>>>,>>>,>>9.99")
                 output_list.str = output_list.str + \
                     to_string(artikel.bezeich, "x(40)")
 
@@ -7433,71 +7401,69 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 58 + 1):
-            output_list.str = output_list.str + "   "
+        for i in range(1, 56):
+            output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(tot_saldo)
         output_list.pay_famt = to_decimal(tot_foreign)
 
         if not long_digit:
-            output_list.str = output_list.str + "T O T A L " +\
-                to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "  T O T A L" +\
+                handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "T O T A L " +\
-                to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "  T O T A L" +\
+                handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
         output_list = Output_list()
         output_list_data.append(output_list)
 
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 58 + 1):
-            output_list.str = output_list.str + "   "
+        for i in range(1, 56):
+            output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(t_credit)
         output_list.pay_famt = to_decimal(t_famt)
 
         if not long_digit:
-            output_list.str = output_list.str + "Sub-Total " +\
-                to_string(t_credit, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(t_famt, "->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "  Sub-Total" +\
+                handling_negative(t_credit, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(t_famt, "->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "Sub-Total " +\
-                to_string(t_credit, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(t_famt, "  ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "  Sub-Total" +\
+                handling_negative(t_credit, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(t_famt, "  ->>>,>>>,>>>,>>9")
         output_list = Output_list()
         output_list_data.append(output_list)
 
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 56 + 1):
+        for i in range(1, 56):
             output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(tot_credit)
         output_list.pay_famt = to_decimal(tot_famt)
 
         if not long_digit:
-            output_list.str = output_list.str + "Grand TOTAL " +\
-                to_string(tot_credit, "->,>>>,>>>,>>9.99") +\
+            output_list.str = output_list.str + "Grand TOTAL" +\
+                handling_negative(tot_credit, "->,>>>,>>>,>>9.99") +\
                 fill(" ", 78) + \
-                to_string(tot_famt, "->>,>>>,>>>,>>9.99")
+                handling_negative(tot_famt, "->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "Grand TOTAL " +\
-                to_string(tot_credit, " ->>>,>>>,>>>,>>9") +\
+            output_list.str = output_list.str + "Grand TOTAL" +\
+                handling_negative(tot_credit, " ->>>,>>>,>>>,>>9") +\
                 fill(" ", 78) + \
-                to_string(tot_famt, "  ->>>,>>>,>>>,>>9")
+                handling_negative(tot_famt, "  ->>>,>>>,>>>,>>9")
         create_tot_payment()
 
     def create_list3b():
-
         nonlocal r_no, s_list_data, t_list_data, t_ar_paylist_data, long_digit, htparam, guest, debitor, artikel, bill, bediener, waehrung
         nonlocal comment, cledger, ccard, last_sort, from_date, to_date, from_art, to_art, mi_payment, mi_transfer, show_inv, bill_name, bill_nr
         nonlocal bguest, bdebitor
-
         nonlocal s_list, t_list, output_list, t_ar_paylist, bguest, bdebitor, tbuff, bq
         nonlocal s_list_data, t_list_data, output_list_data, t_ar_paylist_data
 
@@ -7575,21 +7541,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
-                    for i in range(1, 58 + 1):
-                        output_list.str = output_list.str + "   "
+                    for i in range(1, 56):
+                        output_list.str = output_list.str + " "
                     output_list.pay_amt = to_decimal(tot_saldo)
                     output_list.pay_famt = to_decimal(tot_foreign)
 
                     if not long_digit:
-                        output_list.str = output_list.str + "T O T A L " +\
-                            to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                            fill(" ", 78) +\
-                            to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+                        output_list.str = output_list.str + "  T O T A L" +\
+                            handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                            fill(" ", 79) +\
+                            handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
                     else:
-                        output_list.str = output_list.str + "T O T A L " +\
-                            to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                            fill(" ", 78) +\
-                            to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+                        output_list.str = output_list.str + "  T O T A L" +\
+                            handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                            fill(" ", 79) +\
+                            handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
@@ -7607,21 +7573,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
-                        for i in range(1, 58 + 1):
-                            output_list.str = output_list.str + "   "
+                        for i in range(1, 56):
+                            output_list.str = output_list.str + " "
                         output_list.pay_amt = to_decimal(t_credit)
                         output_list.pay_famt = to_decimal(t_famt)
 
                         if not long_digit:
-                            output_list.str = output_list.str + "Sub-Total " +\
-                                to_string(t_credit, "->,>>>,>>>,>>9.99") +\
-                                fill(" ", 78) +\
-                                to_string(t_famt, "->>,>>>,>>>,>>9.99")
+                            output_list.str = output_list.str + "  Sub-Total" +\
+                                handling_negative(t_credit, "->,>>>,>>>,>>9.99") +\
+                                fill(" ", 79) +\
+                                handling_negative(t_famt, "->>,>>>,>>>,>>9.99")
                         else:
-                            output_list.str = output_list.str + "Sub-Total " +\
-                                to_string(t_credit, " ->>>,>>>,>>>,>>9") +\
-                                fill(" ", 78) +\
-                                to_string(t_famt, "  ->>>,>>>,>>>,>>9")
+                            output_list.str = output_list.str + "  Sub-Total" +\
+                                handling_negative(t_credit, " ->>>,>>>,>>>,>>9") +\
+                                fill(" ", 79) +\
+                                handling_negative(t_famt, "  ->>>,>>>,>>>,>>9")
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
@@ -7695,18 +7661,18 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 if not long_digit:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
-                        to_string(receiver, "x(32)") +\
-                        to_string(debt.saldo, "->,>>>,>>>,>>9.99") +\
-                        to_string(debitor.saldo, "->,>>>,>>>,>>9.99") +\
+                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        substring(to_string(receiver, "x(32)"), 0, 32) +\
+                        handling_negative(debt.saldo, "->,>>>,>>>,>>9.99") +\
+                        handling_negative(debitor.saldo, "->,>>>,>>>,>>9.99") +\
                         to_string(art.bezeich, "x(34)") +\
                         to_string(debitor.rgdatum)
                 else:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
-                        to_string(receiver, "x(32)") +\
-                        to_string(debt.saldo, " ->>>,>>>,>>>,>>9") +\
-                        to_string(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
+                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        substring(to_string(receiver, "x(32)"), 0, 32) +\
+                        handling_negative(debt.saldo, " ->>>,>>>,>>>,>>9") +\
+                        handling_negative(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
                         to_string(art.bezeich, "x(34)") +\
                         to_string(debitor.rgdatum)
                 output_list.bill_num = debitor.rechnr
@@ -7718,7 +7684,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debitor.gastnrmember)]})
 
                 if bguest:
-                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 32)
+                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 30)
 
                 bediener = get_cache(
                     Bediener, {"nr": [(eq, debitor.bediener_nr)]})
@@ -7727,7 +7693,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list.str = output_list.str + \
                         to_string(bediener.userinit, "x(3)")
                 else:
-                    output_list.str = output_list.str + "   "
+                    output_list.str = output_list.str + " "
                 output_list.str = output_list.str + \
                     to_string(debitor.vesrcod, "x(34)")
                 output_list.str = output_list.str + to_string(" ", "x(22)")
@@ -7741,11 +7707,11 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
                 output_list.str = output_list.str + \
-                    to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                    handling_negative(debitor.vesrdep, "->,>>>,>>>,>>9.99")
                 output_list.str = output_list.str + \
                     to_string(debitor.zahlkonto, ">>>>9")
                 output_list.str = output_list.str + \
-                    to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                    handling_negative(debitor.vesrdep, "->,>>>,>>>,>>9.99")
                 output_list.str = output_list.str + \
                     to_string(artikel.bezeich, "x(40)")
 
@@ -7771,71 +7737,69 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 58 + 1):
-            output_list.str = output_list.str + "   "
+        for i in range(1, 56):
+            output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(tot_saldo)
         output_list.pay_famt = to_decimal(tot_foreign)
 
         if not long_digit:
-            output_list.str = output_list.str + "T O T A L " +\
-                to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "  T O T A L" +\
+                handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "T O T A L " +\
-                to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "  T O T A L" +\
+                handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
         output_list = Output_list()
         output_list_data.append(output_list)
 
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 58 + 1):
-            output_list.str = output_list.str + "   "
+        for i in range(1, 56):
+            output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(t_credit)
         output_list.pay_famt = to_decimal(t_famt)
 
         if not long_digit:
-            output_list.str = output_list.str + "Sub-Total " +\
-                to_string(t_credit, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(t_famt, "->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "  Sub-Total" +\
+                handling_negative(t_credit, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(t_famt, "->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "Sub-Total " +\
-                to_string(t_credit, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(t_famt, "  ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "  Sub-Total" +\
+                handling_negative(t_credit, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(t_famt, "  ->>>,>>>,>>>,>>9")
         output_list = Output_list()
         output_list_data.append(output_list)
 
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 56 + 1):
+        for i in range(1, 56):
             output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(tot_credit)
         output_list.pay_famt = to_decimal(tot_famt)
 
         if not long_digit:
-            output_list.str = output_list.str + "Grand TOTAL " +\
-                to_string(tot_credit, "->,>>>,>>>,>>9.99") +\
+            output_list.str = output_list.str + "Grand TOTAL" +\
+                handling_negative(tot_credit, "->,>>>,>>>,>>9.99") +\
                 fill(" ", 78) + \
-                to_string(tot_famt, "->>,>>>,>>>,>>9.99")
+                handling_negative(tot_famt, "->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "Grand TOTAL " +\
-                to_string(tot_credit, " ->>>,>>>,>>>,>>9") +\
+            output_list.str = output_list.str + "Grand TOTAL" +\
+                handling_negative(tot_credit, " ->>>,>>>,>>>,>>9") +\
                 fill(" ", 78) + \
-                to_string(tot_famt, "  ->>>,>>>,>>>,>>9")
+                handling_negative(tot_famt, "  ->>>,>>>,>>>,>>9")
         create_tot_payment()
 
     def create_list3c():
-
         nonlocal r_no, s_list_data, t_list_data, t_ar_paylist_data, long_digit, htparam, guest, debitor, artikel, bill, bediener, waehrung
         nonlocal comment, cledger, ccard, last_sort, from_date, to_date, from_art, to_art, mi_payment, mi_transfer, show_inv, bill_name, bill_nr
         nonlocal bguest, bdebitor
-
         nonlocal s_list, t_list, output_list, t_ar_paylist, bguest, bdebitor, tbuff, bq
         nonlocal s_list_data, t_list_data, output_list_data, t_ar_paylist_data
 
@@ -7913,21 +7877,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
-                    for i in range(1, 58 + 1):
-                        output_list.str = output_list.str + "   "
+                    for i in range(1, 56):
+                        output_list.str = output_list.str + " "
                     output_list.pay_amt = to_decimal(tot_saldo)
                     output_list.pay_famt = to_decimal(tot_foreign)
 
                     if not long_digit:
-                        output_list.str = output_list.str + "T O T A L " +\
-                            to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                            fill(" ", 78) +\
-                            to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+                        output_list.str = output_list.str + "  T O T A L" +\
+                            handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                            fill(" ", 79) +\
+                            handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
                     else:
-                        output_list.str = output_list.str + "T O T A L " +\
-                            to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                            fill(" ", 78) +\
-                            to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+                        output_list.str = output_list.str + "  T O T A L" +\
+                            handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                            fill(" ", 79) +\
+                            handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
@@ -7945,21 +7909,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
-                        for i in range(1, 58 + 1):
-                            output_list.str = output_list.str + "   "
+                        for i in range(1, 56):
+                            output_list.str = output_list.str + " "
                         output_list.pay_amt = to_decimal(t_credit)
                         output_list.pay_famt = to_decimal(t_famt)
 
                         if not long_digit:
-                            output_list.str = output_list.str + "Sub-Total " +\
-                                to_string(t_credit, "->,>>>,>>>,>>9.99") +\
-                                fill(" ", 78) +\
-                                to_string(t_famt, "->>,>>>,>>>,>>9.99")
+                            output_list.str = output_list.str + "  Sub-Total" +\
+                                handling_negative(t_credit, "->,>>>,>>>,>>9.99") +\
+                                fill(" ", 79) +\
+                                handling_negative(t_famt, "->>,>>>,>>>,>>9.99")
                         else:
-                            output_list.str = output_list.str + "Sub-Total " +\
-                                to_string(t_credit, " ->>>,>>>,>>>,>>9") +\
-                                fill(" ", 78) +\
-                                to_string(t_famt, "  ->>>,>>>,>>>,>>9")
+                            output_list.str = output_list.str + "  Sub-Total" +\
+                                handling_negative(t_credit, " ->>>,>>>,>>>,>>9") +\
+                                fill(" ", 79) +\
+                                handling_negative(t_famt, "  ->>>,>>>,>>>,>>9")
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
@@ -8034,18 +7998,18 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 if not long_digit:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
-                        to_string(receiver, "x(32)") +\
-                        to_string(debt.saldo, "->,>>>,>>>,>>9.99") +\
-                        to_string(debitor.saldo, "->,>>>,>>>,>>9.99") +\
+                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        substring(to_string(receiver, "x(32)"), 0, 32) +\
+                        handling_negative(debt.saldo, "->,>>>,>>>,>>9.99") +\
+                        handling_negative(debitor.saldo, "->,>>>,>>>,>>9.99") +\
                         to_string(art.bezeich, "x(34)") +\
                         to_string(debitor.rgdatum)
                 else:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
-                        to_string(receiver, "x(32)") +\
-                        to_string(debt.saldo, " ->>>,>>>,>>>,>>9") +\
-                        to_string(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
+                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        substring(to_string(receiver, "x(32)"), 0, 32) +\
+                        handling_negative(debt.saldo, " ->>>,>>>,>>>,>>9") +\
+                        handling_negative(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
                         to_string(art.bezeich, "x(34)") +\
                         to_string(debitor.rgdatum)
                 output_list.bill_num = debitor.rechnr
@@ -8057,7 +8021,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debitor.gastnrmember)]})
 
                 if bguest:
-                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 32)
+                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 30)
 
                 bediener = get_cache(
                     Bediener, {"nr": [(eq, debitor.bediener_nr)]})
@@ -8066,7 +8030,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list.str = output_list.str + \
                         to_string(bediener.userinit, "x(3)")
                 else:
-                    output_list.str = output_list.str + "   "
+                    output_list.str = output_list.str + " "
                 output_list.str = output_list.str + \
                     to_string(debitor.vesrcod, "x(34)")
                 output_list.str = output_list.str + to_string(" ", "x(22)")
@@ -8080,11 +8044,11 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
                 output_list.str = output_list.str + \
-                    to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                    handling_negative(debitor.vesrdep, "->,>>>,>>>,>>9.99")
                 output_list.str = output_list.str + \
                     to_string(debitor.zahlkonto, ">>>>9")
                 output_list.str = output_list.str + \
-                    to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                    handling_negative(debitor.vesrdep, "->,>>>,>>>,>>9.99")
                 output_list.str = output_list.str + \
                     to_string(artikel.bezeich, "x(40)")
 
@@ -8110,71 +8074,69 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 58 + 1):
-            output_list.str = output_list.str + "   "
+        for i in range(1, 56):
+            output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(tot_saldo)
         output_list.pay_famt = to_decimal(tot_foreign)
 
         if not long_digit:
-            output_list.str = output_list.str + "T O T A L " +\
-                to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "  T O T A L" +\
+                handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "T O T A L " +\
-                to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "  T O T A L" +\
+                handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
         output_list = Output_list()
         output_list_data.append(output_list)
 
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 58 + 1):
-            output_list.str = output_list.str + "   "
+        for i in range(1, 56):
+            output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(t_credit)
         output_list.pay_famt = to_decimal(t_famt)
 
         if not long_digit:
-            output_list.str = output_list.str + "Sub-Total " +\
-                to_string(t_credit, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(t_famt, "->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "  Sub-Total" +\
+                handling_negative(t_credit, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(t_famt, "->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "Sub-Total " +\
-                to_string(t_credit, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(t_famt, "  ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "  Sub-Total" +\
+                handling_negative(t_credit, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(t_famt, "  ->>>,>>>,>>>,>>9")
         output_list = Output_list()
         output_list_data.append(output_list)
 
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 56 + 1):
+        for i in range(1, 56):
             output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(tot_credit)
         output_list.pay_famt = to_decimal(tot_famt)
 
         if not long_digit:
-            output_list.str = output_list.str + "Grand TOTAL " +\
-                to_string(tot_credit, "->,>>>,>>>,>>9.99") +\
+            output_list.str = output_list.str + "Grand TOTAL" +\
+                handling_negative(tot_credit, "->,>>>,>>>,>>9.99") +\
                 fill(" ", 78) + \
-                to_string(tot_famt, "->>,>>>,>>>,>>9.99")
+                handling_negative(tot_famt, "->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "Grand TOTAL " +\
-                to_string(tot_credit, " ->>>,>>>,>>>,>>9") +\
+            output_list.str = output_list.str + "Grand TOTAL" +\
+                handling_negative(tot_credit, " ->>>,>>>,>>>,>>9") +\
                 fill(" ", 78) + \
-                to_string(tot_famt, "  ->>>,>>>,>>>,>>9")
+                handling_negative(tot_famt, "  ->>>,>>>,>>>,>>9")
         create_tot_payment()
 
     def create_list3d():
-
         nonlocal r_no, s_list_data, t_list_data, t_ar_paylist_data, long_digit, htparam, guest, debitor, artikel, bill, bediener, waehrung
         nonlocal comment, cledger, ccard, last_sort, from_date, to_date, from_art, to_art, mi_payment, mi_transfer, show_inv, bill_name, bill_nr
         nonlocal bguest, bdebitor
-
         nonlocal s_list, t_list, output_list, t_ar_paylist, bguest, bdebitor, tbuff, bq
         nonlocal s_list_data, t_list_data, output_list_data, t_ar_paylist_data
 
@@ -8252,21 +8214,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
-                    for i in range(1, 58 + 1):
-                        output_list.str = output_list.str + "   "
+                    for i in range(1, 56):
+                        output_list.str = output_list.str + " "
                     output_list.pay_amt = to_decimal(tot_saldo)
                     output_list.pay_famt = to_decimal(tot_foreign)
 
                     if not long_digit:
-                        output_list.str = output_list.str + "T O T A L " +\
-                            to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                            fill(" ", 78) +\
-                            to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+                        output_list.str = output_list.str + "  T O T A L" +\
+                            handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                            fill(" ", 79) +\
+                            handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
                     else:
-                        output_list.str = output_list.str + "T O T A L " +\
-                            to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                            fill(" ", 78) +\
-                            to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+                        output_list.str = output_list.str + "  T O T A L" +\
+                            handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                            fill(" ", 79) +\
+                            handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
@@ -8284,21 +8246,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
-                        for i in range(1, 58 + 1):
-                            output_list.str = output_list.str + "   "
+                        for i in range(1, 56):
+                            output_list.str = output_list.str + " "
                         output_list.pay_amt = to_decimal(tot_saldo)
                         output_list.pay_famt = to_decimal(t_famt)
 
                         if not long_digit:
-                            output_list.str = output_list.str + "Sub-Total " +\
-                                to_string(t_credit, "->,>>>,>>>,>>9.99") +\
-                                fill(" ", 78) +\
-                                to_string(t_famt, "->>,>>>,>>>,>>9.99")
+                            output_list.str = output_list.str + "  Sub-Total" +\
+                                handling_negative(t_credit, "->,>>>,>>>,>>9.99") +\
+                                fill(" ", 79) +\
+                                handling_negative(t_famt, "->>,>>>,>>>,>>9.99")
                         else:
-                            output_list.str = output_list.str + "Sub-Total " +\
-                                to_string(t_credit, " ->>>,>>>,>>>,>>9") +\
-                                fill(" ", 78) +\
-                                to_string(t_famt, "  ->>>,>>>,>>>,>>9")
+                            output_list.str = output_list.str + "  Sub-Total" +\
+                                handling_negative(t_credit, " ->>>,>>>,>>>,>>9") +\
+                                fill(" ", 79) +\
+                                handling_negative(t_famt, "  ->>>,>>>,>>>,>>9")
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
@@ -8373,18 +8335,18 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 if not long_digit:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
-                        to_string(receiver, "x(32)") +\
-                        to_string(debt.saldo, "->,>>>,>>>,>>9.99") +\
-                        to_string(debitor.saldo, "->,>>>,>>>,>>9.99") +\
+                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        substring(to_string(receiver, "x(32)"), 0, 32) +\
+                        handling_negative(debt.saldo, "->,>>>,>>>,>>9.99") +\
+                        handling_negative(debitor.saldo, "->,>>>,>>>,>>9.99") +\
                         to_string(art.bezeich, "x(34)") +\
                         to_string(debitor.rgdatum)
                 else:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
-                        to_string(receiver, "x(32)") +\
-                        to_string(debt.saldo, " ->>>,>>>,>>>,>>9") +\
-                        to_string(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
+                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        substring(to_string(receiver, "x(32)"), 0, 32) +\
+                        handling_negative(debt.saldo, " ->>>,>>>,>>>,>>9") +\
+                        handling_negative(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
                         to_string(art.bezeich, "x(34)") +\
                         to_string(debitor.rgdatum)
                 output_list.bill_num = debitor.rechnr
@@ -8396,7 +8358,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debitor.gastnrmember)]})
 
                 if bguest:
-                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 32)
+                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 30)
 
                 bediener = get_cache(
                     Bediener, {"nr": [(eq, debitor.bediener_nr)]})
@@ -8405,7 +8367,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list.str = output_list.str + \
                         to_string(bediener.userinit, "x(3)")
                 else:
-                    output_list.str = output_list.str + "   "
+                    output_list.str = output_list.str + " "
                 output_list.str = output_list.str + \
                     to_string(debitor.vesrcod, "x(34)")
                 output_list.str = output_list.str + to_string(" ", "x(22)")
@@ -8419,11 +8381,11 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
                 output_list.str = output_list.str + \
-                    to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                    handling_negative(debitor.vesrdep, "->,>>>,>>>,>>9.99")
                 output_list.str = output_list.str + \
                     to_string(debitor.zahlkonto, ">>>>9")
                 output_list.str = output_list.str + \
-                    to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                    handling_negative(debitor.vesrdep, "->,>>>,>>>,>>9.99")
                 output_list.str = output_list.str + \
                     to_string(artikel.bezeich, "x(40)")
 
@@ -8449,71 +8411,69 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 58 + 1):
-            output_list.str = output_list.str + "   "
+        for i in range(1, 56):
+            output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(tot_saldo)
         output_list.pay_famt = to_decimal(tot_foreign)
 
         if not long_digit:
-            output_list.str = output_list.str + "T O T A L " +\
-                to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "  T O T A L" +\
+                handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "T O T A L " +\
-                to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "  T O T A L" +\
+                handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
         output_list = Output_list()
         output_list_data.append(output_list)
 
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 58 + 1):
-            output_list.str = output_list.str + "   "
+        for i in range(1, 56):
+            output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(t_credit)
         output_list.pay_famt = to_decimal(t_famt)
 
         if not long_digit:
-            output_list.str = output_list.str + "Sub-Total " +\
-                to_string(t_credit, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(t_famt, "->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "  Sub-Total" +\
+                handling_negative(t_credit, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(t_famt, "->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "Sub-Total " +\
-                to_string(t_credit, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(t_famt, "  ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "  Sub-Total" +\
+                handling_negative(t_credit, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(t_famt, "  ->>>,>>>,>>>,>>9")
         output_list = Output_list()
         output_list_data.append(output_list)
 
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 56 + 1):
+        for i in range(1, 56):
             output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(tot_credit)
         output_list.pay_famt = to_decimal(tot_famt)
 
         if not long_digit:
-            output_list.str = output_list.str + "Grand TOTAL " +\
-                to_string(tot_credit, "->,>>>,>>>,>>9.99") +\
+            output_list.str = output_list.str + "Grand TOTAL" +\
+                handling_negative(tot_credit, "->,>>>,>>>,>>9.99") +\
                 fill(" ", 78) + \
-                to_string(tot_famt, "->>,>>>,>>>,>>9.99")
+                handling_negative(tot_famt, "->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "Grand TOTAL " +\
-                to_string(tot_credit, " ->>>,>>>,>>>,>>9") +\
+            output_list.str = output_list.str + "Grand TOTAL" +\
+                handling_negative(tot_credit, " ->>>,>>>,>>>,>>9") +\
                 fill(" ", 78) + \
-                to_string(tot_famt, "  ->>>,>>>,>>>,>>9")
+                handling_negative(tot_famt, "  ->>>,>>>,>>>,>>9")
         create_tot_payment()
 
     def create_list3e():
-
         nonlocal r_no, s_list_data, t_list_data, t_ar_paylist_data, long_digit, htparam, guest, debitor, artikel, bill, bediener, waehrung
         nonlocal comment, cledger, ccard, last_sort, from_date, to_date, from_art, to_art, mi_payment, mi_transfer, show_inv, bill_name, bill_nr
         nonlocal bguest, bdebitor
-
         nonlocal s_list, t_list, output_list, t_ar_paylist, bguest, bdebitor, tbuff, bq
         nonlocal s_list_data, t_list_data, output_list_data, t_ar_paylist_data
 
@@ -8591,21 +8551,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
-                    for i in range(1, 58 + 1):
-                        output_list.str = output_list.str + "   "
+                    for i in range(1, 56):
+                        output_list.str = output_list.str + " "
                     output_list.pay_amt = to_decimal(tot_saldo)
                     output_list.pay_famt = to_decimal(tot_foreign)
 
                     if not long_digit:
-                        output_list.str = output_list.str + "T O T A L " +\
-                            to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                            fill(" ", 78) +\
-                            to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+                        output_list.str = output_list.str + "  T O T A L" +\
+                            handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                            fill(" ", 79) +\
+                            handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
                     else:
-                        output_list.str = output_list.str + "T O T A L " +\
-                            to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                            fill(" ", 78) +\
-                            to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+                        output_list.str = output_list.str + "  T O T A L" +\
+                            handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                            fill(" ", 79) +\
+                            handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
@@ -8623,21 +8583,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
-                        for i in range(1, 58 + 1):
-                            output_list.str = output_list.str + "   "
+                        for i in range(1, 56):
+                            output_list.str = output_list.str + " "
                         output_list.pay_amt = to_decimal(t_credit)
                         output_list.pay_famt = to_decimal(t_famt)
 
                         if not long_digit:
-                            output_list.str = output_list.str + "Sub-Total " +\
-                                to_string(t_credit, "->,>>>,>>>,>>9.99") +\
-                                fill(" ", 78) +\
-                                to_string(t_famt, "->>,>>>,>>>,>>9.99")
+                            output_list.str = output_list.str + "  Sub-Total" +\
+                                handling_negative(t_credit, "->,>>>,>>>,>>9.99") +\
+                                fill(" ", 79) +\
+                                handling_negative(t_famt, "->>,>>>,>>>,>>9.99")
                         else:
-                            output_list.str = output_list.str + "Sub-Total " +\
-                                to_string(t_credit, " ->>>,>>>,>>>,>>9") +\
-                                fill(" ", 78) +\
-                                to_string(t_famt, "  ->>>,>>>,>>>,>>9")
+                            output_list.str = output_list.str + "  Sub-Total" +\
+                                handling_negative(t_credit, " ->>>,>>>,>>>,>>9") +\
+                                fill(" ", 79) +\
+                                handling_negative(t_famt, "  ->>>,>>>,>>>,>>9")
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
@@ -8712,18 +8672,18 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 if not long_digit:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
-                        to_string(receiver, "x(32)") +\
-                        to_string(debt.saldo, "->,>>>,>>>,>>9.99") +\
-                        to_string(debitor.saldo, "->,>>>,>>>,>>9.99") +\
+                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        substring(to_string(receiver, "x(32)"), 0, 32) +\
+                        handling_negative(debt.saldo, "->,>>>,>>>,>>9.99") +\
+                        handling_negative(debitor.saldo, "->,>>>,>>>,>>9.99") +\
                         to_string(art.bezeich, "x(34)") +\
                         to_string(debitor.rgdatum)
                 else:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
-                        to_string(receiver, "x(32)") +\
-                        to_string(debt.saldo, " ->>>,>>>,>>>,>>9") +\
-                        to_string(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
+                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        substring(to_string(receiver, "x(32)"), 0, 32) +\
+                        handling_negative(debt.saldo, " ->>>,>>>,>>>,>>9") +\
+                        handling_negative(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
                         to_string(art.bezeich, "x(34)") +\
                         to_string(debitor.rgdatum)
                 output_list.bill_num = debitor.rechnr
@@ -8735,7 +8695,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debitor.gastnrmember)]})
 
                 if bguest:
-                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 32)
+                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 30)
 
                 bediener = get_cache(
                     Bediener, {"nr": [(eq, debitor.bediener_nr)]})
@@ -8744,7 +8704,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list.str = output_list.str + \
                         to_string(bediener.userinit, "x(3)")
                 else:
-                    output_list.str = output_list.str + "   "
+                    output_list.str = output_list.str + " "
                 output_list.str = output_list.str + \
                     to_string(debitor.vesrcod, "x(34)")
                 output_list.str = output_list.str + to_string(" ", "x(22)")
@@ -8758,11 +8718,11 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
                 output_list.str = output_list.str + \
-                    to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                    handling_negative(debitor.vesrdep, "->,>>>,>>>,>>9.99")
                 output_list.str = output_list.str + \
                     to_string(debitor.zahlkonto, ">>>>9")
                 output_list.str = output_list.str + \
-                    to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                    handling_negative(debitor.vesrdep, "->,>>>,>>>,>>9.99")
                 output_list.str = output_list.str + \
                     to_string(artikel.bezeich, "x(40)")
 
@@ -8788,71 +8748,69 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 58 + 1):
-            output_list.str = output_list.str + "   "
+        for i in range(1, 56):
+            output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(tot_saldo)
         output_list.pay_famt = to_decimal(tot_foreign)
 
         if not long_digit:
-            output_list.str = output_list.str + "T O T A L " +\
-                to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "  T O T A L" +\
+                handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "T O T A L " +\
-                to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "  T O T A L" +\
+                handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
         output_list = Output_list()
         output_list_data.append(output_list)
 
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 58 + 1):
-            output_list.str = output_list.str + "   "
+        for i in range(1, 56):
+            output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(t_credit)
         output_list.pay_famt = to_decimal(t_famt)
 
         if not long_digit:
-            output_list.str = output_list.str + "Sub-Total " +\
-                to_string(t_credit, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(t_famt, "->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "  Sub-Total" +\
+                handling_negative(t_credit, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(t_famt, "->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "Sub-Total " +\
-                to_string(t_credit, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(t_famt, "  ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "  Sub-Total" +\
+                handling_negative(t_credit, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(t_famt, "  ->>>,>>>,>>>,>>9")
         output_list = Output_list()
         output_list_data.append(output_list)
 
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 56 + 1):
+        for i in range(1, 56):
             output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(tot_credit)
         output_list.pay_famt = to_decimal(tot_famt)
 
         if not long_digit:
-            output_list.str = output_list.str + "Grand TOTAL " +\
-                to_string(tot_credit, "->,>>>,>>>,>>9.99") +\
+            output_list.str = output_list.str + "Grand TOTAL" +\
+                handling_negative(tot_credit, "->,>>>,>>>,>>9.99") +\
                 fill(" ", 78) + \
-                to_string(tot_famt, "->>,>>>,>>>,>>9.99")
+                handling_negative(tot_famt, "->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "Grand TOTAL " +\
-                to_string(tot_credit, " ->>>,>>>,>>>,>>9") +\
+            output_list.str = output_list.str + "Grand TOTAL" +\
+                handling_negative(tot_credit, " ->>>,>>>,>>>,>>9") +\
                 fill(" ", 78) + \
-                to_string(tot_famt, "  ->>>,>>>,>>>,>>9")
+                handling_negative(tot_famt, "  ->>>,>>>,>>>,>>9")
         create_tot_payment()
 
     def create_list3f():
-
         nonlocal r_no, s_list_data, t_list_data, t_ar_paylist_data, long_digit, htparam, guest, debitor, artikel, bill, bediener, waehrung
         nonlocal comment, cledger, ccard, last_sort, from_date, to_date, from_art, to_art, mi_payment, mi_transfer, show_inv, bill_name, bill_nr
         nonlocal bguest, bdebitor
-
         nonlocal s_list, t_list, output_list, t_ar_paylist, bguest, bdebitor, tbuff, bq
         nonlocal s_list_data, t_list_data, output_list_data, t_ar_paylist_data
 
@@ -8920,21 +8878,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
-                    for i in range(1, 58 + 1):
-                        output_list.str = output_list.str + "   "
+                    for i in range(1, 56):
+                        output_list.str = output_list.str + " "
                     output_list.pay_amt = to_decimal(tot_saldo)
                     output_list.pay_famt = to_decimal(tot_foreign)
 
                     if not long_digit:
-                        output_list.str = output_list.str + "T O T A L " +\
-                            to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                            fill(" ", 78) +\
-                            to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+                        output_list.str = output_list.str + "  T O T A L" +\
+                            handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                            fill(" ", 79) +\
+                            handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
                     else:
-                        output_list.str = output_list.str + "T O T A L " +\
-                            to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                            fill(" ", 78) +\
-                            to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+                        output_list.str = output_list.str + "  T O T A L" +\
+                            handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                            fill(" ", 79) +\
+                            handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
@@ -8954,21 +8912,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                             output_list = Output_list()
                             output_list_data.append(output_list)
 
-                            for i in range(1, 58 + 1):
-                                output_list.str = output_list.str + "   "
+                            for i in range(1, 56):
+                                output_list.str = output_list.str + " "
                             output_list.pay_amt = to_decimal(tot_saldo)
                             output_list.pay_famt = to_decimal(tot_foreign)
 
                             if not long_digit:
-                                output_list.str = output_list.str + "T O T A L " +\
-                                    to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                                    fill(" ", 78) +\
-                                    to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+                                output_list.str = output_list.str + "  T O T A L" +\
+                                    handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                                    fill(" ", 79) +\
+                                    handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
                             else:
-                                output_list.str = output_list.str + "T O T A L " +\
-                                    to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                                    fill(" ", 78) +\
-                                    to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+                                output_list.str = output_list.str + "  T O T A L" +\
+                                    handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                                    fill(" ", 79) +\
+                                    handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
                             output_list = Output_list()
                             output_list_data.append(output_list)
 
@@ -8977,21 +8935,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
-                        for i in range(1, 58 + 1):
-                            output_list.str = output_list.str + "   "
+                        for i in range(1, 56):
+                            output_list.str = output_list.str + " "
                         output_list.pay_amt = to_decimal(t_credit)
                         output_list.pay_famt = to_decimal(t_famt)
 
                         if not long_digit:
-                            output_list.str = output_list.str + "Sub-Total " +\
-                                to_string(t_credit, "->,>>>,>>>,>>9.99") +\
-                                fill(" ", 78) +\
-                                to_string(t_famt, "->>,>>>,>>>,>>9.99")
+                            output_list.str = output_list.str + "  Sub-Total" +\
+                                handling_negative(t_credit, "->,>>>,>>>,>>9.99") +\
+                                fill(" ", 79) +\
+                                handling_negative(t_famt, "->>,>>>,>>>,>>9.99")
                         else:
-                            output_list.str = output_list.str + "Sub-Total " +\
-                                to_string(t_credit, " ->>>,>>>,>>>,>>9") +\
-                                fill(" ", 78) +\
-                                to_string(t_famt, "  ->>>,>>>,>>>,>>9")
+                            output_list.str = output_list.str + "  Sub-Total" +\
+                                handling_negative(t_credit, " ->>>,>>>,>>>,>>9") +\
+                                fill(" ", 79) +\
+                                handling_negative(t_famt, "  ->>>,>>>,>>>,>>9")
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
@@ -9067,18 +9025,18 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 if not long_digit:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
-                        to_string(receiver, "x(32)") +\
-                        to_string(debt.saldo, "->,>>>,>>>,>>9.99") +\
-                        to_string(debitor.saldo, "->,>>>,>>>,>>9.99") +\
+                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        substring(to_string(receiver, "x(32)"), 0, 32) +\
+                        handling_negative(debt.saldo, "->,>>>,>>>,>>9.99") +\
+                        handling_negative(debitor.saldo, "->,>>>,>>>,>>9.99") +\
                         to_string(art.bezeich, "x(34)") +\
                         to_string(debitor.rgdatum)
                 else:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
-                        to_string(receiver, "x(32)") +\
-                        to_string(debt.saldo, " ->>>,>>>,>>>,>>9") +\
-                        to_string(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
+                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        substring(to_string(receiver, "x(32)"), 0, 32) +\
+                        handling_negative(debt.saldo, " ->>>,>>>,>>>,>>9") +\
+                        handling_negative(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
                         to_string(art.bezeich, "x(34)") +\
                         to_string(debitor.rgdatum)
                 output_list.bill_num = debitor.rechnr
@@ -9090,7 +9048,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debitor.gastnrmember)]})
 
                 if bguest:
-                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 32)
+                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 30)
 
                 bediener = get_cache(
                     Bediener, {"nr": [(eq, debitor.bediener_nr)]})
@@ -9099,7 +9057,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list.str = output_list.str + \
                         to_string(bediener.userinit, "x(3)")
                 else:
-                    output_list.str = output_list.str + "   "
+                    output_list.str = output_list.str + " "
                 output_list.str = output_list.str + \
                     to_string(debitor.vesrcod, "x(34)")
                 output_list.str = output_list.str + to_string(" ", "x(22)")
@@ -9113,11 +9071,11 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
                 output_list.str = output_list.str + \
-                    to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                    handling_negative(debitor.vesrdep, "->,>>>,>>>,>>9.99")
                 output_list.str = output_list.str + \
                     to_string(debitor.zahlkonto, ">>>>9")
                 output_list.str = output_list.str + \
-                    to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                    handling_negative(debitor.vesrdep, "->,>>>,>>>,>>9.99")
                 output_list.str = output_list.str + \
                     to_string(artikel.bezeich, "x(40)")
 
@@ -9143,71 +9101,69 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 58 + 1):
-            output_list.str = output_list.str + "   "
+        for i in range(1, 56):
+            output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(tot_saldo)
         output_list.pay_famt = to_decimal(tot_foreign)
 
         if not long_digit:
-            output_list.str = output_list.str + "T O T A L " +\
-                to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "  T O T A L" +\
+                handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "T O T A L " +\
-                to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "  T O T A L" +\
+                handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
         output_list = Output_list()
         output_list_data.append(output_list)
 
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 58 + 1):
-            output_list.str = output_list.str + "   "
+        for i in range(1, 56):
+            output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(t_credit)
         output_list.pay_famt = to_decimal(t_famt)
 
         if not long_digit:
-            output_list.str = output_list.str + "Sub-Total " +\
-                to_string(t_credit, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(t_famt, "->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "  Sub-Total" +\
+                handling_negative(t_credit, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(t_famt, "->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "Sub-Total " +\
-                to_string(t_credit, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(t_famt, "  ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "  Sub-Total" +\
+                handling_negative(t_credit, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(t_famt, "  ->>>,>>>,>>>,>>9")
         output_list = Output_list()
         output_list_data.append(output_list)
 
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 56 + 1):
+        for i in range(1, 56):
             output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(tot_credit)
         output_list.pay_famt = to_decimal(tot_famt)
 
         if not long_digit:
-            output_list.str = output_list.str + "Grand TOTAL " +\
-                to_string(tot_credit, "->,>>>,>>>,>>9.99") +\
+            output_list.str = output_list.str + "Grand TOTAL" +\
+                handling_negative(tot_credit, "->,>>>,>>>,>>9.99") +\
                 fill(" ", 78) + \
-                to_string(tot_famt, "->>,>>>,>>>,>>9.99")
+                handling_negative(tot_famt, "->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "Grand TOTAL " +\
-                to_string(tot_credit, " ->>>,>>>,>>>,>>9") +\
+            output_list.str = output_list.str + "Grand TOTAL" +\
+                handling_negative(tot_credit, " ->>>,>>>,>>>,>>9") +\
                 fill(" ", 78) + \
-                to_string(tot_famt, "  ->>>,>>>,>>>,>>9")
+                handling_negative(tot_famt, "  ->>>,>>>,>>>,>>9")
         create_tot_payment()
 
     def create_list3fs():
-
         nonlocal r_no, s_list_data, t_list_data, t_ar_paylist_data, long_digit, htparam, guest, debitor, artikel, bill, bediener, waehrung
         nonlocal comment, cledger, ccard, last_sort, from_date, to_date, from_art, to_art, mi_payment, mi_transfer, show_inv, bill_name, bill_nr
         nonlocal bguest, bdebitor
-
         nonlocal s_list, t_list, output_list, t_ar_paylist, bguest, bdebitor, tbuff, bq
         nonlocal s_list_data, t_list_data, output_list_data, t_ar_paylist_data
 
@@ -9275,21 +9231,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
-                    for i in range(1, 58 + 1):
-                        output_list.str = output_list.str + "   "
+                    for i in range(1, 56):
+                        output_list.str = output_list.str + " "
                     output_list.pay_amt = to_decimal(tot_saldo)
                     output_list.pay_famt = to_decimal(tot_foreign)
 
                     if not long_digit:
-                        output_list.str = output_list.str + "T O T A L " +\
-                            to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                            fill(" ", 78) +\
-                            to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+                        output_list.str = output_list.str + "  T O T A L" +\
+                            handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                            fill(" ", 79) +\
+                            handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
                     else:
-                        output_list.str = output_list.str + "T O T A L " +\
-                            to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                            fill(" ", 78) +\
-                            to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+                        output_list.str = output_list.str + "  T O T A L" +\
+                            handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                            fill(" ", 79) +\
+                            handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
@@ -9309,21 +9265,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                             output_list = Output_list()
                             output_list_data.append(output_list)
 
-                            for i in range(1, 58 + 1):
-                                output_list.str = output_list.str + "   "
+                            for i in range(1, 56):
+                                output_list.str = output_list.str + " "
                             output_list.pay_amt = to_decimal(tot_saldo)
                             output_list.pay_famt = to_decimal(tot_foreign)
 
                             if not long_digit:
-                                output_list.str = output_list.str + "T O T A L " +\
-                                    to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                                    fill(" ", 78) +\
-                                    to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+                                output_list.str = output_list.str + "  T O T A L" +\
+                                    handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                                    fill(" ", 79) +\
+                                    handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
                             else:
-                                output_list.str = output_list.str + "T O T A L " +\
-                                    to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                                    fill(" ", 78) +\
-                                    to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+                                output_list.str = output_list.str + "  T O T A L" +\
+                                    handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                                    fill(" ", 79) +\
+                                    handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
                             output_list = Output_list()
                             output_list_data.append(output_list)
 
@@ -9332,21 +9288,21 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
-                        for i in range(1, 58 + 1):
-                            output_list.str = output_list.str + "   "
+                        for i in range(1, 56):
+                            output_list.str = output_list.str + " "
                         output_list.pay_amt = to_decimal(t_credit)
                         output_list.pay_famt = to_decimal(t_famt)
 
                         if not long_digit:
-                            output_list.str = output_list.str + "Sub-Total " +\
-                                to_string(t_credit, "->,>>>,>>>,>>9.99") +\
-                                fill(" ", 78) +\
-                                to_string(t_famt, "->>,>>>,>>>,>>9.99")
+                            output_list.str = output_list.str + "  Sub-Total" +\
+                                handling_negative(t_credit, "->,>>>,>>>,>>9.99") +\
+                                fill(" ", 79) +\
+                                handling_negative(t_famt, "->>,>>>,>>>,>>9.99")
                         else:
-                            output_list.str = output_list.str + "Sub-Total " +\
-                                to_string(t_credit, " ->>>,>>>,>>>,>>9") +\
-                                fill(" ", 78) +\
-                                to_string(t_famt, "  ->>>,>>>,>>>,>>9")
+                            output_list.str = output_list.str + "  Sub-Total" +\
+                                handling_negative(t_credit, " ->>>,>>>,>>>,>>9") +\
+                                fill(" ", 79) +\
+                                handling_negative(t_famt, "  ->>>,>>>,>>>,>>9")
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
@@ -9422,18 +9378,18 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 if not long_digit:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
-                        to_string(receiver, "x(32)") +\
-                        to_string(debt.saldo, "->,>>>,>>>,>>9.99") +\
-                        to_string(debitor.saldo, "->,>>>,>>>,>>9.99") +\
+                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        substring(to_string(receiver, "x(32)"), 0, 32) +\
+                        handling_negative(debt.saldo, "->,>>>,>>>,>>9.99") +\
+                        handling_negative(debitor.saldo, "->,>>>,>>>,>>9.99") +\
                         to_string(art.bezeich, "x(34)") +\
                         to_string(debitor.rgdatum)
                 else:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
-                        to_string(receiver, "x(32)") +\
-                        to_string(debt.saldo, " ->>>,>>>,>>>,>>9") +\
-                        to_string(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
+                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        substring(to_string(receiver, "x(32)"), 0, 32) +\
+                        handling_negative(debt.saldo, " ->>>,>>>,>>>,>>9") +\
+                        handling_negative(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
                         to_string(art.bezeich, "x(34)") +\
                         to_string(debitor.rgdatum)
                 output_list.bill_num = debitor.rechnr
@@ -9445,7 +9401,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     Guest, {"gastnr": [(eq, debitor.gastnrmember)]})
 
                 if bguest:
-                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 32)
+                    output_list.gastname = substring(f"{bguest.name}, {bguest.vorname1}{bguest.anredefirma} {bguest.anrede1}", 0, 30)
 
                 bediener = get_cache(
                     Bediener, {"nr": [(eq, debitor.bediener_nr)]})
@@ -9454,7 +9410,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     output_list.str = output_list.str + \
                         to_string(bediener.userinit, "x(3)")
                 else:
-                    output_list.str = output_list.str + "   "
+                    output_list.str = output_list.str + " "
                 output_list.str = output_list.str + \
                     to_string(debitor.vesrcod, "x(34)")
                 output_list.str = output_list.str + to_string(" ", "x(22)")
@@ -9468,11 +9424,11 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                     tstr = " "
                 output_list.str = output_list.str + to_string(tstr, "x(50)")
                 output_list.str = output_list.str + \
-                    to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                    handling_negative(debitor.vesrdep, "->,>>>,>>>,>>9.99")
                 output_list.str = output_list.str + \
                     to_string(debitor.zahlkonto, ">>>>9")
                 output_list.str = output_list.str + \
-                    to_string(debitor.vesrdep, "->,>>>,>>>,>>9.99")
+                    handling_negative(debitor.vesrdep, "->,>>>,>>>,>>9.99")
                 output_list.str = output_list.str + \
                     to_string(artikel.bezeich, "x(40)")
 
@@ -9498,81 +9454,83 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 58 + 1):
-            output_list.str = output_list.str + "   "
+        for i in range(1, 56):
+            output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(tot_saldo)
         output_list.pay_famt = to_decimal(tot_foreign)
 
         if not long_digit:
-            output_list.str = output_list.str + "T O T A L " +\
-                to_string(tot_saldo, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(tot_foreign, " ->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "  T O T A L" +\
+                handling_negative(tot_saldo, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(tot_foreign, " ->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "T O T A L " +\
-                to_string(tot_saldo, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(tot_foreign, "   ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "  T O T A L" +\
+                handling_negative(tot_saldo, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(tot_foreign, "   ->>>,>>>,>>>,>>9")
         output_list = Output_list()
         output_list_data.append(output_list)
 
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 58 + 1):
-            output_list.str = output_list.str + "   "
+        for i in range(1, 56):
+            output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(t_credit)
         output_list.pay_famt = to_decimal(t_famt)
 
         if not long_digit:
-            output_list.str = output_list.str + "Sub-Total " +\
-                to_string(t_credit, "->,>>>,>>>,>>9.99") +\
-                fill(" ", 78) +\
-                to_string(t_famt, "->>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "  Sub-Total" +\
+                handling_negative(t_credit, "->,>>>,>>>,>>9.99") +\
+                fill(" ", 79) +\
+                handling_negative(t_famt, "->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "Sub-Total " +\
-                to_string(t_credit, " ->>>,>>>,>>>,>>9") +\
-                fill(" ", 78) +\
-                to_string(t_famt, "  ->>>,>>>,>>>,>>9")
+            output_list.str = output_list.str + "  Sub-Total" +\
+                handling_negative(t_credit, " ->>>,>>>,>>>,>>9") +\
+                fill(" ", 79) +\
+                handling_negative(t_famt, "  ->>>,>>>,>>>,>>9")
         output_list = Output_list()
         output_list_data.append(output_list)
 
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        for i in range(1, 56 + 1):
+        for i in range(1, 56):
             output_list.str = output_list.str + " "
         output_list.pay_amt = to_decimal(tot_credit)
         output_list.pay_famt = to_decimal(tot_famt)
 
         if not long_digit:
-            output_list.str = output_list.str + "Grand TOTAL " +\
-                to_string(tot_credit, "->,>>>,>>>,>>9.99") +\
+            output_list.str = output_list.str + "Grand TOTAL" +\
+                handling_negative(tot_credit, "->,>>>,>>>,>>9.99") +\
                 fill(" ", 78) + \
-                to_string(tot_famt, "->>,>>>,>>>,>>9.99")
+                handling_negative(tot_famt, "->>,>>>,>>>,>>9.99")
         else:
-            output_list.str = output_list.str + "Grand TOTAL " +\
-                to_string(tot_credit, " ->>>,>>>,>>>,>>9") +\
+            output_list.str = output_list.str + "Grand TOTAL" +\
+                handling_negative(tot_credit, " ->>>,>>>,>>>,>>9") +\
                 fill(" ", 78) + \
-                to_string(tot_famt, "  ->>>,>>>,>>>,>>9")
+                handling_negative(tot_famt, "  ->>>,>>>,>>>,>>9")
         create_tot_payment()
 
     htparam = get_cache(Htparam, {"paramnr": [(eq, 246)]})
     long_digit = htparam.flogical
     create_list()
     t_ar_paylist_data.clear()
+    
 
     for output_list in query(output_list_data):
         t_ar_paylist = T_ar_paylist()
         t_ar_paylist_data.append(t_ar_paylist)
 
+        # log_program.write_log('LOG', f"output_list.str: {output_list.str}", 'outputFile.txt')
         t_ar_paylist.bill_date = substring(output_list.str, 0, 8)
-        t_ar_paylist.bill_num = substring(output_list.str, 8, 11)
+        t_ar_paylist.bill_num = substring(output_list.str, 8, 9)
         t_ar_paylist.inv_num = output_list.inv_no
-        t_ar_paylist.bill_rcv = substring(output_list.str, 19, 34)
+        t_ar_paylist.bill_rcv = substring(output_list.str, 17, 34)
         t_ar_paylist.debt_amt = substring(output_list.str, 51, 17)
-        t_ar_paylist.curr = substring(output_list.str, 300, 3)
-        # t_ar_paylist.curr =  ""
+        # t_ar_paylist.curr = substring(output_list.str, 300, 3)
+        t_ar_paylist.curr =  ""
         t_ar_paylist.pay_art = substring(output_list.str, 83, 34)
         t_ar_paylist.pay_date = substring(output_list.str, 117, 8)
         t_ar_paylist.uid = substring(output_list.str, 125, 3)
@@ -9581,7 +9539,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         t_ar_paylist.artno = to_string(output_list.bill_art)
         t_ar_paylist.debt_counter = to_string(output_list.debt_counter)
         t_ar_paylist.art_bezeich = output_list.art_bezeich
-        t_ar_paylist.tbetrag = to_string(
+        t_ar_paylist.tbetrag = handling_negative(
             output_list.tbetrag, "->>>,>>>,>>>,>>9.99")
         t_ar_paylist.gastname = substring(output_list.gastname, 0, 30)
         t_ar_paylist.soa_inv = output_list.soa_inv
