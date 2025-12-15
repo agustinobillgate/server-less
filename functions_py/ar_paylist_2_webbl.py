@@ -8,6 +8,9 @@
 # - fixed spacing on long string
 # - added substring gastname, bill_rcv, * receiver to 34, 32, & 30 character 
 # - adjusted substring value
+
+# Rulita, 15/12/2025
+# Fixing error cancel paid AR not found datum
 # ------------------------------------------
 
 from functions.additional_functions import *
@@ -16,7 +19,7 @@ from decimal import Decimal
 from datetime import date
 from models import Htparam, Guest, Debitor, Artikel, Bill, Bediener, Waehrung
 
-from functions import log_program
+# from functions import log_program
 
 def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: int, from_date: date, to_date: date, from_art: int, to_art: int, mi_payment: bool, mi_transfer: bool, show_inv: bool, bill_name: string, bill_nr: int):
 
@@ -464,7 +467,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 if not long_digit:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
                         substring(to_string(receiver, "x(32)"), 0, 32) +\
                         handling_negative(debt.saldo, "->,>>>,>>>,>>9.99") +\
                         handling_negative(debitor.saldo, "->,>>>,>>>,>>9.99") +\
@@ -472,7 +475,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         to_string(debitor.rgdatum)
                 else:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
                         substring(to_string(receiver, "x(32)"), 0, 32) +\
                         handling_negative(debt.saldo, " ->>>,>>>,>>>,>>9") +\
                         handling_negative(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
@@ -785,7 +788,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 if not long_digit:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
                         substring(to_string(receiver, "x(32)"), 0, 32) +\
                         handling_negative(debt.saldo, "->,>>>,>>>,>>9.99") +\
                         handling_negative(debitor.saldo, "->,>>>,>>>,>>9.99") +\
@@ -793,7 +796,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         to_string(debitor.rgdatum)
                 else:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
                         substring(to_string(receiver, "x(32)"), 0, 32) +\
                         handling_negative(debt.saldo, " ->>>,>>>,>>>,>>9") +\
                         handling_negative(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
@@ -1139,7 +1142,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 if not long_digit:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
                         substring(to_string(receiver, "x(32)"), 0, 32) +\
                         handling_negative(debt.saldo, "->,>>>,>>>,>>9.99") +\
                         handling_negative(debitor.saldo, "->,>>>,>>>,>>9.99") +\
@@ -1147,7 +1150,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         to_string(debitor.rgdatum)
                 else:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
                         substring(to_string(receiver, "x(32)"), 0, 32) +\
                         handling_negative(debt.saldo, " ->>>,>>>,>>>,>>9") +\
                         handling_negative(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
@@ -1487,7 +1490,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 if not long_digit:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
                         substring(to_string(receiver, "x(32)"), 0, 32) +\
                         handling_negative(debt.saldo, "->,>>>,>>>,>>9.99") +\
                         handling_negative(debitor.saldo, "->,>>>,>>>,>>9.99") +\
@@ -1495,7 +1498,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         to_string(debitor.rgdatum)
                 else:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
                         substring(to_string(receiver, "x(32)"), 0, 32) +\
                         handling_negative(debt.saldo, " ->>>,>>>,>>>,>>9") +\
                         handling_negative(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
@@ -1836,7 +1839,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 if not long_digit:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
                         substring(to_string(receiver, "x(32)"), 0, 32) +\
                         handling_negative(debt.saldo, "->,>>>,>>>,>>9.99") +\
                         handling_negative(debitor.saldo, "->,>>>,>>>,>>9.99") +\
@@ -1844,7 +1847,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         to_string(debitor.rgdatum)
                 else:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
                         substring(to_string(receiver, "x(32)"), 0, 32) +\
                         handling_negative(debt.saldo, " ->>>,>>>,>>>,>>9") +\
                         handling_negative(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
@@ -2183,7 +2186,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 if not long_digit:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
                         substring(to_string(receiver, "x(32)"), 0, 32) +\
                         handling_negative(debt.saldo, "->,>>>,>>>,>>9.99") +\
                         handling_negative(debitor.saldo, "->,>>>,>>>,>>9.99") +\
@@ -2191,7 +2194,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         to_string(debitor.rgdatum)
                 else:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
                         substring(to_string(receiver, "x(32)"), 0, 32) +\
                         handling_negative(debt.saldo, " ->>>,>>>,>>>,>>9") +\
                         handling_negative(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
@@ -2554,7 +2557,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 if not long_digit:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
                         substring(to_string(receiver, "x(32)"), 0, 32) +\
                         handling_negative(debt.saldo, "->,>>>,>>>,>>9.99") +\
                         handling_negative(debitor.saldo, "->,>>>,>>>,>>9.99") +\
@@ -2562,7 +2565,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         to_string(debitor.rgdatum)
                 else:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
                         substring(to_string(receiver, "x(32)"), 0, 32) +\
                         handling_negative(debt.saldo, " ->>>,>>>,>>>,>>9") +\
                         handling_negative(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
@@ -2929,7 +2932,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 if not long_digit:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
                         substring(to_string(receiver, "x(32)"), 0, 32) +\
                         handling_negative(debt.saldo, "->,>>>,>>>,>>9.99") +\
                         handling_negative(debitor.saldo, "->,>>>,>>>,>>9.99") +\
@@ -2937,7 +2940,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         to_string(debitor.rgdatum)
                 else:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
                         substring(to_string(receiver, "x(32)"), 0, 32) +\
                         handling_negative(debt.saldo, " ->>>,>>>,>>>,>>9") +\
                         handling_negative(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
@@ -3276,7 +3279,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 if not long_digit:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
                         substring(to_string(receiver, "x(32)"), 0, 32) +\
                         handling_negative(debt.saldo, "->,>>>,>>>,>>9.99") +\
                         handling_negative(debitor.saldo, "->,>>>,>>>,>>9.99") +\
@@ -3284,7 +3287,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         to_string(debitor.rgdatum)
                 else:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
                         substring(to_string(receiver, "x(32)"), 0, 32) +\
                         handling_negative(debt.saldo, " ->>>,>>>,>>>,>>9") +\
                         handling_negative(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
@@ -3613,7 +3616,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 if not long_digit:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
                         substring(to_string(receiver, "x(32)"), 0, 32) +\
                         handling_negative(debt.saldo, "->,>>>,>>>,>>9.99") +\
                         handling_negative(debitor.saldo, "->,>>>,>>>,>>9.99") +\
@@ -3621,7 +3624,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         to_string(debitor.rgdatum)
                 else:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
                         substring(to_string(receiver, "x(32)"), 0, 32) +\
                         handling_negative(debt.saldo, " ->>>,>>>,>>>,>>9") +\
                         handling_negative(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
@@ -3965,7 +3968,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 if not long_digit:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
                         substring(to_string(receiver, "x(32)"), 0, 32) +\
                         handling_negative(debt.saldo, "->,>>>,>>>,>>9.99") +\
                         handling_negative(debitor.saldo, "->,>>>,>>>,>>9.99") +\
@@ -3973,7 +3976,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         to_string(debitor.rgdatum)
                 else:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
                         substring(to_string(receiver, "x(32)"), 0, 32) +\
                         handling_negative(debt.saldo, " ->>>,>>>,>>>,>>9") +\
                         handling_negative(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
@@ -4301,7 +4304,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 if not long_digit:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
                         substring(to_string(receiver, "x(32)"), 0, 32) +\
                         handling_negative(debt.saldo, "->,>>>,>>>,>>9.99") +\
                         handling_negative(debitor.saldo, "->,>>>,>>>,>>9.99") +\
@@ -4309,7 +4312,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         to_string(debitor.rgdatum)
                 else:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
                         substring(to_string(receiver, "x(32)"), 0, 32) +\
                         handling_negative(debt.saldo, " ->>>,>>>,>>>,>>9") +\
                         handling_negative(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
@@ -4637,7 +4640,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 if not long_digit:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
                         substring(to_string(receiver, "x(32)"), 0, 32) +\
                         handling_negative(debt.saldo, "->,>>>,>>>,>>9.99") +\
                         handling_negative(debitor.saldo, "->,>>>,>>>,>>9.99") +\
@@ -4645,7 +4648,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         to_string(debitor.rgdatum)
                 else:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
                         substring(to_string(receiver, "x(32)"), 0, 32) +\
                         handling_negative(debt.saldo, " ->>>,>>>,>>>,>>9") +\
                         handling_negative(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
@@ -4973,7 +4976,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 if not long_digit:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
                         substring(to_string(receiver, "x(32)"), 0, 32) +\
                         handling_negative(debt.saldo, "->,>>>,>>>,>>9.99") +\
                         handling_negative(debitor.saldo, "->,>>>,>>>,>>9.99") +\
@@ -5304,7 +5307,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 if not long_digit:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
                         substring(to_string(receiver, "x(32)"), 0, 32) +\
                         handling_negative(debt.saldo, "->,>>>,>>>,>>9.99") +\
                         handling_negative(debitor.saldo, "->,>>>,>>>,>>9.99") +\
@@ -5312,7 +5315,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         to_string(debitor.rgdatum)
                 else:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
                         substring(to_string(receiver, "x(32)"), 0, 32) +\
                         handling_negative(debt.saldo, " ->>>,>>>,>>>,>>9") +\
                         handling_negative(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
@@ -5640,7 +5643,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 if not long_digit:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
                         substring(to_string(receiver, "x(32)"), 0, 32) +\
                         handling_negative(debt.saldo, "->,>>>,>>>,>>9.99") +\
                         handling_negative(debitor.saldo, "->,>>>,>>>,>>9.99") +\
@@ -5648,7 +5651,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         to_string(debitor.rgdatum)
                 else:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
                         substring(to_string(receiver, "x(32)"), 0, 32) +\
                         handling_negative(debt.saldo, " ->>>,>>>,>>>,>>9") +\
                         handling_negative(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
@@ -5977,7 +5980,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 if not long_digit:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
                         substring(to_string(receiver, "x(32)"), 0, 32) +\
                         handling_negative(debt.saldo, "->,>>>,>>>,>>9.99") +\
                         handling_negative(debitor.saldo, "->,>>>,>>>,>>9.99") +\
@@ -5985,7 +5988,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         to_string(debitor.rgdatum)
                 else:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
                         substring(to_string(receiver, "x(32)"), 0, 32) +\
                         handling_negative(debt.saldo, " ->>>,>>>,>>>,>>9") +\
                         handling_negative(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
@@ -6314,7 +6317,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 if not long_digit:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
                         substring(to_string(receiver, "x(32)"), 0, 32) +\
                         handling_negative(debt.saldo, "->,>>>,>>>,>>9.99") +\
                         handling_negative(debitor.saldo, "->,>>>,>>>,>>9.99") +\
@@ -6322,7 +6325,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         to_string(debitor.rgdatum)
                 else:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
                         substring(to_string(receiver, "x(32)"), 0, 32) +\
                         handling_negative(debt.saldo, " ->>>,>>>,>>>,>>9") +\
                         handling_negative(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
@@ -6651,7 +6654,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 if not long_digit:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
                         substring(to_string(receiver, "x(32)"), 0, 32) +\
                         handling_negative(debt.saldo, "->,>>>,>>>,>>9.99") +\
                         handling_negative(debitor.saldo, "->,>>>,>>>,>>9.99") +\
@@ -6659,7 +6662,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         to_string(debitor.rgdatum)
                 else:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
                         substring(to_string(receiver, "x(32)"), 0, 32) +\
                         handling_negative(debt.saldo, " ->>>,>>>,>>>,>>9") +\
                         handling_negative(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
@@ -6988,7 +6991,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 if not long_digit:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
                         substring(to_string(receiver, "x(32)"), 0, 32) +\
                         handling_negative(debt.saldo, "->,>>>,>>>,>>9.99") +\
                         handling_negative(debitor.saldo, "->,>>>,>>>,>>9.99") +\
@@ -6996,7 +6999,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         to_string(debitor.rgdatum)
                 else:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
                         substring(to_string(receiver, "x(32)"), 0, 32) +\
                         handling_negative(debt.saldo, " ->>>,>>>,>>>,>>9") +\
                         handling_negative(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
@@ -7325,7 +7328,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 if not long_digit:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
                         substring(to_string(receiver, "x(32)"), 0, 32) +\
                         handling_negative(debt.saldo, "->,>>>,>>>,>>9.99") +\
                         handling_negative(debitor.saldo, "->,>>>,>>>,>>9.99") +\
@@ -7333,7 +7336,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         to_string(debitor.rgdatum)
                 else:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
                         substring(to_string(receiver, "x(32)"), 0, 32) +\
                         handling_negative(debt.saldo, " ->>>,>>>,>>>,>>9") +\
                         handling_negative(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
@@ -7661,7 +7664,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 if not long_digit:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
                         substring(to_string(receiver, "x(32)"), 0, 32) +\
                         handling_negative(debt.saldo, "->,>>>,>>>,>>9.99") +\
                         handling_negative(debitor.saldo, "->,>>>,>>>,>>9.99") +\
@@ -7669,7 +7672,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         to_string(debitor.rgdatum)
                 else:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
                         substring(to_string(receiver, "x(32)"), 0, 32) +\
                         handling_negative(debt.saldo, " ->>>,>>>,>>>,>>9") +\
                         handling_negative(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
@@ -7998,7 +8001,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 if not long_digit:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
                         substring(to_string(receiver, "x(32)"), 0, 32) +\
                         handling_negative(debt.saldo, "->,>>>,>>>,>>9.99") +\
                         handling_negative(debitor.saldo, "->,>>>,>>>,>>9.99") +\
@@ -8006,7 +8009,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         to_string(debitor.rgdatum)
                 else:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
                         substring(to_string(receiver, "x(32)"), 0, 32) +\
                         handling_negative(debt.saldo, " ->>>,>>>,>>>,>>9") +\
                         handling_negative(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
@@ -8335,7 +8338,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 if not long_digit:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
                         substring(to_string(receiver, "x(32)"), 0, 32) +\
                         handling_negative(debt.saldo, "->,>>>,>>>,>>9.99") +\
                         handling_negative(debitor.saldo, "->,>>>,>>>,>>9.99") +\
@@ -8343,7 +8346,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         to_string(debitor.rgdatum)
                 else:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
                         substring(to_string(receiver, "x(32)"), 0, 32) +\
                         handling_negative(debt.saldo, " ->>>,>>>,>>>,>>9") +\
                         handling_negative(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
@@ -8672,7 +8675,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 if not long_digit:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
                         substring(to_string(receiver, "x(32)"), 0, 32) +\
                         handling_negative(debt.saldo, "->,>>>,>>>,>>9.99") +\
                         handling_negative(debitor.saldo, "->,>>>,>>>,>>9.99") +\
@@ -8680,7 +8683,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         to_string(debitor.rgdatum)
                 else:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
                         substring(to_string(receiver, "x(32)"), 0, 32) +\
                         handling_negative(debt.saldo, " ->>>,>>>,>>>,>>9") +\
                         handling_negative(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
@@ -9025,7 +9028,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 if not long_digit:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
                         substring(to_string(receiver, "x(32)"), 0, 32) +\
                         handling_negative(debt.saldo, "->,>>>,>>>,>>9.99") +\
                         handling_negative(debitor.saldo, "->,>>>,>>>,>>9.99") +\
@@ -9033,7 +9036,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         to_string(debitor.rgdatum)
                 else:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
                         substring(to_string(receiver, "x(32)"), 0, 32) +\
                         handling_negative(debt.saldo, " ->>>,>>>,>>>,>>9") +\
                         handling_negative(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
@@ -9378,7 +9381,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
 
                 if not long_digit:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
                         substring(to_string(receiver, "x(32)"), 0, 32) +\
                         handling_negative(debt.saldo, "->,>>>,>>>,>>9.99") +\
                         handling_negative(debitor.saldo, "->,>>>,>>>,>>9.99") +\
@@ -9386,7 +9389,7 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
                         to_string(debitor.rgdatum)
                 else:
                     output_list.str = to_string(debt.rgdatum) +\
-                        to_string(debitor.rechnr, ">>>>>>>>9") +\
+                        to_string(debitor.rechnr, ">>>,>>>,>>9") +\
                         substring(to_string(receiver, "x(32)"), 0, 32) +\
                         handling_negative(debt.saldo, " ->>>,>>>,>>>,>>9") +\
                         handling_negative(debitor.saldo, " ->>>,>>>,>>>,>>9") +\
@@ -9524,17 +9527,32 @@ def ar_paylist_2_webbl(comment: string, cledger: bool, ccard: bool, last_sort: i
         t_ar_paylist_data.append(t_ar_paylist)
 
         # log_program.write_log('LOG', f"output_list.str: {output_list.str}", 'outputFile.txt')
-        t_ar_paylist.bill_date = substring(output_list.str, 0, 8)
-        t_ar_paylist.bill_num = substring(output_list.str, 8, 9)
+        
+        # Rulita, 15/12/2025
+        # Fixing error cancel paid AR not found datum
+        # t_ar_paylist.bill_date = substring(output_list.str, 0, 8)
+        tmp_str = substring(output_list.str, 0, 8).strip()
+
+        if tmp_str and "/" in tmp_str:
+            try:
+                tmp_dt = datetime.strptime(tmp_str, "%m/%d/%y")
+                tmp_bill_date = tmp_dt.strftime("%d/%m/%y")
+            except ValueError:
+                tmp_bill_date = "        "
+        else:
+            tmp_bill_date = "        "
+
+        t_ar_paylist.bill_date = tmp_bill_date
+        t_ar_paylist.bill_num = substring(output_list.str, 8, 11)
         t_ar_paylist.inv_num = output_list.inv_no
-        t_ar_paylist.bill_rcv = substring(output_list.str, 17, 34)
+        t_ar_paylist.bill_rcv = substring(output_list.str, 19, 34)
         t_ar_paylist.debt_amt = substring(output_list.str, 51, 17)
         # t_ar_paylist.curr = substring(output_list.str, 300, 3)
         t_ar_paylist.curr =  ""
-        t_ar_paylist.pay_art = substring(output_list.str, 83, 34)
-        t_ar_paylist.pay_date = substring(output_list.str, 117, 8)
-        t_ar_paylist.uid = substring(output_list.str, 125, 3)
-        t_ar_paylist.pay_comment = substring(output_list.str, 128, 34)
+        t_ar_paylist.pay_art = substring(output_list.str, 85, 34)
+        t_ar_paylist.pay_date = substring(output_list.str, 119, 8)
+        t_ar_paylist.uid = substring(output_list.str, 127, 3)
+        t_ar_paylist.pay_comment = substring(output_list.str, 130, 34)
         t_ar_paylist.tot_pay = output_list.sbetrag
         t_ar_paylist.artno = to_string(output_list.bill_art)
         t_ar_paylist.debt_counter = to_string(output_list.debt_counter)
