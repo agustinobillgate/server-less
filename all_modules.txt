@@ -1835,7 +1835,7 @@ vhpFOC/foInvoiceReturnQty,fo_invoice_return_qty_webbl
 vhpFOC/checkGCFPayment2,check_gcfpayment2_webbl
 vhpFOC/depositAdmin2,deposit_admin_2_webbl
 vhpFOC/splitBillLeasingPrepare,prepare_split_bill_web_1bl
-vhpFOC/bookJournUserListCustom,usrjournal_list_webbl
+vhpFOC/bookJournUserListCustom,fo_usrjournal_list_webbl
 vhpFOC/
 vhpFOC/service,function
 vhpFOC/bookJournArtPrepare,prepare_fo_journalbl
