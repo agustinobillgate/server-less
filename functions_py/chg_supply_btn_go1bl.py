@@ -2,6 +2,9 @@
 """_yusufwijasena_15/12/2025
 
         _remark_:   - strip value lname & zcode
+                    - cast value l_lieferant.segment1 to int
+                    - strip value l_lieferant.telepon
+                    - added try & except while update data l_lieferant
 """
 from functions.additional_functions import *
 from decimal import Decimal
@@ -94,8 +97,7 @@ def chg_supply_btn_go1bl(pvilanguage: int, lname: string, zcode: string, supply_
         res_history.nr = bediener.nr
         res_history.datum = get_current_date()
         res_history.zeit = get_current_time_in_seconds()
-        res_history.aenderung = "Modify Supplier - Supplier No : " + \
-            to_string(t_l_lieferant.lief_nr)
+        res_history.aenderung = f"Modify Supplier - Supplier No : {to_string(t_l_lieferant.lief_nr)}" 
         res_history.action = "Modify"
 
     return generate_output()
