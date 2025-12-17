@@ -6,6 +6,10 @@
 
 # yusufwijasena, 28/11/2025
 # - Fixed variable name: age_list.comment -> age_list.comments
+
+# yusufwijasena, 16/12/2025
+# - stip value bill_name from input param
+# - fixed error duplicate key _recid when query for all suplier
 # ===============================
 
 from functions.additional_functions import *
@@ -13,10 +17,14 @@ from decimal import Decimal
 from datetime import date
 from models import Htparam, L_lieferant, Artikel, L_kredit, Bediener, Queasy, Gl_jouhdr, Gl_acct, Gl_journal, L_order
 
+from functions import log_program
+
 
 def ap_debtpay_btn_go_webbl(art_selected: int, bill_name: str, bill_date: date):
 
     prepare_cache([Htparam, L_lieferant, L_kredit, Bediener, Queasy, Gl_jouhdr, Gl_acct, Gl_journal, L_order])
+
+    bill_name = bill_name.strip()
 
     outstand = to_decimal("0.0")
     age_list_data = []
@@ -108,15 +116,60 @@ def ap_debtpay_btn_go_webbl(art_selected: int, bill_name: str, bill_date: date):
         l_kredit_obj_list = {}
         l_kredit = L_kredit()
         l_lieferant = L_lieferant()
-        for l_kredit.counter, l_kredit.name, l_kredit.rechnr, l_kredit.lief_nr, l_kredit._recid, l_kredit.bediener_nr, l_kredit.rgdatum, l_kredit.saldo, l_kredit.rabatt, l_kredit.rabattbetrag, l_kredit.netto, l_kredit.ziel, l_kredit.lscheinnr, l_kredit.bemerk, l_kredit.steuercode, l_kredit.zahlkonto, l_lieferant.firma, l_lieferant.anredefirma, l_lieferant.bank, l_lieferant.kontonr, l_lieferant.lief_nr, l_lieferant.telefon, l_lieferant.fax, l_lieferant.adresse1, l_lieferant.notizen, l_lieferant._recid in db_session.query(L_kredit.counter, L_kredit.name, L_kredit.rechnr, L_kredit.lief_nr, L_kredit._recid, L_kredit.bediener_nr, L_kredit.rgdatum, L_kredit.saldo, L_kredit.rabatt, L_kredit.rabattbetrag, L_kredit.netto, L_kredit.ziel, L_kredit.lscheinnr, L_kredit.bemerk, L_kredit.steuercode, L_kredit.zahlkonto, L_lieferant.firma, L_lieferant.anredefirma, L_lieferant.bank, L_lieferant.kontonr, L_lieferant.lief_nr, L_lieferant.telefon, L_lieferant.fax, L_lieferant.adresse1, L_lieferant.notizen, L_lieferant._recid).join(L_lieferant, (L_lieferant.lief_nr == L_kredit.lief_nr)).filter(
-                (L_kredit.rgdatum <= bill_date) & (L_kredit.opart < 2) & (L_kredit.counter >= 0)).order_by(L_lieferant.firma, L_kredit.counter, L_kredit.rgdatum, L_kredit.zahlkonto).all():
-            if l_kredit_obj_list.get(l_kredit._recid):
-                continue
-            else:
-                l_kredit_obj_list[l_kredit._recid] = True
+        # for l_kredit.counter, l_kredit.name, l_kredit.rechnr, l_kredit.lief_nr, l_kredit._recid, l_kredit.bediener_nr, l_kredit.rgdatum, l_kredit.saldo, l_kredit.rabatt, l_kredit.rabattbetrag, l_kredit.netto, l_kredit.ziel, l_kredit.lscheinnr, l_kredit.bemerk, l_kredit.steuercode, l_kredit.zahlkonto, l_lieferant.firma, l_lieferant.anredefirma, l_lieferant.bank, l_lieferant.kontonr, l_lieferant.lief_nr, l_lieferant.telefon, l_lieferant.fax, l_lieferant.adresse1, l_lieferant.notizen, l_lieferant._recid in db_session.query(L_kredit.counter, L_kredit.name, L_kredit.rechnr, L_kredit.lief_nr, L_kredit._recid, L_kredit.bediener_nr, L_kredit.rgdatum, L_kredit.saldo, L_kredit.rabatt, L_kredit.rabattbetrag, L_kredit.netto, L_kredit.ziel, L_kredit.lscheinnr, L_kredit.bemerk, L_kredit.steuercode, L_kredit.zahlkonto, L_lieferant.firma, L_lieferant.anredefirma, L_lieferant.bank, L_lieferant.kontonr, L_lieferant.lief_nr, L_lieferant.telefon, L_lieferant.fax, L_lieferant.adresse1, L_lieferant.notizen, L_lieferant._recid).join(L_lieferant, (L_lieferant.lief_nr == L_kredit.lief_nr)).filter(
+        #         (L_kredit.rgdatum <= bill_date) & (L_kredit.opart < 2) & (L_kredit.counter >= 0)).order_by(L_lieferant.firma, L_kredit.counter, L_kredit.rgdatum, L_kredit.zahlkonto).all():
+        
+            # if l_kredit_obj_list.get(kredit_recid):
+            #     continue
 
+            # l_kredit_obj_list[kredit_recid] = True
+
+        # start - yusufwijasena, fix: error duplicate key _recid
+        l_lieferant_query = (
+            db_session.query(
+                L_kredit.counter,
+                L_kredit.name,
+                L_kredit.rechnr,
+                L_kredit.lief_nr,
+                L_kredit._recid,
+                L_kredit.bediener_nr,
+                L_kredit.rgdatum,
+                L_kredit.saldo,
+                L_kredit.rabatt,
+                L_kredit.rabattbetrag,
+                L_kredit.netto,
+                L_kredit.ziel,
+                L_kredit.lscheinnr,
+                L_kredit.bemerk,
+                L_kredit.steuercode,
+                L_kredit.zahlkonto,
+                L_lieferant.firma,
+                L_lieferant.anredefirma,
+                L_lieferant.bank,
+                L_lieferant.kontonr,
+                L_lieferant.lief_nr,
+                L_lieferant.telefon,
+                L_lieferant.fax,
+                L_lieferant.adresse1,
+                L_lieferant.notizen,
+                L_lieferant._recid,
+                )
+            .join(L_lieferant, L_lieferant.lief_nr == L_kredit.lief_nr)
+            .filter(
+                L_kredit.rgdatum <= bill_date,
+                L_kredit.opart < 2,
+                L_kredit.counter >= 0,
+                )
+            .order_by(
+                L_lieferant.firma,
+                L_kredit.counter,
+                L_kredit.rgdatum,
+                L_kredit.zahlkonto,
+                )
+        )
+        
+        for l_kredit in l_lieferant_query:
             create_it = False
-
             if l_kredit.counter == 0:
                 create_it = True
             else:
@@ -126,6 +179,8 @@ def ap_debtpay_btn_go_webbl(art_selected: int, bill_name: str, bill_date: date):
                 if not age_list:
                     create_it = True
 
+        # end - yusufwijasena, fix: error duplicate key _recid
+        
             if create_it:
                 age_list = Age_list()
                 age_list_data.append(age_list)
@@ -144,11 +199,8 @@ def ap_debtpay_btn_go_webbl(art_selected: int, bill_name: str, bill_date: date):
                 age_list.bank_acct = l_lieferant.kontonr
 
             if l_kredit.zahlkonto == 0:
-                # bediener = get_cache(
-                #     Bediener, {"nr": [(eq, l_kredit.bediener_nr)]})
-                bediener = db_session.query(Bediener).filter(
-                    Bediener.nr == l_kredit.bediener_nr).with_for_update().first(
-                )
+                bediener = get_cache(
+                    Bediener, {"nr": [(eq, l_kredit.bediener_nr)]})
 
                 if bediener:
                     age_list.user_init = bediener.userinit
@@ -165,12 +217,8 @@ def ap_debtpay_btn_go_webbl(art_selected: int, bill_name: str, bill_date: date):
                 age_list.tot_debt = to_decimal(
                     age_list.tot_debt) + to_decimal(l_kredit.netto)
 
-                # queasy = get_cache(
-                #     Queasy, {"key": [(eq, 221)], "char1": [(eq, l_kredit.name)]})
-                queasy = db_session.query(Queasy).filter(
-                    Queasy.key == 221,
-                    Queasy.char1 == l_kredit.name
-                ).with_for_update().first()
+                queasy = get_cache(
+                    Queasy, {"key": [(eq, 221)], "char1": [(eq, l_kredit.name)]})
 
                 if queasy:
                     age_list.recv_date = queasy.date1
@@ -182,11 +230,7 @@ def ap_debtpay_btn_go_webbl(art_selected: int, bill_name: str, bill_date: date):
                     age_list.tot_debt) + to_decimal(l_kredit.saldo)
             disp_l_lieferant_debt()
 
-            # gl_jouhdr = get_cache(Gl_jouhdr, {"refno": [(eq, l_kredit.name)]})
-            gl_jouhdr = db_session.query(Gl_jouhdr).filter(
-                Gl_jouhdr.refno == l_kredit.name
-            ).with_for_update().first()
-            
+            gl_jouhdr = get_cache(Gl_jouhdr, {"refno": [(eq, l_kredit.name)]})
 
             if gl_jouhdr and l_kredit.zahlkonto == 0:
                 gl_journal = Gl_journal()
@@ -233,10 +277,7 @@ def ap_debtpay_btn_go_webbl(art_selected: int, bill_name: str, bill_date: date):
         curr_rechnr = 0
         outstand = to_decimal("0")
 
-        # l_lieferant = get_cache(L_lieferant, {"firma": [(eq, bill_name)]})
-        l_lieferant = db_session.query(L_lieferant).filter(
-            L_lieferant.firma == bill_name
-        ).with_for_update().first()
+        l_lieferant = get_cache(L_lieferant, {"firma": [(eq, bill_name)]})
 
         if l_lieferant:
             for l_kredit in db_session.query(L_kredit).filter(
@@ -270,11 +311,8 @@ def ap_debtpay_btn_go_webbl(art_selected: int, bill_name: str, bill_date: date):
                     age_list.bank_acct = l_lieferant.kontonr
 
                 if l_kredit.zahlkonto == 0:
-                    # bediener = get_cache(
-                    #     Bediener, {"nr": [(eq, l_kredit.bediener_nr)]})
-                    bediener = db_session.query(Bediener).filter(
-                        Bediener.nr == l_kredit.bediener_nr
-                    ).with_for_update().first()
+                    bediener = get_cache(
+                        Bediener, {"nr": [(eq, l_kredit.bediener_nr)]})
 
                     if bediener:
                         age_list.user_init = bediener.userinit
@@ -290,25 +328,16 @@ def ap_debtpay_btn_go_webbl(art_selected: int, bill_name: str, bill_date: date):
                         age_list.tot_debt) + to_decimal(l_kredit.netto)
 
                     if l_kredit.name != l_kredit.lscheinnr:
-                        # l_order = get_cache(L_order, {"lief_nr": [(eq, l_kredit.lief_nr)], "docu_nr": [
-                        #                     (eq, l_kredit.name)], "pos": [(eq, 0)]})
-                        l_order = db_session.query(L_order).filter(
-                            L_order.lief_nr == l_kredit.lief_nr,
-                            L_order.docu_nr == l_kredit.name,
-                            L_order.pos == 0
-                        ).with_for_update().first()
+                        l_order = get_cache(L_order, {"lief_nr": [(eq, l_kredit.lief_nr)], "docu_nr": [
+                                            (eq, l_kredit.name)], "pos": [(eq, 0)]})
 
                         if l_order:
                             age_list.rabattbetrag = to_decimal(
                                 l_order.warenwert)
 
-                    # queasy = get_cache(
-                    #     Queasy, {"key": [(eq, 221)], "char1": [(eq, l_kredit.name)]})
-                    queasy = db_session.query(Queasy).filter(
-                        Queasy.key == 221,
-                        Queasy.char1 == l_kredit.name
-                    ).with_for_update().first()
-                    
+                    queasy = get_cache(
+                        Queasy, {"key": [(eq, 221)], "char1": [(eq, l_kredit.name)]})
+
                     if queasy:
                         age_list.recv_date = queasy.date1
 
@@ -319,11 +348,8 @@ def ap_debtpay_btn_go_webbl(art_selected: int, bill_name: str, bill_date: date):
                         age_list.tot_debt) + to_decimal(l_kredit.saldo)
                 disp_l_lieferant_debt()
 
-                # gl_jouhdr = get_cache(
-                #     Gl_jouhdr, {"refno": [(eq, l_kredit.name)]})
-                gl_jouhdr = db_session.query(Gl_jouhdr).filter(
-                    Gl_jouhdr.refno == l_kredit.name
-                ).with_for_update().first()
+                gl_jouhdr = get_cache(
+                    Gl_jouhdr, {"refno": [(eq, l_kredit.name)]})
 
                 if gl_jouhdr and l_kredit.zahlkonto == 0:
                     gl_journal = Gl_journal()
@@ -362,31 +388,27 @@ def ap_debtpay_btn_go_webbl(art_selected: int, bill_name: str, bill_date: date):
         nonlocal age_list_data, t_l_lieferant_data
 
         lief_nr: int = 0
+        
+        # log_program.write_log('LOG', f'age_list_data processed: {len(age_list_data)}')
 
         if age_list:
             lief_nr = age_list.lief_nr
 
-            # l_lieferant = get_cache(L_lieferant, {"lief_nr": [(eq, lief_nr)]})
-            l_lieferant = db_session.query(L_lieferant).filter(
-                L_lieferant.lief_nr == lief_nr
-            ).with_for_update().first()
+            l_lieferant = get_cache(L_lieferant, {"lief_nr": [(eq, lief_nr)]})
+
             age_list.resname = l_lieferant.firma + ", " + l_lieferant.anredefirma + chr_unicode(10) +\
                 l_lieferant.adresse1 + \
                 chr_unicode(10) + l_lieferant.wohnort + " " + l_lieferant.plz
             age_list.comments = age_list.bemerk
 
-    # htparam = get_cache(Htparam, {"paramnr": [(eq, 986)]})
-    htparam = db_session.query(Htparam).filter(
-        Htparam.paramnr == 986
-    ).with_for_update().first()
+    htparam = get_cache(Htparam, {"paramnr": [(eq, 986)]})
+    
 
     if htparam:
         p_986 = htparam.fchar
 
-    # htparam = get_cache(Htparam, {"paramnr": [(eq, 395)]})
-    htparam = db_session.query(Htparam).filter(
-        Htparam.paramnr == 395
-    ).with_for_update().first()
+    htparam = get_cache(Htparam, {"paramnr": [(eq, 395)]})
+    
 
     if htparam:
         p_395 = htparam.fchar
@@ -397,11 +419,8 @@ def ap_debtpay_btn_go_webbl(art_selected: int, bill_name: str, bill_date: date):
         create_age_list1()
 
     for age_list in query(age_list_data):
-        # l_lieferant = get_cache(
-        #     L_lieferant, {"lief_nr": [(eq, age_list.lief_nr)]})
-        l_lieferant = db_session.query(L_lieferant).filter(
-            L_lieferant.lief_nr == age_list.lief_nr
-        ).with_for_update().first()
+        l_lieferant = get_cache(
+            L_lieferant, {"lief_nr": [(eq, age_list.lief_nr)]})
 
         if l_lieferant:
             t_l_lieferant = query(t_l_lieferant_data, filters=(
@@ -416,5 +435,6 @@ def ap_debtpay_btn_go_webbl(art_selected: int, bill_name: str, bill_date: date):
                 t_l_lieferant.adresse1 = l_lieferant.adresse1
                 t_l_lieferant.notizen_1 = l_lieferant.notizen[0]
                 t_l_lieferant.lief_nr = l_lieferant.lief_nr
+                
 
     return generate_output()
