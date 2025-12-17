@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+import psutil
 
 LOG_DIR = "/usr1/serverless/src/logs"
 os.makedirs(LOG_DIR, exist_ok=True)
@@ -13,3 +14,10 @@ def write_log(level, message, filename="log.txt"):
         log_file.write(formatted_message)
 
     print(formatted_message.strip())
+
+def log_usage(stage: str):
+    process = psutil.Process(os.getpid())
+
+    mem = process.memory_info().rss / (1024 * 1024)   # MB
+    cpu = process.cpu_percent(interval=0.1)           # %
+    return f"[{stage}] RAM: {mem:.2f} MB | CPU: {cpu:.1f}%"

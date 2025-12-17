@@ -5,7 +5,7 @@
 #------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
-from datetime import date
+from datetime import date, datetime
 from models import Queasy, Artikel, Htparam
 
 import time
@@ -52,7 +52,7 @@ def fo_journal_create_list_webbl(id_flag:string, fo_journal_list_data:[Fo_journa
         if count >= 1000:
             break
 
-        if tmp_count == 0 and retry > 60:
+        if tmp_count == 0 and retry > 10:
             break
 
         if tmp_count > 0 and tmp_count == count:
@@ -74,7 +74,7 @@ def fo_journal_create_list_webbl(id_flag:string, fo_journal_list_data:[Fo_journa
         fo_journal_list = Fo_journal_list()
         fo_journal_list_data.append(fo_journal_list)
 
-        fo_journal_list.datum = date_mdy(substring(queasy_str1, 0, 8))
+        fo_journal_list.datum = substring(queasy_str1, 0, 8)
         fo_journal_list.c = trim(substring(queasy_str2, 0, 2))
         fo_journal_list.roomnumber = trim(substring(queasy_str2, 2, 6))
         fo_journal_list.nsflag = trim(substring(queasy_str2, 8, 1))
@@ -92,7 +92,7 @@ def fo_journal_create_list_webbl(id_flag:string, fo_journal_list_data:[Fo_journa
         fo_journal_list.billrcvr = trim(substring(queasy_str2, 127, 24))
         fo_journal_list.zeit = substring(queasy_str1, 127, 8)
         fo_journal_list.id = substring(queasy_str1, 135, 4)
-        fo_journal_list.sysdate = date_mdy(substring(queasy_str1, 139, 8))
+        fo_journal_list.sysdate = substring(queasy_str1, 139, 8)
         fo_journal_list.remark = trim(substring(queasy_str2, 151, 124))
         fo_journal_list.checkin = date_mdy(substring(queasy_str2, 275, 8))
         fo_journal_list.checkout = date_mdy(substring(queasy_str2, 283, 8))

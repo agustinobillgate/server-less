@@ -6,21 +6,23 @@
 
 from functions.additional_functions import *
 from sqlalchemy import func
+from sqlalchemy.engine import Engine, Connection
+from sqlalchemy.orm import sessionmaker
 from decimal import Decimal
 from datetime import date
-import re
 from functions.calc_servvat import calc_servvat
-from models import Guest, Artikel, Queasy, Htparam, Bill, Bill_line, Res_line, Reservation, Sourccod, Segment, Genstat, History, Guestseg, Debitor, Hoteldpt, Billjournal, H_bill, Bk_veran, Arrangement, Argt_line, H_journal
+from models import Guest, Artikel, Queasy, Htparam, Bill, Bill_line, Res_line, Reservation, Sourccod, Segment, Genstat, History, Guestseg, Debitor, Hoteldpt, Billjournal, H_bill, Bk_veran, Arrangement, Argt_line, H_journal, H_bill_line
+from functions.more_additional_functions import format_fixed_length, handling_negative
 
-def format_fixed_length(text: str, length: int) -> str:
-        if len(text) > length:
-            return text[:length]   # trim
-        else:
-            return text.ljust(length)
+from functions import log_program as lp
+
+import re
+import time
+import traceback
 
 def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, from_date:date, to_date:date, sorttype:int, exclude_artrans:bool, long_digit:bool, foreign_flag:bool, mi_onlyjournal:bool, mi_excljournal:bool, mi_post:bool, mi_showrelease:bool, mi_break:bool, id_flag:string):
 
-    prepare_cache ([Guest, Artikel, Queasy, Htparam, Bill, Res_line, Reservation, Sourccod, Segment, Genstat, History, Guestseg, Debitor, Hoteldpt, Billjournal, H_bill, Bk_veran, H_journal])
+    prepare_cache ([Guest, Artikel, Queasy, Htparam, Bill, Res_line, Reservation, Sourccod, Segment, Genstat, History, Guestseg, Debitor, Hoteldpt, Billjournal, H_bill, Bk_veran, H_journal, H_bill_line])
 
     gtot = to_decimal("0.0")
     output_list_data = []
@@ -45,13 +47,13 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
     temp2:string = ""
     counter:int = 0
     isoutletshift:bool = False
-    guest = artikel = queasy = htparam = bill = bill_line = res_line = reservation = sourccod = segment = genstat = history = guestseg = debitor = hoteldpt = billjournal = h_bill = bk_veran = arrangement = argt_line = h_journal = None
+    guest = artikel = queasy = htparam = bill = bill_line = res_line = reservation = sourccod = segment = genstat = history = guestseg = debitor = hoteldpt = billjournal = h_bill = bk_veran = arrangement = argt_line = h_journal = h_bill_line = None
 
     output_list = shift_list = buffguest = gbuff = shift_buff = b_artikel = None
 
     output_list_data, Output_list = create_model("Output_list", {"bezeich":string, "c":string, "ns":string, "mb":string, "shift":string, "dept":string, "str":string, "remark":string, "gname":string, "descr":string, "voucher":string, "checkin":date, "checkout":date, "guestname":string, "segcode":string, "amt_nett":Decimal, "service":Decimal, "vat":Decimal, "zinr":string, "deptno":int, "nationality":string, "resnr":int, "book_source":string, "resname":string})
     shift_list_data, Shift_list = create_model("Shift_list", {"shift":int, "ftime":int, "ttime":int})
-
+    
     Buffguest = create_buffer("Buffguest",Guest)
     Gbuff = create_buffer("Gbuff",Guest)
     Shift_buff = Shift_list
@@ -59,11 +61,28 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
 
     B_artikel = create_buffer("B_artikel",Artikel)
 
-
     db_session = local_storage.db_session
 
+    # Oscar - start - create new session with same search_path for write operation to db and maintain yield__per connection still active
+    search_path = db_session.execute(
+        text("SELECT current_schema()")
+    ).scalar()
+
+    localBind = db_session.get_bind()
+    localEngine = localBind.engine if isinstance(localBind, Connection) else localBind
+
+    WriteSessionOnly = sessionmaker(bind=localEngine)
+
+    write_session_only = WriteSessionOnly()
+
+    write_session_only.execute(
+        text(f"SET search_path TO {search_path}")
+    )
+    # Oscar - end - create new session with same search_path for write operation to db and maintain yield__per connection still active
+
+
     def generate_output():
-        nonlocal gtot, output_list_data, curr_date, descr1, voucher_no, ind, indexing, gdelimiter, roomnumber, zinrdate, billnumber, curr_str, curr_resnr, serv, vat, netto, temp_str, hoteldept, shift, temp1, temp2, counter, isoutletshift, guest, artikel, queasy, htparam, bill, bill_line, res_line, reservation, sourccod, segment, genstat, history, guestseg, debitor, hoteldpt, billjournal, h_bill, bk_veran, arrangement, argt_line, h_journal
+        nonlocal gtot, output_list_data, curr_date, descr1, voucher_no, ind, indexing, gdelimiter, roomnumber, zinrdate, billnumber, curr_str, curr_resnr, serv, vat, netto, temp_str, hoteldept, shift, temp1, temp2, counter, isoutletshift, guest, artikel, queasy, htparam, bill, bill_line, res_line, reservation, sourccod, segment, genstat, history, guestseg, debitor, hoteldpt, billjournal, h_bill, bk_veran, arrangement, argt_line, h_journal, h_bill_line
         nonlocal from_art, to_art, from_dept, to_dept, from_date, to_date, sorttype, exclude_artrans, long_digit, foreign_flag, mi_onlyjournal, mi_excljournal, mi_post, mi_showrelease, mi_break, id_flag
         nonlocal buffguest, gbuff, shift_buff, b_artikel
 
@@ -73,9 +92,10 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
 
         return {"gtot": gtot, "output-list": output_list_data}
 
+
     def handle_null_date(inp_date:date):
 
-        nonlocal gtot, output_list_data, curr_date, descr1, voucher_no, ind, indexing, gdelimiter, roomnumber, zinrdate, billnumber, curr_str, curr_resnr, serv, vat, netto, temp_str, hoteldept, shift, temp1, temp2, counter, isoutletshift, guest, artikel, queasy, htparam, bill, bill_line, res_line, reservation, sourccod, segment, genstat, history, guestseg, debitor, hoteldpt, billjournal, h_bill, bk_veran, arrangement, argt_line, h_journal
+        nonlocal gtot, output_list_data, curr_date, descr1, voucher_no, ind, indexing, gdelimiter, roomnumber, zinrdate, billnumber, curr_str, curr_resnr, serv, vat, netto, temp_str, hoteldept, shift, temp1, temp2, counter, isoutletshift, guest, artikel, queasy, htparam, bill, bill_line, res_line, reservation, sourccod, segment, genstat, history, guestseg, debitor, hoteldpt, billjournal, h_bill, bk_veran, arrangement, argt_line, h_journal, h_bill_line
         nonlocal from_art, to_art, from_dept, to_dept, from_date, to_date, sorttype, exclude_artrans, long_digit, foreign_flag, mi_onlyjournal, mi_excljournal, mi_post, mi_showrelease, mi_break, id_flag
         nonlocal buffguest, gbuff, shift_buff, b_artikel
 
@@ -84,14 +104,14 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
         nonlocal output_list_data, shift_list_data
 
         if inp_date == None:
-            return to_string("", "x(8)")
+            return "" * 8
         else:
-            return to_string(inp_date, "99/99/99")
+            return inp_date.strftime("%m/%d/%y")
 
 
     def handle_null_char(inp_char:string):
 
-        nonlocal gtot, output_list_data, curr_date, descr1, voucher_no, ind, indexing, gdelimiter, roomnumber, zinrdate, billnumber, curr_str, curr_resnr, serv, vat, netto, temp_str, hoteldept, shift, temp1, temp2, counter, isoutletshift, guest, artikel, queasy, htparam, bill, bill_line, res_line, reservation, sourccod, segment, genstat, history, guestseg, debitor, hoteldpt, billjournal, h_bill, bk_veran, arrangement, argt_line, h_journal
+        nonlocal gtot, output_list_data, curr_date, descr1, voucher_no, ind, indexing, gdelimiter, roomnumber, zinrdate, billnumber, curr_str, curr_resnr, serv, vat, netto, temp_str, hoteldept, shift, temp1, temp2, counter, isoutletshift, guest, artikel, queasy, htparam, bill, bill_line, res_line, reservation, sourccod, segment, genstat, history, guestseg, debitor, hoteldpt, billjournal, h_bill, bk_veran, arrangement, argt_line, h_journal, h_bill_line
         nonlocal from_art, to_art, from_dept, to_dept, from_date, to_date, sorttype, exclude_artrans, long_digit, foreign_flag, mi_onlyjournal, mi_excljournal, mi_post, mi_showrelease, mi_break, id_flag
         nonlocal buffguest, gbuff, shift_buff, b_artikel
 
@@ -108,9 +128,9 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
             return inp_char
 
 
-    def custom_record():
+    def custom_record(artikel_prev:Artikel=None, billjournal_prev:Billjournal=None):
 
-        nonlocal gtot, output_list_data, curr_date, descr1, voucher_no, ind, indexing, gdelimiter, serv, vat, netto, temp_str, hoteldept, shift, temp1, temp2, counter, isoutletshift, guest, artikel, queasy, htparam, bill, bill_line, res_line, reservation, sourccod, segment, genstat, history, guestseg, debitor, hoteldpt, billjournal, h_bill, bk_veran, arrangement, argt_line, h_journal
+        nonlocal gtot, output_list_data, curr_date, descr1, voucher_no, ind, indexing, gdelimiter, serv, vat, netto, temp_str, hoteldept, shift, temp1, temp2, counter, isoutletshift, guest, artikel, queasy, htparam, bill, bill_line, res_line, reservation, sourccod, segment, genstat, history, guestseg, debitor, hoteldpt, billjournal, h_bill, bk_veran, arrangement, argt_line, h_journal, h_bill_line
         nonlocal from_art, to_art, from_dept, to_dept, from_date, to_date, sorttype, exclude_artrans, long_digit, foreign_flag, mi_onlyjournal, mi_excljournal, mi_post, mi_showrelease, mi_break, id_flag
         nonlocal buffguest, gbuff, shift_buff, b_artikel
 
@@ -119,11 +139,11 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
         nonlocal output_list_data, shift_list_data
 
         roomnumber:string = ""
-        zinrdate:date = None
+        zinrdate:date = date(1,1,1)
         billnumber:int = 0
         curr_str:string = ""
         curr_resnr:int = 0
-        journdate:date = None
+        journdate:date = date(1,1,1)
         temp_resnr:Decimal = to_decimal("0.0")
         temp_gastnr:Decimal = to_decimal("0.0")
         temp_descr:string = ""
@@ -132,20 +152,27 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 110)]})
 
+        if artikel_prev != None:
+            artikel = artikel_prev
+        if billjournal_prev != None:
+            billjournal = billjournal_prev
+
         if htparam:
             journdate = htparam.fdate
+
         roomnumber = substring(output_list.str, 8, 6)
         roomnumber = roomnumber.strip()
 
         tmp_mm = substring(output_list.str, 0, 2)
         tmp_dd = substring(output_list.str, 3, 2)
         tmp_yy = substring(output_list.str, 6, 2)
+
         # perubahan output_list.sstr 09/24/24 -> membuat string parsing berubah
         # zinrdate = date_mdy(substring(output_list.s, 0, 8))
         if tmp_dd.strip() !="" and tmp_mm.strip() !="" and tmp_yy.strip() !="":
             zinrdate = date(to_int(tmp_yy)+2000, to_int(tmp_mm), to_int(tmp_dd))
         else:
-            zinrdate = None
+            zinrdate = date(1,1,1)
             
         billnumber = to_int(substring(output_list.str, 14, 9))
         artikelnr = to_int(substring(output_list.str, 23, 9))
@@ -154,11 +181,19 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
 
         if output_list.mb.lower()  == ("*").lower() :
 
-            bill = get_cache (Bill, {"rechnr": [(eq, billnumber)]})
+            # bill = get_cache (Bill, {"rechnr": [(eq, billnumber)]})\
+            bill = None
+            bill = db_session.query(Bill).filter((Bill.rechnr == billnumber)).first()
 
-            bill_line = get_cache (Bill_line, {"rechnr": [(eq, bill.rechnr)],"zinr": [(eq, roomnumber)]})
+            bill_line = None
+            if bill:
+                # bill_line = get_cache (Bill_line, {"rechnr": [(eq, bill.rechnr)],"zinr": [(eq, roomnumber)]})
+                bill_line = db_session.query(Bill_line).filter((Bill_line.rechnr == bill.rechnr) & (Bill_line.zinr == roomnumber)).first()
 
-            res_line = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"zinr": [(eq, roomnumber)],"ankunft": [(le, zinrdate)],"abreise": [(ge, zinrdate)]})
+            res_line = None
+            if bill_line:
+                # res_line = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"zinr": [(eq, roomnumber)],"ankunft": [(le, zinrdate)],"abreise": [(ge, zinrdate)]})
+                res_line = db_session.query(Res_line).filter((Res_line.resnr == bill.resnr) & (Res_line.zinr == roomnumber) & (Res_line.ankunft <= zinrdate) & (Res_line.abreise >= zinrdate)).first()
 
             # Rd 13/8/2025
             # if res_line available
@@ -166,7 +201,7 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
                 # reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
                 reservation = db_session.query(Reservation).filter(Reservation.resnr == res_line.resnr).first()
 
-                buffguest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrpay)]})
+                # buffguest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrpay)]})
                 buffguest = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnrpay).first()
 
                 # guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
@@ -176,7 +211,7 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
                 gbuff = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnr).first()
 
                 if guest and reservation:
-                    output_list.str = output_list.str + guest.name + ", " + guest.vorname1 + " " + guest.anrede1
+                    output_list.str = output_list.str + format_fixed_length((guest.name + ", " + guest.vorname1 + " " + guest.anrede1), 50)
                     output_list.checkin = res_line.ankunft
                     output_list.checkout = res_line.abreise
                     output_list.guestname = guest.name + ", " + guest.vorname1 + " " + guest.anrede1
@@ -206,7 +241,7 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
             output_list.segcode = ""
             output_list.checkin = None
             output_list.checkout = None
-            output_list.str = substring(output_list.str, 0, 127)
+            output_list.str = format_fixed_length(substring(output_list.str, 0, 128), 221)
 
         # if matches(substring(str, 77, 12),r"*Grand TOTAL*"):
         if matches(substring(output_list.str, 82, 12),r"*Grand TOTAL*"):
@@ -214,7 +249,7 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
             output_list.segcode = ""
             output_list.checkin = None
             output_list.checkout = None
-            output_list.str = substring(output_list.str, 0, 127)
+            output_list.str = format_fixed_length(substring(output_list.str, 0, 128), 221)
 
         if num_entries(output_list.gname, "|") >= 2:
             output_list.gname = entry(0, output_list.gname, "|")
@@ -242,8 +277,6 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
                             temp_resnr = to_decimal(substring(entry(0, output_list.descr, "[") , length(b_artikel.bezeich) + 2 - 1))
 
             if temp_resnr != 0:
-                # TODO: look up
-
                 # res_line = get_cache (Res_line, {"resnr": [(eq, int(temp_resnr))],"reslinnr": [(eq, 1)]})
                 res_line = db_session.query(Res_line).filter(Res_line.resnr == int(temp_resnr), Res_line.reslinnr == 1).first()
 
@@ -263,7 +296,7 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
                     gbuff = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnr).first()
 
                     if guest and reservation:
-                        output_list.str = output_list.str + guest.name + ", " + guest.vorname1 + " " + guest.anrede1
+                        output_list.str = output_list.str + format_fixed_length((guest.name + ", " + guest.vorname1 + " " + guest.anrede1), 50)
                         output_list.checkin = res_line.ankunft
                         output_list.checkout = res_line.abreise
                         output_list.guestname = guest.name + ", " + guest.vorname1 + " " + guest.anrede1
@@ -335,7 +368,7 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
 
 
                     if guest and reservation:
-                        output_list.str = output_list.str + guest.name + ", " + guest.vorname1 + " " + guest.anrede1
+                        output_list.str = output_list.str + format_fixed_length((guest.name + ", " + guest.vorname1 + " " + guest.anrede1), 50)
                         output_list.checkin = res_line.ankunft
                         output_list.checkout = res_line.abreise
                         output_list.guestname = guest.name + ", " + guest.vorname1 + " " + guest.anrede1
@@ -393,7 +426,7 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
                     gbuff = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnr).first()
 
                     if guest and reservation:
-                        output_list.str = output_list.str + guest.name + ", " + guest.vorname1 + " " + guest.anrede1
+                        output_list.str = output_list.str +format_fixed_length((guest.name + ", " + guest.vorname1 + " " + guest.anrede1), 50)
                         output_list.checkin = res_line.ankunft
                         output_list.checkout = res_line.abreise
                         output_list.guestname = guest.name + ", " + guest.vorname1 + " " + guest.anrede1
@@ -437,7 +470,7 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
                     gbuff = db_session.query(Guest).filter(Guest.gastnr == genstat.gastnr).first()
 
                     if guest and reservation:
-                        output_list.str = output_list.str + guest.name + ", " + guest.vorname1 + " " + guest.anrede1
+                        output_list.str = output_list.str + format_fixed_length((guest.name + ", " + guest.vorname1 + " " + guest.anrede1), 50)
                         output_list.checkin = genstat.res_date[0]
                         output_list.checkout = genstat.res_date[1]
                         output_list.guestname = guest.name + ", " + guest.vorname1 + " " + guest.anrede1
@@ -446,6 +479,7 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
                             output_list.gname = buffguest.name + ", " + buffguest.vorname1 + " " + buffguest.anrede1
                         else:
                             output_list.gname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1
+                            
                         output_list.nationality = guest.nation1
                         output_list.resnr = genstat.resnr
                         output_list.resname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1
@@ -467,31 +501,28 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
 
         if roomnumber != "" and not res_line:
 
-            # bill = get_cache (Bill, {"rechnr": [(eq, billnumber)]})
             bill = db_session.query(Bill).filter(Bill.rechnr == billnumber).first()
 
-            # history = get_cache (History, {"resnr": [(eq, bill.resnr)],"zinr": [(eq, roomnumber)],"ankunft": [(le, zinrdate)],"abreise": [(ge, zinrdate)]})
-            history = db_session.query(History).filter((History.resnr == bill.resnr) & (History.zinr == roomnumber) & (History.ankunft <= zinrdate) & (History.abreise >= zinrdate)).first()
+            history = None
+            if bill:
+                history = db_session.query(History).filter((History.resnr == bill.resnr) & (History.zinr == roomnumber) & (History.ankunft <= zinrdate) & (History.abreise >= zinrdate)).first()
 
-            # res_line = get_cache (Res_line, {"resnr": [(eq, history.resnr)],"reslinnr": [(eq, history.reslinnr)],"ankunft": [(le, history.ankunft)],"abreise": [(ge, history.abreise)]})
-            res_line = db_session.query(Res_line).filter((Res_line.resnr == history.resnr) & (Res_line.reslinnr == history.reslinnr) & (Res_line.ankunft <= history.ankunft) & (History.abreise >= history.abreise)).first()
+            res_line = None
+            if history:
+                res_line = db_session.query(Res_line).filter((Res_line.resnr == history.resnr) & (Res_line.reslinnr == history.reslinnr) & (Res_line.ankunft <= history.ankunft) & (History.abreise >= history.abreise)).first()
 
             if res_line:
 
-                # reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
                 reservation = db_session.query(Reservation).filter((Reservation.resnr == res_line.resnr)).first()
 
-                # buffguest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrpay)]})
                 buffguest = db_session.query(Guest).filter((Guest.gastnr == res_line.gastnrpay)).first()
 
-                # guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
                 guest = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnrmember).first()
 
-                # gbuff = get_cache (Guest, {"gastnr": [(eq, res_line.gastnr)]})
                 gbuff = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnr).first()
 
                 if guest and reservation:
-                    output_list.str = output_list.str + guest.name + ", " + guest.vorname1 + " " + guest.anrede1
+                    output_list.str = output_list.str + format_fixed_length((guest.name + ", " + guest.vorname1 + " " + guest.anrede1), 50)
                     output_list.checkin = res_line.ankunft
                     output_list.checkout = res_line.abreise
                     output_list.guestname = guest.name + ", " + guest.vorname1 + " " + guest.anrede1
@@ -513,9 +544,10 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
                     output_list.segcode = segment.bezeich
                 else:
                     output_list.segcode = ""
+
         roomnumber = ""
 
-        if output_list.ns != "" and handle_null_char (output_list.gname) != "" and bill:
+        if output_list.ns != "" and handle_null_char(output_list.gname) != "" and bill:
 
             # buffguest = get_cache (Guest, {"gastnr": [(eq, bill.gastnr)]})
             buffguest = db_session.query(Guest).filter(Guest.gastnr == bill.gastnr).first()
@@ -544,8 +576,9 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
 
                 if b_artikel:
                     output_list.descr = "A/R Transfer from " + to_string(debitor.artnr) + " " + b_artikel.bezeich
+
         queasy = Queasy()
-        db_session.add(queasy)
+        write_session_only.add(queasy)
 
         counter = counter + 1
         # queasy_str = to_string(output_list.c, "x(2)") +\
@@ -569,7 +602,7 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
         #         " " + to_string(output_list.amt_nett , "->>>,>>>,>>>,>>9.99") +\
         #         " " + to_string(output_list.service , "->>>,>>>,>>>,>>9.99") +\
         #         " " + to_string(output_list.vat , "->>>,>>>,>>>,>>9.99")
-        queasy_str = to_string(output_list.c, "x(2)") +\
+        queasy_str = format_fixed_length(output_list.c, 2) +\
                 format_fixed_length(handle_null_char (output_list.zinr) , 6) +\
                 format_fixed_length(handle_null_char (output_list.ns) , 1) +\
                 format_fixed_length(handle_null_char (output_list.mb) , 1) +\
@@ -582,19 +615,24 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
                 format_fixed_length(handle_null_date (output_list.checkin), 8) +\
                 format_fixed_length(handle_null_date (output_list.checkout), 8) +\
                 format_fixed_length(handle_null_char (output_list.segcode) , 20) +\
-                to_string(output_list.deptno , ">9") +\
+                handling_negative(output_list.deptno , ">9") +\
                 format_fixed_length(handle_null_char (output_list.nationality) , 5) +\
-                to_string(output_list.resnr , "->>>>>>>>9") +\
+                handling_negative(output_list.resnr , "->>>>>>>>9") +\
                 format_fixed_length(handle_null_char (output_list.book_source) , 20) +\
                 format_fixed_length(handle_null_char (output_list.resname) , 25) +\
-                " " + to_string(output_list.amt_nett , "->>>,>>>,>>>,>>9.99") +\
-                " " + to_string(output_list.service , "->>>,>>>,>>>,>>9.99") +\
-                " " + to_string(output_list.vat , "->>>,>>>,>>>,>>9.99")
+                " " + handling_negative(output_list.amt_nett , "->>>,>>>,>>>,>>9.99") +\
+                " " + handling_negative(output_list.service , "->>>,>>>,>>>,>>9.99") +\
+                " " + handling_negative(output_list.vat , "->>>,>>>,>>>,>>9.99")
+        
+        output_list.str = format_fixed_length(output_list.str, 220)
+        
         queasy.key = 280
         queasy.char1 = "FO Transaction"
         queasy.char2 = id_flag
         queasy.char3 = output_list.str + "|" + queasy_str
         queasy.number1 = counter
+
+        write_session_only.commit()
 
         if mi_break:
             queasy.logi1 = mi_break
@@ -655,13 +693,12 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
 
     def journal_list():
 
-        nonlocal gtot, output_list_data, descr1, voucher_no, ind, indexing, gdelimiter, roomnumber, zinrdate, billnumber, curr_str, curr_resnr, serv, vat, netto, temp_str, hoteldept, shift, temp1, temp2, counter, isoutletshift, guest, artikel, queasy, htparam, bill, bill_line, res_line, reservation, sourccod, segment, genstat, history, guestseg, debitor, hoteldpt, billjournal, h_bill, bk_veran, arrangement, argt_line, h_journal
+        nonlocal gtot, output_list_data, descr1, voucher_no, ind, indexing, gdelimiter, roomnumber, zinrdate, billnumber, curr_str, curr_resnr, serv, vat, netto, temp_str, hoteldept, shift, temp1, temp2, counter, isoutletshift, guest, artikel, queasy, htparam, bill, bill_line, res_line, reservation, sourccod, segment, genstat, history, guestseg, debitor, hoteldpt, billjournal, h_bill, bk_veran, arrangement, argt_line, h_journal, h_bill_line
         nonlocal from_art, to_art, from_dept, to_dept, from_date, to_date, sorttype, exclude_artrans, long_digit, foreign_flag, mi_onlyjournal, mi_excljournal, mi_post, mi_showrelease, mi_break, id_flag
         nonlocal buffguest, gbuff, shift_buff, b_artikel
 
 
         nonlocal output_list, shift_list, buffguest, gbuff, shift_buff, b_artikel
-        nonlocal output_list_list, shift_list_list
 
         qty:int = 0
         sub_tot:Decimal = to_decimal("0.0")
@@ -685,2027 +722,855 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
         tot_vat:Decimal = to_decimal("0.0")
         tot_service:Decimal = to_decimal("0.0")
         loopind:int = 0
-        output_list_list.clear()
-
-        for artikel in db_session.query(Artikel).filter(
-                 (Artikel.artnr >= from_art) & (Artikel.artnr <= to_art) & (Artikel.departement >= from_dept) & (Artikel.departement <= to_dept)).order_by((Artikel.departement * 10000 + Artikel.artnr)).all():
-
-            if last_dept != artikel.departement:
-
-                hoteldpt = get_cache (Hoteldpt, {"num": [(eq, artikel.departement)]})
-            last_dept = artikel.departement
-            sub_tot =  to_decimal("0")
-            it_exist = False
-            qty = 0
-            for curr_date in date_range(from_date,to_date) :
-
-                if sorttype == 0:
-
-                    for billjournal in db_session.query(Billjournal).filter(
-                             (Billjournal.artnr == artikel.artnr) & (Billjournal.departement == artikel.departement) & (Billjournal.bill_datum == curr_date) & (Billjournal.anzahl != 0)).order_by(Billjournal.sysdate, Billjournal.zeit, Billjournal.zinr).all():
-                        do_it = True
-
-                        if (mi_onlyjournal  and billjournal.bediener_nr == 0) or (mi_excljournal  and billjournal.bediener_nr != 0):
-                            do_it = False
-
-                        if exclude_artrans and billjournal.kassarapport:
-                            do_it = False
-
-                        if not mi_showrelease and billjournal.betrag == 0:
-                            do_it = False
-
-                        if do_it  and exclude_artrans  and artikel.artart != 4:
-
-                            debitor = get_cache (Debitor, {"rechnr": [(eq, billjournal.rechnr)],"zahlkonto": [(eq, billjournal.artnr)],"rgdatum": [(eq, billjournal.bill_datum)],"zinr": [(eq, billjournal.zinr)],"saldo": [(eq, billjournal.betrag)],"transzeit": [(eq, billjournal.zeit)]})
-
-                            if debitor:
-                                do_it = False
-
-                        if do_it:
-                            it_exist = True
-                            output_list = Output_list()
-                            output_list_list.append(output_list)
-                            if (billjournal.bediener_nr == 0 and mi_onlyjournal == False) or (billjournal.bediener_nr != 0 and mi_excljournal == False):
-                                output_list.remark = billjournal.stornogrund
-
-                            if not matches(billjournal.bezeich, ("*<*")) and not matches(billjournal.bezeich, ("*>*")):
-
-                                if billjournal.rechnr > 0:
-
-                                    if billjournal.bediener_nr == 0 and mi_onlyjournal == False:
-                                        
-                                        # bill = get_cache (Bill, {"rechnr": [(eq, billjournal.rechnr)]})
-                                        bill = db_session.query(Bill).filter(Bill.rechnr == billjournal.rechnr).first()
-
-                                        if bill and billjournal.zinr != "":
-                                            # res_line = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"zinr": [(eq, bill.zinr)]})
-                                            res_line = db_session.query(Res_line).filter(Res_line.resnr == bill.resnr, Res_line.zinr == bill.zinr).first()
-
-                                            # Rd 13/8/2025
-                                            # if res_line
-                                            if res_line:
-                                                # reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
-                                                reservation = db_session.query(Reservation).filter(Reservation.resnr == bill.resnr).first()
-
-                                                # guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
-                                                guest = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnrmember).first()
-
-                                                # buffguest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrpay)]})
-                                                buffguest = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnrpay).first()
-
-                                                # gbuff = get_cache (Guest, {"gastnr": [(eq, res_line.gastnr)]})
-                                                gbuff = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnr).first()
-
-                                                if guest and reservation:
-                                                    output_list.str = output_list.str + guest.name + ", " + guest.vorname1 + " " + guest.anrede1
-                                                    output_list.checkin = res_line.ankunft
-                                                    output_list.checkout = res_line.abreise
-                                                    output_list.guestname = guest.name + ", " + guest.vorname1 + " " + guest.anrede1
-                                                    output_list.gname = buffguest.name + ", " + buffguest.vorname1 + " " + buffguest.anrede1
-                                                    output_list.nationality = guest.nation1
-                                                    output_list.resnr = res_line.resnr
-                                                    output_list.resname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1
-
-                                                    if reservation.resart != 0:
-
-                                                        sourccod = get_cache (Sourccod, {"source_code": [(eq, reservation.resart)]})
-
-                                                        if sourccod:
-                                                            output_list.book_source = sourccod.bezeich
-
-                                                    segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
-
-                                                    if segment:
-                                                        output_list.segcode = segment.bezeich
-                                                    else:
-                                                        output_list.segcode = ""
-
-                                        elif bill:
-                                            if bill.resnr == 0 and bill.bilname.strip() != "":
-                                                output_list.gname = bill.bilname
-                                                output_list.guestname = bill.bilname
-                                            else:
-
-                                                # gbuff = get_cache (Guest, {"gastnr": [(eq, bill.gastnr)]})
-                                                gbuff = db_session.query(Guest).filter(Guest.gastnr == bill.gastnr).first()
-                                                if gbuff:
-                                                    output_list.gname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1 + gbuff.anredefirma
-                                                    output_list.guestname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1 + gbuff.anredefirma
-                                                    output_list.resname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1 + gbuff.anredefirma
-                                                    output_list.nationality = gbuff.nation1
-
-                                    elif billjournal.bediener_nr != 0 and mi_excljournal == False:
-
-                                        h_bill = get_cache (H_bill, {"rechnr": [(eq, billjournal.rechnr)],"departement": [(eq, billjournal.betriebsnr)]})
-
-                                        if h_bill:
-
-                                            if h_bill.resnr > 0 and h_bill.reslinnr > 0:
-
-                                                res_line = get_cache (Res_line, {"resnr": [(eq, h_bill.resnr)],"reslinnr": [(eq, h_bill.reslinnr)]})
-
-                                                if res_line:
-
-                                                    reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
-
-                                                    # guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
-                                                    guest = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnrmember).first()
-
-                                                    # gbuff = get_cache (Guest, {"gastnr": [(eq, res_line.gastnr)]})
-                                                    gbuff = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnr).first()
-
-                                                    output_list.checkin = res_line.ankunft
-                                                    output_list.checkout = res_line.abreise
-                                                    output_list.guestname = guest.name + ", " + guest.vorname1 + " " + guest.anrede1
-                                                    output_list.gname = h_bill.bilname
-                                                    output_list.nationality = guest.nation1
-                                                    output_list.resnr = res_line.resnr
-                                                    output_list.resname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1
-
-                                                    if reservation and reservation.resart != 0:
-
-                                                        sourccod = get_cache (Sourccod, {"source_code": [(eq, reservation.resart)]})
-
-                                                        if sourccod:
-                                                            output_list.book_source = sourccod.bezeich
-
-                                                    if h_bill.bilname == "":
-
-                                                        # buffguest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrpay)]})
-                                                        buffguest = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnrpay).first()
-
-                                                        if buffguest:
-                                                            output_list.gname = buffguest.name + ", " + buffguest.vorname1 + " " + buffguest.anrede1
-
-                                                    genstat = get_cache (Genstat, {"resnr": [(eq, res_line.resnr)]})
-
-                                                    segment = get_cache (Segment, {"segmentcode": [(eq, genstat.segmentcode)]})
-
-                                                    if not segment:
-                                                        output_list.segcode = ""
-                                                    else:
-                                                        output_list.segcode = segment.bezeich
-                                                else:
-                                                    output_list.guestname = h_bill.bilname
-                                                    output_list.gname = h_bill.bilname
-
-                                            elif h_bill.resnr > 0:
-
-                                                # guest = get_cache (Guest, {"gastnr": [(eq, h_bill.resnr)]})
-                                                guest = db_session.query(Guest).filter(Guest.gastnr == h_bill.resnr).first()
-
-
-                                                if guest:
-                                                    output_list.guestname = guest.name + "," + guest.vorname1
-                                                    output_list.gname = h_bill.bilname
-                                                    output_list.nationality = guest.nation1
-
-
-                                                else:
-                                                    output_list.guestname = h_bill.bilname
-                                                    output_list.gname = h_bill.bilname
-
-                                                # segment = get_cache (Segment, {"segmentcode": [(eq, h_bill.segmentcode)]})
-                                                segment = db_session.query(Segment).filter(Segment.segmentcode == h_bill.segmentcode).first()
-
-                                                if not segment:
-                                                    output_list.segcode = ""
-                                                else:
-                                                    output_list.segcode = segment.bezeich
-
-                                            elif h_bill.resnr == 0 and h_bill.bilname != "":
-                                                output_list.guestname = h_bill.bilname
-                                                output_list.gname = h_bill.bilname
-
-                                                # segment = get_cache (Segment, {"segmentcode": [(eq, h_bill.segmentcode)]})
-                                                segment = db_session.query(Segment).filter(Segment.segmentcode == h_bill.segmentcode).first()
-
-                                                if not segment:
-                                                    output_list.segcode = ""
-                                                else:
-                                                    output_list.segcode = segment.bezeich
-
-                                            elif billjournal.betriebsnr == 0:
-
-                                                bill = get_cache (Bill, {"rechnr": [(eq, billjournal.rechnr)]})
-
-                                                if bill:
-
-                                                    # res_line = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"reslinnr": [(eq, bill.reslinnr)]})
-                                                    res_line = db_session.query(Res_line).filter(Res_line.resnr == bill.resnr, Res_line.reslinnr == bill.reslinnr).first()
-
-                                                    if res_line:
-
-                                                        # reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
-                                                        reservation = db_session.query(Reservation).filter(Reservation.resnr == res_line.resnr).first()
-
-                                                        # guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
-                                                        guest = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnrmember).first()
-
-                                                        # gbuff = get_cache (Guest, {"gastnr": [(eq, res_line.gastnr)]})
-                                                        gbuff = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnr).first()
-
-                                                        output_list.checkin = res_line.ankunft
-                                                        output_list.checkout = res_line.abreise
-                                                        output_list.guestname = guest.name + ", " + guest.vorname1 + " " + guest.anrede1
-                                                        output_list.gname = bill.name
-                                                        output_list.nationality = guest.nation1
-                                                        output_list.resnr = res_line.resnr
-                                                        output_list.resname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1
-
-                                                        if reservation and reservation.resart != 0:
-
-                                                            sourccod = get_cache (Sourccod, {"source_code": [(eq, reservation.resart)]})
-
-                                                            if sourccod:
-                                                                output_list.book_source = sourccod.bezeich
-
-                                                        # genstat = get_cache (Genstat, {"resnr": [(eq, res_line.resnr)]})
-                                                        genstat = db_session.query(Genstat).filter(Genstat.resnr == res_line.resnr).first()
-
-                                                        # segment = get_cache (Segment, {"segmentcode": [(eq, genstat.segmentcode)]})
-                                                        segment = db_session.query(Segment).filter(Segment.segmentcode == genstat.segmentcode).first()
-
-
-                                                        if not segment:
-                                                            output_list.segcode = ""
-                                                        else:
-                                                            output_list.segcode = segment.bezeich
-                                else:
-
-                                    if get_index(billjournal.bezeich, " *BQT") > 0:
-
-                                        bk_veran = get_cache (Bk_veran, {"veran_nr": [(eq, to_int(substring(billjournal.bezeich, get_index(billjournal.bezeich, " *bqt") + 5  - 1)))]})
-
-                                        if bk_veran:
-
-                                            gbuff = get_cache (Guest, {"gastnr": [(eq, bk_veran.gastnr)]})
-
-                                            if gbuff:
-                                                output_list.gname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1 + gbuff.anredefirma
-                                                output_list.guestname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1 + gbuff.anredefirma
-                                                output_list.resname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1 + gbuff.anredefirma
-                                                output_list.nationality = gbuff.nation1
-
-                                    elif artikel.artart == 5 and get_index(billjournal.bezeich, " [#") > 0 and billjournal.departement == 0:
-                                        lviresnr = -1
-                                        lvcs = substring(billjournal.bezeich, get_index(billjournal.bezeich, "[#") + 2 - 1)
-                                        lviresnr = to_int(entry(0, lvcs, " "))
-
-                                        # reservation = get_cache (Reservation, {"resnr": [(eq, lviresnr)]})
-                                        reservation = db_session.query(Reservation).filter(Reservation.resnr == lviresnr).first()
-
-                                        if reservation:
-
-                                            gbuff = get_cache (Guest, {"gastnr": [(eq, reservation.gastnr)]})
-
-                                            if gbuff:
-                                                output_list.gname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1 + gbuff.anredefirma
-                                                output_list.guestname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1 + gbuff.anredefirma
-                                                output_list.resname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1 + gbuff.anredefirma
-                                                output_list.nationality = gbuff.nation1
-
-                                            if reservation.resart != 0:
-
-                                                # sourccod = get_cache (Sourccod, {"source_code": [(eq, reservation.resart)]})
-                                                sourccod = db_session.query(Sourccod).filter(Sourccod.source_code == reservation.resart).first()
-
-                                                if sourccod:
-                                                    output_list.book_source = sourccod.bezeich
-
-                                    elif get_index(billjournal.bezeich, " #") > 0 and billjournal.departement == 0:
-                                        lvcs = substring(billjournal.bezeich, get_index(billjournal.bezeich, " #") + 2 - 1)
-                                        lviresnr = to_int(entry(0, lvcs, "]"))
-
-                                        # reservation = get_cache (Reservation, {"resnr": [(eq, lviresnr)]})
-                                        reservation = db_session.query(Reservation).filter(Reservation.resnr == lviresnr).first()
-
-
-                                        if reservation:
-
-                                            # gbuff = get_cache (Guest, {"gastnr": [(eq, reservation.gastnr)]})
-                                            gbuff = db_session.query(Guest).filter(Guest.gastnr == reservation.gastnr).first()
-
-                                            if gbuff:
-                                                output_list.gname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1 + gbuff.anredefirma
-                                                output_list.guestname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1 + gbuff.anredefirma
-                                                output_list.resname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1 + gbuff.anredefirma
-                                                output_list.nationality = gbuff.nation1
-
-                                            if reservation.resart != 0:
-
-                                                # sourccod = get_cache (Sourccod, {"source_code": [(eq, reservation.resart)]})
-                                                sourccod = db_session.query(Sourccod).filter(Sourccod.source_code == reservation.resart).first()
-
-                                                if sourccod:
-                                                    output_list.book_source = sourccod.bezeich
-                            else:
-
-                                # arrangement = get_cache (Arrangement, {"artnr_logis": [(eq, artikel.artnr)],"intervall": [(eq, artikel.departement)]})
-                                arrangement = db_session.query(Arrangement).filter(Arrangement.artnr_logis == artikel.artnr, Arrangement.intervall == artikel.departement).first()
-
-                                if arrangement:
-
-                                    # h_bill = get_cache (H_bill, {"rechnr": [(eq, billjournal.rechnr)],"departement": [(eq, billjournal.departement)]})
-                                    h_bill = db_session.query(H_bill).filter(H_bill.rechnr == billjournal.rechnr, H_bill.departement == billjournal.departement).first()
-
-                                    if h_bill:
-
-                                        if h_bill.resnr > 0 and h_bill.reslinnr > 0:
-
-                                            # res_line = get_cache (Res_line, {"resnr": [(eq, h_bill.resnr)],"reslinnr": [(eq, h_bill.reslinnr)]})
-                                            res_line = db_session.query(Res_line).filter(Res_line.resnr == h_bill.resnr, Res_line.reslinnr == h_bill.reslinnr).first()
-
-
-                                            if res_line:
-                                                output_list.resnr = res_line.resnr
-                                                output_list.guestname = res_line.name
-                                                output_list.gname = h_bill.bilname
-
-                                                # gbuff = get_cache (Guest, {"gastnr": [(eq, res_line.gastnr)]})
-                                                gbuff = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnr).first()
-
-                                                if gbuff:
-                                                    output_list.resname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1
-
-                                                # reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
-                                                reservation = db_session.query(Reservation).filter(Reservation.resnr == res_line.resnr).first()
-
-                                                if reservation and reservation.resart != 0:
-
-                                                    sourccod = get_cache (Sourccod, {"source_code": [(eq, reservation.resart)]})
-
-                                                    if sourccod:
-                                                        output_list.book_source = sourccod.bezeich
-
-                                                # genstat = get_cache (Genstat, {"resnr": [(eq, res_line.resnr)]})
-                                                genstat = db_session.query(Genstat).filter(Genstat.resnr == res_line.resnr).first()
-
-                                                # segment = get_cache (Segment, {"segmentcode": [(eq, genstat.segmentcode)]})
-                                                segment = db_session.query(Segment).filter(Segment.segmentcode == genstat.segmentcode).first()
-
-                                                if not segment:
-                                                    output_list.segcode = ""
-                                                else:
-                                                    output_list.segcode = segment.bezeich
-                                            else:
-                                                output_list.guestname = h_bill.bilname
-                                                output_list.gname = h_bill.bilname
-
-                                        elif h_bill.resnr > 0:
-
-                                            # guest = get_cache (Guest, {"gastnr": [(eq, h_bill.resnr)]})
-                                            guest = db_session.query(Guest).filter(Guest.gastnr == h_bill.resnr).first()
-
-                                            if guest:
-                                                output_list.guestname = guest.name + "," + guest.vorname1
-                                                output_list.gname = h_bill.bilname
-                                                output_list.nationality = guest.nation1
-
-
-                                            else:
-                                                output_list.guestname = h_bill.bilname
-                                                output_list.gname = h_bill.bilname
-
-                                            # segment = get_cache (Segment, {"segmentcode": [(eq, h_bill.segmentcode)]})
-                                            segment = db_session.query(Segment).filter(Segment.segmentcode == h_bill.segmentcode).first()
-
-                                            if not segment:
-                                                output_list.segcode = ""
-                                            else:
-                                                output_list.segcode = segment.bezeich
-
-                                        elif h_bill.resnr == 0:
-                                            output_list.guestname = h_bill.bilname
-                                            output_list.gname = h_bill.bilname
-
-                                            # segment = get_cache (Segment, {"segmentcode": [(eq, h_bill.segmentcode)]})
-                                            segment = db_session.query(Segment).filter(Segment.segmentcode == h_bill.segmentcode).first()
-
-                                            if not segment:
-                                                output_list.segcode = ""
-                                            else:
-                                                output_list.segcode = segment.bezeich
-                                else:
-
-                                    # argt_line = get_cache (Argt_line, {"argt_artnr": [(eq, artikel.artnr)],"departement": [(eq, artikel.departement)]})
-                                    argt_line = db_session.query(Argt_line).filter(Argt_line.argt_artnr == artikel.artnr, Argt_line.departement == artikel.departement).first()
-
-                                    if argt_line:
-                                        hoteldept = billjournal.departement
-
-                                        if matches(billjournal.bezeich, ("*<*")) and matches(billjournal.bezeich, ("*>*")):
-                                            hoteldept = to_int(substring(billjournal.bezeich, get_index(billjournal.bezeich, "<") + 1 - 1, get_index(billjournal.bezeich, ">") - get_index(billjournal.bezeich, "<") - 1))
-
-                                        h_bill = get_cache (H_bill, {"rechnr": [(eq, billjournal.rechnr)],"departement": [(eq, hoteldept)]})
-
-                                        if h_bill:
-
-                                            if h_bill.resnr > 0 and h_bill.reslinnr > 0:
-
-                                                res_line = get_cache (Res_line, {"resnr": [(eq, h_bill.resnr)],"reslinnr": [(eq, h_bill.reslinnr)]})
-
-                                                if res_line:
-
-                                                    # reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
-                                                    reservation = db_session.query(Reservation).filter(Reservation.resnr == res_line.resnr).first()
-
-                                                    # guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
-                                                    guest = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnrmember).first()
-
-                                                    # gbuff = get_cache (Guest, {"gastnr": [(eq, res_line.gastnr)]})
-                                                    gbuff = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnr).first()
-
-                                                    output_list.checkin = res_line.ankunft
-                                                    output_list.checkout = res_line.abreise
-                                                    output_list.guestname = guest.name + ", " + guest.vorname1 + " " + guest.anrede1
-                                                    output_list.gname = h_bill.bilname
-                                                    output_list.nationality = guest.nation1
-                                                    output_list.resnr = res_line.resnr
-                                                    output_list.resname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1
-
-                                                    if reservation and reservation.resart != 0:
-
-                                                        sourccod = get_cache (Sourccod, {"source_code": [(eq, reservation.resart)]})
-
-                                                        if sourccod:
-                                                            output_list.book_source = sourccod.bezeich
-
-                                                    # genstat = get_cache (Genstat, {"resnr": [(eq, res_line.resnr)]})
-                                                    genstat = db_session.query(Genstat).filter(Genstat.resnr == res_line.resnr).first()
-
-                                                    # segment = get_cache (Segment, {"segmentcode": [(eq, genstat.segmentcode)]})
-                                                    segment = db_session.query(Segment).filter(Segment.segmentcode == genstat.segmentcode).first()
-
-                                                    if not segment:
-                                                        output_list.segcode = ""
-                                                    else:
-                                                        output_list.segcode = segment.bezeich
-                                                else:
-                                                    output_list.guestname = h_bill.bilname
-                                                    output_list.gname = h_bill.bilname
-
-                                            elif h_bill.resnr > 0:
-
-                                                # guest = get_cache (Guest, {"gastnr": [(eq, h_bill.resnr)]})
-                                                guest = db_session.query(Guest).filter(Guest.gastnr == h_bill.resnr).first()
-
-
-                                                if guest:
-                                                    output_list.guestname = guest.name + "," + guest.vorname1
-                                                    output_list.gname = h_bill.bilname
-                                                    output_list.nationality = guest.nation1
-
-
-                                                else:
-                                                    output_list.guestname = h_bill.bilname
-                                                    output_list.gname = h_bill.bilname
-
-                                                # segment = get_cache (Segment, {"segmentcode": [(eq, h_bill.segmentcode)]})
-                                                segment = db_session.query(Segment).filter(Segment.segmentcode == h_bill.segmentcode).first()
-
-                                                if not segment:
-                                                    output_list.segcode = ""
-                                                else:
-                                                    output_list.segcode = segment.bezeich
-
-                                            elif h_bill.resnr == 0:
-                                                output_list.guestname = h_bill.bilname
-                                                output_list.gname = h_bill.bilname
-
-                                                # segment = get_cache (Segment, {"segmentcode": [(eq, h_bill.segmentcode)]})
-                                                segment = db_session.query(Segment).filter(Segment.segmentcode == h_bill.segmentcode).first()
-
-                                                if not segment:
-                                                    output_list.segcode = ""
-                                                else:
-                                                    output_list.segcode = segment.bezeich
-
-                            if (billjournal.bediener_nr != 0 and mi_excljournal == False and billjournal.anzahl == 0) or (billjournal.bediener_nr == 0 and mi_onlyjournal == False and billjournal.anzahl == 0):
-                                output_list.bezeich = artikel.bezeich
-
-                            if billjournal.bediener_nr != 0 and mi_excljournal == False:
-                                shift = 0
-
-                                if billjournal.betriebsnr != 0 and isoutletshift :
-
-                                    h_journal = get_cache (H_journal, {"rechnr": [(eq, billjournal.rechnr)],"departement": [(eq, billjournal.betriebsnr)]})
-
-                                    if h_journal:
-
-                                        shift_list = query(shift_list_list, filters=(lambda shift_list: shift_list.ftime <= h_journal.zeit and shift_list.ttime >= h_journal.zeit), first=True)
-
-                                        if shift_list:
-                                            shift = shift_list.shift
+        output_list_data.clear()
+
+        
+
+        # for artikel in db_session.query(Artikel).filter((Artikel.artnr >= from_art) & (Artikel.artnr <= to_art) & (Artikel.departement >= from_dept) & (Artikel.departement <= to_dept)).order_by((Artikel.departement * 10000 + Artikel.artnr)).all():
+
+        #     if last_dept != artikel.departement:
+        #         hoteldpt = get_cache (Hoteldpt, {"num": [(eq, artikel.departement)]})
+
+        #     last_dept = artikel.departement
+        #     sub_tot =  to_decimal("0")
+        #     it_exist = False
+        #     qty = 0
+
+        q_stmt = db_session.query(Artikel.departement,
+                                    Artikel.artart,
+                                    Artikel.artnr,
+                                    Artikel.bezeich,
+                                    Artikel.service_code,
+                                    Artikel.mwst_code,
+                                    Artikel.bezaendern,
+                                    Artikel._recid,
+                                    Billjournal.bediener_nr,
+                                    Billjournal.kassarapport,
+                                    Billjournal.betrag,
+                                    Billjournal.rechnr,
+                                    Billjournal.artnr,
+                                    Billjournal.bill_datum,
+                                    Billjournal.zinr,
+                                    Billjournal.zeit,
+                                    Billjournal.stornogrund,
+                                    Billjournal.bezeich,
+                                    Billjournal.betriebsnr,
+                                    Billjournal.departement,
+                                    Billjournal.anzahl,
+                                    Billjournal.fremdwaehrng,
+                                    Billjournal.userinit,
+                                    Billjournal.sysdate,
+                                    Billjournal._recid)\
+        .outerjoin(Billjournal, (Billjournal.artnr == Artikel.artnr))\
+        .filter((Artikel.artnr >= from_art) & 
+                (Artikel.artnr <= to_art) &
+                (Artikel.departement >= from_dept) & 
+                (Artikel.departement <= to_dept) &
+                (Billjournal.departement == Artikel.departement))\
+        .order_by(Artikel.departement,
+                    Artikel.artnr,
+                    Billjournal.sysdate, 
+                    Billjournal.zeit, 
+                    Billjournal.zinr)
+        
+        if sorttype == 0:
+            q_stmt = q_stmt.filter((Billjournal.anzahl != 0) & (Billjournal.bill_datum >= from_date) & (Billjournal.bill_datum <= to_date))
+        elif sorttype == 1:
+            q_stmt = q_stmt.filter((Billjournal.bill_datum >= from_date) & (Billjournal.bill_datum <= to_date))
+        elif sorttype == 2:
+            q_stmt = q_stmt.filter((Billjournal.anzahl == 0))
+            if mi_post:
+                q_stmt = q_stmt.filter((Billjournal.bill_datum >= from_date) & (Billjournal.bill_datum <= to_date))
+            else:
+                q_stmt = q_stmt.filter((Billjournal.sysdate >= from_date) & (Billjournal.sysdate <= to_date))
+
+        artikel = Artikel()
+        billjournal = Billjournal()
+        
+        curr_artikel_recid = "none"
+        artikel_prev = None
+        billjournal_prev = None
+
+        for row in q_stmt.yield_per(10000):
+
+            (artikel_department, artikel_artart, artikel_artnr, artikel_bezeich, artikel_service_code, artikel_mwst_code, artikel_bezaendern, artikel_recid, billjournal_bediener_nr, billjournal_kassarapport, billjournal_betrag, billjournal_rechnr, billjournal_artnr, billjournal_bill_datum, billjournal_zinr, billjournal_zeit, billjournal_stornogrund, billjournal_bezeich, billjournal_betriebsnr, billjournal_departement, billjournal_anzahl, billjournal_fremdwaehrng, billjournal_userinit, billjournal_sysdate, billjournal_prev_recid) = row
+
+            if curr_artikel_recid != artikel_recid:
+
+                if curr_artikel_recid != "none":
+                    if it_exist:
+                        output_list = Output_list()
+                        output_list_data.append(output_list)
+
+                        if not long_digit:
+                            output_list.str =  format_fixed_length("", 82) + format_fixed_length("T O T A L ", 12) + format_fixed_length("", 6) + handling_negative(qty, "-9999") + handling_negative(sub_tot, "->>,>>>,>>>,>>>,>>9.99")
+                            output_list.amt_nett =  to_decimal(t_amt)
+                            output_list.service =  to_decimal(t_service)
+                            output_list.vat =  to_decimal(t_vat)
+                            t_amt =  to_decimal("0")
+                            t_service =  to_decimal("0")
+                            t_vat =  to_decimal("0")
+                        else:
+                            output_list.str =  format_fixed_length("", 82) + format_fixed_length("T O T A L ", 12) + format_fixed_length("", 6) + handling_negative(qty, "-9999") + handling_negative(sub_tot, "->,>>>,>>>,>>>,>>>,>>9")
+                            output_list.amt_nett =  to_decimal(t_amt)
+                            output_list.service =  to_decimal(t_service)
+                            output_list.vat =  to_decimal(t_vat)
+                            t_amt =  to_decimal("0")
+                            t_service =  to_decimal("0")
+                            t_vat =  to_decimal("0")
+                        
+                        custom_record(artikel_prev, billjournal_prev)
+
+                if last_dept != artikel_department:
+                    hoteldpt = get_cache (Hoteldpt, {"num": [(eq, artikel_department)]})
+
+                last_dept = artikel_department
+                sub_tot =  to_decimal("0")
+                it_exist = False
+                qty = 0
+
+                curr_artikel_recid = artikel_recid
+
+            artikel_prev = Artikel()
+            artikel_prev.departement = artikel_department
+            artikel_prev.artart = artikel_artart
+            artikel_prev.artnr = artikel_artnr
+            artikel_prev.bezeich = artikel_bezeich
+            artikel_prev.service_code = artikel_service_code
+            artikel_prev.mwst_code = artikel_mwst_code
+            artikel_prev.bezaendern = artikel_bezaendern
+            artikel_prev._recid = artikel_recid
+
+            billjournal_prev = Billjournal()
+            billjournal_prev.bediener_nr = billjournal_bediener_nr
+            billjournal_prev.kassarapport = billjournal_kassarapport
+            billjournal_prev.betrag = billjournal_betrag
+            billjournal_prev.rechnr = billjournal_rechnr
+            billjournal_prev.artnr = billjournal_artnr
+            billjournal_prev.bill_datum = billjournal_bill_datum
+            billjournal_prev.zinr = billjournal_zinr
+            billjournal_prev.zeit = billjournal_zeit
+            billjournal_prev.stornogrund = billjournal_stornogrund
+            billjournal_prev.bezeich = billjournal_bezeich
+            billjournal_prev.betriebsnr = billjournal_betriebsnr
+            billjournal_prev.departement = billjournal_departement
+            billjournal_prev.anzahl = billjournal_anzahl
+            billjournal_prev.fremdwaehrng = billjournal_fremdwaehrng
+            billjournal_prev.userinit = billjournal_userinit
+            billjournal_prev.sysdate = billjournal_sysdate
+            billjournal_prev._recid = billjournal_prev_recid
+
+            do_it = True
+
+            if (mi_onlyjournal  and billjournal_bediener_nr == 0) or (mi_excljournal  and billjournal_bediener_nr != 0):
+                do_it = False
+
+            if exclude_artrans and billjournal_kassarapport:
+                do_it = False
+
+            if not mi_showrelease and billjournal_betrag == 0:
+                do_it = False
+
+            if do_it and exclude_artrans and artikel_artart != 4:
+                debitor = get_cache (Debitor, {"rechnr": [(eq, billjournal_rechnr)],"zahlkonto": [(eq, billjournal_artnr)],"rgdatum": [(eq, billjournal_bill_datum)],"zinr": [(eq, billjournal_zinr)],"saldo": [(eq, billjournal_betrag)],"transzeit": [(eq, billjournal_zeit)]})
+
+                if debitor:
+                    do_it = False
+
+            if do_it:
+
+                it_exist = True
+                output_list = Output_list()
+                output_list_data.append(output_list)
+
+                if (billjournal_bediener_nr == 0 and mi_onlyjournal == False) or (billjournal_bediener_nr != 0 and mi_excljournal == False):
+                    output_list.remark = billjournal_stornogrund
+
+                if not matches(billjournal_bezeich, ("*<*")) and not matches(billjournal_bezeich, ("*>*")):
+
+                    if billjournal_rechnr > 0:
+
+                        if billjournal_bediener_nr == 0 and mi_onlyjournal == False:
+                            
+                            # bill = get_cache (Bill, {"rechnr": [(eq, billjournal_rechnr)]})
+                            bill = db_session.query(Bill).filter(Bill.rechnr == billjournal_rechnr).first()
+
+                            if bill and billjournal_zinr != "":
+                                # res_line = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"zinr": [(eq, bill.zinr)]})
+                                res_line = db_session.query(Res_line).filter(Res_line.resnr == bill.resnr, Res_line.zinr == bill.zinr).first()
+
+                                # Rd 13/8/2025
+                                # if res_line
+                                if res_line:
+                                    # reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+                                    reservation = db_session.query(Reservation).filter(Reservation.resnr == bill.resnr).first()
+
+                                    # guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
+                                    guest = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnrmember).first()
+
+                                    # buffguest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrpay)]})
+                                    buffguest = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnrpay).first()
+
+                                    # gbuff = get_cache (Guest, {"gastnr": [(eq, res_line.gastnr)]})
+                                    gbuff = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnr).first()
+
+                                    if guest and reservation:
+                                        output_list.str = output_list.str + guest.name + ", " + guest.vorname1 + " " + guest.anrede1
+                                        output_list.checkin = res_line.ankunft
+                                        output_list.checkout = res_line.abreise
+                                        output_list.guestname = guest.name + ", " + guest.vorname1 + " " + guest.anrede1
+                                        output_list.gname = buffguest.name + ", " + buffguest.vorname1 + " " + buffguest.anrede1
+                                        output_list.nationality = guest.nation1
+                                        output_list.resnr = res_line.resnr
+                                        output_list.resname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1
+
+                                        if reservation.resart != 0:
+
+                                            sourccod = get_cache (Sourccod, {"source_code": [(eq, reservation.resart)]})
+
+                                            if sourccod:
+                                                output_list.book_source = sourccod.bezeich
+
+                                        segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+
+                                        if segment:
+                                            output_list.segcode = segment.bezeich
                                         else:
+                                            output_list.segcode = ""
 
-                                            shift_buff = query(shift_buff_list, filters=(lambda shift_buff: shift_buff.ftime >= shift_buff.ttime), first=True)
-
-                                            if shift_buff:
-                                                shift = shift_buff.shift
-                                output_list.c = to_string(billjournal.betriebsnr, "99")
-                                output_list.shift = to_string(shift, "99")
-
-                            elif billjournal.bediener_nr == 0 and mi_onlyjournal == False:
-
-                                if bill:
-
-                                    if bill.reslinnr == 1 and bill.zinr == "":
-                                        output_list.c = "N"
-                                        output_list.ns = "*"
-
-                                    elif bill.reslinnr == 0:
-                                        output_list.c = "M"
-                                        output_list.mb = "*"
-
-                            if foreign_flag:
-                                amount =  to_decimal(billjournal.fremdwaehrng)
-                            else:
-                                amount =  to_decimal(billjournal.betrag)
-
-                            if mi_break :
-                                serv =  to_decimal("0")
-                                vat =  to_decimal("0")
-
-
-                                serv, vat = get_output(calc_servvat(artikel.departement, artikel.artnr, billjournal.bill_datum, artikel.service_code, artikel.mwst_code))
-                                output_list.amt_nett =  to_decimal(amount) / to_decimal((1) + to_decimal(serv) + to_decimal(vat) )
-                                output_list.service =  to_decimal(output_list.amt_nett) * to_decimal(serv)
-                                output_list.vat =  to_decimal(output_list.amt_nett) * to_decimal(vat)
-                                t_amt =  to_decimal(t_amt) + to_decimal(output_list.amt_nett)
-                                t_vat =  to_decimal(t_vat) + to_decimal(output_list.vat)
-                                t_service =  to_decimal(t_service) + to_decimal(output_list.service)
-                                tot_amt =  to_decimal(tot_amt) + to_decimal(output_list.amt_nett)
-                                tot_vat =  to_decimal(tot_vat) + to_decimal(output_list.vat)
-                                tot_service =  to_decimal(tot_service) + to_decimal(output_list.service)
-
-
-                            descr1 = ""
-                            voucher_no = ""
-
-                            if substring(billjournal.bezeich, 0, 1) == ("*").lower()  or billjournal.kassarapport:
-                                descr1 = billjournal.bezeich
-                                voucher_no = ""
-
-
-                            else:
-
-                                if not artikel.bezaendern:
-                                    ind = num_entries(billjournal.bezeich, "]")
-
-                                    if ind >= 2:
-                                        gdelimiter = "]"
-                                    else:
-                                        ind = num_entries(billjournal.bezeich, "/")
-
-                                        if ind >= 2 and length(artikel.bezeich) <= get_index(billjournal.bezeich, "/") and billjournal.betrag != 0:
-                                            gdelimiter = "/"
-                                        else:
-                                            ind = num_entries(billjournal.bezeich, "|")
-
-                                            if ind >= 2:
-                                                gdelimiter = "|"
-
-                                    if ind != 0:
-
-                                        if ind == 1:
-                                            descr1 = billjournal.bezeich
-                                            voucher_no = ""
-
-                                        elif ind == 2:
-                                            descr1 = entry(0, billjournal.bezeich, gdelimiter)
-                                            voucher_no = entry(1, billjournal.bezeich, gdelimiter)
-
-                                            if gdelimiter.lower()  == ("]").lower() :
-                                                descr1 = descr1 + gdelimiter
-
-                                        elif ind > 2:
-                                            voucher_no = ""
-                                            descr1 = entry(0, billjournal.bezeich, gdelimiter)
-                                            for loopind in range(2,ind + 1) :
-                                                voucher_no = voucher_no + entry(loopind - 1, billjournal.bezeich, gdelimiter) + gdelimiter
-                                            voucher_no = substring(voucher_no, 0, length(voucher_no) - 1)
-                                    else:
-                                        descr1 = billjournal.bezeich
-                                else:
-                                    ind = num_entries(billjournal.bezeich, "/")
-
-                                    if ind == 1:
-                                        descr1 = billjournal.bezeich
-                                        voucher_no = ""
-
-                                    elif ind == 2:
-                                        descr1 = entry(0, billjournal.bezeich, "/")
-                                        voucher_no = entry(1, billjournal.bezeich, "/")
-
-                                    elif ind > 2:
-                                        descr1 = entry(0, billjournal.bezeich, "/")
-                                        for loopind in range(2,ind + 1) :
-                                            voucher_no = voucher_no + entry(loopind - 1, billjournal.bezeich, "/") + "/"
-                                        voucher_no = substring(voucher_no, 0, length(voucher_no) - 1)
-                                    else:
-                                        descr1 = billjournal.bezeich
-
-                            if output_list:
-                                output_list.descr = to_string(descr1, "x(100)")
-                                output_list.voucher = to_string(voucher_no, "x(40)")
-
-                            if billjournal.bediener_nr == 0 and mi_onlyjournal == False:
-
-                                hoteldpt = get_cache (Hoteldpt, {"num": [(eq, billjournal.departement)]})
-
-                                if hoteldpt:
-                                    deptname = hoteldpt.depart
-                                output_list.zinr = billjournal.zinr
-                                output_list.deptno = billjournal.departement
-
-                                if matches(billjournal.bezeich,r"*Deposit*") and billjournal.bezeich.index("[") > 0 and billjournal.bezeich.index("#") and billjournal.rechnr != 0:
-
-                                    if not long_digit:
-                                        output_list.str =  to_string(handle_null_date (billjournal.bill_datum) ) + to_string(handle_null_char (billjournal.zinr) , "x(6)") + to_string(billjournal.rechnr, "999999999") + to_string(billjournal.artnr, "9999") + to_string(handle_null_char (descr1) , "x(50)") + to_string(handle_null_char (deptname) , "x(12)") + format_fixed_length(to_string(billjournal.betriebsnr, ">>>>>>"), 6) + format_fixed_length(to_string(billjournal.anzahl, "-9999"), 5) + format_fixed_length(to_string(amount, "->>,>>>,>>>,>>>,>>9.99"), 22) + to_string(billjournal.zeit, "HH:MM:SS") + to_string(handle_null_char (billjournal.userinit) , "x(4)") + to_string(handle_null_date (billjournal.sysdate)) + to_string(handle_null_char (voucher_no) , "x(24)")
-                                    else:
-                                        output_list.str =  to_string(handle_null_date (billjournal.bill_datum) ) + to_string(handle_null_char (billjournal.zinr) , "x(6)") + to_string(billjournal.rechnr, "999999999") + to_string(billjournal.artnr, "9999") + to_string(handle_null_char (billjournal.bezeich) , "x(50)") + to_string(handle_null_char (deptname) , "x(12)") + format_fixed_length(to_string(billjournal.betriebsnr, ">>>>>>"), 6) + format_fixed_length(to_string(billjournal.anzahl, "-9999"), 5) + format_fixed_length(to_string(amount, "->,>>>,>>>,>>>,>>>,>>9"), 22) + to_string(billjournal.zeit, "HH:MM:SS") + to_string(handle_null_char (billjournal.userinit) , "x(4)") + to_string(handle_null_date (billjournal.sysdate)) + to_string(handle_null_char (voucher_no) , "x(24)")
+                            elif bill:
+                                if bill.resnr == 0 and bill.bilname.strip() != "":
+                                    output_list.gname = bill.bilname
+                                    output_list.guestname = bill.bilname
                                 else:
 
-                                    if not long_digit:
-                                        output_list.str =  to_string(handle_null_date (billjournal.bill_datum)) + to_string(handle_null_char (billjournal.zinr) , "x(6)") + to_string(billjournal.rechnr, "999999999") + to_string(billjournal.artnr, "999999999") + to_string(handle_null_char (descr1) , "x(50)") + to_string(handle_null_char (deptname) , "x(12)") + to_string("", "x(6)") + format_fixed_length(to_string(billjournal.anzahl, "-9999"), 5) + format_fixed_length(to_string(amount, "->>,>>>,>>>,>>>,>>9.99"), 22) + to_string(billjournal.zeit, "HH:MM:SS") + to_string(handle_null_char (billjournal.userinit) , "x(4)") + to_string(handle_null_date (billjournal.sysdate)) + to_string(handle_null_char (voucher_no) , "x(24)")
-                                    else:
-                                        output_list.str =  to_string(handle_null_date (billjournal.bill_datum)) + to_string(handle_null_char (billjournal.zinr) , "x(6)") + to_string(billjournal.rechnr, "999999999") + to_string(billjournal.artnr, "999999999") + to_string(handle_null_char (billjournal.bezeich) , "x(50)") + to_string(handle_null_char (deptname) , "x(12)") + to_string("", "x(6)") + format_fixed_length(to_string(billjournal.anzahl, "-9999"), 5) + format_fixed_length(to_string(amount, "->,>>>,>>>,>>>,>>>,>>9"), 22) + to_string(billjournal.zeit, "HH:MM:SS") + to_string(handle_null_char (billjournal.userinit) , "x(4)") + to_string(handle_null_date (billjournal.sysdate)) + to_string(handle_null_char (voucher_no) , "x(24)")
-                                qty = qty + billjournal.anzahl
-                                gqty = gqty + billjournal.anzahl
+                                    # gbuff = get_cache (Guest, {"gastnr": [(eq, bill.gastnr)]})
+                                    gbuff = db_session.query(Guest).filter(Guest.gastnr == bill.gastnr).first()
+                                    if gbuff:
+                                        output_list.gname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1 + gbuff.anredefirma
+                                        output_list.guestname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1 + gbuff.anredefirma
+                                        output_list.resname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1 + gbuff.anredefirma
+                                        output_list.nationality = gbuff.nation1
 
-                                if foreign_flag:
-                                    sub_tot =  to_decimal(sub_tot) + to_decimal(billjournal.fremdwaehrng)
-                                    tot =  to_decimal(tot) + to_decimal(billjournal.fremdwaehrng)
-                                else:
-                                    sub_tot =  to_decimal(sub_tot) + to_decimal(billjournal.betrag)
-                                    tot =  to_decimal(tot) + to_decimal(billjournal.betrag)
+                        elif billjournal_bediener_nr != 0 and mi_excljournal == False:
 
-                            elif billjournal.bediener_nr != 0 and mi_excljournal == False:
+                            h_bill = get_cache (H_bill, {"rechnr": [(eq, billjournal_rechnr)],"departement": [(eq, billjournal_betriebsnr)]})
 
-                                hoteldpt = get_cache (Hoteldpt, {"num": [(eq, billjournal.departement)]})
+                            if h_bill:
 
-                                if hoteldpt:
-                                    deptname = hoteldpt.depart
-                                output_list.zinr = billjournal.zinr
-                                output_list.deptno = billjournal.departement
+                                if h_bill.resnr > 0 and h_bill.reslinnr > 0:
 
-                                if not long_digit:
-                                    output_list.str =  to_string(handle_null_date (billjournal.bill_datum) ) + to_string(handle_null_char (billjournal.zinr) , "x(6)") + to_string(billjournal.rechnr, "999999999") + to_string(billjournal.artnr, "999999999") + to_string(handle_null_char (descr1) , "x(50)") + to_string(handle_null_char (deptname) , "x(12)") + format_fixed_length(to_string(billjournal.betriebsnr, ">>>>>>"), 6) + format_fixed_length(to_string(billjournal.anzahl, "-9999"), 5) + format_fixed_length(to_string(amount, "->>,>>>,>>>,>>>,>>9.99"), 22) + to_string(billjournal.zeit, "HH:MM:SS") + to_string(handle_null_char (billjournal.userinit) , "x(4)") + to_string(handle_null_date (billjournal.sysdate)) + to_string(handle_null_char (voucher_no) , "x(24)")
-                                else:
-                                    output_list.str =  to_string(handle_null_date (billjournal.bill_datum) ) + to_string(handle_null_char (billjournal.zinr) , "x(6)") + to_string(billjournal.rechnr, "999999999") + to_string(billjournal.artnr, "999999999") + to_string(handle_null_char (billjournal.bezeich) , "x(50)") + to_string(handle_null_char (deptname) , "x(12)") + format_fixed_length(to_string(billjournal.betriebsnr, ">>>>>>"), 6) + format_fixed_length(to_string(billjournal.anzahl, "-9999"), 5) + format_fixed_length(to_string(amount, "->,>>>,>>>,>>>,>>>,>>9"), 22) + to_string(billjournal.zeit, "HH:MM:SS") + to_string(handle_null_char (billjournal.userinit) , "x(4)") + to_string(handle_null_date (billjournal.sysdate)) + to_string(handle_null_char (voucher_no) , "x(24)")
-                                qty = qty + billjournal.anzahl
-                                gqty = gqty + billjournal.anzahl
+                                    res_line = get_cache (Res_line, {"resnr": [(eq, h_bill.resnr)],"reslinnr": [(eq, h_bill.reslinnr)]})
 
-                                if foreign_flag:
-                                    sub_tot =  to_decimal(sub_tot) + to_decimal(billjournal.fremdwaehrng)
-                                    tot =  to_decimal(tot) + to_decimal(billjournal.fremdwaehrng)
-                                else:
-                                    sub_tot =  to_decimal(sub_tot) + to_decimal(billjournal.betrag)
-                                    tot =  to_decimal(tot) + to_decimal(billjournal.betrag)
+                                    if res_line:
 
-                            elif mi_excljournal:
+                                        reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
 
-                                # hoteldpt = get_cache (Hoteldpt, {"num": [(eq, billjournal.departement)]})
-                                hoteldpt = db_session.query(Hoteldpt).filter(Hoteldpt.num == billjournal.departement).first()
+                                        # guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
+                                        guest = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnrmember).first()
 
-                                if hoteldpt:
-                                    deptname = hoteldpt.depart
-                                output_list.zinr = billjournal.zinr
-                                output_list.deptno = billjournal.departement
+                                        # gbuff = get_cache (Guest, {"gastnr": [(eq, res_line.gastnr)]})
+                                        gbuff = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnr).first()
 
-                                if not long_digit:
-                                    output_list.str =  to_string(handle_null_date (billjournal.bill_datum) ) + to_string(handle_null_char (billjournal.zinr) , "x(6)") + to_string(billjournal.rechnr, "999999999") + to_string(billjournal.artnr, "999999999") + to_string(handle_null_char (descr1) , "x(50)") + to_string(handle_null_char (deptname) , "x(12)") + format_fixed_length(to_string(billjournal.betriebsnr, ">>>>>>"), 6) + format_fixed_length(to_string(billjournal.anzahl, "-9999"), 5) + format_fixed_length(to_string(amount, "->>,>>>,>>>,>>>,>>9.99"), 22) + to_string(billjournal.zeit, "HH:MM:SS") + to_string(handle_null_char (billjournal.userinit) , "x(4)") + to_string(handle_null_date (billjournal.sysdate)) + to_string(handle_null_char (voucher_no) , "x(24)")
-                                else:
-                                    output_list.str =  to_string(handle_null_date (billjournal.bill_datum) ) + to_string(handle_null_char (billjournal.zinr) , "x(6)") + to_string(billjournal.rechnr, "999999999") + to_string(billjournal.artnr, "999999999") + to_string(handle_null_char (billjournal.bezeich) , "x(50)") + to_string(handle_null_char (deptname) , "x(12)") + format_fixed_length(to_string(billjournal.betriebsnr, ">>>>>>"), 6) + format_fixed_length(to_string(billjournal.anzahl, "-9999"), 5) + format_fixed_length(to_string(amount, "->,>>>,>>>,>>>,>>>,>>9"), 22) + to_string(billjournal.zeit, "HH:MM:SS") + to_string(handle_null_char (billjournal.userinit) , "x(4)") + to_string(handle_null_date (billjournal.sysdate)) + to_string(handle_null_char (voucher_no) , "x(24)")
-                                qty = qty + billjournal.anzahl
-                                gqty = gqty + billjournal.anzahl
+                                        output_list.checkin = res_line.ankunft
+                                        output_list.checkout = res_line.abreise
+                                        output_list.guestname = guest.name + ", " + guest.vorname1 + " " + guest.anrede1
+                                        output_list.gname = h_bill.bilname
+                                        output_list.nationality = guest.nation1
+                                        output_list.resnr = res_line.resnr
+                                        output_list.resname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1
 
-                                if foreign_flag:
-                                    sub_tot =  to_decimal(sub_tot) + to_decimal(billjournal.fremdwaehrng)
-                                    tot =  to_decimal(tot) + to_decimal(billjournal.fremdwaehrng)
-                                else:
-                                    sub_tot =  to_decimal(sub_tot) + to_decimal(billjournal.betrag)
-                                    tot =  to_decimal(tot) + to_decimal(billjournal.betrag)
+                                        if reservation and reservation.resart != 0:
 
-                            if res_line and res_line.ankunft == res_line.abreise and artikel.departement > 0:
-                                qty = qty - billjournal.anzahl + res_line.erwachs
-                                gqty = gqty - billjournal.anzahl + res_line.erwachs
-                                temp_str = substring(output_list.str, 100)
-                                output_list.str =  substring(output_list.str, 0, 95)
-                                output_list.str =  output_list.str + to_string(res_line.erwachs, "-9999") + temp_str
-                                temp_str = ""
-                            custom_record()
+                                            sourccod = get_cache (Sourccod, {"source_code": [(eq, reservation.resart)]})
 
+                                            if sourccod:
+                                                output_list.book_source = sourccod.bezeich
 
-                elif sorttype == 1:
-
-                    for billjournal in db_session.query(Billjournal).filter(
-                             (Billjournal.artnr == artikel.artnr) & (Billjournal.departement == artikel.departement) & (Billjournal.bill_datum == curr_date)).order_by(Billjournal.sysdate, Billjournal.zeit, Billjournal.zinr).all():
-                        do_it = True
-
-                        if (mi_onlyjournal  and billjournal.bediener_nr == 0) or (mi_excljournal  and billjournal.bediener_nr != 0):
-                            do_it = False
-
-                        if exclude_artrans and billjournal.kassarapport:
-                            do_it = False
-
-                        if not mi_showrelease and billjournal.betrag == 0:
-                            do_it = False
-
-                        if do_it  and exclude_artrans  and artikel.artart != 4:
-
-                            debitor = get_cache (Debitor, {"rechnr": [(eq, billjournal.rechnr)],"zahlkonto": [(eq, billjournal.artnr)],"rgdatum": [(eq, billjournal.bill_datum)],"zinr": [(eq, billjournal.zinr)],"saldo": [(eq, billjournal.betrag)],"transzeit": [(eq, billjournal.zeit)]})
-
-                            if debitor:
-                                do_it = False
-
-                        if do_it:
-                            it_exist = True
-                            output_list = Output_list()
-                            output_list_list.append(output_list)
-
-
-                            if (billjournal.bediener_nr != 0 and mi_excljournal == False) or (billjournal.bediener_nr == 0 and mi_onlyjournal == False):
-                                output_list.remark = billjournal.stornogrund
-
-                            if not matches(billjournal.bezeich, ("*<*")) and not matches(billjournal.bezeich, ("*>*")):
-
-                                if billjournal.rechnr > 0:
-
-                                    if billjournal.bediener_nr == 0 and mi_onlyjournal == False:
-
-                                        # bill = get_cache (Bill, {"rechnr": [(eq, billjournal.rechnr)]})
-                                        bill = db_session.query(Bill).filter(Bill.rechnr == billjournal.rechnr).first()
-
-                                        if bill and billjournal.zinr != "":
-
-                                            # res_line = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"zinr": [(eq, bill.zinr)]})
-                                            res_line = db_session.query(Res_line).filter((Res_line.resnr == bill.resnr) & (Res_line.zinr == billjournal.zinr)).first()
-                                            
-                                            # reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
-                                            reservation = db_session.query(Reservation).filter(Reservation.resnr == bill.resnr).first()
+                                        if h_bill.bilname == "":
 
                                             # buffguest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrpay)]})
-                                            buffguest = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnrpay).first()  
+                                            buffguest = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnrpay).first()
 
-                                            # guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
-                                            guest = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnrmember).first()
-
-                                            # gbuff = get_cache (Guest, {"gastnr": [(eq, res_line.gastnr)]})
-                                            gbuff = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnr).first()
-
-                                            if guest and reservation:
-                                                output_list.str = output_list.str + guest.name + ", " + guest.vorname1 + " " + guest.anrede1
-                                                output_list.checkin = res_line.ankunft
-                                                output_list.checkout = res_line.abreise
-                                                output_list.guestname = guest.name + ", " + guest.vorname1 + " " + guest.anrede1
+                                            if buffguest:
                                                 output_list.gname = buffguest.name + ", " + buffguest.vorname1 + " " + buffguest.anrede1
-                                                output_list.nationality = guest.nation1
-                                                output_list.resnr = res_line.resnr
-                                                output_list.resname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1
 
-                                                if reservation.resart != 0:
+                                        genstat = get_cache (Genstat, {"resnr": [(eq, res_line.resnr)]})
 
-                                                    sourccod = get_cache (Sourccod, {"source_code": [(eq, reservation.resart)]})
+                                        segment = get_cache (Segment, {"segmentcode": [(eq, genstat.segmentcode)]})
 
-                                                    if sourccod:
-                                                        output_list.book_source = sourccod.bezeich
-
-                                                # segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
-                                                segment = db_session.query(Segment).filter(Segment.segmentcode == reservation.segmentcode).first()
-
-                                                if segment:
-                                                    output_list.segcode = segment.bezeich
-                                                else:
-                                                    output_list.segcode = ""
-
-                                        elif bill:
-
-                                            if bill.resnr == 0 and bill.bilname != "":
-                                                output_list.gname = bill.bilname
-                                                output_list.guestname = bill.bilname
-                                            else:
-
-                                                # gbuff = get_cache (Guest, {"gastnr": [(eq, bill.gastnr)]})
-                                                gbuff = db_session.query(Guest).filter(Guest.gastnr == bill.gastnr).first()
-
-                                                if gbuff:
-                                                    output_list.gname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1 + gbuff.anredefirma
-                                                    output_list.guestname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1 + gbuff.anredefirma
-                                                    output_list.resname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1 + gbuff.anredefirma
-                                                    output_list.nationality = gbuff.nation1
-
-                                    elif billjournal.bediener_nr != 0 and mi_excljournal == False:
-
-                                        h_bill = get_cache (H_bill, {"rechnr": [(eq, billjournal.rechnr)],"departement": [(eq, billjournal.betriebsnr)]})
-
-                                        if h_bill:
-
-                                            if h_bill.resnr > 0 and h_bill.reslinnr > 0:
-
-                                                # res_line = get_cache (Res_line, {"resnr": [(eq, h_bill.resnr)],"reslinnr": [(eq, h_bill.reslinnr)]})
-                                                res_line = db_session.query(Res_line).filter(Res_line.resnr == h_bill.resnr, Res_line.reslinnr == h_bill.reslinnr).first()
-
-                                                if res_line:
-
-                                                    # reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
-                                                    reservation = db_session.query(Reservation).filter(Reservation.resnr == res_line.resnr).first()
-
-                                                    # guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
-                                                    guest = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnrmember).first()
-
-
-                                                    # gbuff = get_cache (Guest, {"gastnr": [(eq, res_line.gastnr)]})
-                                                    gbuff = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnr).first()
-                                                    
-                                                    output_list.checkin = res_line.ankunft
-                                                    output_list.checkout = res_line.abreise
-                                                    output_list.guestname = guest.name + ", " + guest.vorname1 + " " + guest.anrede1
-                                                    output_list.gname = h_bill.bilname
-                                                    output_list.nationality = guest.nation1
-                                                    output_list.resnr = res_line.resnr
-                                                    output_list.resname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1
-
-                                                    if reservation and reservation.resart != 0:
-
-                                                        # sourccod = get_cache (Sourccod, {"source_code": [(eq, reservation.resart)]})
-                                                        sourccod = db_session.query(Sourccod).filter(Sourccod.source_code == reservation.resart).first()
-
-                                                        if sourccod:
-                                                            output_list.book_source = sourccod.bezeich
-
-                                                    if h_bill.bilname == "":
-
-                                                        # buffguest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrpay)]})
-                                                        buffguest = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnrpay).first()
-
-                                                        if buffguest:
-                                                            output_list.gname = buffguest.name + ", " + buffguest.vorname1 + " " + buffguest.anrede1
-
-                                                    # genstat = get_cache (Genstat, {"resnr": [(eq, res_line.resnr)]})
-                                                    genstat = db_session.query(Genstat).filter(Genstat.resnr == res_line.resnr).first()
-
-                                                    # segment = get_cache (Segment, {"segmentcode": [(eq, genstat.segmentcode)]})
-                                                    segment = db_session.query(Segment).filter(Segment.segmentcode == genstat.segmentcode).first()
-
-                                                    if not segment:
-                                                        output_list.segcode = ""
-                                                    else:
-                                                        output_list.segcode = segment.bezeich
-                                                else:
-                                                    output_list.guestname = h_bill.bilname
-                                                    output_list.gname = h_bill.bilname
-
-                                            elif h_bill.resnr > 0:
-
-                                                # guest = get_cache (Guest, {"gastnr": [(eq, h_bill.resnr)]})
-                                                guest = db_session.query(Guest).filter(Guest.gastnr == h_bill.resnr).first()
-
-                                                if guest:
-                                                    output_list.guestname = guest.name + "," + guest.vorname1
-                                                    output_list.gname = h_bill.bilname
-                                                    output_list.nationality = guest.nation1
-
-
-                                                else:
-                                                    output_list.guestname = h_bill.bilname
-                                                    output_list.gname = h_bill.bilname
-
-                                                # segment = get_cache (Segment, {"segmentcode": [(eq, h_bill.segmentcode)]})
-                                                segment = db_session.query(Segment).filter(Segment.segmentcode == h_bill.segmentcode).first()
-
-                                                if not segment:
-                                                    output_list.segcode = ""
-                                                else:
-                                                    output_list.segcode = segment.bezeich
-
-                                            elif h_bill.resnr == 0 and h_bill.bilname != "":
-                                                output_list.guestname = h_bill.bilname
-                                                output_list.gname = h_bill.bilname
-
-                                                # segment = get_cache (Segment, {"segmentcode": [(eq, h_bill.segmentcode)]})
-                                                segment = db_session.query(Segment).filter(Segment.segmentcode == h_bill.segmentcode).first()
-
-                                                if not segment:
-                                                    output_list.segcode = ""
-                                                else:
-                                                    output_list.segcode = segment.bezeich
-
-                                            elif billjournal.betriebsnr == 0:
-
-                                                # bill = get_cache (Bill, {"rechnr": [(eq, billjournal.rechnr)]})
-                                                bill = db_session.query(Bill).filter(Bill.rechnr == billjournal.rechnr).first()
-
-                                                if bill:
-
-                                                    # res_line = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"reslinnr": [(eq, bill.reslinnr)]})
-                                                    res_line = db_session.query(Res_line).filter(Res_line.resnr == bill.resnr, Res_line.reslinnr == bill.reslinnr).first()
-
-                                                    if res_line:
-
-                                                        # reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
-                                                        reservation = db_session.query(Reservation).filter(Reservation.resnr == res_line.resnr).first()
-
-                                                        # guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
-                                                        guest = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnrmember).first()
-
-                                                        # gbuff = get_cache (Guest, {"gastnr": [(eq, res_line.gastnr)]})
-                                                        gbuff = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnr).first()
-
-
-                                                        output_list.checkin = res_line.ankunft
-                                                        output_list.checkout = res_line.abreise
-                                                        output_list.guestname = guest.name + ", " + guest.vorname1 + " " + guest.anrede1
-                                                        output_list.gname = bill.name
-                                                        output_list.nationality = guest.nation1
-                                                        output_list.resnr = res_line.resnr
-                                                        output_list.resname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1
-
-                                                        if reservation and reservation.resart != 0:
-
-                                                            # sourccod = get_cache (Sourccod, {"source_code": [(eq, reservation.resart)]})
-                                                            sourccod = db_session.query(Sourccod).filter(Sourccod.source_code == reservation.resart).first()
-
-                                                            if sourccod:
-                                                                output_list.book_source = sourccod.bezeich
-
-                                                        # genstat = get_cache (Genstat, {"resnr": [(eq, res_line.resnr)]})
-                                                        genstat = db_session.query(Genstat).filter(Genstat.resnr == res_line.resnr).first()
-
-                                                        # segment = get_cache (Segment, {"segmentcode": [(eq, genstat.segmentcode)]})
-                                                        segment = db_session.query(Segment).filter(Segment.segmentcode == genstat.segmentcode).first()
-
-                                                        if not segment:
-                                                            output_list.segcode = ""
-                                                        else:
-                                                            output_list.segcode = segment.bezeich
-                                else:
-
-                                    if artikel.artart == 5 and get_index(billjournal.bezeich, " [#") > 0 and billjournal.departement == 0:
-                                        lviresnr = -1
-                                        lvcs = substring(billjournal.bezeich, get_index(billjournal.bezeich, "[#") + 2 - 1)
-                                        lviresnr = to_int(entry(0, lvcs, " "))
-
-                                        # reservation = get_cache (Reservation, {"resnr": [(eq, lviresnr)]})
-                                        reservation = db_session.query(Reservation).filter(Reservation.resnr == lviresnr).first()
-
-                                        if reservation:
-
-                                            # gbuff = get_cache (Guest, {"gastnr": [(eq, reservation.gastnr)]})
-                                            gbuff = db_session.query(Guest).filter(Guest.gastnr == reservation.gastnr).first()
-
-                                            if gbuff:
-                                                output_list.gname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1 + gbuff.anredefirma
-                                                output_list.guestname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1 + gbuff.anredefirma
-                                                output_list.resname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1 + gbuff.anredefirma
-                                                output_list.nationality = gbuff.nation1
-
-                                            if reservation.resart != 0:
-
-                                                # sourccod = get_cache (Sourccod, {"source_code": [(eq, reservation.resart)]})
-                                                sourccod = db_session.query(Sourccod).filter(Sourccod.source_code == reservation.resart).first()
-
-                                                if sourccod:
-                                                    output_list.book_source = sourccod.bezeich
-
-                                    elif get_index(billjournal.bezeich, " #") > 0 and billjournal.departement == 0:
-                                        lvcs = substring(billjournal.bezeich, get_index(billjournal.bezeich, " #") + 2 - 1)
-                                        lviresnr = to_int(entry(0, lvcs, "]"))
-
-                                        # reservation = get_cache (Reservation, {"resnr": [(eq, lviresnr)]})
-                                        reservation = db_session.query(Reservation).filter(Reservation.resnr == lviresnr).first()
-
-                                        if reservation:
-
-                                            # gbuff = get_cache (Guest, {"gastnr": [(eq, reservation.gastnr)]})
-                                            gbuff = db_session.query(Guest).filter(Guest.gastnr == reservation.gastnr).first()
-
-                                            if gbuff:
-                                                output_list.gname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1 + gbuff.anredefirma
-                                                output_list.guestname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1 + gbuff.anredefirma
-                                                output_list.resname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1 + gbuff.anredefirma
-                                                output_list.nationality = gbuff.nation1
-
-                                            if reservation.resart != 0:
-
-                                                # sourccod = get_cache (Sourccod, {"source_code": [(eq, reservation.resart)]})
-                                                sourccod = db_session.query(Sourccod).filter(Sourccod.source_code == reservation.resart).first()
-
-                                                if sourccod:
-                                                    output_list.book_source = sourccod.bezeich
-                            else:
-
-                                # arrangement = get_cache (Arrangement, {"artnr_logis": [(eq, artikel.artnr)],"intervall": [(eq, artikel.departement)]})
-                                arrangement = db_session.query(Arrangement).filter(Arrangement.artnr_logis == artikel.artnr, Arrangement.intervall == artikel.departement).first()
-
-                                if arrangement:
-
-                                    # h_bill = get_cache (H_bill, {"rechnr": [(eq, billjournal.rechnr)],"departement": [(eq, billjournal.departement)]})
-                                    h_bill = db_session.query(H_bill).filter(H_bill.rechnr == billjournal.rechnr, H_bill.departement == billjournal.departement).first()
-
-                                    if h_bill:
-
-                                        if h_bill.resnr > 0 and h_bill.reslinnr > 0:
-
-                                            # res_line = get_cache (Res_line, {"resnr": [(eq, h_bill.resnr)],"reslinnr": [(eq, h_bill.reslinnr)]})
-                                            res_line = db_session.query(Res_line).filter(Res_line.resnr == h_bill.resnr, Res_line.reslinnr == h_bill.reslinnr).first()
-
-                                            if res_line:
-                                                output_list.resnr = res_line.resnr
-                                                output_list.guestname = res_line.name
-                                                output_list.gname = h_bill.bilname
-
-                                                # gbuff = get_cache (Guest, {"gastnr": [(eq, res_line.gastnr)]})
-                                                gbuff = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnr).first()
-
-                                                if gbuff and gbuff.segment3 != 0:
-                                                    output_list.resname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1
-
-                                                # reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
-                                                reservation = db_session.query(Reservation).filter(Reservation.resnr == res_line.resnr).first()
-
-                                                if reservation and reservation.resart != 0:
-
-                                                    # sourccod = get_cache (Sourccod, {"source_code": [(eq, reservation.resart)]})
-                                                    sourccod = db_session.query(Sourccod).filter(Sourccod.source_code == reservation.resart).first()
-
-                                                    if sourccod:
-                                                        output_list.book_source = sourccod.bezeich
-
-                                                # genstat = get_cache (Genstat, {"resnr": [(eq, res_line.resnr)]})
-                                                genstat = db_session.query(Genstat).filter(Genstat.resnr == res_line.resnr).first()
-
-                                                # segment = get_cache (Segment, {"segmentcode": [(eq, genstat.segmentcode)]})
-                                                segment = db_session.query(Segment).filter(Segment.segmentcode == genstat.segmentcode).first()
-
-                                                if not segment:
-                                                    output_list.segcode = ""
-                                                else:
-                                                    output_list.segcode = segment.bezeich
-                                            else:
-                                                output_list.guestname = h_bill.bilname
-                                                output_list.gname = h_bill.bilname
-
-                                        elif h_bill.resnr > 0:
-
-                                            # guest = get_cache (Guest, {"gastnr": [(eq, h_bill.resnr)]})
-                                            guest = db_session.query(Guest).filter(Guest.gastnr == h_bill.resnr).first()
-
-
-                                            if guest:
-                                                output_list.guestname = guest.name + "," + guest.vorname1
-                                                output_list.gname = h_bill.bilname
-                                                output_list.nationality = guest.nation1
-
-
-                                            else:
-                                                output_list.guestname = h_bill.bilname
-                                                output_list.gname = h_bill.bilname
-
-                                            segment = get_cache (Segment, {"segmentcode": [(eq, h_bill.segmentcode)]})
-
-                                            if not segment:
-                                                output_list.segcode = ""
-                                            else:
-                                                output_list.segcode = segment.bezeich
-
-                                        elif h_bill.resnr == 0:
-                                            output_list.guestname = h_bill.bilname
-                                            output_list.gname = h_bill.bilname
-
-                                            segment = get_cache (Segment, {"segmentcode": [(eq, h_bill.segmentcode)]})
-
-                                            if not segment:
-                                                output_list.segcode = ""
-                                            else:
-                                                output_list.segcode = segment.bezeich
-                                else:
-
-                                    # argt_line = get_cache (Argt_line, {"argt_artnr": [(eq, artikel.artnr)],"departement": [(eq, artikel.departement)]})
-                                    argt_line = db_session.query(Argt_line).filter(Argt_line.argt_artnr == artikel.artnr, Argt_line.departement == artikel.departement).first()
-
-                                    if argt_line:
-                                        hoteldept = billjournal.departement
-
-                                        if matches(billjournal.bezeich, ("*<*")) and matches(billjournal.bezeich, ("*>*")):
-                                            hoteldept = to_int(substring(billjournal.bezeich, get_index(billjournal.bezeich, "<") + 1 - 1, get_index(billjournal.bezeich, ">") - get_index(billjournal.bezeich, "<") - 1))
-
-                                        # h_bill = get_cache (H_bill, {"rechnr": [(eq, billjournal.rechnr)],"departement": [(eq, hoteldept)]})
-                                        h_bill = db_session.query(H_bill).filter(H_bill.rechnr == billjournal.rechnr, H_bill.departement == hoteldept).first()
-
-                                        if h_bill:
-
-                                            if h_bill.resnr > 0 and h_bill.reslinnr > 0:
-
-                                                res_line = get_cache (Res_line, {"resnr": [(eq, h_bill.resnr)],"reslinnr": [(eq, h_bill.reslinnr)]})
-
-                                                if res_line:
-
-                                                    # reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
-                                                    reservation = db_session.query(Reservation).filter(Reservation.resnr == res_line.resnr).first()
-
-                                                    # guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
-                                                    guest = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnrmember).first()
-
-                                                    # gbuff = get_cache (Guest, {"gastnr": [(eq, res_line.gastnr)]})
-                                                    gbuff = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnr).first()
-
-
-                                                    output_list.checkin = res_line.ankunft
-                                                    output_list.checkout = res_line.abreise
-                                                    output_list.guestname = guest.name + ", " + guest.vorname1 + " " + guest.anrede1
-                                                    output_list.gname = h_bill.bilname
-                                                    output_list.nationality = guest.nation1
-                                                    output_list.resnr = res_line.resnr
-                                                    output_list.resname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1
-
-                                                    if reservation and reservation.resart != 0:
-
-                                                        sourccod = get_cache (Sourccod, {"source_code": [(eq, reservation.resart)]})
-
-                                                        if sourccod:
-                                                            output_list.book_source = sourccod.bezeich
-
-                                                    # genstat = get_cache (Genstat, {"resnr": [(eq, res_line.resnr)]})
-                                                    genstat = db_session.query(Genstat).filter(Genstat.resnr == res_line.resnr).first()
-
-                                                    # segment = get_cache (Segment, {"segmentcode": [(eq, genstat.segmentcode)]})
-                                                    segment = db_session.query(Segment).filter(Segment.segmentcode == genstat.segmentcode).first()
-
-                                                    if not segment:
-                                                        output_list.segcode = ""
-                                                    else:
-                                                        output_list.segcode = segment.bezeich
-                                                else:
-                                                    output_list.guestname = h_bill.bilname
-                                                    output_list.gname = h_bill.bilname
-
-                                            elif h_bill.resnr > 0:
-
-                                                # guest = get_cache (Guest, {"gastnr": [(eq, h_bill.resnr)]})
-                                                guest = db_session.query(Guest).filter(Guest.gastnr == h_bill.resnr).first()
-
-                                                if guest:
-                                                    output_list.guestname = guest.name + "," + guest.vorname1
-                                                    output_list.gname = h_bill.bilname
-                                                    output_list.nationality = guest.nation1
-
-
-                                                else:
-                                                    output_list.guestname = h_bill.bilname
-                                                    output_list.gname = h_bill.bilname
-
-                                                # segment = get_cache (Segment, {"segmentcode": [(eq, h_bill.segmentcode)]})
-                                                segment = db_session.query(Segment).filter(Segment.segmentcode == h_bill.segmentcode).first()
-
-                                                if not segment:
-                                                    output_list.segcode = ""
-                                                else:
-                                                    output_list.segcode = segment.bezeich
-
-                                            elif h_bill.resnr == 0:
-                                                output_list.guestname = h_bill.bilname
-                                                output_list.gname = h_bill.bilname
-
-                                                segment = get_cache (Segment, {"segmentcode": [(eq, h_bill.segmentcode)]})
-
-                                                if not segment:
-                                                    output_list.segcode = ""
-                                                else:
-                                                    output_list.segcode = segment.bezeich
-
-                            if (billjournal.bediener_nr != 0 and mi_excljournal == False and billjournal.anzahl == 0) or (billjournal.bediener_nr == 0 and mi_onlyjournal == False and billjournal.anzahl == 0):
-                                output_list.bezeich = artikel.bezeich
-
-                            if billjournal.bediener_nr != 0 and mi_excljournal == False:
-                                shift = 0
-
-                                if billjournal.betriebsnr != 0 and isoutletshift :
-
-                                    h_journal = get_cache (H_journal, {"rechnr": [(eq, billjournal.rechnr)],"departement": [(eq, billjournal.betriebsnr)]})
-
-                                    if h_journal:
-
-                                        shift_list = query(shift_list_list, filters=(lambda shift_list: shift_list.ftime <= h_journal.zeit and shift_list.ttime >= h_journal.zeit), first=True)
-
-                                        if shift_list:
-                                            shift = shift_list.shift
+                                        if not segment:
+                                            output_list.segcode = ""
                                         else:
-
-                                            shift_buff = query(shift_buff_list, filters=(lambda shift_buff: shift_buff.ftime >= shift_buff.ttime), first=True)
-
-                                            if shift_buff:
-                                                shift = shift_buff.shift
-                                output_list.c = to_string(billjournal.betriebsnr, "99")
-                                output_list.shift = to_string(shift, "99")
-
-                            elif billjournal.bediener_nr == 0 and mi_onlyjournal == False:
-
-                                if bill:
-
-                                    if bill.reslinnr == 1 and bill.zinr == "":
-                                        output_list.c = "N"
-                                        output_list.ns = "*"
-
-                                    elif bill.reslinnr == 0:
-                                        output_list.c = "M"
-                                        output_list.mb = "*"
-
-                            if foreign_flag:
-                                amount =  to_decimal(billjournal.fremdwaehrng)
-                            else:
-                                amount =  to_decimal(billjournal.betrag)
-
-                            if mi_break :
-                                serv =  to_decimal("0")
-                                vat =  to_decimal("0")
-
-                                serv, vat = get_output(calc_servvat(artikel.departement, artikel.artnr, billjournal.bill_datum, artikel.service_code, artikel.mwst_code))
-                                output_list.amt_nett =  to_decimal(amount) / to_decimal((1) + to_decimal(serv) + to_decimal(vat) )
-                                output_list.service =  to_decimal(output_list.amt_nett) * to_decimal(serv)
-                                output_list.vat =  to_decimal(output_list.amt_nett) * to_decimal(vat)
-                                t_amt =  to_decimal(t_amt) + to_decimal(output_list.amt_nett)
-                                t_vat =  to_decimal(t_vat) + to_decimal(output_list.vat)
-                                t_service =  to_decimal(t_service) + to_decimal(output_list.service)
-                                tot_amt =  to_decimal(tot_amt) + to_decimal(output_list.amt_nett)
-                                tot_vat =  to_decimal(tot_vat) + to_decimal(output_list.vat)
-                                tot_service =  to_decimal(tot_service) + to_decimal(output_list.service)
-
-
-                            descr1 = ""
-                            voucher_no = ""
-
-                            if substring(billjournal.bezeich, 0, 1) == ("*").lower()  or billjournal.kassarapport:
-                                descr1 = billjournal.bezeich
-                                voucher_no = ""
-
-
-                            else:
-
-                                if not artikel.bezaendern:
-                                    ind = num_entries(billjournal.bezeich, "]")
-
-                                    if ind >= 2:
-                                        gdelimiter = "]"
+                                            output_list.segcode = segment.bezeich
                                     else:
-                                        ind = num_entries(billjournal.bezeich, "/")
+                                        output_list.guestname = h_bill.bilname
+                                        output_list.gname = h_bill.bilname
 
-                                        if ind >= 2 and length(artikel.bezeich) <= get_index(billjournal.bezeich, "/") and billjournal.betrag != 0:
-                                            gdelimiter = "/"
-                                        else:
-                                            ind = num_entries(billjournal.bezeich, "|")
+                                elif h_bill.resnr > 0:
 
-                                            if ind >= 2:
-                                                gdelimiter = "|"
+                                    # guest = get_cache (Guest, {"gastnr": [(eq, h_bill.resnr)]})
+                                    guest = db_session.query(Guest).filter(Guest.gastnr == h_bill.resnr).first()
 
-                                    if ind != 0:
 
-                                        if ind == 1:
-                                            descr1 = billjournal.bezeich
-                                            voucher_no = ""
+                                    if guest:
+                                        output_list.guestname = guest.name + "," + guest.vorname1
+                                        output_list.gname = h_bill.bilname
+                                        output_list.nationality = guest.nation1
 
-                                        elif ind == 2:
-                                            descr1 = entry(0, billjournal.bezeich, gdelimiter)
-                                            voucher_no = entry(1, billjournal.bezeich, gdelimiter)
 
-                                            if gdelimiter.lower()  == ("]").lower() :
-                                                descr1 = descr1 + gdelimiter
-
-                                        elif ind > 2:
-                                            voucher_no = ""
-                                            descr1 = entry(0, billjournal.bezeich, gdelimiter)
-                                            for loopind in range(2,ind + 1) :
-                                                voucher_no = voucher_no + entry(loopind - 1, billjournal.bezeich, gdelimiter) + gdelimiter
-                                            voucher_no = substring(voucher_no, 0, length(voucher_no) - 1)
                                     else:
-                                        descr1 = billjournal.bezeich
-                                else:
-                                    ind = num_entries(billjournal.bezeich, "/")
+                                        output_list.guestname = h_bill.bilname
+                                        output_list.gname = h_bill.bilname
 
-                                    if ind == 1:
-                                        descr1 = billjournal.bezeich
-                                        voucher_no = ""
+                                    # segment = get_cache (Segment, {"segmentcode": [(eq, h_bill.segmentcode)]})
+                                    segment = db_session.query(Segment).filter(Segment.segmentcode == h_bill.segmentcode).first()
 
-                                    elif ind == 2:
-                                        descr1 = entry(0, billjournal.bezeich, "/")
-                                        voucher_no = entry(1, billjournal.bezeich, "/")
-
-                                    elif ind > 2:
-                                        descr1 = entry(0, billjournal.bezeich, "/")
-                                        for loopind in range(2,ind + 1) :
-                                            voucher_no = voucher_no + entry(loopind - 1, billjournal.bezeich, "/") + "/"
-                                        voucher_no = substring(voucher_no, 0, length(voucher_no) - 1)
+                                    if not segment:
+                                        output_list.segcode = ""
                                     else:
-                                        descr1 = billjournal.bezeich
+                                        output_list.segcode = segment.bezeich
 
-                            if output_list:
-                                output_list.descr = to_string(descr1, "x(100)")
-                                output_list.voucher = to_string(voucher_no, "x(40)")
+                                elif h_bill.resnr == 0 and h_bill.bilname != "":
+                                    output_list.guestname = h_bill.bilname
+                                    output_list.gname = h_bill.bilname
 
-                            if billjournal.bediener_nr == 0 and mi_onlyjournal == False:
+                                    # segment = get_cache (Segment, {"segmentcode": [(eq, h_bill.segmentcode)]})
+                                    segment = db_session.query(Segment).filter(Segment.segmentcode == h_bill.segmentcode).first()
 
-                                hoteldpt = get_cache (Hoteldpt, {"num": [(eq, billjournal.departement)]})
-
-                                if hoteldpt:
-                                    deptname = hoteldpt.depart
-                                output_list.zinr = billjournal.zinr
-                                output_list.deptno = billjournal.departement
-
-                                if matches(billjournal.bezeich,r"*Deposit*") and billjournal.rechnr != 0:
-
-                                    if not long_digit:
-                                        output_list.str =  to_string(handle_null_date (billjournal.bill_datum) ) + to_string(handle_null_char (billjournal.zinr) , "x(6)") + to_string(billjournal.rechnr, "999999999") + to_string(billjournal.artnr, "9999") + to_string(handle_null_char (descr1) , "x(50)") + to_string(handle_null_char (deptname) , "x(12)") + to_string(billjournal.betriebsnr, ">>>>>>") + format_fixed_length(str(billjournal.anzahl), 5) + format_fixed_length(to_string(amount), 22) + to_string(billjournal.zeit, "HH:MM:SS") + to_string(handle_null_char (billjournal.userinit) , "x(4)") + to_string(handle_null_date (billjournal.sysdate)) + to_string(handle_null_char (voucher_no) , "x(24)")
+                                    if not segment:
+                                        output_list.segcode = ""
                                     else:
-                                        output_list.str =  to_string(handle_null_date (billjournal.bill_datum) ) + to_string(handle_null_char (billjournal.zinr) , "x(6)") + to_string(billjournal.rechnr, "999999999") + to_string(billjournal.artnr, "9999") + to_string(handle_null_char (billjournal.bezeich) , "x(50)") + to_string(handle_null_char (deptname) , "x(12)") + to_string(billjournal.betriebsnr, ">>>>>>") + format_fixed_length(str(billjournal.anzahl), 5) + format_fixed_length(to_string(amount), 22) + to_string(billjournal.zeit, "HH:MM:SS") + to_string(handle_null_char (billjournal.userinit) , "x(4)") + to_string(handle_null_date (billjournal.sysdate)) + to_string(handle_null_char (voucher_no) , "x(24)")
-                                else:
+                                        output_list.segcode = segment.bezeich
 
-                                    if not long_digit:
-                                        output_list.str =  to_string(handle_null_date (billjournal.bill_datum) ) + to_string(handle_null_char (billjournal.zinr) , "x(6)") + to_string(billjournal.rechnr, "999999999") + to_string(billjournal.artnr, "9999") + to_string(handle_null_char (descr1) , "x(50)") + to_string(handle_null_char (deptname) , "x(12)") + to_string("", "x(6)") + format_fixed_length(str(billjournal.anzahl), 5) + format_fixed_length(to_string(amount), 22) + to_string(billjournal.zeit, "HH:MM:SS") + to_string(handle_null_char (billjournal.userinit) , "x(4)") + to_string(handle_null_date (billjournal.sysdate)) + to_string(handle_null_char (voucher_no) , "x(24)")
-                                    else:
-                                        output_list.str =  to_string(handle_null_date (billjournal.bill_datum) ) + to_string(handle_null_char (billjournal.zinr) , "x(6)") + to_string(billjournal.rechnr, "999999999") + to_string(billjournal.artnr, "9999") + to_string(handle_null_char (billjournal.bezeich) , "x(50)") + to_string(handle_null_char (deptname) , "x(12)") + to_string("", "x(6)") + format_fixed_length(str(billjournal.anzahl), 5) + format_fixed_length(to_string(amount), 22) + to_string(billjournal.zeit, "HH:MM:SS") + to_string(handle_null_char (billjournal.userinit) , "x(4)") + to_string(handle_null_date (billjournal.sysdate)) + to_string(handle_null_char (voucher_no) , "x(24)")
-                                qty = qty + billjournal.anzahl
-                                gqty = gqty + billjournal.anzahl
+                                elif billjournal_betriebsnr == 0:
 
-                                if foreign_flag:
-                                    sub_tot =  to_decimal(sub_tot) + to_decimal(billjournal.fremdwaehrng)
-                                    tot =  to_decimal(tot) + to_decimal(billjournal.fremdwaehrng)
-                                else:
-                                    sub_tot =  to_decimal(sub_tot) + to_decimal(billjournal.betrag)
-                                    tot =  to_decimal(tot) + to_decimal(billjournal.betrag)
-
-                            elif billjournal.bediener_nr != 0 and mi_excljournal == False:
-
-                                hoteldpt = get_cache (Hoteldpt, {"num": [(eq, billjournal.departement)]})
-
-                                if hoteldpt:
-                                    deptname = hoteldpt.depart
-                                output_list.zinr = billjournal.zinr
-                                output_list.deptno = billjournal.departement
-
-                                if not long_digit:
-                                    output_list.str =  to_string(handle_null_date (billjournal.bill_datum) ) + to_string(handle_null_char (billjournal.zinr) , "x(6)") + to_string(billjournal.rechnr, "999999999") + to_string(billjournal.artnr, "9999") + to_string(handle_null_char (descr1) , "x(50)") + to_string(handle_null_char (deptname) , "x(12)") + format_fixed_length(str(billjournal.betriebsnr), 6) + format_fixed_length(str(billjournal.anzahl), 5) + format_fixed_length(to_string(amount), 22) + to_string(billjournal.zeit, "HH:MM:SS") + to_string(handle_null_char (billjournal.userinit) , "x(4)") + to_string(handle_null_date (billjournal.sysdate)) + to_string(handle_null_char (voucher_no) , "x(24)")
-                                else:
-                                    output_list.str =  to_string(handle_null_date (billjournal.bill_datum) ) + to_string(handle_null_char (billjournal.zinr) , "x(6)") + to_string(billjournal.rechnr, "999999999") + to_string(billjournal.artnr, "9999") + to_string(handle_null_char (billjournal.bezeich) , "x(50)") + to_string(handle_null_char (deptname) , "x(12)") + format_fixed_length(str(billjournal.betriebsnr), 6) + format_fixed_length(str(billjournal.anzahl), 5) + format_fixed_length(to_string(amount), 22) + to_string(billjournal.zeit, "HH:MM:SS") + to_string(handle_null_char (billjournal.userinit) , "x(4)") + to_string(handle_null_date (billjournal.sysdate)) + to_string(handle_null_char (voucher_no) , "x(24)")
-                                qty = qty + billjournal.anzahl
-                                gqty = gqty + billjournal.anzahl
-
-                                if foreign_flag:
-                                    sub_tot =  to_decimal(sub_tot) + to_decimal(billjournal.fremdwaehrng)
-                                    tot =  to_decimal(tot) + to_decimal(billjournal.fremdwaehrng)
-                                else:
-                                    sub_tot =  to_decimal(sub_tot) + to_decimal(billjournal.betrag)
-                                    tot =  to_decimal(tot) + to_decimal(billjournal.betrag)
-
-                            if res_line and res_line.ankunft == res_line.abreise and artikel.departement > 0:
-                                qty = qty - billjournal.anzahl + res_line.erwachs
-                                gqty = gqty - billjournal.anzahl + res_line.erwachs
-                                temp_str = substring(str, 100)
-                                output_list.str =  substring(str, 0, 95)
-                                output_list.str =  output_list.str + to_string(res_line.erwachs, "-9999") + temp_str
-                                temp_str = ""
-                            custom_record()
-
-
-                elif sorttype == 2: # rd stash test
-
-                    if mi_post :
-
-                        for billjournal in db_session.query(Billjournal).filter(
-                                 (Billjournal.artnr == artikel.artnr) & (Billjournal.departement == artikel.departement) & (Billjournal.bill_datum == curr_date) & (Billjournal.anzahl == 0)).order_by(Billjournal.sysdate, Billjournal.zeit, Billjournal.zinr).all():
-                            do_it = True
-
-                            if (mi_onlyjournal  and billjournal.bediener_nr == 0) or (mi_excljournal  and billjournal.bediener_nr != 0):
-                                do_it = False
-
-                            if exclude_artrans and billjournal.kassarapport:
-                                do_it = False
-
-                            if not mi_showrelease and billjournal.betrag == 0:
-                                do_it = False
-
-                            if do_it  and exclude_artrans  and artikel.artart != 4:
-
-                                debitor = get_cache (Debitor, {"rechnr": [(eq, billjournal.rechnr)],"zahlkonto": [(eq, billjournal.artnr)],"rgdatum": [(eq, billjournal.bill_datum)],"zinr": [(eq, billjournal.zinr)],"saldo": [(eq, billjournal.betrag)],"transzeit": [(eq, billjournal.zeit)]})
-
-                                if debitor:
-                                    do_it = False
-
-                            if do_it:
-                                it_exist = True
-                                output_list = Output_list()
-                                output_list_list.append(output_list)
-
-
-                                if (billjournal.bediener_nr != 0 and mi_excljournal == False) or (billjournal.bediener_nr == 0 and mi_onlyjournal == False):
-                                    output_list.remark = billjournal.stornogrund
-
-                                if not matches(billjournal.bezeich, ("*<*")) and not matches(billjournal.bezeich, ("*>*")):
-
-                                    if billjournal.rechnr > 0:
-
-                                        # bill = get_cache (Bill, {"rechnr": [(eq, billjournal.rechnr)]})
-                                        bill = db_session.query(Bill).filter(Bill.rechnr == billjournal.rechnr).first()
-
-                                        if bill and billjournal.zinr != "":
-
-                                            # res_line = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"zinr": [(eq, bill.zinr)]})
-                                            res_line = db_session.query(Res_line).filter(Res_line.resnr == bill.resnr, Res_line.zinr == bill.zinr).first()
-                                            
-                                            # reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
-                                            reservation = db_session.query(Reservation).filter(Reservation.resnr == res_line.resnr).first()
-
-                                            # guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
-                                            guest = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnrmember).first()
-
-                                            # buffguest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrpay)]})
-                                            buffguest = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnrpay).first()  
-
-                                            # gbuff = get_cache (Guest, {"gastnr": [(eq, res_line.gastnr)]})
-                                            gbuff = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnr).first()
-
-                                            if guest and reservation:
-                                                output_list.str = output_list.str + guest.name + ", " + guest.vorname1 + " " + guest.anrede1
-                                                output_list.checkin = res_line.ankunft
-                                                output_list.checkout = res_line.abreise
-                                                output_list.guestname = guest.name + ", " + guest.vorname1 + " " + guest.anrede1
-                                                output_list.gname = buffguest.name + ", " + buffguest.vorname1 + " " + buffguest.anrede1
-                                                output_list.nationality = guest.nation1
-                                                output_list.resnr = res_line.resnr
-                                                output_list.resname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1
-
-                                                if reservation.resart != 0:
-
-                                                    sourccod = get_cache (Sourccod, {"source_code": [(eq, reservation.resart)]})
-
-                                                    if sourccod:
-                                                        output_list.book_source = sourccod.bezeich
-
-                                                # segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
-                                                segment = db_session.query(Segment).filter(Segment.segmentcode == reservation.segmentcode).first()
-
-                                                if segment:
-                                                    output_list.segcode = segment.bezeich
-                                                else:
-                                                    output_list.segcode = ""
-
-                                        elif bill:
-
-                                            if (billjournal.bediener_nr != 0 and mi_excljournal == False) or (billjournal.bediener_nr == 0 and mi_onlyjournal == False):
-
-                                                if bill.resnr == 0 and bill.bilname != "":
-                                                    output_list.gname = bill.bilname
-                                                    output_list.guestname = bill.bilname
-                                                else:
-
-                                                    gbuff = get_cache (Guest, {"gastnr": [(eq, bill.gastnr)]})
-
-                                                    if gbuff:
-                                                        output_list.gname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1 + gbuff.anredefirma
-                                                        output_list.guestname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1 + gbuff.anredefirma
-                                                        output_list.resname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1 + gbuff.anredefirma
-                                                        output_list.nationality = gbuff.nation1
-                                    else:
-
-                                        if artikel.artart == 5 and get_index(billjournal.bezeich, " [#") > 0 and billjournal.departement == 0:
-                                            lviresnr = -1
-                                            lvcs = substring(billjournal.bezeich, get_index(billjournal.bezeich, "[#") + 2 - 1)
-                                            lviresnr = to_int(entry(0, lvcs, " "))
-
-                                            # reservation = get_cache (Reservation, {"resnr": [(eq, lviresnr)]})
-                                            reservation = db_session.query(Reservation).filter(Reservation.resnr == lviresnr).first()
-
-                                            if reservation:
-
-                                                gbuff = get_cache (Guest, {"gastnr": [(eq, reservation.gastnr)]})
-
-                                                if gbuff:
-                                                    output_list.gname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1 + gbuff.anredefirma
-                                                    output_list.guestname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1 + gbuff.anredefirma
-                                                    output_list.resname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1 + gbuff.anredefirma
-                                                    output_list.nationality = gbuff.nation1
-
-                                                if reservation.resart != 0:
-
-                                                    sourccod = get_cache (Sourccod, {"source_code": [(eq, reservation.resart)]})
-
-                                                    if sourccod:
-                                                        output_list.book_source = sourccod.bezeich
-
-                                        elif get_index(billjournal.bezeich, " #") > 0 and billjournal.departement == 0:
-                                            lvcs = substring(billjournal.bezeich, get_index(billjournal.bezeich, " #") + 2 - 1)
-                                            lviresnr = to_int(entry(0, lvcs, "]"))
-
-                                            # reservation = get_cache (Reservation, {"resnr": [(eq, lviresnr)]})
-                                            reservation = db_session.query(Reservation).filter(Reservation.resnr == lviresnr).first()
-
-                                            if reservation:
-
-                                                gbuff = get_cache (Guest, {"gastnr": [(eq, reservation.gastnr)]})
-
-                                                if gbuff:
-                                                    output_list.gname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1 + gbuff.anredefirma
-                                                    output_list.guestname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1 + gbuff.anredefirma
-                                                    output_list.resname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1 + gbuff.anredefirma
-                                                    output_list.nationality = gbuff.nation1
-
-                                                if reservation.resart != 0:
-
-                                                    # sourccod = get_cache (Sourccod, {"source_code": [(eq, reservation.resart)]})
-                                                    sourccod = db_session.query(Sourccod).filter(Sourccod.source_code == reservation.resart).first()
-
-                                                    if sourccod:
-                                                        output_list.book_source = sourccod.bezeich
-                                else:
-                                    pass
-
-                                if (billjournal.bediener_nr != 0 and mi_excljournal == False and billjournal.anzahl == 0) or (billjournal.bediener_nr == 0 and mi_onlyjournal == False and billjournal.anzahl == 0):
-                                    output_list.bezeich = artikel.bezeich
-
-                                if billjournal.bediener_nr != 0 and mi_excljournal == False:
-                                    shift = 0
-
-                                    if billjournal.betriebsnr != 0 and isoutletshift :
-
-                                        h_journal = get_cache (H_journal, {"rechnr": [(eq, billjournal.rechnr)],"departement": [(eq, billjournal.betriebsnr)]})
-
-                                        if h_journal:
-
-                                            shift_list = query(shift_list_list, filters=(lambda shift_list: shift_list.ftime <= h_journal.zeit and shift_list.ttime >= h_journal.zeit), first=True)
-
-                                            if shift_list:
-                                                shift = shift_list.shift
-                                            else:
-
-                                                shift_buff = query(shift_buff_list, filters=(lambda shift_buff: shift_buff.ftime >= shift_buff.ttime), first=True)
-
-                                                if shift_buff:
-                                                    shift = shift_buff.shift
-                                    output_list.c = to_string(billjournal.betriebsnr, "99")
-                                    output_list.shift = to_string(shift, "99")
-
-                                elif billjournal.bediener_nr == 0 and mi_onlyjournal == False:
+                                    bill = get_cache (Bill, {"rechnr": [(eq, billjournal_rechnr)]})
 
                                     if bill:
 
-                                        if bill.reslinnr == 1 and bill.zinr == "":
-                                            output_list.c = "N"
-                                            output_list.ns = "*"
-
-                                        elif bill.reslinnr == 0:
-                                            output_list.c = "M"
-                                            output_list.mb = "*"
-
-                                if foreign_flag:
-                                    amount =  to_decimal(billjournal.fremdwaehrng)
-                                else:
-                                    amount =  to_decimal(billjournal.betrag)
-
-                                if mi_break :
-                                    serv =  to_decimal("0")
-                                    vat =  to_decimal("0")
-
-
-                                    serv, vat = get_output(calc_servvat(artikel.departement, artikel.artnr, billjournal.bill_datum, artikel.service_code, artikel.mwst_code))
-                                    output_list.amt_nett =  to_decimal(amount) / to_decimal((1) + to_decimal(serv) + to_decimal(vat) )
-                                    output_list.service =  to_decimal(output_list.amt_nett) * to_decimal(serv)
-                                    output_list.vat =  to_decimal(output_list.amt_nett) * to_decimal(vat)
-                                    t_amt =  to_decimal(t_amt) + to_decimal(output_list.amt_nett)
-                                    t_vat =  to_decimal(t_vat) + to_decimal(output_list.vat)
-                                    t_service =  to_decimal(t_service) + to_decimal(output_list.service)
-                                    tot_amt =  to_decimal(tot_amt) + to_decimal(output_list.amt_nett)
-                                    tot_vat =  to_decimal(tot_vat) + to_decimal(output_list.vat)
-                                    tot_service =  to_decimal(tot_service) + to_decimal(output_list.service)
-
-
-                                descr1 = ""
-                                voucher_no = ""
-
-                                if substring(billjournal.bezeich, 0, 1) == ("*").lower()  or billjournal.kassarapport:
-                                    descr1 = billjournal.bezeich
-                                    voucher_no = ""
-
-
-                                else:
-
-                                    if not artikel.bezaendern:
-                                        ind = num_entries(billjournal.bezeich, "]")
-
-                                        if ind >= 2:
-                                            gdelimiter = "]"
-                                        else:
-                                            ind = num_entries(billjournal.bezeich, "/")
-
-                                            if ind >= 2 and length(artikel.bezeich) <= get_index(billjournal.bezeich, "/") and billjournal.betrag != 0:
-                                                gdelimiter = "/"
-                                            else:
-                                                ind = num_entries(billjournal.bezeich, "|")
-
-                                                if ind >= 2:
-                                                    gdelimiter = "|"
-
-                                        if ind != 0:
-
-                                            if ind == 1:
-                                                descr1 = billjournal.bezeich
-                                                voucher_no = ""
-
-                                            elif ind == 2:
-                                                descr1 = entry(0, billjournal.bezeich, gdelimiter)
-                                                voucher_no = entry(1, billjournal.bezeich, gdelimiter)
-
-                                                if gdelimiter.lower()  == ("]").lower() :
-                                                    descr1 = descr1 + gdelimiter
-
-                                            elif ind > 2:
-                                                voucher_no = ""
-                                                descr1 = entry(0, billjournal.bezeich, gdelimiter)
-                                                for loopind in range(2,ind + 1) :
-                                                    voucher_no = voucher_no + entry(loopind - 1, billjournal.bezeich, gdelimiter) + gdelimiter
-                                                voucher_no = substring(voucher_no, 0, length(voucher_no) - 1)
-                                        else:
-                                            descr1 = billjournal.bezeich
-                                    else:
-                                        ind = num_entries(billjournal.bezeich, "/")
-
-                                        if ind == 1:
-                                            descr1 = billjournal.bezeich
-                                            voucher_no = ""
-
-                                        elif ind == 2:
-                                            descr1 = entry(0, billjournal.bezeich, "/")
-                                            voucher_no = entry(1, billjournal.bezeich, "/")
-
-                                        elif ind > 2:
-                                            descr1 = entry(0, billjournal.bezeich, "/")
-                                            for loopind in range(2,ind + 1) :
-                                                voucher_no = voucher_no + entry(loopind - 1, billjournal.bezeich, "/") + "/"
-                                            voucher_no = substring(voucher_no, 0, length(voucher_no) - 1)
-                                        else:
-                                            descr1 = billjournal.bezeich
-
-                                if output_list:
-                                    output_list.descr = to_string(descr1, "x(100)")
-                                    output_list.voucher = to_string(voucher_no, "x(40)")
-
-                                if billjournal.bediener_nr == 0 and mi_onlyjournal == False:
-
-                                    hoteldpt = get_cache (Hoteldpt, {"num": [(eq, billjournal.departement)]})
-
-                                    if hoteldpt:
-                                        deptname = hoteldpt.depart
-                                    output_list.zinr = billjournal.zinr
-                                    output_list.deptno = billjournal.departement
-                                    if matches(billjournal.bezeich,r"*Deposit*") and billjournal.bezeich.index("[") > 0 and billjournal.bezeich.index("#") and billjournal.rechnr != 0:
-                                        if not long_digit:
-                                            output_list.str =  to_string(handle_null_date (billjournal.bill_datum) ) + to_string(handle_null_char (billjournal.zinr) , "x(6)") + to_string(billjournal.rechnr, "999999999") + to_string(billjournal.artnr, "999999999") + to_string(handle_null_char (descr1) , "x(50)") + to_string(handle_null_char (deptname) , "x(12)") + format_fixed_length(to_string(billjournal.betriebsnr, ">>>>>>"), 6) + format_fixed_length(to_string(billjournal.anzahl, "-9999"), 5) + format_fixed_length(to_string(amount, "->>,>>>,>>>,>>>,>>9.99"), 22) + to_string(billjournal.zeit, "HH:MM:SS") + to_string(handle_null_char (billjournal.userinit) , "x(4)") + to_string(handle_null_date (billjournal.sysdate)) + to_string(handle_null_char (voucher_no) , "x(24)")
-                                        else:
-                                            output_list.str =  to_string(handle_null_date (billjournal.bill_datum) ) + to_string(handle_null_char (billjournal.zinr) , "x(6)") + to_string(billjournal.rechnr, "999999999") + to_string(billjournal.artnr, "999999999") + to_string(handle_null_char (billjournal.bezeich) , "x(50)") + to_string(handle_null_char (deptname) , "x(12)") + format_fixed_length(to_string(billjournal.betriebsnr, ">>>>>>"), 6) + format_fixed_length(to_string(billjournal.anzahl, "-9999"), 5) + format_fixed_length(to_string(amount, "->,>>>,>>>,>>>,>>>,>>9"), 22) + to_string(billjournal.zeit, "HH:MM:SS") + to_string(handle_null_char (billjournal.userinit) , "x(4)") + to_string(handle_null_date (billjournal.sysdate)) + to_string(handle_null_char (voucher_no) , "x(24)")
-                                    else:
-
-                                        if not long_digit:
-                                            str = to_string(handle_null_date (billjournal.bill_datum) , "x(8)") + to_string(handle_null_char (billjournal.zinr) , "x(6)") + to_string(billjournal.rechnr, "999999999") + to_string(billjournal.artnr, "999999999") + to_string(handle_null_char (descr1) , "x(50)") + to_string(handle_null_char (deptname) , "x(12)") + to_string("", "x(6)") + format_fixed_length(to_string(billjournal.anzahl, "-9999"), 5) + format_fixed_length(to_string(amount, "->>,>>>,>>>,>>>,>>9.99"), 22) + to_string(billjournal.zeit, "HH:MM:SS") + to_string(handle_null_char (billjournal.userinit) , "x(4)") + to_string(handle_null_date (billjournal.sysdate)) + to_string(handle_null_char (voucher_no) , "x(24)")
-                                        else:
-                                            str = to_string(handle_null_date (billjournal.bill_datum) , "x(8)") + to_string(handle_null_char (billjournal.zinr) , "x(6)") + to_string(billjournal.rechnr, "999999999") + to_string(billjournal.artnr, "999999999") + to_string(handle_null_char (billjournal.bezeich) , "x(50)") + to_string(handle_null_char (deptname) , "x(12)") + to_string("", "x(6)") +  format_fixed_length(to_string(billjournal.anzahl, "-9999"), 5) + format_fixed_length(to_string(amount, "->,>>>,>>>,>>>,>>>,>>9"), 22) + to_string(billjournal.zeit, "HH:MM:SS") + to_string(handle_null_char (billjournal.userinit) , "x(4)") + to_string(handle_null_date (billjournal.sysdate)) + to_string(handle_null_char (voucher_no) , "x(24)")
-                                    qty = qty + billjournal.anzahl
-                                    gqty = gqty + billjournal.anzahl
-
-                                    if foreign_flag:
-                                        sub_tot =  to_decimal(sub_tot) + to_decimal(billjournal.fremdwaehrng)
-                                        tot =  to_decimal(tot) + to_decimal(billjournal.fremdwaehrng)
-                                    else:
-                                        sub_tot =  to_decimal(sub_tot) + to_decimal(billjournal.betrag)
-                                        tot =  to_decimal(tot) + to_decimal(billjournal.betrag)
-
-                                elif billjournal.bediener_nr != 0 and mi_excljournal == False:
-
-                                    hoteldpt = get_cache (Hoteldpt, {"num": [(eq, billjournal.departement)]})
-
-                                    if hoteldpt:
-                                        deptname = hoteldpt.depart
-                                    output_list.zinr = billjournal.zinr
-                                    output_list.deptno = billjournal.departement
-
-                                    if not long_digit:
-                                        output_list.str =  to_string(handle_null_date (billjournal.bill_datum) ) + to_string(handle_null_char (billjournal.zinr) , "x(6)") + to_string(billjournal.rechnr, "999999999") + to_string(billjournal.artnr, "999999999") + to_string(handle_null_char (descr1) , "x(50)") + to_string(handle_null_char (deptname) , "x(12)") + format_fixed_length(to_string(billjournal.betriebsnr, ">>>>>>"), 6) + format_fixed_length(to_string(billjournal.anzahl, "-9999"), 5) + format_fixed_length(to_string(amount, "->>,>>>,>>>,>>>,>>9.99"), 22) + to_string(billjournal.zeit, "HH:MM:SS") + to_string(handle_null_char (billjournal.userinit) , "x(4)") + to_string(handle_null_date (billjournal.sysdate)) + to_string(handle_null_char (voucher_no) , "x(24)")
-                                    else:
-                                        output_list.str =  to_string(handle_null_date (billjournal.bill_datum) ) + to_string(handle_null_char (billjournal.zinr) , "x(6)") + to_string(billjournal.rechnr, "999999999") + to_string(billjournal.artnr, "999999999") + to_string(handle_null_char (billjournal.bezeich) , "x(50)") + to_string(handle_null_char (deptname) , "x(12)") + format_fixed_length(to_string(billjournal.betriebsnr, ">>>>>>"), 6) + format_fixed_length(to_string(billjournal.anzahl, "-9999"), 5) + format_fixed_length(to_string(amount, "->,>>>,>>>,>>>,>>>,>>9"), 22) + to_string(billjournal.zeit, "HH:MM:SS") + to_string(handle_null_char (billjournal.userinit) , "x(4)") + to_string(handle_null_date (billjournal.sysdate)) + to_string(handle_null_char (voucher_no) , "x(24)")
-                                    qty = qty + billjournal.anzahl
-                                    gqty = gqty + billjournal.anzahl
-
-                                    if foreign_flag:
-                                        sub_tot =  to_decimal(sub_tot) + to_decimal(billjournal.fremdwaehrng)
-                                        tot =  to_decimal(tot) + to_decimal(billjournal.fremdwaehrng)
-                                    else:
-                                        sub_tot =  to_decimal(sub_tot) + to_decimal(billjournal.betrag)
-                                        tot =  to_decimal(tot) + to_decimal(billjournal.betrag)
-
-                                if res_line and res_line.ankunft == res_line.abreise and artikel.departement > 0:
-                                    qty = qty - billjournal.anzahl + res_line.erwachs
-                                    gqty = gqty - billjournal.anzahl + res_line.erwachs
-                                    temp_str = substring(output_list.str, 100)
-                                    output_list.str =  substring(output_list.str, 0, 95)
-                                    output_list.str =  output_list.str + to_string(res_line.erwachs, "-9999") + temp_str
-                                    temp_str = ""
-                                custom_record()
-
-                    else:
-
-                        for billjournal in db_session.query(Billjournal).filter(
-                                 (Billjournal.artnr == artikel.artnr) & (Billjournal.departement == artikel.departement) & (Billjournal.sysdate == curr_date) & (Billjournal.anzahl == 0)).order_by(Billjournal.sysdate, Billjournal.zeit, Billjournal.zinr).all():
-                            do_it = True
-
-                            if (mi_onlyjournal  and billjournal.bediener_nr == 0) or (mi_excljournal  and billjournal.bediener_nr != 0):
-                                do_it = False
-
-                            if exclude_artrans and billjournal.kassarapport:
-                                do_it = False
-
-                            if not mi_showrelease and billjournal.betrag == 0:
-                                do_it = False
-
-                            if do_it  and exclude_artrans  and artikel.artart != 4:
-
-                                debitor = get_cache (Debitor, {"rechnr": [(eq, billjournal.rechnr)],"zahlkonto": [(eq, billjournal.artnr)],"rgdatum": [(eq, billjournal.bill_datum)],"zinr": [(eq, billjournal.zinr)],"saldo": [(eq, billjournal.betrag)],"transzeit": [(eq, billjournal.zeit)]})
-
-                                if debitor:
-                                    do_it = False
-
-                            if do_it:
-                                it_exist = True
-                                output_list = Output_list()
-                                output_list_list.append(output_list)
-
-
-                                if (billjournal.bediener_nr != 0 and mi_excljournal == False) or (billjournal.bediener_nr == 0 and mi_onlyjournal == False):
-                                    output_list.remark = billjournal.stornogrund
-
-                                if not matches(billjournal.bezeich, ("*<*")) and not matches(billjournal.bezeich, ("*>*")):
-
-                                    # bill = get_cache (Bill, {"rechnr": [(eq, billjournal.rechnr)]})
-                                    bill = db_session.query(Bill).filter(Bill.rechnr == billjournal.rechnr).first()
-                                    
-
-                                    if bill and billjournal.zinr != "":
-
-                                        # res_line = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"zinr": [(eq, bill.zinr)]})
-                                        res_line = db_session.query(Res_line).filter(Res_line.resnr == bill.resnr, Res_line.zinr == bill.zinr).first()
+                                        # res_line = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"reslinnr": [(eq, bill.reslinnr)]})
+                                        res_line = db_session.query(Res_line).filter(Res_line.resnr == bill.resnr, Res_line.reslinnr == bill.reslinnr).first()
 
                                         if res_line:
+
                                             # reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
                                             reservation = db_session.query(Reservation).filter(Reservation.resnr == res_line.resnr).first()
 
                                             # guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
                                             guest = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnrmember).first()
 
-                                            # buffguest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrpay)]})
-                                            buffguest = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnrpay).first()  
-
                                             # gbuff = get_cache (Guest, {"gastnr": [(eq, res_line.gastnr)]})
                                             gbuff = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnr).first()
 
-                                            if guest and reservation:
-                                                output_list.str = output_list.str + guest.name + ", " + guest.vorname1 + " " + guest.anrede1
-                                                output_list.checkin = res_line.ankunft
-                                                output_list.checkout = res_line.abreise
-                                                output_list.guestname = guest.name + ", " + guest.vorname1 + " " + guest.anrede1
-                                                output_list.gname = buffguest.name + ", " + buffguest.vorname1 + " " + buffguest.anrede1
-                                                output_list.nationality = guest.nation1
-                                                output_list.resnr = res_line.resnr
-                                                output_list.resname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1
+                                            output_list.checkin = res_line.ankunft
+                                            output_list.checkout = res_line.abreise
+                                            output_list.guestname = guest.name + ", " + guest.vorname1 + " " + guest.anrede1
+                                            output_list.gname = bill.name
+                                            output_list.nationality = guest.nation1
+                                            output_list.resnr = res_line.resnr
+                                            output_list.resname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1
 
-                                                if reservation.resart != 0:
+                                            if reservation and reservation.resart != 0:
 
-                                                    sourccod = get_cache (Sourccod, {"source_code": [(eq, reservation.resart)]})
+                                                sourccod = get_cache (Sourccod, {"source_code": [(eq, reservation.resart)]})
 
-                                                    if sourccod:
-                                                        output_list.book_source = sourccod.bezeich
+                                                if sourccod:
+                                                    output_list.book_source = sourccod.bezeich
 
-                                                # segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
-                                                segment = db_session.query(Segment).filter(Segment.segmentcode == reservation.segmentcode).first()
+                                            # genstat = get_cache (Genstat, {"resnr": [(eq, res_line.resnr)]})
+                                            genstat = db_session.query(Genstat).filter(Genstat.resnr == res_line.resnr).first()
 
-                                                if segment:
-                                                    output_list.segcode = segment.bezeich
-                                                else:
-                                                    output_list.segcode = ""
+                                            # segment = get_cache (Segment, {"segmentcode": [(eq, genstat.segmentcode)]})
+                                            segment = db_session.query(Segment).filter(Segment.segmentcode == genstat.segmentcode).first()
 
-                                    elif bill:
 
-                                        if (billjournal.bediener_nr != 0 and mi_excljournal == False) or (billjournal.bediener_nr == 0 and mi_onlyjournal == False):
-
-                                            if bill.resnr == 0 and bill.bilname != "":
-                                                output_list.gname = bill.bilname
-                                                output_list.guestname = bill.bilname
+                                            if not segment:
+                                                output_list.segcode = ""
                                             else:
+                                                output_list.segcode = segment.bezeich
+                    else:
 
-                                                # gbuff = get_cache (Guest, {"gastnr": [(eq, bill.gastnr)]})
-                                                gbuff = db_session.query(Guest).filter(Guest.gastnr == bill.gastnr).first()
+                        if get_index(billjournal_bezeich, " *BQT") > 0:
 
-                                                if gbuff:
-                                                    output_list.gname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1 + gbuff.anredefirma
-                                                    output_list.guestname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1 + gbuff.anredefirma
-                                                    output_list.resname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1 + gbuff.anredefirma
-                                                    output_list.nationality = gbuff.nation1
+                            bk_veran = get_cache (Bk_veran, {"veran_nr": [(eq, to_int(substring(billjournal_bezeich, get_index(billjournal_bezeich, " *bqt") + 5  - 1)))]})
 
-                                if (billjournal.bediener_nr != 0 and mi_excljournal == False and billjournal.anzahl == 0) or (billjournal.bediener_nr == 0 and mi_onlyjournal == False and billjournal.anzahl == 0):
-                                    output_list.bezeich = artikel.bezeich
+                            if bk_veran:
 
-                                if billjournal.bediener_nr != 0 and mi_excljournal == False:
-                                    shift = 0
+                                gbuff = get_cache (Guest, {"gastnr": [(eq, bk_veran.gastnr)]})
 
-                                    if billjournal.betriebsnr != 0 and isoutletshift :
+                                if gbuff:
+                                    output_list.gname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1 + gbuff.anredefirma
+                                    output_list.guestname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1 + gbuff.anredefirma
+                                    output_list.resname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1 + gbuff.anredefirma
+                                    output_list.nationality = gbuff.nation1
 
-                                        h_journal = get_cache (H_journal, {"rechnr": [(eq, billjournal.rechnr)],"departement": [(eq, billjournal.betriebsnr)]})
+                        elif artikel_artart == 5 and get_index(billjournal_bezeich, " [#") > 0 and billjournal_departement == 0:
+                            lviresnr = -1
+                            lvcs = substring(billjournal_bezeich, get_index(billjournal_bezeich, "[#") + 2 - 1)
+                            lviresnr = to_int(entry(0, lvcs, " "))
 
-                                        if h_journal:
+                            # reservation = get_cache (Reservation, {"resnr": [(eq, lviresnr)]})
+                            reservation = db_session.query(Reservation).filter(Reservation.resnr == lviresnr).first()
 
-                                            shift_list = query(shift_list_list, filters=(lambda shift_list: shift_list.ftime <= h_journal.zeit and shift_list.ttime >= h_journal.zeit), first=True)
+                            if reservation:
 
-                                            if shift_list:
-                                                shift = shift_list.shift
-                                            else:
+                                gbuff = get_cache (Guest, {"gastnr": [(eq, reservation.gastnr)]})
 
-                                                shift_buff = query(shift_buff_list, filters=(lambda shift_buff: shift_buff.ftime >= shift_buff.ttime), first=True)
+                                if gbuff:
+                                    output_list.gname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1 + gbuff.anredefirma
+                                    output_list.guestname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1 + gbuff.anredefirma
+                                    output_list.resname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1 + gbuff.anredefirma
+                                    output_list.nationality = gbuff.nation1
 
-                                                if shift_buff:
-                                                    shift = shift_buff.shift
-                                    output_list.c = to_string(billjournal.betriebsnr, "99")
-                                    output_list.shift = to_string(shift, "99")
+                                if reservation.resart != 0:
 
-                                elif billjournal.bediener_nr == 0 and mi_onlyjournal == False:
+                                    # sourccod = get_cache (Sourccod, {"source_code": [(eq, reservation.resart)]})
+                                    sourccod = db_session.query(Sourccod).filter(Sourccod.source_code == reservation.resart).first()
 
-                                    if bill:
+                                    if sourccod:
+                                        output_list.book_source = sourccod.bezeich
 
-                                        if bill.reslinnr == 1 and bill.zinr == "":
-                                            output_list.ns = "*"
-                                            output_list.c = "N"
+                        elif get_index(billjournal_bezeich, " #") > 0 and billjournal_departement == 0:
+                            lvcs = substring(billjournal_bezeich, get_index(billjournal_bezeich, " #") + 2 - 1)
+                            lviresnr = to_int(entry(0, lvcs, "]"))
 
-                                        elif bill.reslinnr == 0:
-                                            output_list.c = "M"
-                                            output_list.mb = "*"
+                            # reservation = get_cache (Reservation, {"resnr": [(eq, lviresnr)]})
+                            reservation = db_session.query(Reservation).filter(Reservation.resnr == lviresnr).first()
 
-                                if foreign_flag:
-                                    amount =  to_decimal(billjournal.fremdwaehrng)
+
+                            if reservation:
+
+                                # gbuff = get_cache (Guest, {"gastnr": [(eq, reservation.gastnr)]})
+                                gbuff = db_session.query(Guest).filter(Guest.gastnr == reservation.gastnr).first()
+
+                                if gbuff:
+                                    output_list.gname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1 + gbuff.anredefirma
+                                    output_list.guestname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1 + gbuff.anredefirma
+                                    output_list.resname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1 + gbuff.anredefirma
+                                    output_list.nationality = gbuff.nation1
+
+                                if reservation.resart != 0:
+
+                                    # sourccod = get_cache (Sourccod, {"source_code": [(eq, reservation.resart)]})
+                                    sourccod = db_session.query(Sourccod).filter(Sourccod.source_code == reservation.resart).first()
+
+                                    if sourccod:
+                                        output_list.book_source = sourccod.bezeich
+                else:
+
+                    # arrangement = get_cache (Arrangement, {"artnr_logis": [(eq, artikel_artnr)],"intervall": [(eq, artikel_department)]})
+                    arrangement = db_session.query(Arrangement).filter(Arrangement.artnr_logis == artikel_artnr, Arrangement.intervall == artikel_department).first()
+
+                    if arrangement:
+
+                        # h_bill = get_cache (H_bill, {"rechnr": [(eq, billjournal_rechnr)],"departement": [(eq, billjournal_departement)]})
+                        h_bill = db_session.query(H_bill).filter(H_bill.rechnr == billjournal_rechnr, H_bill.departement == billjournal_departement).first()
+
+                        if h_bill:
+
+                            if h_bill.resnr > 0 and h_bill.reslinnr > 0:
+
+                                # res_line = get_cache (Res_line, {"resnr": [(eq, h_bill.resnr)],"reslinnr": [(eq, h_bill.reslinnr)]})
+                                res_line = db_session.query(Res_line).filter(Res_line.resnr == h_bill.resnr, Res_line.reslinnr == h_bill.reslinnr).first()
+
+
+                                if res_line:
+                                    output_list.resnr = res_line.resnr
+                                    output_list.guestname = res_line.name
+                                    output_list.gname = h_bill.bilname
+
+                                    # gbuff = get_cache (Guest, {"gastnr": [(eq, res_line.gastnr)]})
+                                    gbuff = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnr).first()
+
+                                    if gbuff:
+                                        output_list.resname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1
+
+                                    # reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+                                    reservation = db_session.query(Reservation).filter(Reservation.resnr == res_line.resnr).first()
+
+                                    if reservation and reservation.resart != 0:
+
+                                        sourccod = get_cache (Sourccod, {"source_code": [(eq, reservation.resart)]})
+
+                                        if sourccod:
+                                            output_list.book_source = sourccod.bezeich
+
+                                    # genstat = get_cache (Genstat, {"resnr": [(eq, res_line.resnr)]})
+                                    genstat = db_session.query(Genstat).filter(Genstat.resnr == res_line.resnr).first()
+
+                                    # segment = get_cache (Segment, {"segmentcode": [(eq, genstat.segmentcode)]})
+                                    segment = db_session.query(Segment).filter(Segment.segmentcode == genstat.segmentcode).first()
+
+                                    if not segment:
+                                        output_list.segcode = ""
+                                    else:
+                                        output_list.segcode = segment.bezeich
                                 else:
-                                    amount =  to_decimal(billjournal.betrag)
+                                    output_list.guestname = h_bill.bilname
+                                    output_list.gname = h_bill.bilname
 
-                                if mi_break :
-                                    serv =  to_decimal("0")
-                                    vat =  to_decimal("0")
+                            elif h_bill.resnr > 0:
 
+                                # guest = get_cache (Guest, {"gastnr": [(eq, h_bill.resnr)]})
+                                guest = db_session.query(Guest).filter(Guest.gastnr == h_bill.resnr).first()
 
-                                    serv, vat = get_output(calc_servvat(artikel.departement, artikel.artnr, billjournal.bill_datum, artikel.service_code, artikel.mwst_code))
-                                    output_list.amt_nett =  to_decimal(amount) / to_decimal((1) + to_decimal(serv) + to_decimal(vat) )
-                                    output_list.service =  to_decimal(output_list.amt_nett) * to_decimal(serv)
-                                    output_list.vat =  to_decimal(output_list.amt_nett) * to_decimal(vat)
-                                    t_amt =  to_decimal(t_amt) + to_decimal(output_list.amt_nett)
-                                    t_vat =  to_decimal(t_vat) + to_decimal(output_list.vat)
-                                    t_service =  to_decimal(t_service) + to_decimal(output_list.service)
-                                    tot_amt =  to_decimal(tot_amt) + to_decimal(output_list.amt_nett)
-                                    tot_vat =  to_decimal(tot_vat) + to_decimal(output_list.vat)
-                                    tot_service =  to_decimal(tot_service) + to_decimal(output_list.service)
+                                if guest:
+                                    output_list.guestname = guest.name + "," + guest.vorname1
+                                    output_list.gname = h_bill.bilname
+                                    output_list.nationality = guest.nation1
 
 
-                                descr1 = ""
+                                else:
+                                    output_list.guestname = h_bill.bilname
+                                    output_list.gname = h_bill.bilname
+
+                                # segment = get_cache (Segment, {"segmentcode": [(eq, h_bill.segmentcode)]})
+                                segment = db_session.query(Segment).filter(Segment.segmentcode == h_bill.segmentcode).first()
+
+                                if not segment:
+                                    output_list.segcode = ""
+                                else:
+                                    output_list.segcode = segment.bezeich
+
+                            elif h_bill.resnr == 0:
+                                output_list.guestname = h_bill.bilname
+                                output_list.gname = h_bill.bilname
+
+                                # segment = get_cache (Segment, {"segmentcode": [(eq, h_bill.segmentcode)]})
+                                segment = db_session.query(Segment).filter(Segment.segmentcode == h_bill.segmentcode).first()
+
+                                if not segment:
+                                    output_list.segcode = ""
+                                else:
+                                    output_list.segcode = segment.bezeich
+                    else:
+
+                        # argt_line = get_cache (Argt_line, {"argt_artnr": [(eq, artikel_artnr)],"departement": [(eq, artikel_department)]})
+                        argt_line = db_session.query(Argt_line).filter(Argt_line.argt_artnr == artikel_artnr, Argt_line.departement == artikel_department).first()
+
+                        if argt_line:
+                            hoteldept = billjournal_departement
+
+                            if matches(billjournal_bezeich, ("*<*")) and matches(billjournal_bezeich, ("*>*")):
+                                hoteldept = to_int(substring(billjournal_bezeich, get_index(billjournal_bezeich, "<") + 1 - 1, get_index(billjournal_bezeich, ">") - get_index(billjournal_bezeich, "<") - 1))
+
+                            h_bill = get_cache (H_bill, {"rechnr": [(eq, billjournal_rechnr)],"departement": [(eq, hoteldept)]})
+
+                            if h_bill:
+
+                                if h_bill.resnr > 0 and h_bill.reslinnr > 0:
+
+                                    res_line = get_cache (Res_line, {"resnr": [(eq, h_bill.resnr)],"reslinnr": [(eq, h_bill.reslinnr)]})
+
+                                    if res_line:
+
+                                        # reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+                                        reservation = db_session.query(Reservation).filter(Reservation.resnr == res_line.resnr).first()
+
+                                        # guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
+                                        guest = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnrmember).first()
+
+                                        # gbuff = get_cache (Guest, {"gastnr": [(eq, res_line.gastnr)]})
+                                        gbuff = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnr).first()
+
+                                        output_list.checkin = res_line.ankunft
+                                        output_list.checkout = res_line.abreise
+                                        output_list.guestname = guest.name + ", " + guest.vorname1 + " " + guest.anrede1
+                                        output_list.gname = h_bill.bilname
+                                        output_list.nationality = guest.nation1
+                                        output_list.resnr = res_line.resnr
+                                        output_list.resname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1
+
+                                        if reservation and reservation.resart != 0:
+
+                                            sourccod = get_cache (Sourccod, {"source_code": [(eq, reservation.resart)]})
+
+                                            if sourccod:
+                                                output_list.book_source = sourccod.bezeich
+
+                                        # genstat = get_cache (Genstat, {"resnr": [(eq, res_line.resnr)]})
+                                        genstat = db_session.query(Genstat).filter(Genstat.resnr == res_line.resnr).first()
+
+                                        # segment = get_cache (Segment, {"segmentcode": [(eq, genstat.segmentcode)]})
+                                        segment = db_session.query(Segment).filter(Segment.segmentcode == genstat.segmentcode).first()
+
+                                        if not segment:
+                                            output_list.segcode = ""
+                                        else:
+                                            output_list.segcode = segment.bezeich
+                                    else:
+                                        output_list.guestname = h_bill.bilname
+                                        output_list.gname = h_bill.bilname
+
+                                elif h_bill.resnr > 0:
+
+                                    # guest = get_cache (Guest, {"gastnr": [(eq, h_bill.resnr)]})
+                                    guest = db_session.query(Guest).filter(Guest.gastnr == h_bill.resnr).first()
+
+
+                                    if guest:
+                                        output_list.guestname = guest.name + "," + guest.vorname1
+                                        output_list.gname = h_bill.bilname
+                                        output_list.nationality = guest.nation1
+
+
+                                    else:
+                                        output_list.guestname = h_bill.bilname
+                                        output_list.gname = h_bill.bilname
+
+                                    # segment = get_cache (Segment, {"segmentcode": [(eq, h_bill.segmentcode)]})
+                                    segment = db_session.query(Segment).filter(Segment.segmentcode == h_bill.segmentcode).first()
+
+                                    if not segment:
+                                        output_list.segcode = ""
+                                    else:
+                                        output_list.segcode = segment.bezeich
+
+                                elif h_bill.resnr == 0:
+                                    output_list.guestname = h_bill.bilname
+                                    output_list.gname = h_bill.bilname
+
+                                    # segment = get_cache (Segment, {"segmentcode": [(eq, h_bill.segmentcode)]})
+                                    segment = db_session.query(Segment).filter(Segment.segmentcode == h_bill.segmentcode).first()
+
+                                    if not segment:
+                                        output_list.segcode = ""
+                                    else:
+                                        output_list.segcode = segment.bezeich
+
+                if (billjournal_bediener_nr != 0 and mi_excljournal == False and billjournal_anzahl == 0) or (billjournal_bediener_nr == 0 and mi_onlyjournal == False and billjournal_anzahl == 0):
+                    output_list.bezeich = artikel_bezeich
+
+                if billjournal_bediener_nr != 0 and mi_excljournal == False:
+                    shift = 0
+
+                    if billjournal_betriebsnr != 0 and isoutletshift :
+
+                        # h_journal = get_cache (H_journal, {"rechnr": [(eq, billjournal_rechnr)],"departement": [(eq, billjournal_betriebsnr)]})
+
+                        # if h_journal:
+
+                        #     shift_list = query(shift_list_data, filters=(lambda shift_list: shift_list.ftime <= h_journal.zeit and shift_list.ttime >= h_journal.zeit), first=True)
+
+                        #     if shift_list:
+                        #         shift = shift_list.shift
+                        #     else:
+
+                        #         shift_buff = query(shift_buff_data, filters=(lambda shift_buff: shift_buff.ftime >= shift_buff.ttime), first=True)
+
+                        #         if shift_buff:
+                        #             shift = shift_buff.shift
+
+                        h_bill_line = db_session.query(H_bill_line).filter((H_bill_line.rechnr == billjournal_rechnr) & (H_bill_line.departement == billjournal_betriebsnr) & (H_bill_line.betriebsnr != 0)).first()
+                        if h_bill_line:
+                            shift = h_bill_line.betriebsnr
+
+                    output_list.c = handling_negative(billjournal_betriebsnr, "99")
+                    output_list.shift = handling_negative(shift, "99")
+
+                elif billjournal_bediener_nr == 0 and mi_onlyjournal == False:
+
+                    if bill:
+
+                        if bill.reslinnr == 1 and bill.zinr == "":
+                            output_list.c = "N"
+                            output_list.ns = "*"
+
+                        elif bill.reslinnr == 0:
+                            output_list.c = "M"
+                            output_list.mb = "*"
+
+                if foreign_flag:
+                    amount =  to_decimal(billjournal_fremdwaehrng)
+                else:
+                    amount =  to_decimal(billjournal_betrag)
+
+                if mi_break :
+                    serv =  to_decimal("0")
+                    vat =  to_decimal("0")
+
+
+                    serv, vat = get_output(calc_servvat(artikel_department, artikel_artnr, billjournal_bill_datum, artikel_service_code, artikel_mwst_code))
+                    output_list.amt_nett =  to_decimal(amount) / to_decimal((1) + to_decimal(serv) + to_decimal(vat) )
+                    output_list.service =  to_decimal(output_list.amt_nett) * to_decimal(serv)
+                    output_list.vat =  to_decimal(output_list.amt_nett) * to_decimal(vat)
+                    t_amt =  to_decimal(t_amt) + to_decimal(output_list.amt_nett)
+                    t_vat =  to_decimal(t_vat) + to_decimal(output_list.vat)
+                    t_service =  to_decimal(t_service) + to_decimal(output_list.service)
+                    tot_amt =  to_decimal(tot_amt) + to_decimal(output_list.amt_nett)
+                    tot_vat =  to_decimal(tot_vat) + to_decimal(output_list.vat)
+                    tot_service =  to_decimal(tot_service) + to_decimal(output_list.service)
+
+                descr1 = ""
+                voucher_no = ""
+
+                if substring(billjournal_bezeich, 0, 1) == ("*").lower()  or billjournal_kassarapport:
+                    descr1 = billjournal_bezeich
+                    voucher_no = ""
+                else:
+
+                    if not artikel_bezaendern:
+                        ind = num_entries(billjournal_bezeich, "]")
+
+                        if ind >= 2:
+                            gdelimiter = "]"
+                        else:
+                            ind = num_entries(billjournal_bezeich, "/")
+
+                            if ind >= 2 and length(artikel_bezeich) <= get_index(billjournal_bezeich, "/") and billjournal_betrag != 0:
+                                gdelimiter = "/"
+                            else:
+                                ind = num_entries(billjournal_bezeich, "|")
+
+                                if ind >= 2:
+                                    gdelimiter = "|"
+
+                        if ind != 0:
+
+                            if ind == 1:
+                                descr1 = billjournal_bezeich
                                 voucher_no = ""
 
-                                if substring(billjournal.bezeich, 0, 1) == ("*").lower()  or billjournal.kassarapport:
-                                    descr1 = billjournal.bezeich
-                                    voucher_no = ""
+                            elif ind == 2:
+                                descr1 = entry(0, billjournal_bezeich, gdelimiter)
+                                voucher_no = entry(1, billjournal_bezeich, gdelimiter)
 
+                                if gdelimiter.lower()  == ("]").lower() :
+                                    descr1 = descr1 + gdelimiter
 
-                                else:
+                            elif ind > 2:
+                                voucher_no = ""
+                                descr1 = entry(0, billjournal_bezeich, gdelimiter)
+                                for loopind in range(2,ind + 1) :
+                                    voucher_no = voucher_no + entry(loopind - 1, billjournal_bezeich, gdelimiter) + gdelimiter
+                                voucher_no = substring(voucher_no, 0, length(voucher_no) - 1)
+                        else:
+                            descr1 = billjournal_bezeich
+                    else:
+                        ind = num_entries(billjournal_bezeich, "/")
 
-                                    if not artikel.bezaendern:
-                                        ind = num_entries(billjournal.bezeich, "]")
+                        if ind == 1:
+                            descr1 = billjournal_bezeich
+                            voucher_no = ""
 
-                                        if ind >= 2:
-                                            gdelimiter = "]"
-                                        else:
-                                            ind = num_entries(billjournal.bezeich, "/")
+                        elif ind == 2:
+                            descr1 = entry(0, billjournal_bezeich, "/")
+                            voucher_no = entry(1, billjournal_bezeich, "/")
 
-                                            if ind >= 2 and length(artikel.bezeich) <= get_index(billjournal.bezeich, "/") and billjournal.betrag != 0:
-                                                gdelimiter = "/"
-                                            else:
-                                                ind = num_entries(billjournal.bezeich, "|")
+                        elif ind > 2:
+                            descr1 = entry(0, billjournal_bezeich, "/")
+                            for loopind in range(2,ind + 1) :
+                                voucher_no = voucher_no + entry(loopind - 1, billjournal_bezeich, "/") + "/"
+                            voucher_no = substring(voucher_no, 0, length(voucher_no) - 1)
+                        else:
+                            descr1 = billjournal_bezeich
 
-                                                if ind >= 2:
-                                                    gdelimiter = "|"
+                if output_list:
+                    output_list.descr = format_fixed_length(descr1, 100)
+                    output_list.voucher = format_fixed_length(voucher_no, 40)
 
-                                        if ind != 0:
+                if billjournal_bediener_nr == 0 and mi_onlyjournal == False:
 
-                                            if ind == 1:
-                                                descr1 = billjournal.bezeich
-                                                voucher_no = ""
+                    hoteldpt = get_cache (Hoteldpt, {"num": [(eq, billjournal_departement)]})
 
-                                            elif ind == 2:
-                                                descr1 = entry(0, billjournal.bezeich, gdelimiter)
-                                                voucher_no = entry(1, billjournal.bezeich, gdelimiter)
+                    if hoteldpt:
+                        deptname = hoteldpt.depart
 
-                                                if gdelimiter.lower()  == ("]").lower() :
-                                                    descr1 = descr1 + gdelimiter
+                    output_list.zinr = billjournal_zinr
+                    output_list.deptno = billjournal_departement
 
-                                            elif ind > 2:
-                                                voucher_no = ""
-                                                descr1 = entry(0, billjournal.bezeich, gdelimiter)
-                                                for loopind in range(2,ind + 1) :
-                                                    voucher_no = voucher_no + entry(loopind - 1, billjournal.bezeich, gdelimiter) + gdelimiter
-                                                voucher_no = substring(voucher_no, 0, length(voucher_no) - 1)
-                                        else:
-                                            descr1 = billjournal.bezeich
-                                    else:
-                                        ind = num_entries(billjournal.bezeich, "/")
+                    if matches(billjournal_bezeich,r"*Deposit*") and billjournal_bezeich.find("[") > 0 and billjournal_bezeich.find("#") and billjournal_rechnr != 0:
+                        if not long_digit:
+                            output_list.str = handle_null_date(billjournal_bill_datum) + format_fixed_length(handle_null_char(billjournal_zinr), 6) + handling_negative(billjournal_rechnr, "999999999") + handling_negative(billjournal_artnr, "9999") + format_fixed_length(handle_null_char(descr1), 50) + format_fixed_length(handle_null_char(deptname), 12) + handling_negative(billjournal_betriebsnr, ">>>>>9") + handling_negative(billjournal_anzahl, "-9999") + handling_negative(amount, "->>,>>>,>>>,>>>,>>9.99") + to_string(billjournal_zeit, "HH:MM:SS") + format_fixed_length(billjournal_userinit, 4) + handle_null_date(billjournal_sysdate) + format_fixed_length(handle_null_char(voucher_no), 24)
+                        else:
+                            output_list.str =  handle_null_date(billjournal_bill_datum) + format_fixed_length(handle_null_char (billjournal_zinr) , 6) + handling_negative(billjournal_rechnr, "999999999") + handling_negative(billjournal_artnr, "9999") + format_fixed_length(handle_null_char (billjournal_bezeich) , 50) + format_fixed_length(handle_null_char(deptname) , 12) + handling_negative(billjournal_betriebsnr, ">>>>>9") + handling_negative(billjournal_anzahl, "-9999") + handling_negative(amount, "->,>>>,>>>,>>>,>>>,>>9") + to_string(billjournal_zeit, "HH:MM:SS") + format_fixed_length(handle_null_char(billjournal_userinit), 4) + handle_null_date(billjournal_sysdate) + format_fixed_length(handle_null_char(voucher_no), 24)
+                    else:
+                        if not long_digit:
+                            output_list.str = handle_null_date(billjournal_bill_datum) + format_fixed_length(handle_null_char(billjournal_zinr), 6) + handling_negative(billjournal_rechnr, "999999999") + handling_negative(billjournal_artnr, "999999999") + format_fixed_length(handle_null_char(descr1), 50) + format_fixed_length(handle_null_char(deptname), 12) + format_fixed_length("", 6) + handling_negative(billjournal_anzahl, "-9999") + handling_negative(amount, "->>,>>>,>>>,>>>,>>9.99") + to_string(billjournal_zeit, "HH:MM:SS") + format_fixed_length(handle_null_char(billjournal_userinit), 4) + handle_null_date(billjournal_sysdate) + format_fixed_length(handle_null_char(voucher_no), 24)
+                        else:
+                            output_list.str =  handle_null_date(billjournal_bill_datum) + format_fixed_length(handle_null_char(billjournal_zinr), 6) + handling_negative(billjournal_rechnr, "999999999") + handling_negative(billjournal_artnr, "999999999") + format_fixed_length(handle_null_char(billjournal_bezeich), 50) + format_fixed_length(handle_null_char(deptname) , 12) + format_fixed_length("", 6) + handling_negative(billjournal_anzahl, "-9999") + handling_negative(amount, "->,>>>,>>>,>>>,>>>,>>9") + to_string(billjournal_zeit, "HH:MM:SS") + format_fixed_length(handle_null_char(billjournal_userinit), 4) + handle_null_date(billjournal_sysdate) + format_fixed_length(handle_null_char(voucher_no), 24)
+                    
+                    qty = qty + billjournal_anzahl
+                    gqty = gqty + billjournal_anzahl
 
-                                        if ind == 1:
-                                            descr1 = billjournal.bezeich
-                                            voucher_no = ""
+                    if foreign_flag:
+                        sub_tot =  to_decimal(sub_tot) + to_decimal(billjournal_fremdwaehrng)
+                        tot =  to_decimal(tot) + to_decimal(billjournal_fremdwaehrng)
+                    else:
+                        sub_tot =  to_decimal(sub_tot) + to_decimal(billjournal_betrag)
+                        tot =  to_decimal(tot) + to_decimal(billjournal_betrag)
 
-                                        elif ind == 2:
-                                            descr1 = entry(0, billjournal.bezeich, "/")
-                                            voucher_no = entry(1, billjournal.bezeich, "/")
+                elif billjournal_bediener_nr != 0 and mi_excljournal == False:
 
-                                        elif ind > 2:
-                                            descr1 = entry(0, billjournal.bezeich, "/")
-                                            for loopind in range(2,ind + 1) :
-                                                voucher_no = voucher_no + entry(loopind - 1, billjournal.bezeich, "/") + "/"
-                                            voucher_no = substring(voucher_no, 0, length(voucher_no) - 1)
-                                        else:
-                                            descr1 = billjournal.bezeich
+                    hoteldpt = get_cache (Hoteldpt, {"num": [(eq, billjournal_departement)]})
 
-                                if output_list:
-                                    output_list.descr = to_string(descr1, "x(100)")
-                                    output_list.voucher = to_string(voucher_no, "x(40)")
+                    if hoteldpt:
+                        deptname = hoteldpt.depart
 
-                                if (billjournal.bediener_nr != 0 and mi_excljournal == False) or (billjournal.bediener_nr == 0 and mi_onlyjournal == False):
+                    output_list.zinr = billjournal_zinr
+                    output_list.deptno = billjournal_departement
 
-                                    hoteldpt = get_cache (Hoteldpt, {"num": [(eq, billjournal.departement)]})
+                    if not long_digit:
+                        output_list.str = handle_null_date(billjournal_bill_datum) + format_fixed_length(handle_null_char(billjournal_zinr) , 6) + handling_negative(billjournal_rechnr, "999999999") + handling_negative(billjournal_artnr, "999999999") + format_fixed_length(handle_null_char(descr1), 50) + format_fixed_length(handle_null_char(deptname) , 12) + handling_negative(billjournal_betriebsnr, ">>>>>9") + handling_negative(billjournal_anzahl, "-9999") + handling_negative(amount, "->>,>>>,>>>,>>>,>>9.99") + to_string(billjournal_zeit, "HH:MM:SS") + format_fixed_length(handle_null_char(billjournal_userinit) , 4) + handle_null_date(billjournal_sysdate) + format_fixed_length(handle_null_char (voucher_no) , 24)
+                    else:
+                        output_list.str = handle_null_date(billjournal_bill_datum) + format_fixed_length(handle_null_char(billjournal_zinr) , 6) + handling_negative(billjournal_rechnr, "999999999") + handling_negative(billjournal_artnr, "999999999") + format_fixed_length(handle_null_char(billjournal_bezeich), 50) + format_fixed_length(handle_null_char(deptname) , 12) + handling_negative(billjournal_betriebsnr, ">>>>>9") + handling_negative(billjournal_anzahl, "-9999") + handling_negative(amount, "->,>>>,>>>,>>>,>>>,>>9") + to_string(billjournal_zeit, "HH:MM:SS") + format_fixed_length(handle_null_char(billjournal_userinit), 4) + handle_null_date(billjournal_sysdate) + format_fixed_length(handle_null_char(voucher_no), 24)
 
-                                    if hoteldpt:
-                                        deptname = hoteldpt.depart
-                                    output_list.zinr = billjournal.zinr
-                                    output_list.deptno = billjournal.departement
+                    qty = qty + billjournal_anzahl
+                    gqty = gqty + billjournal_anzahl
 
-                                    if matches(billjournal.bezeich,r"*Deposit*") and billjournal.bezeich.index("[") > 0 and billjournal.bezeich.index("#") and billjournal.rechnr != 0:
+                    if foreign_flag:
+                        sub_tot =  to_decimal(sub_tot) + to_decimal(billjournal_fremdwaehrng)
+                        tot =  to_decimal(tot) + to_decimal(billjournal_fremdwaehrng)
+                    else:
+                        sub_tot =  to_decimal(sub_tot) + to_decimal(billjournal_betrag)
+                        tot =  to_decimal(tot) + to_decimal(billjournal_betrag)
 
-                                        if not long_digit:
-                                            output_list.str =  to_string(handle_null_date (billjournal.bill_datum) ) + to_string(handle_null_char (billjournal.zinr) , "x(6)") + to_string(billjournal.rechnr, "999999999") + to_string(billjournal.artnr, "999999999") + to_string(handle_null_char (descr1) , "x(50)") + to_string(handle_null_char (deptname) , "x(12)") + format_fixed_length(to_string(billjournal.betriebsnr, ">>>>>>"), 6) + format_fixed_length(to_string(billjournal.anzahl, "-9999"), 5) + format_fixed_length(to_string(amount, "->>,>>>,>>>,>>>,>>9.99"), 22) + to_string(billjournal.zeit, "HH:MM:SS") + to_string(handle_null_char (billjournal.userinit) , "x(4)") + to_string(handle_null_date (billjournal.sysdate)) + to_string(handle_null_char (voucher_no) , "x(24)")
-                                        else:
-                                            output_list.str =  to_string(handle_null_date (billjournal.bill_datum) ) + to_string(handle_null_char (billjournal.zinr) , "x(6)") + to_string(billjournal.rechnr, "999999999") + to_string(billjournal.artnr, "999999999") + to_string(handle_null_char (billjournal.bezeich) , "x(50)") + to_string(handle_null_char (deptname) , "x(12)") + format_fixed_length(to_string(billjournal.betriebsnr, ">>>>>>"), 6) + format_fixed_length(to_string(billjournal.anzahl, "-9999"), 5) + format_fixed_length(to_string(amount, "->,>>>,>>>,>>>,>>>,>>9"), 22) + to_string(billjournal.zeit, "HH:MM:SS") + to_string(handle_null_char (billjournal.userinit) , "x(4)") + to_string(handle_null_date (billjournal.sysdate)) + to_string(handle_null_char (voucher_no) , "x(24)")
-                                    else:
+                elif mi_excljournal:
 
-                                        if not long_digit:
-                                            output_list.str =  to_string(handle_null_date (billjournal.bill_datum) ) + to_string(handle_null_char (billjournal.zinr) , "x(6)") + to_string(billjournal.rechnr, "999999999") + to_string(billjournal.artnr, "999999999") + to_string(handle_null_char (descr1) , "x(50)") + to_string(handle_null_char (deptname) , "x(12)") + to_string("", "x(6)") + format_fixed_length(to_string(billjournal.anzahl, "-9999"), 5) + format_fixed_length(to_string(amount, "->>,>>>,>>>,>>>,>>9.99"), 22) + to_string(billjournal.zeit, "HH:MM:SS") + to_string(handle_null_char (billjournal.userinit) , "x(4)") + to_string(handle_null_date (billjournal.sysdate)) + to_string(handle_null_char (voucher_no) , "x(24)")
-                                        else:
-                                            output_list.str =  to_string(handle_null_date (billjournal.bill_datum) ) + to_string(handle_null_char (billjournal.zinr) , "x(6)") + to_string(billjournal.rechnr, "999999999") + to_string(billjournal.artnr, "9999") + to_string(handle_null_char (billjournal.bezeich) , "x(50)") + to_string(handle_null_char (deptname) , "x(12)") + to_string("", "x(6)") + format_fixed_length(to_string(billjournal.anzahl, "-9999"), 5) + format_fixed_length(to_string(amount, "->,>>>,>>>,>>>,>>>,>>9"), 22) + to_string(billjournal.zeit, "HH:MM:SS") + to_string(handle_null_char (billjournal.userinit) , "x(4)") + to_string(handle_null_date (billjournal.sysdate)) + to_string(handle_null_char (voucher_no) , "x(24)")
-                                    qty = qty + billjournal.anzahl
-                                    gqty = gqty + billjournal.anzahl
+                    # hoteldpt = get_cache (Hoteldpt, {"num": [(eq, billjournal_departement)]})
+                    hoteldpt = db_session.query(Hoteldpt).filter(Hoteldpt.num == billjournal_departement).first()
 
-                                    if foreign_flag:
-                                        sub_tot =  to_decimal(sub_tot) + to_decimal(billjournal.fremdwaehrng)
-                                        tot =  to_decimal(tot) + to_decimal(billjournal.fremdwaehrng)
-                                    else:
-                                        sub_tot =  to_decimal(sub_tot) + to_decimal(billjournal.betrag)
-                                        tot =  to_decimal(tot) + to_decimal(billjournal.betrag)
+                    if hoteldpt:
+                        deptname = hoteldpt.depart
 
-                                elif billjournal.bediener_nr != 0 and mi_excljournal == False:
+                    output_list.zinr = billjournal_zinr
+                    output_list.deptno = billjournal_departement
 
-                                    hoteldpt = get_cache (Hoteldpt, {"num": [(eq, billjournal.departement)]})
+                    if not long_digit:
+                        output_list.str =  handle_null_date(billjournal_bill_datum) + format_fixed_length(handle_null_char(billjournal_zinr) , 6) + handling_negative(billjournal_rechnr, "999999999") + handling_negative(billjournal_artnr, "999999999") + format_fixed_length(handle_null_char (descr1) , 50) + format_fixed_length(handle_null_char (deptname) , 12) + handling_negative(billjournal_betriebsnr, ">>>>>9") + handling_negative(billjournal_anzahl, "-9999") + handling_negative(amount, "->>,>>>,>>>,>>>,>>9.99") + to_string(billjournal_zeit, "HH:MM:SS") + format_fixed_length(handle_null_char(billjournal_userinit) , 4) + handle_null_date(billjournal_sysdate) + format_fixed_length(handle_null_char(voucher_no), 24)
+                    else:
+                        output_list.str =  handle_null_date(billjournal_bill_datum) + format_fixed_length(handle_null_char(billjournal_zinr) , 6) + handling_negative(billjournal_rechnr, "999999999") + handling_negative(billjournal_artnr, "999999999") + format_fixed_length(handle_null_char (billjournal_bezeich) , 50) + format_fixed_length(handle_null_char (deptname) , 12) + handling_negative(billjournal_betriebsnr, ">>>>>9") + handling_negative(billjournal_anzahl, "-9999") + handling_negative(amount, "->,>>>,>>>,>>>,>>>,>>9") + to_string(billjournal_zeit, "HH:MM:SS") + format_fixed_length(handle_null_char(billjournal_userinit) , 4) + handle_null_date(billjournal_sysdate) + format_fixed_length(handle_null_char(voucher_no), 24)
 
-                                    if hoteldpt:
-                                        deptname = hoteldpt.depart
-                                    output_list.zinr = billjournal.zinr
-                                    output_list.deptno = billjournal.departement
+                    qty = qty + billjournal_anzahl
+                    gqty = gqty + billjournal_anzahl
 
-                                    if not long_digit:
-                                        output_list.str =  to_string(handle_null_date (billjournal.bill_datum) ) + to_string(handle_null_char (billjournal.zinr) , "x(6)") + to_string(billjournal.rechnr, "999999999") + to_string(billjournal.artnr, "999999999") + to_string(handle_null_char (descr1) , "x(50)") + to_string(handle_null_char (deptname) , "x(12)") + format_fixed_length(to_string(billjournal.betriebsnr, ">>>>>>"), 6) + format_fixed_length(to_string(billjournal.anzahl, "-9999"), 5) + format_fixed_length(to_string(amount, "->>,>>>,>>>,>>>,>>9.99"), 22) + to_string(billjournal.zeit, "HH:MM:SS") + to_string(handle_null_char (billjournal.userinit) , "x(4)") + to_string(handle_null_date (billjournal.sysdate)) + to_string(handle_null_char (voucher_no) , "x(24)")
-                                    else:
-                                        output_list.str =  to_string(handle_null_date (billjournal.bill_datum) ) + to_string(handle_null_char (billjournal.zinr) , "x(6)") + to_string(billjournal.rechnr, "999999999") + to_string(billjournal.artnr, "999999999") + to_string(handle_null_char (billjournal.bezeich) , "x(50)") + to_string(handle_null_char (deptname) , "x(12)") + format_fixed_length(to_string(billjournal.betriebsnr, ">>>>>>"), 6) + format_fixed_length(to_string(billjournal.anzahl, "-9999"), 5) + format_fixed_length(to_string(amount, "->,>>>,>>>,>>>,>>>,>>9"), 22) + to_string(billjournal.zeit, "HH:MM:SS") + to_string(handle_null_char (billjournal.userinit) , "x(4)") + to_string(handle_null_date (billjournal.sysdate)) + to_string(handle_null_char (voucher_no) , "x(24)")
-                                    qty = qty + billjournal.anzahl
-                                    gqty = gqty + billjournal.anzahl
+                    if foreign_flag:
+                        sub_tot =  to_decimal(sub_tot) + to_decimal(billjournal_fremdwaehrng)
+                        tot =  to_decimal(tot) + to_decimal(billjournal_fremdwaehrng)
+                    else:
+                        sub_tot =  to_decimal(sub_tot) + to_decimal(billjournal_betrag)
+                        tot =  to_decimal(tot) + to_decimal(billjournal_betrag)
 
-                                    if foreign_flag:
-                                        sub_tot =  to_decimal(sub_tot) + to_decimal(billjournal.fremdwaehrng)
-                                        tot =  to_decimal(tot) + to_decimal(billjournal.fremdwaehrng)
-                                    else:
-                                        sub_tot =  to_decimal(sub_tot) + to_decimal(billjournal.betrag)
-                                        tot =  to_decimal(tot) + to_decimal(billjournal.betrag)
+                if res_line and res_line.ankunft == res_line.abreise and artikel_department > 0:
+                    qty = qty - billjournal_anzahl + res_line.erwachs
+                    gqty = gqty - billjournal_anzahl + res_line.erwachs
+                    temp_str = substring(output_list.str, 120)
 
-                                if res_line and res_line.ankunft == res_line.abreise and artikel.departement > 0:
-                                    qty = qty - billjournal.anzahl + res_line.erwachs
-                                    gqty = gqty - billjournal.anzahl + res_line.erwachs
-                                    temp_str = substring(output_list.str, 100)
-                                    output_list.str =  substring(output_list.str, 0, 95)
-                                    output_list.str =  output_list.str + to_string(res_line.erwachs, "-9999") + temp_str
-                                    temp_str = ""
-                            custom_record()
+                    output_list.str =  substring(output_list.str, 0, 95)
+                    output_list.str =  output_list.str + handling_negative(res_line.erwachs, "-9999") + temp_str
 
+                    temp_str = ""
 
+                custom_record(artikel_prev, billjournal_prev)
+
+        if curr_artikel_recid != "none":
             if it_exist:
                 output_list = Output_list()
-                output_list_list.append(output_list)
+                output_list_data.append(output_list)
 
                 if not long_digit:
-                    output_list.str =  to_string("", "x(82)") + to_string("T O T A L ", "x(12)") + to_string("", "x(6)") + format_fixed_length(to_string(qty, "-9999"), 6) + format_fixed_length(to_string(sub_tot, "->>,>>>,>>>,>>>,>>9.99"), 22)
+                    output_list.str =  to_string("", "x(82)") + to_string("T O T A L ", "x(12)") + to_string("", "x(6)") + handling_negative(qty, "-9999") + handling_negative(sub_tot, "->>,>>>,>>>,>>>,>>9.99")
                     output_list.amt_nett =  to_decimal(t_amt)
                     output_list.service =  to_decimal(t_service)
                     output_list.vat =  to_decimal(t_vat)
@@ -2713,42 +1578,48 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
                     t_service =  to_decimal("0")
                     t_vat =  to_decimal("0")
                 else:
-                    output_list.str =  to_string("", "x(82)") + to_string("T O T A L ", "x(12)") + to_string("", "x(6)") + format_fixed_length(to_string(qty, "-9999"), 6) + format_fixed_length(to_string(sub_tot, "->,>>>,>>>,>>>,>>>,>>9"), 22)
+                    output_list.str =  to_string("", "x(82)") + to_string("T O T A L ", "x(12)") + to_string("", "x(6)") + handling_negative(qty, "-9999") + handling_negative(sub_tot, "->,>>>,>>>,>>>,>>>,>>9")
                     output_list.amt_nett =  to_decimal(t_amt)
                     output_list.service =  to_decimal(t_service)
                     output_list.vat =  to_decimal(t_vat)
                     t_amt =  to_decimal("0")
                     t_service =  to_decimal("0")
                     t_vat =  to_decimal("0")
-                custom_record()
+                    
+                custom_record(artikel_prev, billjournal_prev)
+
         output_list = Output_list()
-        output_list_list.append(output_list)
+        output_list_data.append(output_list)
 
 
         if not long_digit:
             output_list.str =  to_string("", "x(82)") +\
                     to_string("Grand TOTAL ", "x(12)") +\
                     to_string("", "x(6)") +\
-                    format_fixed_length(to_string(gqty, "-9999"), 5) +\
-                    format_fixed_length(to_string(tot, "->>,>>>,>>>,>>>,>>9.99"), 22)
+                    handling_negative(gqty, "-9999") +\
+                    handling_negative(tot, "->>,>>>,>>>,>>>,>>9.99")
+            
             output_list.amt_nett =  to_decimal(tot_amt)
             output_list.service =  to_decimal(tot_service)
             output_list.vat =  to_decimal(tot_vat)
-
-
         else:
             output_list.str =  to_string("", "x(82)") +\
                     to_string("Grand TOTAL ", "x(12)") +\
                     to_string("", "x(6)") +\
-                    format_fixed_length(to_string(gqty, "-9999"), 5) +\
-                    format_fixed_length(to_string(tot, "->,>>>,>>>,>>>,>>>,>>9"), 22)
+                    handling_negative(gqty, "-9999") +\
+                    handling_negative(tot, "->,>>>,>>>,>>>,>>>,>>9")
+            
             output_list.amt_nett =  to_decimal(tot_amt)
             output_list.service =  to_decimal(tot_service)
             output_list.vat =  to_decimal(tot_vat)
 
-
         gtot =  to_decimal(tot)
+
         custom_record()
+
+    # lp.write_log("debug", f"{lp.log_usage("START TRACK LOOP JOURNAL_LIST")}", "log_oscar.txt")
+    # lp.write_log("debug", "start track loop journal_list", "log_oscar.txt")
+    # start = time.perf_counter()
 
     if from_date == None:
 
@@ -2760,8 +1631,9 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
 
     for queasy in db_session.query(Queasy).filter(
              (Queasy.key == 5) & (Queasy.number3 != 0)).order_by(Queasy.number1).all():
+        
         shift_list = Shift_list()
-        shift_list_list.append(shift_list)
+        shift_list_data.append(shift_list)
 
         shift_list.shift = queasy.number3
         temp1 = to_string(queasy.number1, "9999")
@@ -2770,6 +1642,18 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
         shift_list.ttime = (to_int(substring(temp2, 0, 2)) * 3600) + (to_int(substring(temp2, 2, 2)) * 60)
         isoutletshift = True
 
-    journal_list()
+    try:
+        journal_list()
+    except Exception as e:
+        tb = traceback.format_exc()
+        lp.write_log("error",f"Exception occurred:\n{tb}\n","log_oscar.txt")
+
+
+    # end = time.perf_counter()
+    # lp.write_log("debug", f"{lp.log_usage("END TRACK LOOP JOURNAL_LIST")}", "log_oscar.txt")
+    # lp.write_log("debug", f"Elapsed time: {end - start:.6f} seconds", "log_oscar.txt")
+        
+
+    write_session_only.close()
 
     return generate_output()
