@@ -10,6 +10,9 @@
 # yusufwijasena, 16/12/2025
 # - stip value bill_name from input param
 # - fixed error duplicate key _recid when query for all suplier
+
+# yusufwijasena, 18/12/2025
+# - fixed l_lieferant_query to db_session.query(l_kredit)
 # ===============================
 
 from functions.additional_functions import *
@@ -22,7 +25,8 @@ from functions import log_program
 
 def ap_debtpay_btn_go_webbl(art_selected: int, bill_name: str, bill_date: date):
 
-    prepare_cache([Htparam, L_lieferant, L_kredit, Bediener, Queasy, Gl_jouhdr, Gl_acct, Gl_journal, L_order])
+    prepare_cache([Htparam, L_lieferant, L_kredit, Bediener,
+                  Queasy, Gl_jouhdr, Gl_acct, Gl_journal, L_order])
 
     bill_name = bill_name.strip()
 
@@ -118,56 +122,29 @@ def ap_debtpay_btn_go_webbl(art_selected: int, bill_name: str, bill_date: date):
         l_lieferant = L_lieferant()
         # for l_kredit.counter, l_kredit.name, l_kredit.rechnr, l_kredit.lief_nr, l_kredit._recid, l_kredit.bediener_nr, l_kredit.rgdatum, l_kredit.saldo, l_kredit.rabatt, l_kredit.rabattbetrag, l_kredit.netto, l_kredit.ziel, l_kredit.lscheinnr, l_kredit.bemerk, l_kredit.steuercode, l_kredit.zahlkonto, l_lieferant.firma, l_lieferant.anredefirma, l_lieferant.bank, l_lieferant.kontonr, l_lieferant.lief_nr, l_lieferant.telefon, l_lieferant.fax, l_lieferant.adresse1, l_lieferant.notizen, l_lieferant._recid in db_session.query(L_kredit.counter, L_kredit.name, L_kredit.rechnr, L_kredit.lief_nr, L_kredit._recid, L_kredit.bediener_nr, L_kredit.rgdatum, L_kredit.saldo, L_kredit.rabatt, L_kredit.rabattbetrag, L_kredit.netto, L_kredit.ziel, L_kredit.lscheinnr, L_kredit.bemerk, L_kredit.steuercode, L_kredit.zahlkonto, L_lieferant.firma, L_lieferant.anredefirma, L_lieferant.bank, L_lieferant.kontonr, L_lieferant.lief_nr, L_lieferant.telefon, L_lieferant.fax, L_lieferant.adresse1, L_lieferant.notizen, L_lieferant._recid).join(L_lieferant, (L_lieferant.lief_nr == L_kredit.lief_nr)).filter(
         #         (L_kredit.rgdatum <= bill_date) & (L_kredit.opart < 2) & (L_kredit.counter >= 0)).order_by(L_lieferant.firma, L_kredit.counter, L_kredit.rgdatum, L_kredit.zahlkonto).all():
-        
-            # if l_kredit_obj_list.get(kredit_recid):
-            #     continue
 
-            # l_kredit_obj_list[kredit_recid] = True
+        # if l_kredit_obj_list.get(kredit_recid):
+        #     continue
+
+        # l_kredit_obj_list[kredit_recid] = True
 
         # start - yusufwijasena, fix: error duplicate key _recid
         l_lieferant_query = (
-            db_session.query(
-                L_kredit.counter,
-                L_kredit.name,
-                L_kredit.rechnr,
-                L_kredit.lief_nr,
-                L_kredit._recid,
-                L_kredit.bediener_nr,
-                L_kredit.rgdatum,
-                L_kredit.saldo,
-                L_kredit.rabatt,
-                L_kredit.rabattbetrag,
-                L_kredit.netto,
-                L_kredit.ziel,
-                L_kredit.lscheinnr,
-                L_kredit.bemerk,
-                L_kredit.steuercode,
-                L_kredit.zahlkonto,
-                L_lieferant.firma,
-                L_lieferant.anredefirma,
-                L_lieferant.bank,
-                L_lieferant.kontonr,
-                L_lieferant.lief_nr,
-                L_lieferant.telefon,
-                L_lieferant.fax,
-                L_lieferant.adresse1,
-                L_lieferant.notizen,
-                L_lieferant._recid,
-                )
+            db_session.query(L_kredit)
             .join(L_lieferant, L_lieferant.lief_nr == L_kredit.lief_nr)
             .filter(
                 L_kredit.rgdatum <= bill_date,
                 L_kredit.opart < 2,
                 L_kredit.counter >= 0,
-                )
+            )
             .order_by(
                 L_lieferant.firma,
                 L_kredit.counter,
                 L_kredit.rgdatum,
                 L_kredit.zahlkonto,
-                )
+            )
         )
-        
+
         for l_kredit in l_lieferant_query:
             create_it = False
             if l_kredit.counter == 0:
@@ -180,7 +157,7 @@ def ap_debtpay_btn_go_webbl(art_selected: int, bill_name: str, bill_date: date):
                     create_it = True
 
         # end - yusufwijasena, fix: error duplicate key _recid
-        
+
             if create_it:
                 age_list = Age_list()
                 age_list_data.append(age_list)
@@ -280,8 +257,20 @@ def ap_debtpay_btn_go_webbl(art_selected: int, bill_name: str, bill_date: date):
         l_lieferant = get_cache(L_lieferant, {"firma": [(eq, bill_name)]})
 
         if l_lieferant:
-            for l_kredit in db_session.query(L_kredit).filter(
-                    (L_kredit.rgdatum <= bill_date) & (L_kredit.opart < 2) & (L_kredit.lief_nr == l_lieferant.lief_nr)).order_by(L_kredit.counter, L_kredit.rgdatum, L_kredit.zahlkonto).all():
+            l_kredit_query = (
+                db_session.query(L_kredit)
+                .filter(
+                    (L_kredit.rgdatum <= bill_date) &
+                    (L_kredit.opart < 2) &
+                    (L_kredit.lief_nr == l_lieferant.lief_nr)
+                )
+                .order_by(
+                    L_kredit.counter,
+                    L_kredit.rgdatum,
+                    L_kredit.zahlkonto
+                )
+            )
+            for l_kredit in l_kredit_query:
                 create_it = False
 
                 if l_kredit.counter == 0:
@@ -388,7 +377,7 @@ def ap_debtpay_btn_go_webbl(art_selected: int, bill_name: str, bill_date: date):
         nonlocal age_list_data, t_l_lieferant_data
 
         lief_nr: int = 0
-        
+
         # log_program.write_log('LOG', f'age_list_data processed: {len(age_list_data)}')
 
         if age_list:
@@ -402,13 +391,11 @@ def ap_debtpay_btn_go_webbl(art_selected: int, bill_name: str, bill_date: date):
             age_list.comments = age_list.bemerk
 
     htparam = get_cache(Htparam, {"paramnr": [(eq, 986)]})
-    
 
     if htparam:
         p_986 = htparam.fchar
 
     htparam = get_cache(Htparam, {"paramnr": [(eq, 395)]})
-    
 
     if htparam:
         p_395 = htparam.fchar
@@ -435,6 +422,5 @@ def ap_debtpay_btn_go_webbl(art_selected: int, bill_name: str, bill_date: date):
                 t_l_lieferant.adresse1 = l_lieferant.adresse1
                 t_l_lieferant.notizen_1 = l_lieferant.notizen[0]
                 t_l_lieferant.lief_nr = l_lieferant.lief_nr
-                
 
     return generate_output()
