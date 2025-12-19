@@ -81,8 +81,8 @@ def mk_pr_btn_go_webbl(s_list_data:[S_list], docu_nr:string, rec_id:int, dml_cre
                  (L_orderhdr._recid == rec_id)).with_for_update().first()
     # Rd 3/8/2025
     # if not avail return
-    if l_orderhdr is None:
-        return generate_output()
+    # if l_orderhdr is None:
+    #     return generate_output()
     
     l_orderhdr.lieferdatum = t_l_orderhdr_lieferdatum
     l_orderhdr.lief_fax[2] = comments_screen_value
@@ -92,6 +92,9 @@ def mk_pr_btn_go_webbl(s_list_data:[S_list], docu_nr:string, rec_id:int, dml_cre
     flag_modified(l_orderhdr, "angebot_lief")
     created = True
     pr_nr = docu_nr
+
+    flag_modified(l_order, "lief_fax")
+    flag_modified(l_order, "angebot_lief")
 
     if dml_created:
         del_dml_art()

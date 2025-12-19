@@ -1786,8 +1786,6 @@ def pr_list_disp_list_2bl(char1: string, billdate: date, from_date: date, to_dat
 
         l_orderhdr = get_cache(L_orderhdr, {"docu_nr": [(eq, s_list.docu_nr)]})
 
-        log_program.write_log('LOG', f'l_orderhdr: {l_orderhdr}')
-
         if l_orderhdr:
             s_list.lief_fax2 = l_orderhdr.lief_fax[1]
 

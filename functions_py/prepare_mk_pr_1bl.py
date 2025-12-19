@@ -1,6 +1,10 @@
 #using conversion tools version: 1.0.0.117
 #-------------------------------------------------------
 # Rd, 01/12/2025, with_for_update added
+
+# Rulita, 19/12/2025
+# Fix handle flag_modified
+# # Fix add flush erorr recid null 
 #-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -131,11 +135,11 @@ def prepare_mk_pr_1bl(docu_nr:string, tp_bediener_user_group:int, tp_bediener_us
             l_artikel = L_artikel()
             for dml_art.anzahl, dml_art.datum, dml_art._recid, l_artikel.artnr, l_artikel.traubensorte, l_artikel.lief_einheit, l_artikel._recid, l_artikel.bezeich, l_artikel.betriebsnr, l_artikel.jahrgang, l_artikel.inhalt, l_artikel.masseinheit, l_artikel.zwkum in db_session.query(Dml_art.anzahl, Dml_art.datum, Dml_art._recid, L_artikel.artnr, L_artikel.traubensorte, L_artikel.lief_einheit, L_artikel._recid, L_artikel.bezeich, L_artikel.betriebsnr, L_artikel.jahrgang, L_artikel.inhalt, L_artikel.masseinheit, L_artikel.zwkum).join(L_artikel,(L_artikel.artnr == Dml_art.artnr) & (L_artikel.zwkum == dml_grp)).filter(
                      (Dml_art.datum == dml_datum)).order_by(L_artikel.bezeich).with_for_update().all():
+                
                 if dml_art_obj_list.get(dml_art._recid):
                     continue
                 else:
                     dml_art_obj_list[dml_art._recid] = True
-
 
                 pos = pos + 1
                 s_list = S_list()
@@ -158,6 +162,7 @@ def prepare_mk_pr_1bl(docu_nr:string, tp_bediener_user_group:int, tp_bediener_us
 
                 if to_int(cost_acct) != 0:
                     s_list.stornogrund = cost_acct
+
         dml_created = True
         l_orderhdr.lieferdatum = dml_datum
 
@@ -176,7 +181,6 @@ def prepare_mk_pr_1bl(docu_nr:string, tp_bediener_user_group:int, tp_bediener_us
     if htparam:
         p_370 = htparam.flogical
 
-
     new_pr_number()
     l_orderhdr = L_orderhdr()
     db_session.add(l_orderhdr)
@@ -189,13 +193,20 @@ def prepare_mk_pr_1bl(docu_nr:string, tp_bediener_user_group:int, tp_bediener_us
     l_orderhdr.angebot_lief[0] = eng_dept
     l_orderhdr.lief_fax[1] = " ; ; ; "
 
+    # Rulita, 19/12/2025
+    # Fix handle flag_modified 
+    flag_modified(l_orderhdr, "angebot_lief")
+    flag_modified(l_orderhdr, "lief_fax")
 
     l_orderhdr.docu_nr = docu_nr
-    pass
+    
     t_l_orderhdr = T_l_orderhdr()
     t_l_orderhdr_data.append(t_l_orderhdr)
 
+    # Rulita, 19/12/2025
+    # Fix add flush erorr recid null
     buffer_copy(l_orderhdr, t_l_orderhdr)
+    db_session.flush()
     t_l_orderhdr.rec_id = l_orderhdr._recid
 
     if dml_flag:
