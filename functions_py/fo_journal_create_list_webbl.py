@@ -52,7 +52,7 @@ def fo_journal_create_list_webbl(id_flag:string, fo_journal_list_data:[Fo_journa
         if count >= 1000:
             break
 
-        if tmp_count == 0 and retry > 10:
+        if tmp_count == 0 and retry > 20:
             break
 
         if tmp_count > 0 and tmp_count == count:
@@ -63,16 +63,31 @@ def fo_journal_create_list_webbl(id_flag:string, fo_journal_list_data:[Fo_journa
 
         time.sleep(0.3)
 
-    for queasy in db_session.query(Queasy).filter(
-             (Queasy.key == 280) & (Queasy.char1 == ("FO Transaction")) & (Queasy.char2 == (id_flag))).order_by(Queasy.number1).all():
+    for queasy_char3, queasy_logi1, queasy_recid in db_session.query(Queasy.char3, 
+                                                                     Queasy.logi1, 
+                                                                     Queasy._recid)\
+                                                              .filter((Queasy.key == 280) & 
+                                                                      (Queasy.char1 == ("FO Transaction")) & 
+                                                                      (Queasy.char2 == (id_flag)))\
+                                                              .order_by(Queasy.number1).yield_per(10000):
+
+        
         counter = counter + 1
-        queasy_str1 = entry(0, queasy.char3, "|")
-        queasy_str2 = entry(1, queasy.char3, "|")
+        queasy_str1 = entry(0, queasy_char3, "|")
+        queasy_str2 = entry(1, queasy_char3, "|")
 
         if counter > 1000:
             break
+
         fo_journal_list = Fo_journal_list()
         fo_journal_list_data.append(fo_journal_list)
+
+        # tmp_date = ""
+
+        # if substring(queasy_str1, 0, 8).strip() == "":
+        #     tmp_date = ""
+        # else:
+        #     tmp_date = date(datetime.strptime(substring(queasy_str1, 6, 2), "%y").year, int(substring(queasy_str1, 0, 2)), int(substring(queasy_str1, 3, 2)))
 
         fo_journal_list.datum = substring(queasy_str1, 0, 8)
         fo_journal_list.c = trim(substring(queasy_str2, 0, 2))
@@ -103,41 +118,43 @@ def fo_journal_create_list_webbl(id_flag:string, fo_journal_list_data:[Fo_journa
         fo_journal_list.book_source = trim(substring(queasy_str2, 328, 20))
         fo_journal_list.resname = trim(substring(queasy_str2, 348, 25))
 
-        if queasy.logi1:
+        if queasy_logi1:
             fo_journal_list.amt_nett = to_decimal(substring(queasy_str2, 373, 21))
             fo_journal_list.service = to_decimal(substring(queasy_str2, 394, 21))
             fo_journal_list.vat = to_decimal(substring(queasy_str2, 415, 21))
 
-            artikel = get_cache (Artikel, {"departement": [(eq, fo_journal_list.deptno)],"artnr": [(eq, fo_journal_list.artno)]})
+            # artikel = get_cache (Artikel, {"departement": [(eq, fo_journal_list.deptno)],"artnr": [(eq, fo_journal_list.artno)]})
+            artikel = db_session.query(Artikel).filter((Artikel.departement == fo_journal_list.deptno) & (Artikel.artnr == fo_journal_list.artno)).first()
 
             if artikel:
 
-                htparam = get_cache (Htparam, {"paramnr": [(eq, artikel.mwst_code)]})
+                # htparam = get_cache (Htparam, {"paramnr": [(eq, artikel.mwst_code)]})
+                htparam = db_session.query(Htparam).filter(Htparam.paramnr == artikel.mwst_code).first()
 
                 if htparam:
                     fo_journal_list.vat_percentage =  to_decimal(htparam.fdecimal)
                 else:
                     fo_journal_list.vat_percentage =  to_decimal("0")
 
-                htparam = get_cache (Htparam, {"paramnr": [(eq, artikel.service_code)]})
+                # htparam = get_cache (Htparam, {"paramnr": [(eq, artikel.service_code)]})
+                htparam = db_session.query(Htparam).filter(Htparam.paramnr == artikel.service_code).first()
 
                 if htparam:
                     fo_journal_list.serv_percentage =  to_decimal(htparam.fdecimal)
                 else:
                     fo_journal_list.serv_percentage =  to_decimal("0")
 
-        bqueasy = db_session.query(Bqueasy).filter(Bqueasy._recid == queasy._recid).with_for_update().first()
+        bqueasy = db_session.query(Bqueasy).filter(Bqueasy._recid == queasy_recid).with_for_update().first()
         db_session.delete(bqueasy)
+    
+    db_session.commit()
 
     pqueasy = db_session.query(Pqueasy).filter(
              (Pqueasy.key == 280) & (Pqueasy.char1 == ("FO Transaction")) & (Pqueasy.char2 == (id_flag))).first()
 
     if pqueasy:
         done_flag = False
-
-
     else:
-
         tqueasy = db_session.query(Tqueasy).filter(
                  (Tqueasy.key == 285) & (Tqueasy.char1 == ("FO Transaction")) & (Tqueasy.number1 == 1) & (Tqueasy.char2 == (id_flag))).first()
 

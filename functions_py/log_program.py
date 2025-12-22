@@ -13,8 +13,6 @@ def write_log(level, message, filename="log.txt"):
     with open(log_file_path, "a") as log_file:
         log_file.write(formatted_message)
 
-    print(formatted_message.strip())
-
 def log_usage(stage: str):
     process = psutil.Process(os.getpid())
 
