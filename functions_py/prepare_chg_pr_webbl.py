@@ -1,5 +1,10 @@
 #using conversion tools version: 1.0.0.117
 
+# ==============================
+# Rulita, 19/12/2025
+# Fix add flush erorr recid null
+# ==============================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -57,7 +62,6 @@ def prepare_chg_pr_webbl(docu_nr:string):
 
     B_lorder = create_buffer("B_lorder",L_order)
 
-
     db_session = local_storage.db_session
 
     def generate_output():
@@ -105,7 +109,6 @@ def prepare_chg_pr_webbl(docu_nr:string):
             s_list.lief_einheit = l_artikel.lief_einheit
             s_list.vk_preis =  to_decimal(l_artikel.vk_preis)
             s_list.lprice =  to_decimal(l_artikel.ek_letzter)
-
 
             tot_avg_cons = 0
 
@@ -166,12 +169,9 @@ def prepare_chg_pr_webbl(docu_nr:string):
                 else:
                     l_pprice_obj_list[l_pprice._recid] = True
 
-
                 s_list.last_pdate = l_pprice.bestelldatum
                 s_list.last_pbook =  to_decimal(l_pprice.einzelpreis)
                 s_list.a_firma = l_lieferant.firma
-
-
                 break
 
             l_lieferant = get_cache (L_lieferant, {"lief_nr": [(eq, l_order.lief_nr)]})
@@ -229,8 +229,8 @@ def prepare_chg_pr_webbl(docu_nr:string):
     l_orderhdr = get_cache (L_orderhdr, {"docu_nr": [(eq, docu_nr)]})
 
     if not l_orderhdr:
-
         return generate_output()
+    
     comments = l_orderhdr.lief_fax[2]
     deptnr = l_orderhdr.angebot_lief[0]
     lieferdatum = l_orderhdr.lieferdatum
@@ -239,7 +239,10 @@ def prepare_chg_pr_webbl(docu_nr:string):
     t_l_orderhdr = T_l_orderhdr()
     t_l_orderhdr_data.append(t_l_orderhdr)
 
+    # Rulita, 19/12/2025
+    # Fix add flush erorr recid null
     buffer_copy(l_orderhdr, t_l_orderhdr)
+    db_session.flush()
     t_l_orderhdr.rec_id = l_orderhdr._recid
 
     if get_index(t_l_orderhdr.lief_fax[1], "|") == 0:
@@ -270,8 +273,6 @@ def prepare_chg_pr_webbl(docu_nr:string):
         tmpdate = date_mdy(tmpint, 1, yy)
         tmpdate = tmpdate - timedelta(days=1)
         to_date = tmpdate
-
-
     else:
         tmpint = yy + 1
         tmpdate = date_mdy(1, 1, tmpint)
@@ -291,6 +292,7 @@ def prepare_chg_pr_webbl(docu_nr:string):
 
     if parameters:
         deptname = parameters.vstring
+        
     reload_s_list()
 
     for l_artikel in db_session.query(L_artikel).order_by(L_artikel._recid).all():

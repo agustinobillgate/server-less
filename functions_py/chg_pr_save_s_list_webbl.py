@@ -7,6 +7,7 @@ from decimal import Decimal
 from datetime import date
 from models import L_order, L_lieferant, L_orderhdr, Queasy, Bediener, Res_history
 from sqlalchemy.orm.attributes import flag_modified
+from sqlalchemy.orm import make_transient
 
 s_list_data, S_list = create_model_like(L_order, {"curr":string, "exrate":Decimal, "s_recid":int, "amount":Decimal, "supp1":int, "supp2":int, "supp3":int, "suppn1":string, "suppn2":string, "suppn3":string, "supps":string, "du_price1":Decimal, "du_price2":Decimal, "du_price3":Decimal, "curr1":string, "curr2":string, "curr3":string, "fdate1":date, "fdate2":date, "fdate3":date, "tdate1":date, "tdate2":date, "tdate3":date, "desc_coa":string, "last_pprice":Decimal, "avg_pprice":Decimal, "lprice":Decimal, "lief_fax2":string, "ek_letzter":Decimal, "lief_einheit":int, "supplier":string, "lief_fax_2":string, "vk_preis":Decimal, "soh":Decimal, "last_pdate":date, "a_firma":string, "last_pbook":Decimal, "avg_cons":Decimal})
 approved_data, Approved = create_model("Approved", {"nr":int, "flag":bool, "usrid":string, "app_date":date, "app_time":string})
@@ -34,8 +35,14 @@ def chg_pr_save_s_list_webbl(s_list_data:[S_list], approved_data:[Approved], rec
     s_list = approved = t_l_lieferant = old_l_orderhdr = old_l_order = t_lieferant = sbuff = None
 
     t_l_lieferant_data, T_l_lieferant = create_model_like(L_lieferant)
-    old_l_orderhdr_data, Old_l_orderhdr = create_model_like(L_orderhdr)
-    old_l_order_data, Old_l_order = create_model_like(L_order)
+    # old_l_orderhdr_data, Old_l_orderhdr = create_model_like(L_orderhdr)
+    # old_l_order_data, Old_l_order = create_model_like(L_order)
+
+    old_l_orderhdr = L_orderhdr()
+    make_transient(old_l_orderhdr)
+    
+    old_l_order = L_order()
+    make_transient(old_l_order)
 
     T_lieferant = create_buffer("T_lieferant",L_lieferant)
     Sbuff = S_list
@@ -52,7 +59,7 @@ def chg_pr_save_s_list_webbl(s_list_data:[S_list], approved_data:[Approved], rec
 
 
         nonlocal s_list, approved, t_l_lieferant, old_l_orderhdr, old_l_order, t_lieferant, sbuff
-        nonlocal t_l_lieferant_data, old_l_orderhdr_data, old_l_order_data
+        nonlocal t_l_lieferant_data
 
         return {}
 
@@ -64,7 +71,7 @@ def chg_pr_save_s_list_webbl(s_list_data:[S_list], approved_data:[Approved], rec
 
 
         nonlocal s_list, approved, t_l_lieferant, old_l_orderhdr, old_l_order, t_lieferant, sbuff
-        nonlocal t_l_lieferant_data, old_l_orderhdr_data, old_l_order_data
+        nonlocal t_l_lieferant_data
 
         bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})
 
@@ -79,18 +86,14 @@ def chg_pr_save_s_list_webbl(s_list_data:[S_list], approved_data:[Approved], rec
             res_history.action = "Purchase Request"
             res_history.aenderung = aend_str
 
-
-            pass
-            pass
-
-
     # l_orderhdr = get_cache (L_orderhdr, {"_recid": [(eq, rec_id)]})
     l_orderhdr = db_session.query(L_orderhdr).filter(
                  (L_orderhdr._recid == rec_id)).with_for_update().first()
 
     if l_orderhdr:
-        pass
+
         buffer_copy(l_orderhdr, old_l_orderhdr)
+
         l_orderhdr.lief_fax[2] = comments_screen_value
         l_orderhdr.lieferdatum = lieferdatum
         l_orderhdr.angebot_lief[0] = deptnr
@@ -147,10 +150,14 @@ def chg_pr_save_s_list_webbl(s_list_data:[S_list], approved_data:[Approved], rec
 
         for sbuff in query(sbuff_data):
 
-            l_order = get_cache (L_order, {"_recid": [(eq, sbuff.s_recid)]})
+            # l_order = get_cache (L_order, {"_recid": [(eq, sbuff.s_recid)]})
+            l_order = db_session.query(L_order).filter(
+                         (L_order._recid == sbuff.s_recid)).first()
 
             s_list = query(s_list_data, filters=(lambda s_list: s_list.s_recid == to_int(l_order._recid)), first=True)
+
             buffer_copy(l_order, old_l_order)
+
             l_order.einzelpreis =  to_decimal(s_list.einzelpreis)
             l_order.anzahl =  to_decimal(s_list.anzahl)
             l_order.stornogrund = s_list.stornogrund
@@ -213,7 +220,9 @@ def chg_pr_save_s_list_webbl(s_list_data:[S_list], approved_data:[Approved], rec
             if num_entries(old_l_order.bestellart, "-") > 0:
                 for j in range(1,num_entries(l_order.bestellart, "-")  + 1) :
 
-                    if trim(entry(0, entry(j - 1, l_order.bestellart, "-") , ";")) != trim(entry(1, entry(j - 1, old_l_order.bestellart, "-") , ";") - 1) and trim(entry(1, entry(j, old_l_order.bestellart, "-") , ";") - 1 - 1) == ("0").lower() :
+                    # Rulita, 17/12/2025
+                    # Fixing error syntax - 1 - 1
+                    if trim(entry(0, entry(j - 1, l_order.bestellart, "-") , ";")) != trim(entry(1, entry(j - 1, old_l_order.bestellart, "-") , ";")) and trim(entry(1, entry(j, old_l_order.bestellart, "-") , ";")) == ("0").lower() :
 
                         l_lieferant = get_cache (L_lieferant, {"lief_nr": [(eq, to_int(entry(0, entry(j - 1, l_order.bestellart, "-") , ";")))]})
 
@@ -223,7 +232,9 @@ def chg_pr_save_s_list_webbl(s_list_data:[S_list], approved_data:[Approved], rec
                             logstring = "[CHG LORDER]DOC NO: " + l_order.docu_nr + " - ITEM NO: " + to_string(l_order.artnr) + " Supplier " + to_string(j) + " is added" + " Value: " + trim(entry(0, entry(j - 1, l_order.bestellart, "-") , ";"))
                         create_log(logstring)
 
-                    elif trim(entry(0, entry(j - 1, l_order.bestellart, "-") , ";")) != trim(entry(1, entry(j - 1, old_l_order.bestellart, "-") , ";") - 1) and trim(entry(1, entry(j, l_order.bestellart, "-") , ";") - 1 - 1) == ("0").lower() :
+                    # Rulita, 17/12/2025
+                    # Fixing error syntax - 1 - 1
+                    elif trim(entry(0, entry(j - 1, l_order.bestellart, "-") , ";")) != trim(entry(1, entry(j - 1, old_l_order.bestellart, "-") , ";")) and trim(entry(1, entry(j, l_order.bestellart, "-") , ";")) == ("0").lower() :
 
                         l_lieferant = get_cache (L_lieferant, {"lief_nr": [(eq, to_int(entry(0, entry(j - 1, old_l_order.bestellart, "-") , ";")))]})
 
@@ -232,8 +243,10 @@ def chg_pr_save_s_list_webbl(s_list_data:[S_list], approved_data:[Approved], rec
                         else:
                             logstring = "[CHG LORDER]DOC NO: " + l_order.docu_nr + " - ITEM NO: " + to_string(l_order.artnr) + " Supplier " + to_string(j) + " is removed" + " Value: " + trim(entry(0, entry(j - 1, old_l_order.bestellart, "-") , ";"))
                         create_log(logstring)
-
-                    elif trim(entry(0, entry(j - 1, l_order.bestellart, "-") , ";")) != trim(entry(1, entry(j - 1, old_l_order.bestellart, "-") , ";") - 1):
+                    
+                    # Rulita, 17/12/2025
+                    # Fixing error syntax - 1 - 1
+                    elif trim(entry(0, entry(j - 1, l_order.bestellart, "-") , ";")) != trim(entry(1, entry(j - 1, old_l_order.bestellart, "-") , ";")):
 
                         l_lieferant = get_cache (L_lieferant, {"lief_nr": [(eq, to_int(entry(0, entry(j - 1, old_l_order.bestellart, "-") , ";")))]})
 
@@ -274,6 +287,7 @@ def chg_pr_save_s_list_webbl(s_list_data:[S_list], approved_data:[Approved], rec
         pass
         flag_modified(l_orderhdr, "lief_fax")
         flag_modified(l_orderhdr, "angebot_lief")
+        flag_modified(l_order, "angebot_lief")
 
 
     return generate_output()
