@@ -1,7 +1,10 @@
-#using conversion tools version: 1.0.0.119
-#-------------------------------------------------------
+# using conversion tools version: 1.0.0.119
+# -------------------------------------------------------
 # Rd, 01/12/2025, with_for_update added
-#-------------------------------------------------------
+
+# yusufwijasena, 19/12/2025
+# - fixed value angebot_lief not updated in database
+# -------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -9,14 +12,37 @@ from sqlalchemy import func
 from models import L_orderhdr, L_order, L_artikel, Waehrung, Queasy, Bediener, Res_history, Htparam
 from sqlalchemy.orm.attributes import flag_modified
 
-t_l_orderhdr_data, T_l_orderhdr = create_model_like(L_orderhdr, {"rec_id":int})
-t_l_order_data, T_l_order = create_model_like(L_order, {"rec_id":int, "a_bezeich":string, "price0":Decimal, "brutto":Decimal, "disc":Decimal, "disc2":Decimal, "vat":Decimal, "disc_val":Decimal, "disc2_val":Decimal, "vat_val":Decimal, "addvat_no":int, "addvat_value":Decimal})
+from functions import log_program as log
 
-def mk_po_btn_go1_web_2bl(t_l_orderhdr_data:[T_l_orderhdr], t_l_order_data:[T_l_order], docu_nr:string, 
-                          lief_nr:int, billdate:date, create_new:bool, pr:string, globaldisc:Decimal, 
-                          currency_screen_value:string, zeroprice_flag:bool, user_init:string):
+t_l_orderhdr_data, T_l_orderhdr = create_model_like(
+    L_orderhdr,
+    {
+        "rec_id": int
+    })
+t_l_order_data, T_l_order = create_model_like(
+    L_order,
+    {
+        "rec_id": int,
+        "a_bezeich": string,
+        "price0": Decimal,
+        "brutto": Decimal,
+        "disc": Decimal,
+        "disc2": Decimal,
+        "vat": Decimal,
+        "disc_val": Decimal,
+        "disc2_val": Decimal,
+        "vat_val": Decimal,
+        "addvat_no": int,
+        "addvat_value": Decimal
+    })
 
-    prepare_cache ([L_orderhdr, L_order, L_artikel, Waehrung, Queasy, Bediener, Res_history, Htparam])
+
+def mk_po_btn_go1_web_2bl(t_l_orderhdr_data: [T_l_orderhdr], t_l_order_data: [T_l_order], docu_nr: string,
+                          lief_nr: int, billdate: date, create_new: bool, pr: string, globaldisc: Decimal,
+                          currency_screen_value: string, zeroprice_flag: bool, user_init: string):
+
+    prepare_cache([L_orderhdr, L_order, L_artikel, Waehrung,
+                  Queasy, Bediener, Res_history, Htparam])
 
     fl_code = 0
     avail_hdrbuff = False
@@ -25,14 +51,14 @@ def mk_po_btn_go1_web_2bl(t_l_orderhdr_data:[T_l_orderhdr], t_l_order_data:[T_l_
 
     t_l_orderhdr = t_l_order = hdrbuff = l_od = l_art1 = None
 
-    Hdrbuff = create_buffer("Hdrbuff",L_orderhdr)
-    L_od = create_buffer("L_od",L_order)
-    L_art1 = create_buffer("L_art1",L_artikel)
+    Hdrbuff = create_buffer("Hdrbuff", L_orderhdr)
+    L_od = create_buffer("L_od", L_order)
+    L_art1 = create_buffer("L_art1", L_artikel)
 
     db_session = local_storage.db_session
     docu_nr = docu_nr.strip()
     pr = pr.strip()
-    
+
     def generate_output():
         nonlocal fl_code, avail_hdrbuff, new_docu_nr, l_orderhdr, l_order, l_artikel, waehrung, queasy, bediener, res_history, htparam
         nonlocal docu_nr, lief_nr, billdate, create_new, pr, globaldisc, currency_screen_value, zeroprice_flag, user_init
@@ -42,30 +68,28 @@ def mk_po_btn_go1_web_2bl(t_l_orderhdr_data:[T_l_orderhdr], t_l_order_data:[T_l_
         return {"fl_code": fl_code, "avail_hdrbuff": avail_hdrbuff, "new_docu_nr": new_docu_nr}
 
     def new_po_number():
-
         nonlocal fl_code, avail_hdrbuff, new_docu_nr, l_orderhdr, l_order, l_artikel, waehrung, queasy, bediener, res_history, htparam
         nonlocal docu_nr, lief_nr, billdate, create_new, pr, globaldisc, currency_screen_value, zeroprice_flag, user_init
         nonlocal hdrbuff, l_od, l_art1
-
-
         nonlocal t_l_orderhdr, t_l_order, hdrbuff, l_od, l_art1
 
         l_orderhdr1 = None
-        s:string = ""
-        i:int = 1
-        mm:int = 0
-        yy:int = 0
-        L_orderhdr1 =  create_buffer("L_orderhdr1",L_orderhdr)
+        s: string = ""
+        i: int = 1
+        mm: int = 0
+        yy: int = 0
+        L_orderhdr1 = create_buffer("L_orderhdr1", L_orderhdr)
 
-        htparam = get_cache (Htparam, {"paramnr": [(eq, 973)]})
+        htparam = get_cache(Htparam, {"paramnr": [(eq, 973)]})
 
         if htparam.paramgruppe == 21 and htparam.flogical:
             mm = get_month(billdate)
             yy = get_year(billdate)
-            s = "P" + substring(to_string(get_year(billdate)) , 2, 2) + to_string(get_month(billdate) , "99")
+            s = "P" + substring(to_string(get_year(billdate)),
+                                2, 2) + to_string(get_month(billdate), "99")
 
             for l_orderhdr1 in db_session.query(L_orderhdr1).filter(
-                     (get_month(L_orderhdr1.bestelldatum) == mm) & (get_year(L_orderhdr1.bestelldatum) == yy) & (L_orderhdr1.betriebsnr <= 1) & (matches(L_orderhdr1.docu_nr,"P*"))).order_by(L_orderhdr1.docu_nr.desc()).all():
+                    (get_month(L_orderhdr1.bestelldatum) == mm) & (get_year(L_orderhdr1.bestelldatum) == yy) & (L_orderhdr1.betriebsnr <= 1) & (matches(L_orderhdr1.docu_nr, "P*"))).order_by(L_orderhdr1.docu_nr.desc()).all():
                 i = to_int(substring(l_orderhdr1.docu_nr, 5, 5))
                 i = i + 1
                 new_docu_nr = s + to_string(i, "99999")
@@ -74,10 +98,11 @@ def mk_po_btn_go1_web_2bl(t_l_orderhdr_data:[T_l_orderhdr], t_l_order_data:[T_l_
             new_docu_nr = s + to_string(i, "99999")
 
             return
-        s = "P" + substring(to_string(get_year(billdate)) , 2, 2) + to_string(get_month(billdate) , "99") + to_string(get_day(billdate) , "99")
+        s = "P" + substring(to_string(get_year(billdate)), 2, 2) + to_string(
+            get_month(billdate), "99") + to_string(get_day(billdate), "99")
 
         for l_orderhdr1 in db_session.query(L_orderhdr1).filter(
-                 (L_orderhdr1.bestelldatum == billdate) & (L_orderhdr1.betriebsnr <= 1) & (matches(L_orderhdr1.docu_nr,"P*"))).order_by(L_orderhdr1.docu_nr.desc()).all():
+                (L_orderhdr1.bestelldatum == billdate) & (L_orderhdr1.betriebsnr <= 1) & (matches(L_orderhdr1.docu_nr, "P*"))).order_by(L_orderhdr1.docu_nr.desc()).all():
             i = to_int(substring(l_orderhdr1.docu_nr, 7, 3))
             i = i + 1
             new_docu_nr = s + to_string(i, "999")
@@ -85,33 +110,43 @@ def mk_po_btn_go1_web_2bl(t_l_orderhdr_data:[T_l_orderhdr], t_l_order_data:[T_l_
             return
         new_docu_nr = s + to_string(i, "999")
 
-    t_l_orderhdr = query(t_l_orderhdr_data, first=True)
+    # yusufwijasena, comment out to avoid reset t_l_orderhdr to default values
+    # t_l_orderhdr = query(t_l_orderhdr_data, first=True)
+
+    # log.write_log('mk_po_btn_go1_web_2bl',
+    #               f't_l_orderhdr before save: {t_l_orderhdr}', 'outputFile.txt')
 
     # l_orderhdr = get_cache (L_orderhdr, {"_recid": [(eq, t_l_orderhdr.rec_id)]})
     l_orderhdr = db_session.query(L_orderhdr).filter(
-             (L_orderhdr._recid == t_l_orderhdr.rec_id)).with_for_update().first()
+        (L_orderhdr._recid == t_l_orderhdr_data[0].rec_id)).with_for_update().first()
     buffer_copy(t_l_orderhdr, l_orderhdr)
 
-    waehrung = get_cache (Waehrung, {"wabkurz": [(eq, currency_screen_value)]})
+    # log.write_log('mk_po_btn_go1_web_2bl',
+    #               f'buffer copy from l_orderhdr: {t_l_orderhdr}', 'outputFile.txt')
+
+    waehrung = get_cache(Waehrung, {"wabkurz": [(eq, currency_screen_value)]})
 
     if waehrung:
         l_orderhdr.angebot_lief[2] = waehrung.waehrungsnr
         flag_modified(l_orderhdr, "angebot_lief")
 
-    for t_l_order in query(t_l_order_data, filters=(lambda t_l_order: t_l_order.pos > 0 and t_l_order.docu_nr.lower()  == (docu_nr).lower()  and t_l_order.betriebsnr >= 98)):
+    for t_l_order in query(t_l_order_data, filters=(lambda t_l_order: t_l_order.pos > 0 and t_l_order.docu_nr.lower() == (docu_nr).lower() and t_l_order.betriebsnr >= 98)):
 
         if t_l_order.betriebsnr == 99:
-            t_l_order.geliefert =  to_decimal("0")
+            t_l_order.geliefert = to_decimal("0")
         t_l_order.betriebsnr = 2
 
-    t_l_order = query(t_l_order_data, filters=(lambda t_l_order: t_l_order.pos > 0 and t_l_order.docu_nr.lower()  == (docu_nr).lower()  and t_l_order.betriebsnr == 2), first=True)
+    t_l_order = query(t_l_order_data, filters=(lambda t_l_order: t_l_order.pos > 0 and t_l_order.docu_nr.lower(
+    ) == (docu_nr).lower() and t_l_order.betriebsnr == 2), first=True)
 
     if not t_l_order:
         fl_code = 1
 
         # hdrbuff = get_cache (L_orderhdr, {"docu_nr": [(eq, l_orderhdr.docu_nr)],"_recid": [(ne, l_orderhdr._recid)]})
         hdrbuff = db_session.query(L_orderhdr).filter(
-                 (L_orderhdr.docu_nr == l_orderhdr.docu_nr) & (L_orderhdr._recid != l_orderhdr._recid)).with_for_update().first()
+            (L_orderhdr.docu_nr == l_orderhdr.docu_nr) &
+            (L_orderhdr._recid != l_orderhdr._recid)
+        ).with_for_update().first()
 
         if hdrbuff:
             new_po_number()
@@ -120,7 +155,8 @@ def mk_po_btn_go1_web_2bl(t_l_orderhdr_data:[T_l_orderhdr], t_l_order_data:[T_l_
 
             return generate_output()
 
-    t_l_order = query(t_l_order_data, filters=(lambda t_l_order: t_l_order.docu_nr.lower()  == (docu_nr).lower()  and t_l_order.pos > 0 and t_l_order.einzelpreis == 0 and t_l_order.betriebsnr == 2), first=True)
+    t_l_order = query(t_l_order_data, filters=(lambda t_l_order: t_l_order.docu_nr.lower() == (docu_nr).lower(
+    ) and t_l_order.pos > 0 and t_l_order.einzelpreis == 0 and t_l_order.betriebsnr == 2), first=True)
 
     if t_l_order:
         fl_code = 2
@@ -130,12 +166,12 @@ def mk_po_btn_go1_web_2bl(t_l_orderhdr_data:[T_l_orderhdr], t_l_order_data:[T_l_
             return generate_output()
         else:
 
-            hdrbuff = get_cache (L_orderhdr, {"docu_nr": [(eq, l_orderhdr.docu_nr)],"_recid": [(ne, l_orderhdr._recid)]})
+            hdrbuff = get_cache(L_orderhdr, {"docu_nr": [
+                                (eq, l_orderhdr.docu_nr)], "_recid": [(ne, l_orderhdr._recid)]})
 
             if hdrbuff:
                 new_po_number()
                 l_orderhdr.docu_nr = new_docu_nr
-
 
                 avail_hdrbuff = True
 
@@ -143,33 +179,33 @@ def mk_po_btn_go1_web_2bl(t_l_orderhdr_data:[T_l_orderhdr], t_l_order_data:[T_l_
 
     for t_l_order in query(t_l_order_data, filters=(lambda t_l_order: t_l_order.pos > 0)):
 
-        l_art1 = get_cache (L_artikel, {"artnr": [(eq, t_l_order.artnr)]})
+        l_art1 = get_cache(L_artikel, {"artnr": [(eq, t_l_order.artnr)]})
 
         # l_order = get_cache (L_order, {"_recid": [(eq, t_l_order.rec_id)]})
         l_order = db_session.query(L_order).filter(
-                 (L_order._recid == t_l_order.rec_id)).with_for_update().first
+            (L_order._recid == t_l_order.rec_id)).with_for_update().first()
 
         if l_order:
             l_order.quality = to_string(t_l_order.disc, "99.99 ") +\
-                    to_string(t_l_order.vat, "99.99") + to_string(t_l_order.disc2, " 99.99") +\
-                    to_string(t_l_order.disc_val, " >,>>>,>>>,>>9.999") + to_string(t_l_order.disc2_val, " >,>>>,>>>,>>9.999") +\
-                    to_string(t_l_order.vat_val, " >,>>>,>>>,>>9.999") +\
-                    to_string(t_l_order.price0, " >>,>>>,>>>,>>9.99") +\
-                    to_string(t_l_order.brutto, " >>,>>>,>>>,>>9.99")
-            l_order.warenwert =  to_decimal(t_l_order.warenwert)
-            l_order.einzelpreis =  to_decimal(t_l_order.einzelpreis)
+                to_string(t_l_order.vat, "99.99") + to_string(t_l_order.disc2, " 99.99") +\
+                to_string(t_l_order.disc_val, " >,>>>,>>>,>>9.999") + to_string(t_l_order.disc2_val, " >,>>>,>>>,>>9.999") +\
+                to_string(t_l_order.vat_val, " >,>>>,>>>,>>9.999") +\
+                to_string(t_l_order.price0, " >>,>>>,>>>,>>9.99") +\
+                to_string(t_l_order.brutto, " >>,>>>,>>>,>>9.99")
+            l_order.warenwert = to_decimal(t_l_order.warenwert)
+            l_order.einzelpreis = to_decimal(t_l_order.einzelpreis)
             l_order.lief_nr = lief_nr
             l_order.betriebsnr = 0
 
-
-            l_order.geliefert =  to_decimal(t_l_order.geliefert)
+            l_order.geliefert = to_decimal(t_l_order.geliefert)
 
             if not l_order.flag:
-                l_order.warenwert =  to_decimal(l_order.warenwert) * to_decimal(l_art1.lief_einheit)
+                l_order.warenwert = to_decimal(
+                    l_order.warenwert) * to_decimal(l_art1.lief_einheit)
 
             # queasy = get_cache (Queasy, {"key": [(eq, 304)],"char1": [(eq, t_l_order.docu_nr)],"number1": [(eq, t_l_order.artnr)]})
             queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 304) & (Queasy.char1 == t_l_order.docu_nr) & (Queasy.number1 == t_l_order.artnr)).with_for_update().first()
+                (Queasy.key == 304) & (Queasy.char1 == t_l_order.docu_nr) & (Queasy.number1 == t_l_order.artnr)).with_for_update().first()
 
             if not queasy:
                 queasy = Queasy()
@@ -179,21 +215,14 @@ def mk_po_btn_go1_web_2bl(t_l_orderhdr_data:[T_l_orderhdr], t_l_order_data:[T_l_
                 queasy.char1 = t_l_order.docu_nr
                 queasy.number1 = t_l_order.artnr
                 queasy.number2 = t_l_order.addvat_no
-                queasy.deci1 =  to_decimal(t_l_order.addvat_value)
+                queasy.deci1 = to_decimal(t_l_order.addvat_value)
 
-
-                pass
             else:
-                pass
                 queasy.char1 = t_l_order.docu_nr
                 queasy.number1 = t_l_order.artnr
                 queasy.number2 = t_l_order.addvat_no
-                queasy.deci1 =  to_decimal(t_l_order.addvat_value)
+                queasy.deci1 = to_decimal(t_l_order.addvat_value)
 
-
-                pass
-                pass
-            pass
         else:
             l_order = L_order()
             db_session.add(l_order)
@@ -208,12 +237,11 @@ def mk_po_btn_go1_web_2bl(t_l_orderhdr_data:[T_l_orderhdr], t_l_order_data:[T_l_
                     to_string(t_l_order.price0, " >>,>>>,>>>,>>9.99") +\
                     to_string(t_l_order.brutto, " >>,>>>,>>>,>>9.99")
 
-
             l_order.betriebsnr = 0
 
             # queasy = get_cache (Queasy, {"key": [(eq, 304)],"char1": [(eq, t_l_order.docu_nr)],"number1": [(eq, t_l_order.artnr)]})
             queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 304) & (Queasy.char1 == t_l_order.docu_nr) & (Queasy.number1 == t_l_order.artnr)).with_for_update().first()
+                (Queasy.key == 304) & (Queasy.char1 == t_l_order.docu_nr) & (Queasy.number1 == t_l_order.artnr)).with_for_update().first()
 
             if not queasy:
                 queasy = Queasy()
@@ -223,8 +251,7 @@ def mk_po_btn_go1_web_2bl(t_l_orderhdr_data:[T_l_orderhdr], t_l_order_data:[T_l_
                 queasy.char1 = t_l_order.docu_nr
                 queasy.number1 = t_l_order.artnr
                 queasy.number2 = t_l_order.addvat_no
-                queasy.deci1 =  to_decimal(t_l_order.addvat_value)
-                pass
+                queasy.deci1 = to_decimal(t_l_order.addvat_value)
 
     if create_new:
         l_od = L_order()
@@ -238,19 +265,25 @@ def mk_po_btn_go1_web_2bl(t_l_orderhdr_data:[T_l_orderhdr], t_l_order_data:[T_l_
         l_od.lief_fax[0] = pr
         l_od.betriebsnr = 2
 
+        flag_modified(l_od, "lief_fax")
+
+        # log.write_log('mk_po_btn_go1_web_2bl',
+        #               f'Creating new L_order: {l_od.__dict__}', 'outputFile.txt')
+
     # l_od = get_cache (L_order, {"docu_nr": [(eq, docu_nr)],"pos": [(eq, 0)],"op_art": [(eq, 2)]})
     l_od = db_session.query(L_order).filter(
-             (L_order.docu_nr == docu_nr) & (L_order.pos == 0) & (L_order.op_art == 2)).with_for_update().first()
+        (L_order.docu_nr == docu_nr) &
+        (L_order.pos == 0) &
+        (L_order.op_art == 2)).with_for_update().first()
 
     if l_od:
-        l_od.warenwert =  to_decimal(globaldisc)
+        l_od.warenwert = to_decimal(globaldisc)
         l_od.lief_nr = lief_nr
         l_od.lief_fax[0] = pr
 
         flag_modified(l_od, "lief_fax")
-        pass
 
-    bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})
+    bediener = get_cache(Bediener, {"userinit": [(eq, user_init)]})
 
     if bediener:
         res_history = Res_history()
@@ -259,9 +292,8 @@ def mk_po_btn_go1_web_2bl(t_l_orderhdr_data:[T_l_orderhdr], t_l_order_data:[T_l_
         res_history.nr = bediener.nr
         res_history.datum = get_current_date()
         res_history.zeit = get_current_time_in_seconds()
-        res_history.aenderung = "Create Po - Document No : " + to_string(docu_nr)
+        res_history.aenderung = "Create Po - Document No : " + \
+            to_string(docu_nr)
         res_history.action = "Create Po"
-
-
 
     return generate_output()

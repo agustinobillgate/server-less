@@ -4,11 +4,15 @@
     Ticket ID: F6D79E
         _remark_:   - fix python indentation
                     - fix ("string").lower()
+                    
+    _yusufwijasena_19/12/2025
+        _remark_:   - split query from for loop
 """
 from functions.additional_functions import *
 from decimal import Decimal
 from models import L_order, L_artikel, Htparam, L_lieferant, L_orderhdr, Parameters, Waehrung, Queasy
 
+from functions import log_program
 
 def po_list_btn_go_1cldbl(usrname: str, po_number: str, dml_only: bool, pr_only: bool, excl_dml_pr: bool):
 
@@ -85,16 +89,36 @@ def po_list_btn_go_1cldbl(usrname: str, po_number: str, dml_only: bool, pr_only:
         nonlocal l_order1, l_order2, l_art
         nonlocal w_list, cost_list, q2_list, l_order1, l_order2, l_art
         nonlocal w_list_data, cost_list_data, q2_list_data
+        
+        # print('[LOG] start display po')
 
         if usrname == "":
             l_orderhdr_obj_list = {}
-            for l_orderhdr, l_lieferant, l_order1 in db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, (L_lieferant.lief_nr == L_orderhdr.lief_nr)).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter(
-                    (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.docu_nr == (po_number).lower())).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all():
+            
+            l_order_query = (
+                db_session.query(L_orderhdr, L_lieferant, L_order1)
+                .join(L_lieferant, (L_lieferant.lief_nr == L_orderhdr.lief_nr))
+                .join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0))
+                .filter(
+                    (L_orderhdr.betriebsnr <= 1) &
+                    (L_orderhdr.docu_nr == (po_number).lower())
+                    )
+                .order_by(
+                    L_orderhdr.bestelldatum,
+                    L_orderhdr.docu_nr,
+                    L_lieferant.firma
+                    )
+                )
+            
+            for l_orderhdr, l_lieferant, l_order1 in l_order_query:
+            # for l_orderhdr, l_lieferant, l_order1 in db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, (L_lieferant.lief_nr == L_orderhdr.lief_nr)).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter(
+            #         (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.docu_nr == (po_number).lower())).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all():
                 if l_orderhdr_obj_list.get(l_orderhdr._recid):
                     continue
                 else:
                     l_orderhdr_obj_list[l_orderhdr._recid] = True
 
+                # log_program.write_log('DEBUG', f'l_orderhdr: {l_orderhdr} | l_lieferant: {l_lieferant} | l_order1: {l_order1}')
                 cost_list_bezeich = ""
                 w_list_wabkurz = ""
 
@@ -173,8 +197,18 @@ def po_list_btn_go_1cldbl(usrname: str, po_number: str, dml_only: bool, pr_only:
         m: int = 1
         n: int = 0
 
-        for parameters in db_session.query(Parameters).filter(
-                (Parameters.progname == "costcenter") & (Parameters.section == "name") & (Parameters.varname > "")).order_by(Parameters._recid).all():
+        params_query = (
+            db_session.query(Parameters)
+            .filter(
+                (Parameters.progname == "costcenter") &
+                (Parameters.section == "name") &
+                (Parameters.varname > "")
+            )
+            .order_by(
+                Parameters._recid
+            )
+        )
+        for parameters in params_query:
             cost_list = Cost_list()
             cost_list_data.append(cost_list)
 
@@ -187,7 +221,7 @@ def po_list_btn_go_1cldbl(usrname: str, po_number: str, dml_only: bool, pr_only:
         nonlocal l_order1, l_order2, l_art
         nonlocal w_list, cost_list, q2_list, l_order1, l_order2, l_art
         nonlocal w_list_data, cost_list_data, q2_list_data
-
+        
         local_nr: int = 0
 
         htparam = get_cache(Htparam, {"paramnr": [(eq, 152)]})
@@ -241,7 +275,7 @@ def po_list_btn_go_1cldbl(usrname: str, po_number: str, dml_only: bool, pr_only:
         if p_71:
             queasy = get_cache(
                 Queasy, {"key": [(eq, 245)], "char1": [(eq, l_orderhdr.docu_nr)]})
-            while queasy is not None:
+            while queasy:
                 if q2_list.username != "":
                     if num_entries(q2_list.username, ";") < 4:
                         q2_list.username = q2_list.username + \
@@ -268,8 +302,10 @@ def po_list_btn_go_1cldbl(usrname: str, po_number: str, dml_only: bool, pr_only:
                     q2_list.username = ""
 
         l_order2 = db_session.query(L_order2).filter(
-            (L_order2.docu_nr == l_orderhdr.docu_nr) & (L_order2.pos > 0) & (L_order2.loeschflag == 0)).first()
-        while l_order2 is not None:
+            (L_order2.docu_nr == l_orderhdr.docu_nr) & 
+            (L_order2.pos > 0) & (L_order2.loeschflag == 0)
+            ).first()
+        while l_order2:
             l_art = db_session.query(L_art).filter(
                 (L_art.artnr == l_order2.artnr)).first()
 
@@ -279,7 +315,11 @@ def po_list_btn_go_1cldbl(usrname: str, po_number: str, dml_only: bool, pr_only:
 
             curr_recid = l_order2._recid
             l_order2 = db_session.query(L_order2).filter(
-                (L_order2.docu_nr == l_orderhdr.docu_nr) & (L_order2.pos > 0) & (L_order2.loeschflag == 0) & (L_order2._recid > curr_recid)).first()
+                (L_order2.docu_nr == l_orderhdr.docu_nr) &
+                (L_order2.pos > 0) &
+                (L_order2.loeschflag == 0) &
+                (L_order2._recid > curr_recid)
+                ).first()
         q2_list.tot_amount = to_decimal(t_amount)
 
     create_costlist()
