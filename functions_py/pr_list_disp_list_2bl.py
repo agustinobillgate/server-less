@@ -1,17 +1,21 @@
 # using conversion tools version: 1.0.0.117
 
-# =============================================
+# ==============================================
 # Rulita, 17/12/2025
 # Fixing userinit assignment when usr is None
-# =============================================
+
+# Rulita, 22/12/2025
+# Fixing error list data shot type cancel/delete
+# ==============================================
 
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Bediener, L_lieferant, L_order, L_orderhdr, Parameters, L_artikel, L_pprice, Gl_acct
 
-from functions import log_program
-
+# For debug
+# from functions import log_program
+# import traceback
 
 def pr_list_disp_list_2bl(char1: string, billdate: date, from_date: date, to_date: date, outstand_flag: bool, expired_flag: bool, approve_flag: bool, reject_flag: bool, sorttype: int, sort_app: string):
 
@@ -343,6 +347,7 @@ def pr_list_disp_list_2bl(char1: string, billdate: date, from_date: date, to_dat
         estimated = get_current_time_in_seconds()
 
         if sort_app.lower() == ("ALL").lower() or sort_app.lower() == "":
+            # log_program.write_log('LOG',f'Sorting ALL records {sorttype}','log_rulita.txt')
 
             for l_orderhdr in db_session.query(L_orderhdr).filter(
                     (L_orderhdr.bestelldatum >= from_date) &
@@ -424,10 +429,15 @@ def pr_list_disp_list_2bl(char1: string, billdate: date, from_date: date, to_dat
                         lambda sbuff: sbuff.s_recid == s_list.s_recid), first=True)
                     
                     # l_order = get_cache(L_order, {"docu_nr": [(eq, l_orderhdr.docu_nr)], "pos": [(gt, 0)], "lief_nr": [(eq, 0)], "loeschflag": [(eq, sorttype)]})
-                    l_order = db_session.query(L_order).filter(
-                        (L_order.docu_nr == l_orderhdr.docu_nr) & (L_order.pos > 0) & (L_order.lief_nr == 0) & (L_order.loeschflag == sorttype)).order_by(L_order._recid).first()
+                    # l_order = db_session.query(L_order).filter(
+                        # (L_order.docu_nr == l_orderhdr.docu_nr) & (L_order.pos > 0) & (L_order.lief_nr == 0) & (L_order.loeschflag == sorttype)).order_by(L_order._recid).first()
                     
-                    while None != l_order:
+                    # while None != l_order:
+                    for l_order in db_session.query(L_order).filter(
+                            (L_order.docu_nr == l_orderhdr.docu_nr) &
+                            (L_order.pos > 0) &
+                            (L_order.lief_nr == 0) &
+                            (L_order.loeschflag == sorttype)).order_by(L_order._recid).all():
 
                         l_artikel = get_cache(
                             L_artikel, {"artnr": [(eq, l_order.artnr)]})
@@ -461,6 +471,7 @@ def pr_list_disp_list_2bl(char1: string, billdate: date, from_date: date, to_dat
                             s_list_data.append(s_list)
 
                             s_list.s_recid = l_order._recid
+
                             s_list.deptnr = l_orderhdr.angebot_lief[0]
                             s_list.docu_nr = l_order.docu_nr
                             s_list.po_nr = l_order.lief_fax[1]
@@ -565,13 +576,16 @@ def pr_list_disp_list_2bl(char1: string, billdate: date, from_date: date, to_dat
                                 s_list.lieferdatum = to_string(
                                     l_orderhdr.lieferdatum)
 
+                            # l_order.angebot_lief[2] = l_order.angebot_lief[2] if l_order.angebot_lief[2] is not None else 0
+                            # print(f'l_order.angebot_lief[2]: {l_order.angebot_lief[2]}')
                             if l_order.angebot_lief[2] != 0:
 
-                                usrbuff = get_cache(
-                                    Bediener, {"nr": [(eq, l_order.angebot_lief[2])]})
+                                # usrbuff = get_cache( Bediener, {"nr": [(eq, l_order.angebot_lief[2])]})
+                                usrbuff = db_session.query(Bediener).filter(
+                                    Bediener.nr == l_order.angebot_lief[2]).first()
 
                                 if usrbuff:
-                                    s_list.cid = tmp_usr.userinit
+                                    s_list.cid = usrbuff.userinit
 
                             if l_order.lieferdatum != None:
                                 s_list.lieferdatum = to_string(
@@ -585,9 +599,9 @@ def pr_list_disp_list_2bl(char1: string, billdate: date, from_date: date, to_dat
                                 s_list.str4 = to_string(
                                     l_artikel.lief_einheit, ">>,>>9")
 
-                        curr_recid = l_order._recid
-                        l_order = db_session.query(L_order).filter(
-                            (L_order.docu_nr == l_orderhdr.docu_nr) & (L_order.pos > 0) & (L_order.lief_nr == 0) & (L_order.loeschflag == sorttype) & (L_order._recid > curr_recid)).first()
+                        # curr_recid = l_order._recid
+                        # l_order = db_session.query(L_order).filter(
+                        #     (L_order.docu_nr == l_orderhdr.docu_nr) & (L_order.pos > 0) & (L_order.lief_nr == 0) & (L_order.loeschflag == sorttype) & (L_order._recid > curr_recid)).order_by(L_order._recid).first()
 
         elif sort_app.lower() == ("No Approve").lower():
 
@@ -809,7 +823,7 @@ def pr_list_disp_list_2bl(char1: string, billdate: date, from_date: date, to_dat
                                         Bediener, {"nr": [(eq, l_order.angebot_lief[2])]})
 
                                     if usrbuff:
-                                        s_list.cid = tmp_usr.userinit
+                                        s_list.cid = usrbuff.userinit
 
                                 if l_order.lieferdatum != None:
                                     s_list.lieferdatum = to_string(
@@ -1047,7 +1061,7 @@ def pr_list_disp_list_2bl(char1: string, billdate: date, from_date: date, to_dat
                                         Bediener, {"nr": [(eq, l_order.angebot_lief[2])]})
 
                                     if usrbuff:
-                                        s_list.cid = tmp_usr.userinit
+                                        s_list.cid = usrbuff.userinit
 
                                 if l_order.lieferdatum != None:
                                     s_list.lieferdatum = to_string(
@@ -1285,7 +1299,7 @@ def pr_list_disp_list_2bl(char1: string, billdate: date, from_date: date, to_dat
                                         Bediener, {"nr": [(eq, l_order.angebot_lief[2])]})
 
                                     if usrbuff:
-                                        s_list.cid = tmp_usr.userinit
+                                        s_list.cid = usrbuff.userinit
 
                                 if l_order.lieferdatum != None:
                                     s_list.lieferdatum = to_string(
@@ -1523,7 +1537,7 @@ def pr_list_disp_list_2bl(char1: string, billdate: date, from_date: date, to_dat
                                         Bediener, {"nr": [(eq, l_order.angebot_lief[2])]})
 
                                     if usrbuff:
-                                        s_list.cid = tmp_usr.userinit
+                                        s_list.cid = usrbuff.userinit
 
                                 if l_order.lieferdatum != None:
                                     s_list.lieferdatum = to_string(
@@ -1761,7 +1775,7 @@ def pr_list_disp_list_2bl(char1: string, billdate: date, from_date: date, to_dat
                                         Bediener, {"nr": [(eq, l_order.angebot_lief[2])]})
 
                                     if usrbuff:
-                                        s_list.cid = tmp_usr.userinit
+                                        s_list.cid = usrbuff.userinit
 
                                 if l_order.lieferdatum != None:
                                     s_list.lieferdatum = to_string(
