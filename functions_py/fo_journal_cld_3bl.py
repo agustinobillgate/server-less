@@ -134,7 +134,6 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
         nonlocal from_art, to_art, from_dept, to_dept, from_date, to_date, sorttype, exclude_artrans, long_digit, foreign_flag, mi_onlyjournal, mi_excljournal, mi_post, mi_showrelease, mi_break, id_flag
         nonlocal buffguest, gbuff, shift_buff, b_artikel
 
-
         nonlocal output_list, shift_list, buffguest, gbuff, shift_buff, b_artikel
         nonlocal output_list_data, shift_list_data
 
@@ -150,7 +149,8 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
         artikelnr:int = 0
         queasy_str:string = ""
 
-        htparam = get_cache (Htparam, {"paramnr": [(eq, 110)]})
+        # htparam = get_cache (Htparam, {"paramnr": [(eq, 110)]})
+        htparam = db_session.query(Htparam).filter(Htparam.paramnr == 110).first()
 
         if artikel_prev != None:
             artikel = artikel_prev
@@ -222,12 +222,14 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
 
                     if reservation.resart != 0:
 
-                        sourccod = get_cache (Sourccod, {"source_code": [(eq, reservation.resart)]})
+                        # sourccod = get_cache (Sourccod, {"source_code": [(eq, reservation.resart)]})
+                        sourccod = db_session.query(Sourccod).filter(Sourccod.source_code == reservation.resart).first()
 
                         if sourccod:
                             output_list.book_source = sourccod.bezeich
 
-                segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+                # segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+                segment = db_session.query(Segment).filter(Segment.segmentcode == reservation.segmentcode).first()
 
                 if segment:
                     output_list.segcode = segment.bezeich
@@ -271,7 +273,8 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
 
                     if num_entries(entry(0, output_list.descr, "[") , "/") <= 1:
 
-                        b_artikel = get_cache (Artikel, {"artnr": [(eq, artikelnr)],"departement": [(eq, output_list.deptno)]})
+                        # b_artikel = get_cache (Artikel, {"artnr": [(eq, artikelnr)],"departement": [(eq, output_list.deptno)]})
+                        b_artikel = db_session.query(Artikel).filter((Artikel.artnr == artikelnr) & (Artikel.departement == output_list.deptno)).first()
 
                         if b_artikel:
                             temp_resnr = to_decimal(substring(entry(0, output_list.descr, "[") , length(b_artikel.bezeich) + 2 - 1))
@@ -307,12 +310,14 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
 
                         if reservation.resart != 0:
 
-                            sourccod = get_cache (Sourccod, {"source_code": [(eq, reservation.resart)]})
+                            # sourccod = get_cache (Sourccod, {"source_code": [(eq, reservation.resart)]})
+                            sourccod = db_session.query(Sourccod).filter(Sourccod.source_code == reservation.resart).first()
 
                             if sourccod:
                                 output_list.book_source = sourccod.bezeich
 
-                    segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+                    # segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+                    segment = db_session.query(Segment).filter(Segment.segmentcode == reservation.segmentcode).first()
 
                     if segment:
                         output_list.segcode = segment.bezeich
@@ -323,7 +328,6 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
 
                 # guest = get_cache (Guest, {"gastnr": [(eq, int(temp_gastnr))]})
                 guest = db_session.query(Guest).filter(Guest.gastnr == int(temp_gastnr)).first()
-
 
                 if guest:
                     output_list.guestname = guest.name + ", " + guest.vorname1 + " " + guest.anrede1
@@ -345,16 +349,21 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
 
                 elif num_entries(output_list.descr, "[") > 1:
 
-                    b_artikel = get_cache (Artikel, {"artnr": [(eq, artikelnr)]})
-                    temp_resnr = to_decimal(substring(entry(0, output_list.descr, "[") , length(b_artikel.bezeich) + 2 - 1))
+                    # b_artikel = get_cache (Artikel, {"artnr": [(eq, artikelnr)]})
+                    b_artikel = db_session.query(Artikel).filter(Artikel.artnr == artikelnr).first()
+
+                    if b_artikel:
+                        temp_resnr = to_decimal(substring(entry(0, output_list.descr, "[") , length(b_artikel.bezeich) + 2 - 1))
 
             if temp_resnr != 0:
 
-                res_line = get_cache (Res_line, {"resnr": [(eq, int(temp_resnr))],"reslinnr": [(eq, 1)]})
+                # res_line = get_cache (Res_line, {"resnr": [(eq, int(temp_resnr))],"reslinnr": [(eq, 1)]})
+                res_line = db_session.query(Res_line).filter((Res_line.resnr == int(temp_resnr)) & (Res_line.reslinnr == 1)).first()
 
                 if res_line:
 
-                    reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+                    # reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+                    reservation = db_session.query(Reservation).filter(Reservation.resnr == res_line.resnr).first()
 
                     # buffguest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrpay)]})
                     buffguest = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnrpay).first()
@@ -379,7 +388,8 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
 
                         if reservation.resart != 0:
 
-                            sourccod = get_cache (Sourccod, {"source_code": [(eq, reservation.resart)]})
+                            # sourccod = get_cache (Sourccod, {"source_code": [(eq, reservation.resart)]})
+                            sourccod = db_session.query(Sourccod).filter(Sourccod.source_code == reservation.resart).first()
 
                             if sourccod:
                                 output_list.book_source = sourccod.bezeich
@@ -397,7 +407,6 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
                 # guest = get_cache (Guest, {"gastnr": [(eq, int(temp_gastnr))]})
                 guest = db_session.query(Guest).filter(Guest.gastnr == int(temp_gastnr)).first()
 
-
                 if guest:
                     output_list.guestname = guest.name + ", " + guest.vorname1 + " " + guest.anrede1
                     output_list.gname = guest.name + ", " + guest.vorname1 + " " + guest.anrede1
@@ -414,7 +423,6 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
                 if res_line:
                     # reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
                     reservation = db_session.query(Reservation).filter(Reservation.resnr == res_line.resnr).first()
-
 
                     # buffguest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrpay)]})
                     buffguest = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnrpay).first()
@@ -437,12 +445,14 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
 
                         if reservation.resart != 0:
 
-                            sourccod = get_cache (Sourccod, {"source_code": [(eq, reservation.resart)]})
+                            # sourccod = get_cache (Sourccod, {"source_code": [(eq, reservation.resart)]})
+                            sourccod = db_session.query(Sourccod).filter(Sourccod.source_code == reservation.resart).first()
 
                             if sourccod:
                                 output_list.book_source = sourccod.bezeich
 
-                    segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+                    # segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+                    segment = db_session.query(Segment).filter(Segment.segmentcode == reservation.segmentcode).first()
 
                     if segment:
                         output_list.segcode = segment.bezeich
@@ -451,7 +461,8 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
 
             elif zinrdate < journdate:
 
-                genstat = get_cache (Genstat, {"datum": [(eq, zinrdate)],"zinr": [(eq, roomnumber)]})
+                # genstat = get_cache (Genstat, {"datum": [(eq, zinrdate)],"zinr": [(eq, roomnumber)]})
+                genstat = db_session.query(Genstat).filter((Genstat.datum == zinrdate) & (Genstat.zinr == roomnumber)).first()
                 
                 if genstat:
                     # reservation = get_cache (Reservation, {"resnr": [(eq, genstat.resnr)]})
@@ -486,7 +497,8 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
 
                         if reservation.resart != 0:
 
-                            sourccod = get_cache (Sourccod, {"source_code": [(eq, reservation.resart)]})
+                            # sourccod = get_cache (Sourccod, {"source_code": [(eq, reservation.resart)]})
+                            sourccod = db_session.query(Sourccod).filter(Sourccod.source_code == reservation.resart).first()
 
                             if sourccod:
                                 output_list.book_source = sourccod.bezeich
@@ -533,12 +545,14 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
 
                     if reservation.resart != 0:
 
-                        sourccod = get_cache (Sourccod, {"source_code": [(eq, reservation.resart)]})
+                        # sourccod = get_cache (Sourccod, {"source_code": [(eq, reservation.resart)]})
+                        sourccod = db_session.query(Sourccod).filter(Sourccod.source_code == reservation.resart).first()
 
                         if sourccod:
                             output_list.book_source = sourccod.bezeich
 
-                segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+                # segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+                segment = db_session.query(Segment).filter(Segment.segmentcode == reservation.segmentcode).first()
 
                 if segment:
                     output_list.segcode = segment.bezeich
@@ -557,7 +571,8 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
 
             if guestseg:
 
-                segment = get_cache (Segment, {"segmentcode": [(eq, guestseg.segmentcode)]})
+                # segment = get_cache (Segment, {"segmentcode": [(eq, guestseg.segmentcode)]})
+                segment = db_session.query(Segment).filter(Segment.segmentcode == guestseg.segmentcode).first()
 
                 if segment:
                     output_list.segcode = segment.bezeich
@@ -568,17 +583,23 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
 
         if billjournal and exclude_artrans == False and artikel.artart != 4:
 
-            debitor = get_cache (Debitor, {"rechnr": [(eq, billjournal.rechnr)],"zahlkonto": [(eq, billjournal.artnr)],"rgdatum": [(eq, billjournal.bill_datum)],"zinr": [(eq, billjournal.zinr)],"saldo": [(eq, billjournal.betrag)],"transzeit": [(eq, billjournal.zeit)]})
+            # debitor = get_cache (Debitor, {"rechnr": [(eq, billjournal.rechnr)],"zahlkonto": [(eq, billjournal.artnr)],"rgdatum": [(eq, billjournal.bill_datum)],"zinr": [(eq, billjournal.zinr)],"saldo": [(eq, billjournal.betrag)],"transzeit": [(eq, billjournal.zeit)]})
+            debitor = db_session.query(Debitor).filter((Debitor.rechnr == billjournal.rechnr) & 
+                                                       (Debitor.zahlkonto == billjournal.artnr) & 
+                                                       (Debitor.rgdatum == billjournal.bill_datum) & 
+                                                       (Debitor.zinr == billjournal.zinr) & 
+                                                       (Debitor.saldo == billjournal.betrag) & 
+                                                       (Debitor.transzeit == billjournal.zeit)).first()
 
             if debitor:
 
-                b_artikel = get_cache (Artikel, {"artnr": [(eq, debitor.artnr)]})
+                # b_artikel = get_cache (Artikel, {"artnr": [(eq, debitor.artnr)]})
+                b_artikel = db_session.query(Artikel).filter(Artikel.artnr == debitor.artnr).first()
 
                 if b_artikel:
                     output_list.descr = "A/R Transfer from " + to_string(debitor.artnr) + " " + b_artikel.bezeich
 
         queasy = Queasy()
-        write_session_only.add(queasy)
 
         counter = counter + 1
         # queasy_str = to_string(output_list.c, "x(2)") +\
@@ -632,6 +653,8 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
         queasy.char3 = output_list.str + "|" + queasy_str
         queasy.number1 = counter
 
+
+        write_session_only.add(queasy)
         write_session_only.commit()
 
         if mi_break:
@@ -822,7 +845,8 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
                         custom_record(artikel_prev, billjournal_prev)
 
                 if last_dept != artikel_department:
-                    hoteldpt = get_cache (Hoteldpt, {"num": [(eq, artikel_department)]})
+                    # hoteldpt = get_cache (Hoteldpt, {"num": [(eq, artikel_department)]})
+                    hoteldpt = db_session.query(Hoteldpt).filter(Hoteldpt.num == artikel_department).first()
 
                 last_dept = artikel_department
                 sub_tot =  to_decimal("0")
@@ -872,7 +896,13 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
                 do_it = False
 
             if do_it and exclude_artrans and artikel_artart != 4:
-                debitor = get_cache (Debitor, {"rechnr": [(eq, billjournal_rechnr)],"zahlkonto": [(eq, billjournal_artnr)],"rgdatum": [(eq, billjournal_bill_datum)],"zinr": [(eq, billjournal_zinr)],"saldo": [(eq, billjournal_betrag)],"transzeit": [(eq, billjournal_zeit)]})
+                # debitor = get_cache (Debitor, {"rechnr": [(eq, billjournal_rechnr)],"zahlkonto": [(eq, billjournal_artnr)],"rgdatum": [(eq, billjournal_bill_datum)],"zinr": [(eq, billjournal_zinr)],"saldo": [(eq, billjournal_betrag)],"transzeit": [(eq, billjournal_zeit)]})
+                debitor = db_session.query(Debitor).filter((Debitor.rechnr == billjournal_rechnr) &
+                                                            (Debitor.zahlkonto == billjournal_artnr) &
+                                                            (Debitor.rgdatum == billjournal_bill_datum) &
+                                                            (Debitor.zinr == billjournal_zinr) &
+                                                            (Debitor.saldo == billjournal_betrag) &
+                                                            (Debitor.transzeit == billjournal_zeit)).first()
 
                 if debitor:
                     do_it = False
@@ -926,12 +956,14 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
 
                                         if reservation.resart != 0:
 
-                                            sourccod = get_cache (Sourccod, {"source_code": [(eq, reservation.resart)]})
+                                            # sourccod = get_cache (Sourccod, {"source_code": [(eq, reservation.resart)]})
+                                            sourccod = db_session.query(Sourccod).filter(Sourccod.source_code == reservation.resart).first()
 
                                             if sourccod:
                                                 output_list.book_source = sourccod.bezeich
 
-                                        segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+                                        # segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+                                        segment = db_session.query(Segment).filter(Segment.segmentcode == reservation.segmentcode).first()
 
                                         if segment:
                                             output_list.segcode = segment.bezeich
@@ -954,17 +986,20 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
 
                         elif billjournal_bediener_nr != 0 and mi_excljournal == False:
 
-                            h_bill = get_cache (H_bill, {"rechnr": [(eq, billjournal_rechnr)],"departement": [(eq, billjournal_betriebsnr)]})
+                            # h_bill = get_cache (H_bill, {"rechnr": [(eq, billjournal_rechnr)],"departement": [(eq, billjournal_betriebsnr)]})
+                            h_bill = db_session.query(H_bill).filter((H_bill.rechnr == billjournal_rechnr) & (H_bill.departement == billjournal_betriebsnr)).first()
 
                             if h_bill:
 
                                 if h_bill.resnr > 0 and h_bill.reslinnr > 0:
 
-                                    res_line = get_cache (Res_line, {"resnr": [(eq, h_bill.resnr)],"reslinnr": [(eq, h_bill.reslinnr)]})
+                                    # res_line = get_cache (Res_line, {"resnr": [(eq, h_bill.resnr)],"reslinnr": [(eq, h_bill.reslinnr)]})
+                                    res_line = db_session.query(Res_line).filter((Res_line.resnr == h_bill.resnr) & (Res_line.reslinnr == h_bill.reslinnr)).first()
 
                                     if res_line:
 
-                                        reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+                                        # reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+                                        reservation = db_session.query(Reservation).filter(Reservation.resnr == res_line.resnr).first()
 
                                         # guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
                                         guest = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnrmember).first()
@@ -982,7 +1017,8 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
 
                                         if reservation and reservation.resart != 0:
 
-                                            sourccod = get_cache (Sourccod, {"source_code": [(eq, reservation.resart)]})
+                                            # sourccod = get_cache (Sourccod, {"source_code": [(eq, reservation.resart)]})
+                                            sourccod = db_session.query(Sourccod).filter(Sourccod.source_code == reservation.resart).first()
 
                                             if sourccod:
                                                 output_list.book_source = sourccod.bezeich
@@ -995,9 +1031,13 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
                                             if buffguest:
                                                 output_list.gname = buffguest.name + ", " + buffguest.vorname1 + " " + buffguest.anrede1
 
-                                        genstat = get_cache (Genstat, {"resnr": [(eq, res_line.resnr)]})
+                                        # genstat = get_cache (Genstat, {"resnr": [(eq, res_line.resnr)]})
+                                        genstat = db_session.query(Genstat).filter(Genstat.resnr == res_line.resnr).first()
 
-                                        segment = get_cache (Segment, {"segmentcode": [(eq, genstat.segmentcode)]})
+                                        segment = None
+                                        if genstat:
+                                            # segment = get_cache (Segment, {"segmentcode": [(eq, genstat.segmentcode)]})
+                                            segment = db_session.query(Segment).filter(Segment.segmentcode == genstat.segmentcode).first()
 
                                         if not segment:
                                             output_list.segcode = ""
@@ -1045,7 +1085,8 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
 
                                 elif billjournal_betriebsnr == 0:
 
-                                    bill = get_cache (Bill, {"rechnr": [(eq, billjournal_rechnr)]})
+                                    # bill = get_cache (Bill, {"rechnr": [(eq, billjournal_rechnr)]})
+                                    bill = db_session.query(Bill).filter(Bill.rechnr == billjournal_rechnr).first()
 
                                     if bill:
 
@@ -1081,8 +1122,10 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
                                             # genstat = get_cache (Genstat, {"resnr": [(eq, res_line.resnr)]})
                                             genstat = db_session.query(Genstat).filter(Genstat.resnr == res_line.resnr).first()
 
-                                            # segment = get_cache (Segment, {"segmentcode": [(eq, genstat.segmentcode)]})
-                                            segment = db_session.query(Segment).filter(Segment.segmentcode == genstat.segmentcode).first()
+                                            segment = None
+                                            if genstat:
+                                                # segment = get_cache (Segment, {"segmentcode": [(eq, genstat.segmentcode)]})
+                                                segment = db_session.query(Segment).filter(Segment.segmentcode == genstat.segmentcode).first()
 
 
                                             if not segment:
@@ -1093,11 +1136,13 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
 
                         if get_index(billjournal_bezeich, " *BQT") > 0:
 
-                            bk_veran = get_cache (Bk_veran, {"veran_nr": [(eq, to_int(substring(billjournal_bezeich, get_index(billjournal_bezeich, " *bqt") + 5  - 1)))]})
+                            # bk_veran = get_cache (Bk_veran, {"veran_nr": [(eq, to_int(substring(billjournal_bezeich, get_index(billjournal_bezeich, " *bqt") + 5  - 1)))]})
+                            bk_veran = db_session.query(Bk_veran).filter(Bk_veran.veran_nr == to_int(substring(billjournal_bezeich, get_index(billjournal_bezeich, " *bqt") + 5  - 1))).first()
 
                             if bk_veran:
 
-                                gbuff = get_cache (Guest, {"gastnr": [(eq, bk_veran.gastnr)]})
+                                # gbuff = get_cache (Guest, {"gastnr": [(eq, bk_veran.gastnr)]})
+                                gbuff = db_session.query(Gbuff).filter(Gbuff.gastnr == bk_veran.gastnr).first()
 
                                 if gbuff:
                                     output_list.gname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1 + gbuff.anredefirma
@@ -1115,7 +1160,8 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
 
                             if reservation:
 
-                                gbuff = get_cache (Guest, {"gastnr": [(eq, reservation.gastnr)]})
+                                # gbuff = get_cache (Guest, {"gastnr": [(eq, reservation.gastnr)]})
+                                gbuff = db_session.query(Gbuff).filter(Gbuff.gastnr == reservation.gastnr).first()
 
                                 if gbuff:
                                     output_list.gname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1 + gbuff.anredefirma
@@ -1160,19 +1206,19 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
                 else:
 
                     # arrangement = get_cache (Arrangement, {"artnr_logis": [(eq, artikel_artnr)],"intervall": [(eq, artikel_department)]})
-                    arrangement = db_session.query(Arrangement).filter(Arrangement.artnr_logis == artikel_artnr, Arrangement.intervall == artikel_department).first()
+                    arrangement = db_session.query(Arrangement).filter((Arrangement.artnr_logis == artikel_artnr) & (Arrangement.intervall == artikel_department)).first()
 
                     if arrangement:
 
                         # h_bill = get_cache (H_bill, {"rechnr": [(eq, billjournal_rechnr)],"departement": [(eq, billjournal_departement)]})
-                        h_bill = db_session.query(H_bill).filter(H_bill.rechnr == billjournal_rechnr, H_bill.departement == billjournal_departement).first()
+                        h_bill = db_session.query(H_bill).filter((H_bill.rechnr == billjournal_rechnr) & (H_bill.departement == billjournal_departement)).first()
 
                         if h_bill:
 
                             if h_bill.resnr > 0 and h_bill.reslinnr > 0:
 
                                 # res_line = get_cache (Res_line, {"resnr": [(eq, h_bill.resnr)],"reslinnr": [(eq, h_bill.reslinnr)]})
-                                res_line = db_session.query(Res_line).filter(Res_line.resnr == h_bill.resnr, Res_line.reslinnr == h_bill.reslinnr).first()
+                                res_line = db_session.query(Res_line).filter((Res_line.resnr == h_bill.resnr) & (Res_line.reslinnr == h_bill.reslinnr)).first()
 
 
                                 if res_line:
@@ -1191,7 +1237,8 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
 
                                     if reservation and reservation.resart != 0:
 
-                                        sourccod = get_cache (Sourccod, {"source_code": [(eq, reservation.resart)]})
+                                        # sourccod = get_cache (Sourccod, {"source_code": [(eq, reservation.resart)]})
+                                        sourccod = db_session.query(Sourccod).filter(Sourccod.source_code == reservation.resart).first()
 
                                         if sourccod:
                                             output_list.book_source = sourccod.bezeich
@@ -1199,8 +1246,10 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
                                     # genstat = get_cache (Genstat, {"resnr": [(eq, res_line.resnr)]})
                                     genstat = db_session.query(Genstat).filter(Genstat.resnr == res_line.resnr).first()
 
-                                    # segment = get_cache (Segment, {"segmentcode": [(eq, genstat.segmentcode)]})
-                                    segment = db_session.query(Segment).filter(Segment.segmentcode == genstat.segmentcode).first()
+                                    segment = None
+                                    if genstat:
+                                        # segment = get_cache (Segment, {"segmentcode": [(eq, genstat.segmentcode)]})
+                                        segment = db_session.query(Segment).filter(Segment.segmentcode == genstat.segmentcode).first()
 
                                     if not segment:
                                         output_list.segcode = ""
@@ -1247,7 +1296,7 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
                     else:
 
                         # argt_line = get_cache (Argt_line, {"argt_artnr": [(eq, artikel_artnr)],"departement": [(eq, artikel_department)]})
-                        argt_line = db_session.query(Argt_line).filter(Argt_line.argt_artnr == artikel_artnr, Argt_line.departement == artikel_department).first()
+                        argt_line = db_session.query(Argt_line).filter((Argt_line.argt_artnr == artikel_artnr) & (Argt_line.departement == artikel_department)).first()
 
                         if argt_line:
                             hoteldept = billjournal_departement
@@ -1255,13 +1304,15 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
                             if matches(billjournal_bezeich, ("*<*")) and matches(billjournal_bezeich, ("*>*")):
                                 hoteldept = to_int(substring(billjournal_bezeich, get_index(billjournal_bezeich, "<") + 1 - 1, get_index(billjournal_bezeich, ">") - get_index(billjournal_bezeich, "<") - 1))
 
-                            h_bill = get_cache (H_bill, {"rechnr": [(eq, billjournal_rechnr)],"departement": [(eq, hoteldept)]})
+                            # h_bill = get_cache (H_bill, {"rechnr": [(eq, billjournal_rechnr)],"departement": [(eq, hoteldept)]})
+
 
                             if h_bill:
 
                                 if h_bill.resnr > 0 and h_bill.reslinnr > 0:
 
-                                    res_line = get_cache (Res_line, {"resnr": [(eq, h_bill.resnr)],"reslinnr": [(eq, h_bill.reslinnr)]})
+                                    # res_line = get_cache (Res_line, {"resnr": [(eq, h_bill.resnr)],"reslinnr": [(eq, h_bill.reslinnr)]})
+                                    res_line = db_session.query(Res_line).filter((Res_line.resnr == h_bill.resnr) & (Res_line.reslinnr == h_bill.reslinnr)).first()
 
                                     if res_line:
 
@@ -1284,7 +1335,8 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
 
                                         if reservation and reservation.resart != 0:
 
-                                            sourccod = get_cache (Sourccod, {"source_code": [(eq, reservation.resart)]})
+                                            # sourccod = get_cache (Sourccod, {"source_code": [(eq, reservation.resart)]})
+                                            sourccod = db_session.query(Sourccod).filter(Sourccod.source_code == reservation.resart).first()
 
                                             if sourccod:
                                                 output_list.book_source = sourccod.bezeich
@@ -1292,8 +1344,10 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
                                         # genstat = get_cache (Genstat, {"resnr": [(eq, res_line.resnr)]})
                                         genstat = db_session.query(Genstat).filter(Genstat.resnr == res_line.resnr).first()
 
-                                        # segment = get_cache (Segment, {"segmentcode": [(eq, genstat.segmentcode)]})
-                                        segment = db_session.query(Segment).filter(Segment.segmentcode == genstat.segmentcode).first()
+                                        segment = None
+                                        if genstat:
+                                            # segment = get_cache (Segment, {"segmentcode": [(eq, genstat.segmentcode)]})
+                                            segment = db_session.query(Segment).filter(Segment.segmentcode == genstat.segmentcode).first()
 
                                         if not segment:
                                             output_list.segcode = ""
@@ -1472,7 +1526,8 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
 
                 if billjournal_bediener_nr == 0 and mi_onlyjournal == False:
 
-                    hoteldpt = get_cache (Hoteldpt, {"num": [(eq, billjournal_departement)]})
+                    # hoteldpt = get_cache (Hoteldpt, {"num": [(eq, billjournal_departement)]})
+                    hoteldpt = db_session.query(Hoteldpt).filter(Hoteldpt.num == billjournal_departement).first()
 
                     if hoteldpt:
                         deptname = hoteldpt.depart
@@ -1503,7 +1558,8 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
 
                 elif billjournal_bediener_nr != 0 and mi_excljournal == False:
 
-                    hoteldpt = get_cache (Hoteldpt, {"num": [(eq, billjournal_departement)]})
+                    # hoteldpt = get_cache (Hoteldpt, {"num": [(eq, billjournal_departement)]})
+                    hoteldpt = db_session.query(Hoteldpt).filter(Hoteldpt.num == billjournal_departement).first()
 
                     if hoteldpt:
                         deptname = hoteldpt.depart
@@ -1591,7 +1647,6 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
         output_list = Output_list()
         output_list_data.append(output_list)
 
-
         if not long_digit:
             output_list.str =  to_string("", "x(82)") +\
                     to_string("Grand TOTAL ", "x(12)") +\
@@ -1617,9 +1672,6 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
 
         custom_record()
 
-    # lp.write_log("debug", f"{lp.log_usage("START TRACK LOOP JOURNAL_LIST")}", "log_oscar.txt")
-    # lp.write_log("debug", "start track loop journal_list", "log_oscar.txt")
-    # start = time.perf_counter()
 
     if from_date == None:
 
@@ -1629,30 +1681,31 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
 
         return generate_output()
 
-    for queasy in db_session.query(Queasy).filter(
-             (Queasy.key == 5) & (Queasy.number3 != 0)).order_by(Queasy.number1).all():
+    # for queasy in db_session.query(Queasy).filter(
+    #          (Queasy.key == 5) & (Queasy.number3 != 0)).order_by(Queasy.number1).all():
         
-        shift_list = Shift_list()
-        shift_list_data.append(shift_list)
+    #     shift_list = Shift_list()
+    #     shift_list_data.append(shift_list)
 
-        shift_list.shift = queasy.number3
-        temp1 = to_string(queasy.number1, "9999")
-        temp2 = to_string(queasy.number2, "9999")
-        shift_list.ftime = (to_int(substring(temp1, 0, 2)) * 3600) + (to_int(substring(temp1, 2, 2)) * 60)
-        shift_list.ttime = (to_int(substring(temp2, 0, 2)) * 3600) + (to_int(substring(temp2, 2, 2)) * 60)
+    #     shift_list.shift = queasy.number3
+    #     temp1 = to_string(queasy.number1, "9999")
+    #     temp2 = to_string(queasy.number2, "9999")
+    #     shift_list.ftime = (to_int(substring(temp1, 0, 2)) * 3600) + (to_int(substring(temp1, 2, 2)) * 60)
+    #     shift_list.ttime = (to_int(substring(temp2, 0, 2)) * 3600) + (to_int(substring(temp2, 2, 2)) * 60)
+    #     isoutletshift = True
+
+    queasy = db_session.query(Queasy).filter(
+             (Queasy.key == 5) & (Queasy.number3 != 0)).order_by(Queasy.number1).first()
+    if queasy:
         isoutletshift = True
 
     try:
         journal_list()
     except Exception as e:
-        tb = traceback.format_exc()
-        lp.write_log("error",f"Exception occurred:\n{tb}\n","log_oscar.txt")
+        pass
+        # tb = traceback.format_exc()
+        # lp.write_log("error",f"Exception occurred:\n{tb}\n","log_oscar.txt")
 
-
-    # end = time.perf_counter()
-    # lp.write_log("debug", f"{lp.log_usage("END TRACK LOOP JOURNAL_LIST")}", "log_oscar.txt")
-    # lp.write_log("debug", f"Elapsed time: {end - start:.6f} seconds", "log_oscar.txt")
-        
 
     write_session_only.close()
 

@@ -50,6 +50,7 @@ def fo_journal_list_2_webbl(from_art:int, to_art:int, from_dept:int, to_dept:int
         queasy.number1 = 1
         queasy.char2 = id_flag
 
+        db_session.commit()
 
         pass
         gtot, output_list_data = get_output(fo_journal_cld_3bl(from_art, to_art, from_dept, to_dept, from_date, to_date, sorttype, exclude_artrans, long_digit, foreign_flag, onlyjournal, excljournal, mi_post, mi_showrelease, mi_break, id_flag))
@@ -100,19 +101,22 @@ def fo_journal_list_2_webbl(from_art:int, to_art:int, from_dept:int, to_dept:int
                 fo_journal_list.service =  to_decimal(output_list.service)
                 fo_journal_list.vat =  to_decimal(output_list.vat)
 
-                artikel = get_cache (Artikel, {"departement": [(eq, fo_journal_list.deptno)],"artnr": [(eq, fo_journal_list.artno)]})
+                # artikel = get_cache (Artikel, {"departement": [(eq, fo_journal_list.deptno)],"artnr": [(eq, fo_journal_list.artno)]})
+                artikel = db_session.query(Artikel).filter((Artikel.departement == fo_journal_list.deptno) & (Artikel.artnr == fo_journal_list.artno)).first()
 
                 if artikel:
 
-                    htparam = get_cache (Htparam, {"paramnr": [(eq, artikel.mwst_code)]})
+                    # htparam = get_cache (Htparam, {"paramnr": [(eq, artikel.mwst_code)]})
+                    htparam = db_session.query(Htparam).filter(Htparam.paramnr == artikel.mwst_code).first()
 
                     if htparam:
                         fo_journal_list.vat_percentage =  to_decimal(htparam.fdecimal)
                     else:
                         fo_journal_list.vat_percentage =  to_decimal("0")
 
-                    htparam = get_cache (Htparam, {"paramnr": [(eq, artikel.service_code)]})
-
+                    # htparam = get_cache (Htparam, {"paramnr": [(eq, artikel.service_code)]})
+                    htparam = db_session.query(Htparam).filter(Htparam.paramnr == artikel.service_code).first()
+                    
                     if htparam:
                         fo_journal_list.serv_percentage =  to_decimal(htparam.fdecimal)
                     else:
