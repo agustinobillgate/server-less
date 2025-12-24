@@ -7,6 +7,8 @@ from functions.additional_functions import *
 from decimal import Decimal
 from models import H_artikel, H_bill_line, H_bill, Htparam
 
+from functions import log_program as log
+
 def ts_restinv_pay_cash3bl(pvilanguage:int, curr_dept:int, do_it:bool, rec_id:int, balance_foreign:Decimal, balance:Decimal, double_currency:bool):
 
     prepare_cache ([H_bill, Htparam])
@@ -23,6 +25,11 @@ def ts_restinv_pay_cash3bl(pvilanguage:int, curr_dept:int, do_it:bool, rec_id:in
 
     H_bline = create_buffer("H_bline",H_bill_line)
     H_art = create_buffer("H_art",H_artikel)
+    
+    if balance_foreign is None:
+        balance_foreign = 0
+    if balance is None:
+        balance = 0
 
 
     db_session = local_storage.db_session
@@ -31,12 +38,14 @@ def ts_restinv_pay_cash3bl(pvilanguage:int, curr_dept:int, do_it:bool, rec_id:in
         nonlocal exrate, msg_str, t_h_artikel_data, lvcarea, h_artikel, h_bill_line, h_bill, htparam
         nonlocal pvilanguage, curr_dept, do_it, rec_id, balance_foreign, balance, double_currency
         nonlocal h_bline, h_art
-
-
         nonlocal t_h_artikel, h_bline, h_art
         nonlocal t_h_artikel_data
 
-        return {"exrate": exrate, "msg_str": msg_str, "t-h-artikel": t_h_artikel_data}
+        return {
+            "exrate": exrate, 
+            "msg_str": msg_str, 
+            "t-h-artikel": t_h_artikel_data
+            }
 
     h_bill = get_cache (H_bill, {"_recid": [(eq, rec_id)]})
     # Rd 3/8/2025
@@ -64,6 +73,7 @@ def ts_restinv_pay_cash3bl(pvilanguage:int, curr_dept:int, do_it:bool, rec_id:in
             return generate_output()
 
         if balance_foreign != 0:
+            log.write_log ("TS-Restinv-Pay-Cash3BL", f"[LOG] balance_foreign: {balance_foreign}, balance: {balance}")
             exrate =  to_decimal(balance) / to_decimal(balance_foreign)
     t_h_artikel = T_h_artikel()
     t_h_artikel_data.append(t_h_artikel)
