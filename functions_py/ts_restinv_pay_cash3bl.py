@@ -2,6 +2,9 @@
 #----------------------------------------
 # Rd 3/8/2025
 # if not availble -> return
+
+# yusufwijasena, 24/12/2025
+# - add validation for balance_foreign and balance
 #----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -26,6 +29,7 @@ def ts_restinv_pay_cash3bl(pvilanguage:int, curr_dept:int, do_it:bool, rec_id:in
     H_bline = create_buffer("H_bline",H_bill_line)
     H_art = create_buffer("H_art",H_artikel)
     
+    # add validation for balance_foreign and balance
     if balance_foreign is None:
         balance_foreign = 0
     if balance is None:
@@ -65,7 +69,9 @@ def ts_restinv_pay_cash3bl(pvilanguage:int, curr_dept:int, do_it:bool, rec_id:in
     if do_it:
 
         h_bline = db_session.query(H_bline).filter(
-                 (H_bline.rechnr == h_bill.rechnr) & (H_bline.departement == h_bill.departement) & (H_bline.waehrungsnr > 0)).first()
+                 (H_bline.rechnr == h_bill.rechnr) & 
+                 (H_bline.departement == h_bill.departement) & 
+                 (H_bline.waehrungsnr > 0)).first()
 
         if h_bline:
             msg_str = msg_str + chr_unicode(2) + translateExtended ("Bill has been splitted, use Split Bill's Cash Payment", lvcarea, "")
@@ -73,7 +79,7 @@ def ts_restinv_pay_cash3bl(pvilanguage:int, curr_dept:int, do_it:bool, rec_id:in
             return generate_output()
 
         if balance_foreign != 0:
-            log.write_log ("TS-Restinv-Pay-Cash3BL", f"[LOG] balance_foreign: {balance_foreign}, balance: {balance}")
+            # log.write_log ("TS-Restinv-Pay-Cash3BL", f"[LOG] balance_foreign: {balance_foreign}, balance: {balance}")
             exrate =  to_decimal(balance) / to_decimal(balance_foreign)
     t_h_artikel = T_h_artikel()
     t_h_artikel_data.append(t_h_artikel)
