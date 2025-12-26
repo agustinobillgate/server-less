@@ -26,19 +26,14 @@ def read_artikel1bl(case_type:int, artno:int, dept:int, aname:string, artart:int
     def generate_output():
         nonlocal t_artikel_data, artikel
         nonlocal case_type, artno, dept, aname, artart, betriebsno, actflag
-
-
         nonlocal t_artikel
         nonlocal t_artikel_data
 
         return {"t-artikel": t_artikel_data}
 
     def cr_artikel():
-
         nonlocal t_artikel_data, artikel
         nonlocal case_type, artno, dept, aname, artart, betriebsno, actflag
-
-
         nonlocal t_artikel
         nonlocal t_artikel_data
 
@@ -54,10 +49,12 @@ def read_artikel1bl(case_type:int, artno:int, dept:int, aname:string, artart:int
         if artno != 0:
 
             artikel = get_cache (Artikel, {"artnr": [(eq, artno)],"departement": [(eq, dept)]})
+            # print(f'[LOG] artno: {artno}, artikel: {artikel.__dict__}')
 
         elif aname != "":
 
             artikel = get_cache (Artikel, {"bezeich": [(eq, aname)],"departement": [(eq, dept)]})
+            # print(f'[LOG] aname: {aname}, artikel: {artikel.__dict__}')
 
         if artikel:
             cr_artikel()
