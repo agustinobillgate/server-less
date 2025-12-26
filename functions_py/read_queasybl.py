@@ -1,5 +1,10 @@
 #using conversion tools version: 1.0.0.117
 
+"""_yusufwijasena_26/12/2025
+
+        _remark_:   - changed filter query to queasy.number1
+"""
+
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Queasy, Htparam
@@ -25,8 +30,6 @@ def read_queasybl(case_type:int, intkey:int, inpint1:int, inpchar1:string):
     def generate_output():
         nonlocal t_queasy_data, i, j, sumuser, sumappr, p_786, queasy, htparam
         nonlocal case_type, intkey, inpint1, inpchar1
-
-
         nonlocal t_queasy
         nonlocal t_queasy_data
 
@@ -52,8 +55,13 @@ def read_queasybl(case_type:int, intkey:int, inpint1:int, inpchar1:string):
             buffer_copy(queasy, t_queasy)
     elif case_type == 3:
 
+        # for queasy in db_session.query(Queasy).filter(
+        #          (Queasy.key == intkey)).order_by(Queasy.char1).all():
+        # yusufwijasena, changed filter query to queasy.number1 
         for queasy in db_session.query(Queasy).filter(
-                 (Queasy.key == intkey)).order_by(Queasy.char1).all():
+                 (Queasy.key == intkey)).order_by(Queasy.number1).all():
+            
+            # print(f"[LOG] queasy: {queasy.number1} - {queasy.char1}")
             t_queasy = T_queasy()
             t_queasy_data.append(t_queasy)
 
