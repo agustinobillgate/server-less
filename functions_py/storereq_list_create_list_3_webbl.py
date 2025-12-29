@@ -162,7 +162,7 @@ def storereq_list_create_list_3_webbl(from_date: date, to_date: date, from_dept:
 
             for l_op in create_all_query:
 
-                print(f"[LOG] l_op(all): {l_op.lscheinnr}, date: {l_op.datum}")
+                # print(f"[LOG] l_op(all): {l_op.lscheinnr}, date: {l_op.datum}")
 
                 if l_op_obj_list.get(l_op._recid):
                     continue
@@ -179,8 +179,8 @@ def storereq_list_create_list_3_webbl(from_date: date, to_date: date, from_dept:
                 ).first()
 
                 if l_ophdr:
-                    print(
-                        f"[LOG] check l_ophdr.docu_nr eq l_op.lscheinnr: {l_ophdr.docu_nr}")
+                    # print(
+                    #     f"[LOG] check l_ophdr.docu_nr eq l_op.lscheinnr: {l_ophdr.docu_nr}")
                     appflag = l_ophdr.betriebsnr != 0
 
                 lscheinnr, qty, qty1, val, amount, t_qty, t_qty1, t_val, t_amount, appflag, deptno, curr_centername = create_list_data(
@@ -218,8 +218,8 @@ def storereq_list_create_list_3_webbl(from_date: date, to_date: date, from_dept:
 
             for l_op in create_no_approve_query:
 
-                print(
-                    f"[LOG] l_op(no-approve): {l_op.lscheinnr}, date: {l_op.datum}")
+                # print(
+                #     f"[LOG] l_op(no-approve): {l_op.lscheinnr}, date: {l_op.datum}")
                 if l_op_obj_list.get(l_op._recid):
                     continue
                 else:
@@ -273,8 +273,8 @@ def storereq_list_create_list_3_webbl(from_date: date, to_date: date, from_dept:
 
             for l_op in create_approve_query:
 
-                print(
-                    f"[LOG] l_op(approve): {l_op.lscheinnr}, date: {l_op.datum}")
+                # print(
+                #     f"[LOG] l_op(approve): {l_op.lscheinnr}, date: {l_op.datum}")
                 if l_op_obj_list.get(l_op._recid):
                     continue
                 else:
@@ -327,8 +327,8 @@ def storereq_list_create_list_3_webbl(from_date: date, to_date: date, from_dept:
 
             for l_op in create_outgoing_query:
 
-                print(
-                    f"[LOG] l_op(outgoing): {l_op.lscheinnr}, date: {l_op.datum}")
+                # print(
+                #     f"[LOG] l_op(outgoing): {l_op.lscheinnr}, date: {l_op.datum}")
                 if l_op_obj_list.get(l_op._recid):
                     continue
                 else:
@@ -387,8 +387,8 @@ def storereq_list_create_list_3_webbl(from_date: date, to_date: date, from_dept:
 
             for l_op in create_delete_query:
 
-                print(
-                    f"[LOG] l_op(delete): {l_op.lscheinnr}, date: {l_op.datum}")
+                # print(
+                #     f"[LOG] l_op(delete): {l_op.lscheinnr}, date: {l_op.datum}")
                 if l_op_obj_list.get(l_op._recid):
                     continue
                 else:
