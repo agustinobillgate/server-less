@@ -1,7 +1,11 @@
 # using conversion tools version: 1.0.0.117
 """_yusufwijasena_28/11/2025
 
-        issue:  - cannot display store request list
+        remark: - cannot display store request list
+                - strip value curr_lschein
+                - fix filter query for l_op.art
+                - fix query l_ophdr
+
 """
 from functions.additional_functions import *
 from decimal import Decimal
@@ -11,7 +15,8 @@ from models import Htparam, L_op, L_artikel, L_ophdr, L_lager, Parameters, L_bes
 
 def storereq_list_create_list_3_webbl(from_date: date, to_date: date, from_dept: int, to_dept: int, curr_lschein: str, show_price: bool, filter: str):
 
-    prepare_cache([Htparam, L_op, L_artikel, L_ophdr, L_lager, Parameters, L_bestand, Bediener, Gl_acct, Queasy])
+    prepare_cache([Htparam, L_op, L_artikel, L_ophdr, L_lager,
+                  Parameters, L_bestand, Bediener, Gl_acct, Queasy])
 
     it_exist = False
     t_list_data = []
@@ -21,6 +26,8 @@ def storereq_list_create_list_3_webbl(from_date: date, to_date: date, from_dept:
     htparam = l_op = l_artikel = l_ophdr = l_lager = parameters = l_bestand = bediener = gl_acct = queasy = None
 
     t_list = sr_remark_list = None
+
+    curr_lschein = trim(curr_lschein)
 
     t_list_data, T_list = create_model(
         "T_list",
@@ -87,7 +94,6 @@ def storereq_list_create_list_3_webbl(from_date: date, to_date: date, from_dept:
     def create_list():
         nonlocal it_exist, t_list_data, sr_remark_list_data, long_digit, htparam, l_op, l_artikel, l_ophdr, l_lager, parameters, l_bestand, bediener, gl_acct, queasy
         nonlocal from_date, to_date, from_dept, to_dept, curr_lschein, show_price, filter
-
         nonlocal t_list, sr_remark_list
         nonlocal t_list_data, sr_remark_list_data
 
@@ -117,8 +123,47 @@ def storereq_list_create_list_3_webbl(from_date: date, to_date: date, from_dept:
             l_op_obj_list = {}
             l_op = L_op()
             l_artikel = L_artikel()
-            for l_op.lscheinnr, l_op.op_art, l_op.loeschflag, l_op.lager_nr, l_op.pos, l_op.reorgflag, l_op._recid, l_op.herkunftflag, l_op.datum, l_op.anzahl, l_op.deci1, l_op.einzelpreis, l_op.warenwert, l_op.artnr, l_op.stornogrund, l_op.fuellflag, l_artikel.bezeich, l_artikel.masseinheit, l_artikel.inhalt, l_artikel.lief_einheit, l_artikel.traubensorte, l_artikel.zwkum, l_artikel.endkum, l_artikel._recid in db_session.query(L_op.lscheinnr, L_op.op_art, L_op.loeschflag, L_op.lager_nr, L_op.pos, L_op.reorgflag, L_op._recid, L_op.herkunftflag, L_op.datum, L_op.anzahl, L_op.deci1, L_op.einzelpreis, L_op.warenwert, L_op.artnr, L_op.stornogrund, L_op.fuellflag, L_artikel.bezeich, L_artikel.masseinheit, L_artikel.inhalt, L_artikel.lief_einheit, L_artikel.traubensorte, L_artikel.zwkum, L_artikel.endkum, L_artikel._recid).join(L_artikel, (L_artikel.artnr == L_op.artnr)).filter(
-                    (L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.reorgflag >= from_dept) & (L_op.reorgflag <= to_dept) & (L_op.op_art >= 13) & (L_op.op_art <= 14) & (L_op.herkunftflag <= 2) & (L_op.loeschflag <= 1)).order_by(L_op.reorgflag, L_op.lscheinnr, L_op.zeit).all():
+
+            # for l_op.lscheinnr, l_op.op_art, l_op.loeschflag, l_op.lager_nr, l_op.pos, l_op.reorgflag, l_op._recid, l_op.herkunftflag, l_op.datum, l_op.anzahl, l_op.deci1, l_op.einzelpreis, l_op.warenwert, l_op.artnr, l_op.stornogrund, l_op.fuellflag, l_artikel.bezeich, l_artikel.masseinheit, l_artikel.inhalt, l_artikel.lief_einheit, l_artikel.traubensorte, l_artikel.zwkum, l_artikel.endkum, l_artikel._recid in db_session.query(
+            #     L_op.lscheinnr, L_op.op_art, L_op.loeschflag, L_op.lager_nr, L_op.pos, L_op.reorgflag, L_op._recid, L_op.herkunftflag, L_op.datum, L_op.anzahl, L_op.deci1, L_op.einzelpreis, L_op.warenwert, L_op.artnr, L_op.stornogrund, L_op.fuellflag, L_artikel.bezeich, L_artikel.masseinheit, L_artikel.inhalt, L_artikel.lief_einheit, L_artikel.traubensorte, L_artikel.zwkum, L_artikel.endkum, L_artikel._recid).join(
+            #         L_artikel, (L_artikel.artnr == L_op.artnr)).filter(
+            #         (L_op.datum >= from_date) &
+            #         (L_op.datum <= to_date) &
+            #         (L_op.reorgflag >= from_dept) &
+            #         (L_op.reorgflag <= to_dept) &
+            #         (L_op.op_art >= 13) &
+            #         (L_op.op_art <= 14) &
+            #         (L_op.herkunftflag <= 2) &
+            #         (L_op.loeschflag <= 1)
+            #         ).order_by(L_op.reorgflag, L_op.lscheinnr, L_op.zeit).all():
+
+            create_all_query = (
+                db_session.query(
+                    L_op,
+                    # L_artikel,
+                )
+                .join(L_artikel, L_artikel.artnr == L_op.artnr)
+                .filter(
+                    (L_op.datum >= from_date) &
+                    (L_op.datum <= to_date) &
+                    (L_op.reorgflag >= from_dept) &
+                    (L_op.reorgflag <= to_dept) &
+                    (L_op.op_art >= 13) &
+                    (L_op.op_art <= 14) &
+                    (L_op.herkunftflag <= 2) &
+                    (L_op.loeschflag <= 1)
+                )
+                .order_by(
+                    L_op.reorgflag,
+                    L_op.lscheinnr,
+                    L_op.zeit,
+                )
+            )
+
+            for l_op in create_all_query:
+
+                # print(f"[LOG] l_op(all): {l_op.lscheinnr}, date: {l_op.datum}")
+
                 if l_op_obj_list.get(l_op._recid):
                     continue
                 else:
@@ -131,9 +176,11 @@ def storereq_list_create_list_3_webbl(from_date: date, to_date: date, from_dept:
                     L_ophdr.op_typ == "req",
                     L_ophdr.lscheinnr == l_op.lscheinnr,
                     L_ophdr.docu_nr == l_op.lscheinnr
-                ).with_for_update().first()
+                ).first()
 
                 if l_ophdr:
+                    # print(
+                    #     f"[LOG] check l_ophdr.docu_nr eq l_op.lscheinnr: {l_ophdr.docu_nr}")
                     appflag = l_ophdr.betriebsnr != 0
 
                 lscheinnr, qty, qty1, val, amount, t_qty, t_qty1, t_val, t_amount, appflag, deptno, curr_centername = create_list_data(
@@ -143,8 +190,36 @@ def storereq_list_create_list_3_webbl(from_date: date, to_date: date, from_dept:
             l_op_obj_list = {}
             l_op = L_op()
             l_artikel = L_artikel()
-            for l_op.lscheinnr, l_op.op_art, l_op.loeschflag, l_op.lager_nr, l_op.pos, l_op.reorgflag, l_op._recid, l_op.herkunftflag, l_op.datum, l_op.anzahl, l_op.deci1, l_op.einzelpreis, l_op.warenwert, l_op.artnr, l_op.stornogrund, l_op.fuellflag, l_artikel.bezeich, l_artikel.masseinheit, l_artikel.inhalt, l_artikel.lief_einheit, l_artikel.traubensorte, l_artikel.zwkum, l_artikel.endkum, l_artikel._recid in db_session.query(L_op.lscheinnr, L_op.op_art, L_op.loeschflag, L_op.lager_nr, L_op.pos, L_op.reorgflag, L_op._recid, L_op.herkunftflag, L_op.datum, L_op.anzahl, L_op.deci1, L_op.einzelpreis, L_op.warenwert, L_op.artnr, L_op.stornogrund, L_op.fuellflag, L_artikel.bezeich, L_artikel.masseinheit, L_artikel.inhalt, L_artikel.lief_einheit, L_artikel.traubensorte, L_artikel.zwkum, L_artikel.endkum, L_artikel._recid).join(L_artikel, (L_artikel.artnr == L_op.artnr)).filter(
-                    (L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.reorgflag >= from_dept) & (L_op.reorgflag <= to_dept) & (L_op.op_art >= 13) & (L_op.op_art <= 14) & (L_op.herkunftflag <= 2) & (L_op.loeschflag <= 1)).order_by(L_op.reorgflag, L_op.lscheinnr, L_op.zeit).all():
+            # for l_op.lscheinnr, l_op.op_art, l_op.loeschflag, l_op.lager_nr, l_op.pos, l_op.reorgflag, l_op._recid, l_op.herkunftflag, l_op.datum, l_op.anzahl, l_op.deci1, l_op.einzelpreis, l_op.warenwert, l_op.artnr, l_op.stornogrund, l_op.fuellflag, l_artikel.bezeich, l_artikel.masseinheit, l_artikel.inhalt, l_artikel.lief_einheit, l_artikel.traubensorte, l_artikel.zwkum, l_artikel.endkum, l_artikel._recid in db_session.query(L_op.lscheinnr, L_op.op_art, L_op.loeschflag, L_op.lager_nr, L_op.pos, L_op.reorgflag, L_op._recid, L_op.herkunftflag, L_op.datum, L_op.anzahl, L_op.deci1, L_op.einzelpreis, L_op.warenwert, L_op.artnr, L_op.stornogrund, L_op.fuellflag, L_artikel.bezeich, L_artikel.masseinheit, L_artikel.inhalt, L_artikel.lief_einheit, L_artikel.traubensorte, L_artikel.zwkum, L_artikel.endkum, L_artikel._recid).join(L_artikel, (L_artikel.artnr == L_op.artnr)).filter(
+            #         (L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.reorgflag >= from_dept) & (L_op.reorgflag <= to_dept) & (L_op.op_art >= 13) & (L_op.op_art <= 14) & (L_op.herkunftflag <= 2) & (L_op.loeschflag <= 1)).order_by(L_op.reorgflag, L_op.lscheinnr, L_op.zeit).all():
+
+            create_no_approve_query = (
+                db_session.query(
+                    L_op,
+                    # L_artikel,
+                )
+                .join(L_artikel, L_artikel.artnr == L_op.artnr)
+                .filter(
+                    (L_op.datum >= from_date) &
+                    (L_op.datum <= to_date) &
+                    (L_op.reorgflag >= from_dept) &
+                    (L_op.reorgflag <= to_dept) &
+                    (L_op.op_art >= 13) &
+                    (L_op.op_art <= 14) &
+                    (L_op.herkunftflag <= 2) &
+                    (L_op.loeschflag <= 1)
+                )
+                .order_by(
+                    L_op.reorgflag,
+                    L_op.lscheinnr,
+                    L_op.zeit,
+                )
+            )
+
+            for l_op in create_no_approve_query:
+
+                # print(
+                #     f"[LOG] l_op(no-approve): {l_op.lscheinnr}, date: {l_op.datum}")
                 if l_op_obj_list.get(l_op._recid):
                     continue
                 else:
@@ -157,7 +232,7 @@ def storereq_list_create_list_3_webbl(from_date: date, to_date: date, from_dept:
                     L_ophdr.op_typ == "req",
                     L_ophdr.lscheinnr == l_op.lscheinnr,
                     L_ophdr.docu_nr == l_op.lscheinnr
-                ).with_for_update().first()
+                ).first()
 
                 if l_ophdr:
                     appflag = l_ophdr.betriebsnr != 0
@@ -170,8 +245,36 @@ def storereq_list_create_list_3_webbl(from_date: date, to_date: date, from_dept:
             l_op_obj_list = {}
             l_op = L_op()
             l_artikel = L_artikel()
-            for l_op.lscheinnr, l_op.op_art, l_op.loeschflag, l_op.lager_nr, l_op.pos, l_op.reorgflag, l_op._recid, l_op.herkunftflag, l_op.datum, l_op.anzahl, l_op.deci1, l_op.einzelpreis, l_op.warenwert, l_op.artnr, l_op.stornogrund, l_op.fuellflag, l_artikel.bezeich, l_artikel.masseinheit, l_artikel.inhalt, l_artikel.lief_einheit, l_artikel.traubensorte, l_artikel.zwkum, l_artikel.endkum, l_artikel._recid in db_session.query(L_op.lscheinnr, L_op.op_art, L_op.loeschflag, L_op.lager_nr, L_op.pos, L_op.reorgflag, L_op._recid, L_op.herkunftflag, L_op.datum, L_op.anzahl, L_op.deci1, L_op.einzelpreis, L_op.warenwert, L_op.artnr, L_op.stornogrund, L_op.fuellflag, L_artikel.bezeich, L_artikel.masseinheit, L_artikel.inhalt, L_artikel.lief_einheit, L_artikel.traubensorte, L_artikel.zwkum, L_artikel.endkum, L_artikel._recid).join(L_artikel, (L_artikel.artnr == L_op.artnr)).filter(
-                    (L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.reorgflag >= from_dept) & (L_op.reorgflag <= to_dept) & (L_op.op_art >= 13) & (L_op.op_art <= 14) & (L_op.herkunftflag <= 2) & (L_op.loeschflag <= 1)).order_by(L_op.reorgflag, L_op.lscheinnr, L_op.zeit).all():
+            # for l_op.lscheinnr, l_op.op_art, l_op.loeschflag, l_op.lager_nr, l_op.pos, l_op.reorgflag, l_op._recid, l_op.herkunftflag, l_op.datum, l_op.anzahl, l_op.deci1, l_op.einzelpreis, l_op.warenwert, l_op.artnr, l_op.stornogrund, l_op.fuellflag, l_artikel.bezeich, l_artikel.masseinheit, l_artikel.inhalt, l_artikel.lief_einheit, l_artikel.traubensorte, l_artikel.zwkum, l_artikel.endkum, l_artikel._recid in db_session.query(L_op.lscheinnr, L_op.op_art, L_op.loeschflag, L_op.lager_nr, L_op.pos, L_op.reorgflag, L_op._recid, L_op.herkunftflag, L_op.datum, L_op.anzahl, L_op.deci1, L_op.einzelpreis, L_op.warenwert, L_op.artnr, L_op.stornogrund, L_op.fuellflag, L_artikel.bezeich, L_artikel.masseinheit, L_artikel.inhalt, L_artikel.lief_einheit, L_artikel.traubensorte, L_artikel.zwkum, L_artikel.endkum, L_artikel._recid).join(L_artikel, (L_artikel.artnr == L_op.artnr)).filter(
+            #         (L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.reorgflag >= from_dept) & (L_op.reorgflag <= to_dept) & (L_op.op_art >= 13) & (L_op.op_art <= 14) & (L_op.herkunftflag <= 2) & (L_op.loeschflag <= 1)).order_by(L_op.reorgflag, L_op.lscheinnr, L_op.zeit).all():
+
+            create_approve_query = (
+                db_session.query(
+                    L_op,
+                    # L_artikel,
+                )
+                .join(L_artikel, L_artikel.artnr == L_op.artnr)
+                .filter(
+                    (L_op.datum >= from_date) &
+                    (L_op.datum <= to_date) &
+                    (L_op.reorgflag >= from_dept) &
+                    (L_op.reorgflag <= to_dept) &
+                    (L_op.op_art >= 13) &
+                    (L_op.op_art <= 14) &
+                    (L_op.herkunftflag <= 2) &
+                    (L_op.loeschflag <= 1)
+                )
+                .order_by(
+                    L_op.reorgflag,
+                    L_op.lscheinnr,
+                    L_op.zeit,
+                )
+            )
+
+            for l_op in create_approve_query:
+
+                # print(
+                #     f"[LOG] l_op(approve): {l_op.lscheinnr}, date: {l_op.datum}")
                 if l_op_obj_list.get(l_op._recid):
                     continue
                 else:
@@ -184,7 +287,7 @@ def storereq_list_create_list_3_webbl(from_date: date, to_date: date, from_dept:
                     L_ophdr.op_typ == "req",
                     L_ophdr.lscheinnr == l_op.lscheinnr,
                     L_ophdr.docu_nr == l_op.lscheinnr
-                ).with_for_update().first()
+                ).first()
 
                 if l_ophdr:
                     appflag = l_ophdr.betriebsnr != 0
@@ -197,8 +300,35 @@ def storereq_list_create_list_3_webbl(from_date: date, to_date: date, from_dept:
             l_op_obj_list = {}
             l_op = L_op()
             l_artikel = L_artikel()
-            for l_op.lscheinnr, l_op.op_art, l_op.loeschflag, l_op.lager_nr, l_op.pos, l_op.reorgflag, l_op._recid, l_op.herkunftflag, l_op.datum, l_op.anzahl, l_op.deci1, l_op.einzelpreis, l_op.warenwert, l_op.artnr, l_op.stornogrund, l_op.fuellflag, l_artikel.bezeich, l_artikel.masseinheit, l_artikel.inhalt, l_artikel.lief_einheit, l_artikel.traubensorte, l_artikel.zwkum, l_artikel.endkum, l_artikel._recid in db_session.query(L_op.lscheinnr, L_op.op_art, L_op.loeschflag, L_op.lager_nr, L_op.pos, L_op.reorgflag, L_op._recid, L_op.herkunftflag, L_op.datum, L_op.anzahl, L_op.deci1, L_op.einzelpreis, L_op.warenwert, L_op.artnr, L_op.stornogrund, L_op.fuellflag, L_artikel.bezeich, L_artikel.masseinheit, L_artikel.inhalt, L_artikel.lief_einheit, L_artikel.traubensorte, L_artikel.zwkum, L_artikel.endkum, L_artikel._recid).join(L_artikel, (L_artikel.artnr == L_op.artnr)).filter(
-                    (L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.reorgflag >= from_dept) & (L_op.reorgflag <= to_dept) & (L_op.op_art >= 13) & (L_op.op_art <= 14) & (L_op.herkunftflag <= 2) & (L_op.loeschflag <= 1)).order_by(L_op.reorgflag, L_op.lscheinnr, L_op.zeit).all():
+            #
+
+            create_outgoing_query = (
+                db_session.query(
+                    L_op,
+                    # L_artikel,
+                )
+                .join(L_artikel, L_artikel.artnr == L_op.artnr)
+                .filter(
+                    (L_op.datum >= from_date) &
+                    (L_op.datum <= to_date) &
+                    (L_op.reorgflag >= from_dept) &
+                    (L_op.reorgflag <= to_dept) &
+                    (L_op.op_art >= 13) &
+                    (L_op.op_art <= 14) &
+                    (L_op.herkunftflag <= 2) &
+                    (L_op.loeschflag <= 1)
+                )
+                .order_by(
+                    L_op.reorgflag,
+                    L_op.lscheinnr,
+                    L_op.zeit,
+                )
+            )
+
+            for l_op in create_outgoing_query:
+
+                # print(
+                #     f"[LOG] l_op(outgoing): {l_op.lscheinnr}, date: {l_op.datum}")
                 if l_op_obj_list.get(l_op._recid):
                     continue
                 else:
@@ -211,15 +341,15 @@ def storereq_list_create_list_3_webbl(from_date: date, to_date: date, from_dept:
                     L_ophdr.op_typ == "req",
                     L_ophdr.lscheinnr == l_op.lscheinnr,
                     L_ophdr.docu_nr == l_op.lscheinnr
-                ).with_for_update().first()
+                ).first()
 
                 if l_ophdr:
                     appflag = l_ophdr.betriebsnr != 0
 
                 tl_op = db_session.query(Tl_op).filter(
-                    (Tl_op.lscheinnr == l_op.lscheinnr) & 
-                    ((Tl_op.op_art == 3) | (Tl_op.op_art == 4)) & 
-                    (Tl_op.loeschflag <= 1)).with_for_update().first()
+                    (Tl_op.lscheinnr == l_op.lscheinnr) &
+                    ((Tl_op.op_art == 3) | (Tl_op.op_art == 4)) &
+                    (Tl_op.loeschflag <= 1)).first()
 
                 if tl_op:
                     lscheinnr, qty, qty1, val, amount, t_qty, t_qty1, t_val, t_amount, appflag, deptno, curr_centername = create_list_data(
@@ -229,8 +359,36 @@ def storereq_list_create_list_3_webbl(from_date: date, to_date: date, from_dept:
             l_op_obj_list = {}
             l_op = L_op()
             l_artikel = L_artikel()
-            for l_op.lscheinnr, l_op.op_art, l_op.loeschflag, l_op.lager_nr, l_op.pos, l_op.reorgflag, l_op._recid, l_op.herkunftflag, l_op.datum, l_op.anzahl, l_op.deci1, l_op.einzelpreis, l_op.warenwert, l_op.artnr, l_op.stornogrund, l_op.fuellflag, l_artikel.bezeich, l_artikel.masseinheit, l_artikel.inhalt, l_artikel.lief_einheit, l_artikel.traubensorte, l_artikel.zwkum, l_artikel.endkum, l_artikel._recid in db_session.query(L_op.lscheinnr, L_op.op_art, L_op.loeschflag, L_op.lager_nr, L_op.pos, L_op.reorgflag, L_op._recid, L_op.herkunftflag, L_op.datum, L_op.anzahl, L_op.deci1, L_op.einzelpreis, L_op.warenwert, L_op.artnr, L_op.stornogrund, L_op.fuellflag, L_artikel.bezeich, L_artikel.masseinheit, L_artikel.inhalt, L_artikel.lief_einheit, L_artikel.traubensorte, L_artikel.zwkum, L_artikel.endkum, L_artikel._recid).join(L_artikel, (L_artikel.artnr == L_op.artnr)).filter(
-                    (L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.reorgflag >= from_dept) & (L_op.reorgflag <= to_dept) & (L_op.op_art >= 13) & (L_op.op_art <= 14) & (L_op.herkunftflag <= 2) & (L_op.loeschflag == 2)).order_by(L_op.reorgflag, L_op.lscheinnr, L_op.zeit).all():
+            # for l_op.lscheinnr, l_op.op_art, l_op.loeschflag, l_op.lager_nr, l_op.pos, l_op.reorgflag, l_op._recid, l_op.herkunftflag, l_op.datum, l_op.anzahl, l_op.deci1, l_op.einzelpreis, l_op.warenwert, l_op.artnr, l_op.stornogrund, l_op.fuellflag, l_artikel.bezeich, l_artikel.masseinheit, l_artikel.inhalt, l_artikel.lief_einheit, l_artikel.traubensorte, l_artikel.zwkum, l_artikel.endkum, l_artikel._recid in db_session.query(L_op.lscheinnr, L_op.op_art, L_op.loeschflag, L_op.lager_nr, L_op.pos, L_op.reorgflag, L_op._recid, L_op.herkunftflag, L_op.datum, L_op.anzahl, L_op.deci1, L_op.einzelpreis, L_op.warenwert, L_op.artnr, L_op.stornogrund, L_op.fuellflag, L_artikel.bezeich, L_artikel.masseinheit, L_artikel.inhalt, L_artikel.lief_einheit, L_artikel.traubensorte, L_artikel.zwkum, L_artikel.endkum, L_artikel._recid).join(L_artikel, (L_artikel.artnr == L_op.artnr)).filter(
+            #         (L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.reorgflag >= from_dept) & (L_op.reorgflag <= to_dept) & (L_op.op_art >= 13) & (L_op.op_art <= 14) & (L_op.herkunftflag <= 2) & (L_op.loeschflag == 2)).order_by(L_op.reorgflag, L_op.lscheinnr, L_op.zeit).all():
+
+            create_delete_query = (
+                db_session.query(
+                    L_op,
+                    # L_artikel,
+                )
+                .join(L_artikel, L_artikel.artnr == L_op.artnr)
+                .filter(
+                    (L_op.datum >= from_date) &
+                    (L_op.datum <= to_date) &
+                    (L_op.reorgflag >= from_dept) &
+                    (L_op.reorgflag <= to_dept) &
+                    (L_op.op_art >= 13) &
+                    (L_op.op_art <= 14) &
+                    (L_op.herkunftflag <= 2) &
+                    (L_op.loeschflag == 2)
+                )
+                .order_by(
+                    L_op.reorgflag,
+                    L_op.lscheinnr,
+                    L_op.zeit,
+                )
+            )
+
+            for l_op in create_delete_query:
+
+                # print(
+                #     f"[LOG] l_op(delete): {l_op.lscheinnr}, date: {l_op.datum}")
                 if l_op_obj_list.get(l_op._recid):
                     continue
                 else:
@@ -238,12 +396,13 @@ def storereq_list_create_list_3_webbl(from_date: date, to_date: date, from_dept:
 
                 appflag = False
 
-                l_ophdr = get_cache(L_ophdr, {"op_typ": [(eq, "req")], "lscheinnr": [(eq, l_op.lscheinnr)], "docu_nr": [(eq, l_op.lscheinnr)]})
+                # l_ophdr = get_cache(L_ophdr, {"op_typ": [(eq, "req")], "lscheinnr": [
+                #                     (eq, l_op.lscheinnr)], "docu_nr": [(eq, l_op.lscheinnr)]})
                 l_ophdr = db_session.query(L_ophdr).filter(
-                    l_ophdr.op_typ == "req",
-                    l_ophdr.lscheinnr == l_op.lscheinnr,
-                    l_ophdr.docu_nr == l_op.lscheinnr
-                ).with_for_update().first()
+                    L_ophdr.op_typ == "req",
+                    L_ophdr.lscheinnr == l_op.lscheinnr,
+                    L_ophdr.docu_nr == l_op.lscheinnr
+                ).first()
 
                 if l_ophdr:
                     appflag = l_ophdr.betriebsnr != 0
@@ -270,6 +429,7 @@ def storereq_list_create_list_3_webbl(from_date: date, to_date: date, from_dept:
             t_list.val = to_decimal(t_val)
             t_list.total = to_decimal(t_amount)
 
+    # check list data to output
     def create_list_data(lscheinnr: str, qty: Decimal, qty1: Decimal, val: Decimal, amount: Decimal, t_qty: Decimal, t_qty1: Decimal, t_val: Decimal, t_amount: Decimal, appflag: bool, deptno: int, curr_centername: str):
         nonlocal it_exist, t_list_data, sr_remark_list_data, long_digit, htparam, l_op, l_artikel, l_ophdr, l_lager, parameters, l_bestand, bediener, gl_acct, queasy
         nonlocal from_date, to_date, from_dept, to_dept, curr_lschein, show_price, filter
@@ -321,8 +481,9 @@ def storereq_list_create_list_3_webbl(from_date: date, to_date: date, from_dept:
             if l_op.reorgflag != deptno:
                 deptno = l_op.reorgflag
 
+                # get department data
                 parameters = db_session.query(Parameters).filter(
-                    (Parameters.progname == "costcenter") & 
+                    (Parameters.progname == "costcenter") &
                     (Parameters.section == "name") &
                     (to_int(Parameters.varname) == deptno)).with_for_update().first()
                 t_list = T_list()
@@ -378,7 +539,8 @@ def storereq_list_create_list_3_webbl(from_date: date, to_date: date, from_dept:
             if tl_op:
                 t_list.issue_date = tl_op.datum
 
-            l_bestand = get_cache(L_bestand, {"artnr": [(eq, l_op.artnr)], "lager_nr": [(eq, l_op.lager_nr)]})
+            l_bestand = get_cache(
+                L_bestand, {"artnr": [(eq, l_op.artnr)], "lager_nr": [(eq, l_op.lager_nr)]})
             l_bestand = db_session.query(L_bestand).filter(
                 L_bestand.artnr == l_op.artnr,
                 L_bestand.lager_nr == l_op.lager_nr
@@ -390,9 +552,10 @@ def storereq_list_create_list_3_webbl(from_date: date, to_date: date, from_dept:
 
             # b_l_op = get_cache(L_op, {"lscheinnr": [(eq, l_op.lscheinnr)], "artnr": [(eq, l_op.artnr)], "op_art": [(ge, 3), (le, 4)]})
             b_l_op = db_session.query(L_op).filter(
-                L_op.lscheinnr == l_op.lscheinnr,
-                L_op.artnr == l_op.artnr,
-                3 <= L_op.op_art >= 4,
+                (L_op.lscheinnr == l_op.lscheinnr) &
+                (L_op.artnr == l_op.artnr) &
+                (L_op.op_art >= 3) &
+                (L_op.op_art <= 4)
             ).with_for_update().first()
 
             if not b_l_op:
@@ -407,7 +570,8 @@ def storereq_list_create_list_3_webbl(from_date: date, to_date: date, from_dept:
                 t_list.appstr = "Y"
 
                 if l_ophdr:
-                    bediener = get_cache(Bediener, {"nr": [(eq, l_ophdr.betriebsnr)]})
+                    bediener = get_cache(
+                        Bediener, {"nr": [(eq, l_ophdr.betriebsnr)]})
 
                     if bediener:
                         t_list.approved_by = to_string(
