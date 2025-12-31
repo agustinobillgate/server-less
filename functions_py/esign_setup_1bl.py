@@ -33,7 +33,7 @@ def esign_setup_1bl(case_type:int, user_init:string, esign_list_data:[Esign_list
     if case_type == 0:
 
         for guestbook in db_session.query(Guestbook).filter(
-                 (Guestbook.gastnr >= -271150) & (Guestbook.gastnr <= -271080)).order_by(Guestbook.reserve_int[inc_value(0)]).all():
+                 (Guestbook.gastnr >= -271150) & (Guestbook.gastnr <= -271080)).order_by(Guestbook.reserve_int[0]).all():
             esign_list = Esign_list()
             esign_list_data.append(esign_list)
 

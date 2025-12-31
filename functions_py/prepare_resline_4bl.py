@@ -3,6 +3,9 @@
 # Rd, 31/10/2025
 # Ticket:F6D79E
 # Issue: When the contact code has leading or trailing spaces, it causes issues in matching with guest preferences.
+# 
+# yusufwijasena, 31/12/2025
+# - fixed validation gbuff.notizen index
 #------------------------------------------
 
 from functions.additional_functions import *
@@ -434,10 +437,12 @@ def prepare_resline_4bl(pvilanguage:int, res_mode:string, session_date:string, u
 
         gbuff = db_session.query(Gbuff).filter(
                  (Gbuff.gastnr == inp_gastnr)).first()
+        
+        # print(f"[LOG] gbuff.notizen: {gbuff.gastnr} - {gbuff.notizen}")
 
-        if gbuff.notizen[2] != "":
+        if gbuff.notizen[1] != "":
 
-            waehrung1 = get_cache (Waehrung, {"wabkurz": [(eq, gbuff.notizen[2])]})
+            waehrung1 = get_cache (Waehrung, {"wabkurz": [(eq, gbuff.notizen[1])]})
 
             if waehrung1:
                 guest_currency = waehrung1.waehrungsnr
