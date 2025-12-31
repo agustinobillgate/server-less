@@ -15,9 +15,6 @@ from models import Guest, Artikel, Queasy, Htparam, Bill, Bill_line, Res_line, R
 from functions.more_additional_functions import format_fixed_length, handling_negative
 
 from functions import log_program as lp
-
-import re
-import time
 import traceback
 
 def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, from_date:date, to_date:date, sorttype:int, exclude_artrans:bool, long_digit:bool, foreign_flag:bool, mi_onlyjournal:bool, mi_excljournal:bool, mi_post:bool, mi_showrelease:bool, mi_break:bool, id_flag:string):
@@ -1672,13 +1669,10 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
 
         custom_record()
 
-
     if from_date == None:
-
         return generate_output()
 
     if to_date == None:
-
         return generate_output()
 
     # for queasy in db_session.query(Queasy).filter(
@@ -1702,10 +1696,8 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
     try:
         journal_list()
     except Exception as e:
-        pass
-        # tb = traceback.format_exc()
-        # lp.write_log("error",f"Exception occurred:\n{tb}\n","log_oscar.txt")
-
+        tb = traceback.format_exc()
+        lp.write_log("error",f"Exception occurred:\n{tb}\n")
 
     write_session_only.close()
 

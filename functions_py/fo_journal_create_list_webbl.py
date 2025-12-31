@@ -8,6 +8,8 @@ from decimal import Decimal
 from datetime import date, datetime
 from models import Queasy, Artikel, Htparam
 
+from functions import log_program as lp
+
 import time
 
 fo_journal_list_data, Fo_journal_list = create_model("Fo_journal_list", {"datum":date, "c":string, "roomnumber":string, "nsflag":string, "mbflag":string, "shift":string, "billno":int, "artno":int, "bezeich":string, "voucher":string, "depart":string, "outlet":string, "qty":int, "amount":Decimal, "guestname":string, "billrcvr":string, "zeit":string, "id":string, "sysdate":date, "remark":string, "checkin":date, "checkout":date, "segcode":string, "amt_nett":Decimal, "service":Decimal, "vat":Decimal, "vat_percentage":Decimal, "serv_percentage":Decimal, "deptno":int, "nationality":string, "resnr":int, "book_source":string, "resname":string})
@@ -52,7 +54,7 @@ def fo_journal_create_list_webbl(id_flag:string, fo_journal_list_data:[Fo_journa
         if count >= 1000:
             break
 
-        if tmp_count == 0 and retry > 20:
+        if tmp_count == 0 and retry > 1:
             break
 
         if tmp_count > 0 and tmp_count == count:
@@ -61,7 +63,7 @@ def fo_journal_create_list_webbl(id_flag:string, fo_journal_list_data:[Fo_journa
         tmp_count = count
         retry += 1
 
-        time.sleep(0.3)
+        time.sleep(0.5)
 
     for queasy_char3, queasy_logi1, queasy_recid in db_session.query(Queasy.char3, 
                                                                      Queasy.logi1, 
@@ -81,13 +83,6 @@ def fo_journal_create_list_webbl(id_flag:string, fo_journal_list_data:[Fo_journa
 
         fo_journal_list = Fo_journal_list()
         fo_journal_list_data.append(fo_journal_list)
-
-        # tmp_date = ""
-
-        # if substring(queasy_str1, 0, 8).strip() == "":
-        #     tmp_date = ""
-        # else:
-        #     tmp_date = date(datetime.strptime(substring(queasy_str1, 6, 2), "%y").year, int(substring(queasy_str1, 0, 2)), int(substring(queasy_str1, 3, 2)))
 
         fo_journal_list.datum = substring(queasy_str1, 0, 8)
         fo_journal_list.c = trim(substring(queasy_str2, 0, 2))
@@ -169,7 +164,9 @@ def fo_journal_create_list_webbl(id_flag:string, fo_journal_list_data:[Fo_journa
              (Tqueasy.key == 285) & (Tqueasy.char1 == ("FO Transaction")) & (Tqueasy.number1 == 0) & (Tqueasy.char2 == (id_flag))).first()
 
     if tqueasy:
+
         db_session.refresh(tqueasy, with_for_update=True)
         db_session.delete(tqueasy)
+        db_session.commit()
 
     return generate_output()
