@@ -8,10 +8,6 @@ from decimal import Decimal
 from datetime import date, datetime
 from models import Queasy, Artikel, Htparam
 
-from functions import log_program as lp
-
-import time
-
 fo_journal_list_data, Fo_journal_list = create_model("Fo_journal_list", {"datum":date, "c":string, "roomnumber":string, "nsflag":string, "mbflag":string, "shift":string, "billno":int, "artno":int, "bezeich":string, "voucher":string, "depart":string, "outlet":string, "qty":int, "amount":Decimal, "guestname":string, "billrcvr":string, "zeit":string, "id":string, "sysdate":date, "remark":string, "checkin":date, "checkout":date, "segcode":string, "amt_nett":Decimal, "service":Decimal, "vat":Decimal, "vat_percentage":Decimal, "serv_percentage":Decimal, "deptno":int, "nationality":string, "resnr":int, "book_source":string, "resname":string})
 
 def fo_journal_create_list_webbl(id_flag:string, fo_journal_list_data:[Fo_journal_list]):
@@ -43,27 +39,28 @@ def fo_journal_create_list_webbl(id_flag:string, fo_journal_list_data:[Fo_journa
 
         return {"done_flag": done_flag, "fo-journal-list": fo_journal_list_data}
 
-    count = retry = tmp_count = 0
-    while True:
-        count = db_session.query(Queasy).filter(
-            (Queasy.key == 280) &
-            (Queasy.char1 == "FO Transaction") &
-            (Queasy.char2 == (id_flag))
-        ).count()
+    # Oscar - disable time sleep to increase speed (not needed)
+    # count = retry = tmp_count = 0
+    # while True:
+    #     count = db_session.query(Queasy).filter(
+    #         (Queasy.key == 280) &
+    #         (Queasy.char1 == "FO Transaction") &
+    #         (Queasy.char2 == (id_flag))
+    #     ).count()
 
-        if count >= 1000:
-            break
+    #     if count >= 1000:
+    #         break
 
-        if tmp_count == 0 and retry > 1:
-            break
+    #     if tmp_count == 0 and retry > 1:
+    #         break
 
-        if tmp_count > 0 and tmp_count == count:
-            break
+    #     if tmp_count > 0 and tmp_count == count:
+    #         break
 
-        tmp_count = count
-        retry += 1
+    #     tmp_count = count
+    #     retry += 1
 
-        time.sleep(0.5)
+    #     time.sleep(0.5)
 
     for queasy_char3, queasy_logi1, queasy_recid in db_session.query(Queasy.char3, 
                                                                      Queasy.logi1, 
@@ -71,7 +68,7 @@ def fo_journal_create_list_webbl(id_flag:string, fo_journal_list_data:[Fo_journa
                                                               .filter((Queasy.key == 280) & 
                                                                       (Queasy.char1 == ("FO Transaction")) & 
                                                                       (Queasy.char2 == (id_flag)))\
-                                                              .order_by(Queasy.number1).yield_per(10000):
+                                                              .order_by(Queasy.number1).yield_per(100):
 
         
         counter = counter + 1
@@ -141,8 +138,6 @@ def fo_journal_create_list_webbl(id_flag:string, fo_journal_list_data:[Fo_journa
 
         bqueasy = db_session.query(Bqueasy).filter(Bqueasy._recid == queasy_recid).with_for_update().first()
         db_session.delete(bqueasy)
-    
-    db_session.commit()
 
     pqueasy = db_session.query(Pqueasy).filter(
              (Pqueasy.key == 280) & (Pqueasy.char1 == ("FO Transaction")) & (Pqueasy.char2 == (id_flag))).first()
@@ -167,6 +162,5 @@ def fo_journal_create_list_webbl(id_flag:string, fo_journal_list_data:[Fo_journa
 
         db_session.refresh(tqueasy, with_for_update=True)
         db_session.delete(tqueasy)
-        db_session.commit()
 
     return generate_output()
