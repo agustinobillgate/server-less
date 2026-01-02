@@ -14,6 +14,7 @@ from functions.calc_servvat import calc_servvat
 from models import Guest, Artikel, Queasy, Htparam, Bill, Bill_line, Res_line, Reservation, Sourccod, Segment, Genstat, History, Guestseg, Debitor, Hoteldpt, Billjournal, H_bill, Bk_veran, Arrangement, Argt_line, H_journal, H_bill_line
 from functions.more_additional_functions import format_fixed_length, handling_negative
 
+from types import SimpleNamespace
 from functions import log_program as lp
 import traceback
 import time
@@ -78,6 +79,16 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
     )
     # Oscar - end - create new session with same search_path for write operation to db and maintain yield__per connection still active
 
+    # Oscar - start - create new session with same search_path for looping operation and stream result
+    LoopingSessionOnly = sessionmaker(bind=localEngine)
+
+    looping_session_only = LoopingSessionOnly()
+
+    looping_session_only.execute(
+        text(f"SET search_path TO {search_path}")
+    )
+    # Oscar - end - create new session with same search_path for looping operation and stream result
+
 
     def generate_output():
         nonlocal gtot, output_list_data, curr_date, descr1, voucher_no, ind, indexing, gdelimiter, roomnumber, zinrdate, billnumber, curr_str, curr_resnr, serv, vat, netto, temp_str, hoteldept, shift, temp1, temp2, counter, isoutletshift, guest, artikel, queasy, htparam, bill, bill_line, res_line, reservation, sourccod, segment, genstat, history, guestseg, debitor, hoteldpt, billjournal, h_bill, bk_veran, arrangement, argt_line, h_journal, h_bill_line
@@ -126,7 +137,7 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
             return inp_char
 
 
-    def custom_record(artikel_prev:Artikel=None, billjournal_prev:Billjournal=None):
+    def custom_record(artikel_prev, billjournal_prev):
 
         nonlocal gtot, output_list_data, curr_date, descr1, voucher_no, ind, indexing, gdelimiter, serv, vat, netto, temp_str, hoteldept, shift, temp1, temp2, counter, isoutletshift, guest, artikel, queasy, htparam, bill, bill_line, res_line, reservation, sourccod, segment, genstat, history, guestseg, debitor, hoteldpt, billjournal, h_bill, bk_veran, arrangement, argt_line, h_journal, h_bill_line
         nonlocal from_art, to_art, from_dept, to_dept, from_date, to_date, sorttype, exclude_artrans, long_digit, foreign_flag, mi_onlyjournal, mi_excljournal, mi_post, mi_showrelease, mi_break, id_flag
@@ -708,7 +719,9 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
             pass
 
         write_session_only.add(queasy)
-        write_session_only.commit()
+
+        if counter % 200 == 0:
+            write_session_only.commit()
 
 
     def journal_list():
@@ -756,7 +769,7 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
         #     it_exist = False
         #     qty = 0
 
-        q_stmt = db_session.query(Artikel.departement,
+        q_stmt = looping_session_only.query(Artikel.departement,
                                     Artikel.artart,
                                     Artikel.artnr,
                                     Artikel.bezeich,
@@ -811,7 +824,7 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
         artikel_prev = None
         billjournal_prev = None
 
-        for row in q_stmt.yield_per(1000):
+        for row in q_stmt.yield_per(1000).execution_options(stream_results=True):
 
             (artikel_department, artikel_artart, artikel_artnr, artikel_bezeich, artikel_service_code, artikel_mwst_code, artikel_bezaendern, artikel_recid, billjournal_bediener_nr, billjournal_kassarapport, billjournal_betrag, billjournal_rechnr, billjournal_artnr, billjournal_bill_datum, billjournal_zinr, billjournal_zeit, billjournal_stornogrund, billjournal_bezeich, billjournal_betriebsnr, billjournal_departement, billjournal_anzahl, billjournal_fremdwaehrng, billjournal_userinit, billjournal_sysdate, billjournal_prev_recid) = row
 
@@ -852,35 +865,17 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
 
                 curr_artikel_recid = artikel_recid
 
-            artikel_prev = Artikel()
-            artikel_prev.departement = artikel_department
+            artikel_prev = SimpleNamespace()
             artikel_prev.artart = artikel_artart
-            artikel_prev.artnr = artikel_artnr
-            artikel_prev.bezeich = artikel_bezeich
-            artikel_prev.service_code = artikel_service_code
-            artikel_prev.mwst_code = artikel_mwst_code
-            artikel_prev.bezaendern = artikel_bezaendern
-            artikel_prev._recid = artikel_recid
-
-            billjournal_prev = Billjournal()
-            billjournal_prev.bediener_nr = billjournal_bediener_nr
-            billjournal_prev.kassarapport = billjournal_kassarapport
-            billjournal_prev.betrag = billjournal_betrag
+            
+            billjournal_prev = SimpleNamespace()
             billjournal_prev.rechnr = billjournal_rechnr
             billjournal_prev.artnr = billjournal_artnr
             billjournal_prev.bill_datum = billjournal_bill_datum
             billjournal_prev.zinr = billjournal_zinr
+            billjournal_prev.betrag = billjournal_betrag
             billjournal_prev.zeit = billjournal_zeit
-            billjournal_prev.stornogrund = billjournal_stornogrund
-            billjournal_prev.bezeich = billjournal_bezeich
-            billjournal_prev.betriebsnr = billjournal_betriebsnr
-            billjournal_prev.departement = billjournal_departement
-            billjournal_prev.anzahl = billjournal_anzahl
-            billjournal_prev.fremdwaehrng = billjournal_fremdwaehrng
-            billjournal_prev.userinit = billjournal_userinit
-            billjournal_prev.sysdate = billjournal_sysdate
-            billjournal_prev._recid = billjournal_prev_recid
-
+            
             do_it = True
 
             if (mi_onlyjournal  and billjournal_bediener_nr == 0) or (mi_excljournal  and billjournal_bediener_nr != 0):
@@ -1667,7 +1662,7 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
 
         gtot =  to_decimal(tot)
 
-        custom_record()
+        custom_record(artikel_prev, billjournal_prev)
 
     if from_date == None:
         return generate_output()
@@ -1699,6 +1694,9 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
         tb = traceback.format_exc()
         lp.write_log("error",f"Exception occurred:\n{tb}\n")
 
+    write_session_only.commit()
+
     write_session_only.close()
+    looping_session_only.close()
 
     return generate_output()
