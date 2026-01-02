@@ -16,6 +16,7 @@ from functions.more_additional_functions import format_fixed_length, handling_ne
 
 from functions import log_program as lp
 import traceback
+import time
 
 def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, from_date:date, to_date:date, sorttype:int, exclude_artrans:bool, long_digit:bool, foreign_flag:bool, mi_onlyjournal:bool, mi_excljournal:bool, mi_post:bool, mi_showrelease:bool, mi_break:bool, id_flag:string):
 
@@ -650,10 +651,6 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
         queasy.char3 = output_list.str + "|" + queasy_str
         queasy.number1 = counter
 
-
-        write_session_only.add(queasy)
-        write_session_only.commit()
-
         if mi_break:
             queasy.logi1 = mi_break
         else:
@@ -709,6 +706,9 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
 
         if hoteldpt:
             pass
+
+        write_session_only.add(queasy)
+        write_session_only.commit()
 
 
     def journal_list():
@@ -811,7 +811,7 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
         artikel_prev = None
         billjournal_prev = None
 
-        for row in q_stmt.yield_per(100):
+        for row in q_stmt.yield_per(1000):
 
             (artikel_department, artikel_artart, artikel_artnr, artikel_bezeich, artikel_service_code, artikel_mwst_code, artikel_bezaendern, artikel_recid, billjournal_bediener_nr, billjournal_kassarapport, billjournal_betrag, billjournal_rechnr, billjournal_artnr, billjournal_bill_datum, billjournal_zinr, billjournal_zeit, billjournal_stornogrund, billjournal_bezeich, billjournal_betriebsnr, billjournal_departement, billjournal_anzahl, billjournal_fremdwaehrng, billjournal_userinit, billjournal_sysdate, billjournal_prev_recid) = row
 
