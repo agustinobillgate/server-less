@@ -149,6 +149,7 @@ confirmSignature1,confirm_signature_1bl
 queueView,view_queuebl
 esignSelectUsr,esign_select_usrbl
 esignSetup1,esign_setup_1bl
+esignSetup2,esign_setup_2bl
 nsCashlessTools,ns_inv_cashless_toolsbl
 nsCashlessGetLicense,prepare_get_license_cashlessbl
 nsCashlessToolsPrepare,prepare_ns_inv_cashless_toolsbl
