@@ -190,6 +190,7 @@ def gl_joulist2_web_1bl(from_date:date, to_date:date, last_2yr:date, close_year:
 
         if bqueasy:
             bqueasy.number1 = 0
+            db_session.commit()
 
     except Exception as e:
         tb = traceback.format_exc()
