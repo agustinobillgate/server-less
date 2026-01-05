@@ -60,6 +60,7 @@ def fo_journal_list_2_webbl(from_art:int, to_art:int, from_dept:int, to_dept:int
             done_flag = True
             db_session.refresh(bqueasy, with_for_update=True)
             bqueasy.number1 = 0
+            db_session.commit()
 
         fo_journal_list_data.clear()
 
