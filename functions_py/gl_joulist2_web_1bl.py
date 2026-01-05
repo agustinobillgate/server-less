@@ -8,6 +8,10 @@ from decimal import Decimal
 from datetime import date
 from functions.gl_joulist_2_webbl import gl_joulist_2_webbl
 from models import Queasy, Paramtext
+from functions import log_program as lp
+
+import traceback
+
 
 def gl_joulist2_web_1bl(from_date:date, to_date:date, last_2yr:date, close_year:date, journaltype:int, excl_other:bool, other_dept:bool, summ_date:bool, from_fibu:string, to_fibu:string, sorttype:int, from_dept:int, journaltype1:int, cashflow:bool, f_note:string, from_main:int, idflag:string):
 
@@ -19,7 +23,6 @@ def gl_joulist2_web_1bl(from_date:date, to_date:date, last_2yr:date, close_year:
     crdate:string = ""
     cgdate:string = ""
     counter:int = 0
-    curr_time:int = 0
     queasy = paramtext = None
 
     out_list = g_list = j_list = bqueasy = tqueasy = None
@@ -35,7 +38,7 @@ def gl_joulist2_web_1bl(from_date:date, to_date:date, last_2yr:date, close_year:
     db_session = local_storage.db_session
 
     def generate_output():
-        nonlocal str, htl_no, tdate, crdate, cgdate, counter, curr_time, queasy, paramtext
+        nonlocal str, htl_no, tdate, crdate, cgdate, counter, queasy, paramtext
         nonlocal from_date, to_date, last_2yr, close_year, journaltype, excl_other, other_dept, summ_date, from_fibu, to_fibu, sorttype, from_dept, journaltype1, cashflow, f_note, from_main, idflag
         nonlocal bqueasy, tqueasy
 
@@ -47,7 +50,7 @@ def gl_joulist2_web_1bl(from_date:date, to_date:date, last_2yr:date, close_year:
 
     def decode_string(in_str:string):
 
-        nonlocal str, htl_no, tdate, crdate, cgdate, counter, curr_time, queasy, paramtext
+        nonlocal str, htl_no, tdate, crdate, cgdate, counter, queasy, paramtext
         nonlocal from_date, to_date, last_2yr, close_year, journaltype, excl_other, other_dept, summ_date, from_fibu, to_fibu, sorttype, from_dept, journaltype1, cashflow, f_note, from_main, idflag
         nonlocal bqueasy, tqueasy
 
@@ -72,122 +75,124 @@ def gl_joulist2_web_1bl(from_date:date, to_date:date, last_2yr:date, close_year:
 
         return generate_inner_output()
 
-    queasy = Queasy()
-    db_session.add(queasy)
-
-    queasy.key = 285
-    queasy.char1 = "General Ledger"
-    queasy.number1 = 1
-    queasy.char2 = idflag
-
-
-    pass
-    curr_time = get_current_time_in_seconds()
-
-    paramtext = get_cache (Paramtext, {"txtnr": [(eq, 243)]})
-
-    if paramtext and paramtext.ptexte != "":
-        htl_no = decode_string(paramtext.ptexte)
-    out_list_data = get_output(gl_joulist_2_webbl(from_date, to_date, last_2yr, close_year, journaltype, excl_other, other_dept, summ_date, from_fibu, to_fibu, sorttype, from_dept, journaltype1, cashflow, f_note, from_main))
-    curr_time = get_current_time_in_seconds()
-
-    out_list = query(out_list_data, first=True)
-    while None != out_list:
-
-        if length(out_list.bemerk) > 100:
-            out_list.bemerk = substring(out_list.bemerk, 0, 100)
-
-        if length(out_list.bezeich) > 100:
-            out_list.bezeich = substring(out_list.bezeich, 0, 100)
-
-        if length(out_list.refno) > 100:
-            out_list.refno = substring(out_list.refno, 0, 100)
-
-
-        out_list.bezeich = replace_str(out_list.bezeich, chr_unicode(10) , "")
-        out_list.bezeich = replace_str(out_list.bezeich, chr_unicode(13) , "")
-        out_list.refno = replace_str(out_list.refno, chr_unicode(10) , "")
-        out_list.refno = replace_str(out_list.refno, chr_unicode(13) , "")
-        out_list.bemerk = replace_str(out_list.bemerk, chr_unicode(10) , "")
-        out_list.bemerk = replace_str(out_list.bemerk, chr_unicode(13) , "")
-        out_list.bemerk = replace_str(out_list.bemerk, "|", " ")
-        out_list.bezeich = replace_str(out_list.bezeich, "|", " ")
-        out_list.refno = replace_str(out_list.refno, "|", " ")
-        counter = counter + 1
-
-        if out_list.uid == None:
-            out_list.uid = ""
-
-        if out_list.trans_date == None:
-            tdate = ""
-
-
-        else:
-            tdate = to_string(out_list.trans_date)
-
-        if out_list.created == None:
-            crdate = ""
-
-
-        else:
-            crdate = to_string(out_list.created)
-
-        if out_list.chgdate == None:
-            cgdate = ""
-
-
-        else:
-            cgdate = to_string(out_list.chgdate)
-
-
+    try:
         queasy = Queasy()
         db_session.add(queasy)
 
-        queasy.key = 280
+        queasy.key = 285
         queasy.char1 = "General Ledger"
-        queasy.char3 = idflag
-        queasy.char2 = to_string(out_list.s_recid) + "|" +\
-                out_list.marked + "|" +\
-                out_list.fibukonto + "|" +\
-                to_string(out_list.jnr) + "|" +\
-                to_string(out_list.jtype) + "|" +\
-                out_list.bemerk + "|" +\
-                tdate + "|" +\
-                out_list.bezeich + "|" +\
-                out_list.number1 + "|" +\
-                to_string(out_list.debit) + "|" +\
-                to_string(out_list.credit) + "|" +\
-                to_string(out_list.balance) + "|" +\
-                out_list.debit_str + "|" +\
-                out_list.credit_str + "|" +\
-                out_list.balance_str + "|" +\
-                out_list.refno + "|" +\
-                out_list.uid + "|" +\
-                crdate + "|" +\
-                out_list.chgid + "|" +\
-                cgdate + "|" +\
-                out_list.tax_code + "|" +\
-                out_list.tax_amount + "|" +\
-                out_list.tot_amt + "|" +\
-                to_string(out_list.approved) + "|" +\
-                out_list.prev_bal + "|" +\
-                to_string(out_list.dept_code) + "|" +\
-                to_string(out_list.coa_bezeich)
-        queasy.number1 = counter
+        queasy.number1 = 1
+        queasy.char2 = idflag
 
-        out_list = query(out_list_data, next=True)
+        db_session.commit()
 
-    # Rd, 25/11/2025, with_for_update added
-    # bqueasy = get_cache (Queasy, {"key": [(eq, 285)],"char1": [(eq, "general ledger")],"char2": [(eq, idflag)]})
-    bqueasy = db_session.query(Queasy).filter(
-             (Queasy.key == 285) & (func.lower(Queasy.char1) == ("General Ledger").lower()) & (Queasy.char2 == idflag)).with_for_update().first()
+        # paramtext = get_cache (Paramtext, {"txtnr": [(eq, 243)]})
+        paramtext = db_session.query(Paramtext).filter((Paramtext.txtnr == 243)).first()
 
-    if bqueasy:
-        pass
-        bqueasy.number1 = 0
+        if paramtext and paramtext.ptexte != "":
+            htl_no = decode_string(paramtext.ptexte)
+
+        out_list_data = get_output(gl_joulist_2_webbl(from_date, to_date, last_2yr, close_year, journaltype, excl_other, other_dept, summ_date, from_fibu, to_fibu, sorttype, from_dept, journaltype1, cashflow, f_note, from_main, idflag))
+
+        # Start - Oscar - move Queasy creation to inside gl_joulist_2_webbl main loop
+        # out_list = query(out_list_data, first=True)
+        # while None != out_list:
+
+        #     if length(out_list.bemerk) > 100:
+        #         out_list.bemerk = substring(out_list.bemerk, 0, 100)
+
+        #     if length(out_list.bezeich) > 100:
+        #         out_list.bezeich = substring(out_list.bezeich, 0, 100)
+
+        #     if length(out_list.refno) > 100:
+        #         out_list.refno = substring(out_list.refno, 0, 100)
 
 
-        pass
-        pass
+        #     out_list.bezeich = replace_str(out_list.bezeich, chr_unicode(10) , "")
+        #     out_list.bezeich = replace_str(out_list.bezeich, chr_unicode(13) , "")
+        #     out_list.refno = replace_str(out_list.refno, chr_unicode(10) , "")
+        #     out_list.refno = replace_str(out_list.refno, chr_unicode(13) , "")
+        #     out_list.bemerk = replace_str(out_list.bemerk, chr_unicode(10) , "")
+        #     out_list.bemerk = replace_str(out_list.bemerk, chr_unicode(13) , "")
+        #     out_list.bemerk = replace_str(out_list.bemerk, "|", " ")
+        #     out_list.bezeich = replace_str(out_list.bezeich, "|", " ")
+        #     out_list.refno = replace_str(out_list.refno, "|", " ")
+        #     counter = counter + 1
+
+        #     if out_list.uid == None:
+        #         out_list.uid = ""
+
+        #     if out_list.trans_date == None:
+        #         tdate = ""
+
+
+        #     else:
+        #         tdate = to_string(out_list.trans_date)
+
+        #     if out_list.created == None:
+        #         crdate = ""
+
+
+        #     else:
+        #         crdate = to_string(out_list.created)
+
+        #     if out_list.chgdate == None:
+        #         cgdate = ""
+
+
+        #     else:
+        #         cgdate = to_string(out_list.chgdate)
+
+
+        #     queasy = Queasy()
+        #     db_session.add(queasy)
+
+        #     queasy.key = 280
+        #     queasy.char1 = "General Ledger"
+        #     queasy.char3 = idflag
+        #     queasy.char2 = to_string(out_list.s_recid) + "|" +\
+        #             out_list.marked + "|" +\
+        #             out_list.fibukonto + "|" +\
+        #             to_string(out_list.jnr) + "|" +\
+        #             to_string(out_list.jtype) + "|" +\
+        #             out_list.bemerk + "|" +\
+        #             tdate + "|" +\
+        #             out_list.bezeich + "|" +\
+        #             out_list.number1 + "|" +\
+        #             to_string(out_list.debit) + "|" +\
+        #             to_string(out_list.credit) + "|" +\
+        #             to_string(out_list.balance) + "|" +\
+        #             out_list.debit_str + "|" +\
+        #             out_list.credit_str + "|" +\
+        #             out_list.balance_str + "|" +\
+        #             out_list.refno + "|" +\
+        #             out_list.uid + "|" +\
+        #             crdate + "|" +\
+        #             out_list.chgid + "|" +\
+        #             cgdate + "|" +\
+        #             out_list.tax_code + "|" +\
+        #             out_list.tax_amount + "|" +\
+        #             out_list.tot_amt + "|" +\
+        #             to_string(out_list.approved) + "|" +\
+        #             out_list.prev_bal + "|" +\
+        #             to_string(out_list.dept_code) + "|" +\
+        #             to_string(out_list.coa_bezeich)
+        #     queasy.number1 = counter
+
+        #     out_list = query(out_list_data, next=True)
+        # End - Oscar - move Queasy creation to inside gl_joulist_2_webbl main loop
+
+        # Rd, 25/11/2025, with_for_update added
+        # bqueasy = get_cache (Queasy, {"key": [(eq, 285)],"char1": [(eq, "general ledger")],"char2": [(eq, idflag)]})
+
+        bqueasy = db_session.query(Queasy).filter(
+                (Queasy.key == 285) & (func.lower(Queasy.char1) == ("General Ledger").lower()) & (Queasy.char2 == idflag)).with_for_update().first()
+
+        if bqueasy:
+            bqueasy.number1 = 0
+
+    except Exception as e:
+        tb = traceback.format_exc()
+        lp.write_log("error",f"Exception occurred:\n{tb}\n")
 
     return generate_output()
