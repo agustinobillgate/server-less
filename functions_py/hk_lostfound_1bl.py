@@ -1,5 +1,10 @@
 #using conversion tools version: 1.0.0.117
 
+# =====================
+# Rulita, 05/01/26
+# - Fix reportdate null
+# =====================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -72,7 +77,10 @@ def hk_lostfound_1bl(casetype:int, comments:string, sorttype:int, fr_date:date, 
                 elif i == 3:
                     s_list.reportby = entry(2, queasy.char3, "|")
                 elif i == 4:
-                    s_list.report_date = date_mdy(entry(3, queasy.char3, "|"))
+                    # Rulita, 05/01/26
+                    # Fix reportdate null
+                    # s_list.report_date = date_mdy(entry(3, queasy.char3, "|"))
+                    s_list.report_date = entry(3, queasy.char3, "|")
                 elif i == 5:
                     s_list.phoneno = entry(4, queasy.char3, "|")
                 elif i == 6:
