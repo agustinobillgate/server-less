@@ -149,6 +149,7 @@ Common/confirmSignature1,confirm_signature_1bl
 Common/queueView,view_queuebl
 Common/esignSelectUsr,esign_select_usrbl
 Common/esignSetup1,esign_setup_1bl
+Common/esignSetup2,esign_setup_2bl
 Common/nsCashlessTools,ns_inv_cashless_toolsbl
 Common/nsCashlessGetLicense,prepare_get_license_cashlessbl
 Common/nsCashlessToolsPrepare,prepare_ns_inv_cashless_toolsbl
