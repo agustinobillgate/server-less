@@ -8,10 +8,18 @@
 #----------------------------------------
 # Rd, 24/11/2025, Update last counter 
 #----------------------------------------
+# Rulita, 06/01/26
+# - Fixing first kurang kurung()
+# - Fix error compile rhbline.Rhbline.nr
+# - Fix error compile h_bill -> hbill
+#----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import H_bill, Htparam, Counters, Hoteldpt, H_bill_line, H_mjourn, H_journal, Queasy
+
+# For debug
+# from functions import log_program
 
 
 temp_data, Temp = create_model("Temp", {"pos":int, "bezeich":string, "artnr":int})
@@ -82,11 +90,11 @@ def ts_splitbill_move_tablebl(temp_data:[Temp], rhbline_data:[Rhbline], tableno:
         if bilrecid != 0:
 
             # hbill = get_cache (H_bill, {"_recid": [(eq, bilrecid)]})
-            h_bill = db_session.query(Hbill).filter(Hbill._recid == bilrecid).with_for_update().first()
+            hbill = db_session.query(Hbill).filter(Hbill._recid == bilrecid).with_for_update().first()
 
             # Rd 3/8/2025
             # if not avail return
-            if h_bill is None:
+            if hbill is None:
                 return
         else:
 
@@ -111,13 +119,10 @@ def ts_splitbill_move_tablebl(temp_data:[Temp], rhbline_data:[Rhbline], tableno:
 
             hbill.tischnr = tableno
             hbill.departement = dept
-            hbill.kellner_nr = curr_waiter
-            
+            hbill.kellner_nr = curr_waiter        
             hbill.rechnr = counters.counter
-
-
             hbill.belegung = 1
-
+            db_session.commit()
 
             pass
         pass
@@ -125,7 +130,7 @@ def ts_splitbill_move_tablebl(temp_data:[Temp], rhbline_data:[Rhbline], tableno:
 
         for temp in query(temp_data):
 
-            rhbline = query(rhbline_data, filters=(lambda rhbline: rhbline.Rhbline.nr == temp.pos), first=True)
+            rhbline = query(rhbline_data, filters=(lambda rhbline: rhbline.nr == temp.pos), first=True)
 
             # h_bill_line = get_cache (H_bill_line, {"_recid": [(eq, rhbline.rid)]})
             h_bill_line = db_session.query(H_bill_line).filter(H_bill_line._recid == rhbline.rid).with_for_update().first()
@@ -162,13 +167,12 @@ def ts_splitbill_move_tablebl(temp_data:[Temp], rhbline_data:[Rhbline], tableno:
                 h_journal = db_session.query(H_journal).filter(
                          (H_journal.bill_datum == h_bill_line.bill_datum) & (H_journal.departement == h_bill_line.departement) & 
                          (H_journal.rechnr == h_bill_line.rechnr) & (H_journal.artnr == h_bill_line.artnr) & 
-                         (H_journal.zeit == h_bill_line.zeit)).with_for_update().first
+                         (H_journal.zeit == h_bill_line.zeit)).with_for_update().first()
                 if h_journal:
                     h_journal.tischnr = tableno
                     h_journal.rechnr = hbill.rechnr
-
-
                     pass
+
             h_bill_line.waehrungsnr = 0
             h_bill_line.tischnr = tableno
             h_bill_line.rechnr = hbill.rechnr
