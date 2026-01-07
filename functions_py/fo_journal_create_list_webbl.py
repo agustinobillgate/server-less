@@ -68,7 +68,7 @@ def fo_journal_create_list_webbl(id_flag:string, fo_journal_list_data:[Fo_journa
                                                               .filter((Queasy.key == 280) & 
                                                                       (Queasy.char1 == ("FO Transaction")) & 
                                                                       (Queasy.char2 == (id_flag)))\
-                                                              .order_by(Queasy.number1).yield_per(1000):
+                                                              .order_by(Queasy.number1).yield_per(100):
 
         
         counter = counter + 1

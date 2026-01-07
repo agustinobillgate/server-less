@@ -830,7 +830,7 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
         artikel_prev = None
         billjournal_prev = None
 
-        for row in q_stmt.yield_per(1000).execution_options(stream_results=True):
+        for row in q_stmt.yield_per(100).execution_options(stream_results=True):
 
             (artikel_department, artikel_artart, artikel_artnr, artikel_bezeich, artikel_service_code, artikel_mwst_code, artikel_bezaendern, artikel_recid, billjournal_bediener_nr, billjournal_kassarapport, billjournal_betrag, billjournal_rechnr, billjournal_artnr, billjournal_bill_datum, billjournal_zinr, billjournal_zeit, billjournal_stornogrund, billjournal_bezeich, billjournal_betriebsnr, billjournal_departement, billjournal_anzahl, billjournal_fremdwaehrng, billjournal_userinit, billjournal_sysdate, billjournal_prev_recid) = row
 
