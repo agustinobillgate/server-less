@@ -63,9 +63,15 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
     db_session = local_storage.db_session
 
     # Oscar - start - create new session with same search_path for write operation to db and maintain yield__per connection still active
-    search_path = db_session.execute(
-        text("SELECT current_schema()")
-    ).scalar()
+    sql = text("""
+    SELECT n.nspname AS full_name
+    FROM pg_class c
+    JOIN pg_namespace n ON n.oid = c.relnamespace
+    WHERE c.oid = CAST(:tbl AS regclass) 
+    LIMIT 1
+    """)
+
+    search_path = db_session.execute(sql, {"tbl": "htparam"}).scalar()
 
     localBind = db_session.get_bind()
     localEngine = localBind.engine if isinstance(localBind, Connection) else localBind
@@ -824,7 +830,7 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
         artikel_prev = None
         billjournal_prev = None
 
-        for row in q_stmt.yield_per(1000).execution_options(stream_results=True):
+        for row in q_stmt.yield_per(100).execution_options(stream_results=True):
 
             (artikel_department, artikel_artart, artikel_artnr, artikel_bezeich, artikel_service_code, artikel_mwst_code, artikel_bezaendern, artikel_recid, billjournal_bediener_nr, billjournal_kassarapport, billjournal_betrag, billjournal_rechnr, billjournal_artnr, billjournal_bill_datum, billjournal_zinr, billjournal_zeit, billjournal_stornogrund, billjournal_bezeich, billjournal_betriebsnr, billjournal_departement, billjournal_anzahl, billjournal_fremdwaehrng, billjournal_userinit, billjournal_sysdate, billjournal_prev_recid) = row
 
