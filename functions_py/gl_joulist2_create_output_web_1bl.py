@@ -100,7 +100,7 @@ def gl_joulist2_create_output_web_1bl(idflag:string, out_list_data:[Out_list]):
     # while None != queasy:
 
     queasy = Queasy()
-    for queasy_char2, queasy_recid in db_session.query(Queasy.char2, Queasy._recid).filter((Queasy.key == 280) & (func.lower(Queasy.char1) == 'general ledger') & (Queasy.char3 == idflag)).order_by(Queasy._recid).yield_per(1000):
+    for queasy_char2, queasy_recid in db_session.query(Queasy.char2, Queasy._recid).filter((Queasy.key == 280) & (func.lower(Queasy.char1) == 'general ledger') & (Queasy.char3 == idflag)).order_by(Queasy._recid).yield_per(100):
         counter = counter + 1
 
         if counter > 500:
