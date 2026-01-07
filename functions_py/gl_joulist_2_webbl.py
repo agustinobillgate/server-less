@@ -36,9 +36,15 @@ def gl_joulist_2_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
     db_session = local_storage.db_session
 
     # Oscar - start - create new session with same search_path for write operation to db and maintain yield__per connection still active
-    search_path = db_session.execute(
-        text("SELECT current_schema()")
-    ).scalar()
+    sql = text("""
+    SELECT n.nspname AS full_name
+    FROM pg_class c
+    JOIN pg_namespace n ON n.oid = c.relnamespace
+    WHERE c.oid = CAST(:tbl AS regclass) 
+    LIMIT 1
+    """)
+
+    search_path = db_session.execute(sql, {"tbl": "htparam"}).scalar()
 
     localBind = db_session.get_bind()
     localEngine = localBind.engine if isinstance(localBind, Connection) else localBind
@@ -96,6 +102,7 @@ def gl_joulist_2_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
         if inp_date == None:
             return "" * 10
         else:
+            # return f"{gl_jouhdr.datum.strftime("%m/%d/%y")}"
             return f"{gl_jouhdr.datum.strftime("%y").zfill(4)}-{gl_jouhdr.datum.strftime("%m-%d")}"
     
     def handle_null_char(inp_char:string):
@@ -173,7 +180,7 @@ def gl_joulist_2_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
         gl_jhdrhis = SimpleNamespace()
         gl_jourhis = SimpleNamespace()
 
-        for row in query.yield_per(1000).execution_options(stream_results=True):
+        for row in query.yield_per(100).execution_options(stream_results=True):
 
             (
                 gl_jhdrhis._recid,
@@ -262,7 +269,7 @@ def gl_joulist_2_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
 
         gl_jourhis_obj_list = {}
 
-        for gl_jourhis, gl_jhdrhis, gl_acct in main_q.yield_per(1000).execution_options(stream_results=True):
+        for gl_jourhis, gl_jhdrhis, gl_acct in main_q.yield_per(100).execution_options(stream_results=True):
             final_gl_jourhis = gl_jourhis
             final_gl_acct = gl_acct
             
@@ -592,7 +599,7 @@ def gl_joulist_2_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
         gl_jouhdr = SimpleNamespace()
         gl_journal = SimpleNamespace()
 
-        for row in query.yield_per(1000).execution_options(stream_results=True):
+        for row in query.yield_per(100).execution_options(stream_results=True):
 
             (
                 gl_jouhdr._recid,
@@ -683,7 +690,7 @@ def gl_joulist_2_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
 
         gl_journal_obj_list = {}
 
-        for gl_journal, gl_jouhdr, gl_acct in main_q.yield_per(1000).execution_options(stream_results=True):
+        for gl_journal, gl_jouhdr, gl_acct in main_q.yield_per(100).execution_options(stream_results=True):
             
             final_gl_journal = gl_journal
             final_gl_acct = gl_acct
@@ -1016,7 +1023,7 @@ def gl_joulist_2_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
             tmp_from_date = date_mdy(get_month(from_date) , 1, get_year(from_date))
             tmp_to_date = date_mdy(get_month(from_date) , get_day(from_date) - 1, get_year(from_date))
 
-            for hdrbuff, joubuff in looping_session_only.query(Hdrbuff, Joubuff).join(Joubuff, (Joubuff.jnr == Hdrbuff.jnr)).filter((Hdrbuff.datum >= tmp_from_date) & (Hdrbuff.datum <= tmp_to_date) & (Hdrbuff.activeflag <= 1) & (Joubuff.fibukonto == (fibu).lower())).order_by(Hdrbuff._recid, Joubuff._recid).yield_per(1000).execution_options(stream_results=True):
+            for hdrbuff, joubuff in looping_session_only.query(Hdrbuff, Joubuff).join(Joubuff, (Joubuff.jnr == Hdrbuff.jnr)).filter((Hdrbuff.datum >= tmp_from_date) & (Hdrbuff.datum <= tmp_to_date) & (Hdrbuff.activeflag <= 1) & (Joubuff.fibukonto == (fibu).lower())).order_by(Hdrbuff._recid, Joubuff._recid).yield_per(100).execution_options(stream_results=True):
                 prev_bal =  to_decimal(prev_bal) + to_decimal(joubuff.debit) - to_decimal(joubuff.credit)
 
         if gl_account.acc_type == 1 or gl_account.acc_type == 4:
