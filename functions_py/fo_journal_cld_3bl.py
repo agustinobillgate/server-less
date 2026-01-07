@@ -63,9 +63,15 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
     db_session = local_storage.db_session
 
     # Oscar - start - create new session with same search_path for write operation to db and maintain yield__per connection still active
-    search_path = db_session.execute(
-        text("SELECT current_schema()")
-    ).scalar()
+    sql = text("""
+    SELECT n.nspname AS full_name
+    FROM pg_class c
+    JOIN pg_namespace n ON n.oid = c.relnamespace
+    WHERE c.oid = CAST(:tbl AS regclass) 
+    LIMIT 1
+    """)
+
+    search_path = db_session.execute(sql, {"tbl": "htparam"}).scalar()
 
     localBind = db_session.get_bind()
     localEngine = localBind.engine if isinstance(localBind, Connection) else localBind
