@@ -284,6 +284,7 @@ update_field_mapping = {
    
     #updated 1.0.0.15
     "refno": "refNo",
+    "reportby": "reportBy",
     "voucherno": "voucherNo",
     "voucherno1": "voucherNo1",
     "voucherno2": "voucherNo2",
@@ -888,13 +889,16 @@ update_field_mapping = {
     "totpok":"totpOK",
     "ratecode":"rateCode",
     "present-guest":"Present-guest",
-    
+    "Rhbline":"Rhbline",
+    "Lhbline":"Lhbline",
     }
 
 docker_version += ".r"
-
+# vhpOU/splitbillSelectLmenu
 #updated 1.0.0.14
 update_table_name("vhpOU","splitbillPrepare","lhbline","Lhbline")
+update_table_name("vhpOU","splitbillPrepareCustom","lhbline","Lhbline")
+update_table_name("vhpOU","splitbillSelectLmenu","rhbline","Rhbline")
 
 #updated 1.0.0.15
 update_table_name("HouseKeeping","getStoreRoomDiscrepancyList","hkdiscrepancyList","hkDiscrepancyList")
@@ -1203,15 +1207,19 @@ def update_input_format(obj,input_data):
             #                                       frozenset, bool, bytes, bytearray, memoryview, type(None)} and \
             #     not param_data_type[0] in {int, decimal, float, complex, str, list, tuple, range, dict, set, 
             #                                       frozenset, bool, bytes, bytearray, memoryview, type(None)}:
-            elif not type(param_data_type[0]) in {int,  Decimal, float, complex, str, list, tuple, range, dict, set, 
-                                                  frozenset, bool, bytes, bytearray, memoryview, type(None)} and \
-                not param_data_type[0] in {int, Decimal, float, complex, str, list, tuple, range, dict, set, 
-                                                  frozenset, bool, bytes, bytearray, memoryview, type(None)}:
+            elif not type(param_data_type[0]) in {int,  Decimal, float, complex, str, list, tuple, range, dict, set, frozenset, bool, bytes, bytearray, memoryview, type(None)} \
+            and not param_data_type[0] in {int, Decimal, float, complex, str, list, tuple, range, dict, set, frozenset, bool, bytes, bytearray, memoryview, type(None)}:
                                                     
                 data_list = input_data[param_name]
+
                 if not isinstance(data_list,list):
                     input_data[param_name] = [data_list]
-                    data_list = input_data[param_name]   
+                    data_list = input_data[param_name] 
+
+                all_keys_from_input = list(
+                    {key.replace("_", "-") for d in data_list for key in d.keys()}
+                )
+
                 
                 if len(data_list) > 0:
                     fieldNameList = []
@@ -1239,11 +1247,11 @@ def update_input_format(obj,input_data):
 
 
                             # updated 1.0.0.5
-                            if not field.name in data_list[0]:
-                                if field.name.replace("_","-") in data_list[0]:
+                            if not field.name in all_keys_from_input:
+                                if field.name.replace("_","-") in all_keys_from_input:
                                     fieldNameList.append(field.name)
                                 else:
-                                    for field_name in data_list[0].keys():
+                                    for field_name in all_keys_from_input:
                                         if field.name == field_name.lower():
                                             fieldNameList.append(field_name)
                                             break
@@ -1252,7 +1260,6 @@ def update_input_format(obj,input_data):
                             #         # field.name.replace("_","-") in data_list):
                             #         field.name.replace("_","-") in data_list[0]):
                             #     fieldNameList.append(field.name)
-                            
                     if check_recid or len(fieldNameList) > 0 or len(dateFormatList) > 0 or len(boolFormatList) > 0:
                         for data in data_list:
                             if check_recid:
@@ -1260,10 +1267,13 @@ def update_input_format(obj,input_data):
                                     data["_recid"] = None
 
                             for name in fieldNameList:
+
                                 #updated 1.0.0.5
                                 data_field_name = name.replace("_","-")
-                                data[name.lower()] = data[data_field_name]
-                                data.pop(data_field_name)
+                                    
+                                if data_field_name in data.keys():
+                                    data[name.lower()] = data[data_field_name]
+                                    data.pop(data_field_name)
                             
                             for name in dateFormatList:
                                 # data[name] = get_date_temp_table(data[name])
@@ -1279,15 +1289,16 @@ def update_input_format(obj,input_data):
                 
                     ignore_key_list = []
                     param_key_list = [field.name for field in fields(param_data_type[0])]
-                    for key in data_list[0].keys():
-                        if not key in param_key_list:
+                    for key in all_keys_from_input:
+                        if (not key in param_key_list):
                             ignore_key_list.append(key)
 
                     for i in range(0,len(data_list)):
-                        for key in ignore_key_list:                            
-                            data_list[i].pop(key)
+                        for key in ignore_key_list:
+                            if key in data_list[i].keys():                            
+                                data_list[i].pop(key)
 
-                        data_list[i] = param_data_type[0](**data_list[i])        
+                        data_list[i] = param_data_type[0](**data_list[i])
 
     input_data_keys = list(input_data.keys())
 
@@ -1635,7 +1646,7 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
     #             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
     #         input_data[key] = headers.get(key.lower())
 
-    """
+    """ """
     if timestamp and abs(to_int(timestamp) - int(datetime.now().strftime('%s'))) > 600:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid timestamp")                
 
@@ -1650,7 +1661,7 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
 
     if  signature and nonce and timestamp and body_str and signature != sha1_hex(body_str + "|" + nonce + "|" + timestamp):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid value")                
-    """
+    
     ui_request_id = input_data.get("ui_request_id", "None")
     is_existing_json = False
     inputUsername = input_data.get("inputUsername")

@@ -639,137 +639,309 @@ def create_model(model_name: str, create_fields: Dict[str, Any], default_values:
     return [], dataclass(type(model_name, (object,), cls_dict))
 
 # def create_model_like(model, additional_fields=None, default_values=None):
+# def create_model_like(model, additional_fields=None, default_values=None):
+#     if additional_fields is None:
+#         additional_fields = {}
+#     if default_values is None:
+#         default_values = {}
+
+#     fields_ = {}
+#     post_init_defaults = {}
+
+#     if is_dataclass(model):
+#         fields_.update({f.name: f.type for f in fields(model)})
+#         for field_ in fields(model):
+#             if not field_.name in default_values:
+#                 if field_.default is not MISSING:
+#                     default_values[field_.name] = field_.default
+#                 elif field_.default_factory is not MISSING:
+#                     default_values[field_.name] = field_.default_factory()
+
+#     else:
+#         type_map = {
+#             sa.Integer: int,
+#             sa.String: string,
+#             sa.Float: float,
+#             sa.Boolean: bool,
+#             sa.Date: date,
+#             sa.DateTime: datetime,
+#             sa.Text: string,
+#             sa.Numeric: float,
+#             sa.LargeBinary: bytes,
+#             CITEXT: string
+#         }
+
+#         for column in sa.inspect(model).columns:
+#             name = column.name
+#             if isinstance(column.type, sa.ARRAY):
+#                 inner_type = column.type.item_type
+#                 python_inner_type = type_map.get(type(inner_type), None)
+
+#                 if python_inner_type is None:
+#                     raise ValueError(f"Unsupported array inner type: {type(inner_type)}")
+
+#                 field_type = list[python_inner_type]
+#                 fields_[name] = field_type  # field type, defaults handled in post_init
+
+#                 if not name in default_values:
+#                     # If the column has a default value, add it to post_init_defaults
+#                     if column.default is not None and column.default.is_scalar:
+#                         post_init_defaults[name] = column.default.arg
+#                     else:
+#                         post_init_defaults[name] = []
+#                     default_values[name] = field(default_factory=list)
+
+#             else:
+#                 field_type = type_map.get(type(column.type), None)
+#                 if field_type is None:
+#                     raise ValueError(f"Unsupported column type: {type(column.type)}")
+
+#                 fields_[name] = field_type
+                
+#                 if not name in default_values:
+#                     # Handle default values for non-array fields
+#                     if field_type == int:
+#                         default_values[name] = 0
+#                     elif field_type == float:
+#                         default_values[name] = 0.0
+#                     elif field_type == bool:
+#                         default_values[name] = False
+#                     elif field_type == string or field_type == sa.Text:
+#                         default_values[name] = ""
+#                     else:
+#                         default_values[name] = None
+
+#     # Merge additional fields if provided
+#     for name, field_type in additional_fields.items():
+#         if type(field_type) == list:
+#             inner_type = field_type[0]
+
+#             fields_[name] = list[inner_type]
+
+#             if len(field_type) == 2:
+#                 size = field_type[1]
+#             else:
+#                 size = 0
+            
+#             if not name in default_values:
+
+#                 default_values[name] = lambda: []
+
+#                 if inner_type == int: post_init_defaults[name] = [0] * size
+#                 elif inner_type == float: post_init_defaults[name] = [0.0] * size
+#                 elif inner_type == Decimal: post_init_defaults[name] = [0.0] * size
+#                 elif inner_type == bool: post_init_defaults[name] = [False] * size
+#                 elif inner_type == string: post_init_defaults[name] = [""] * size
+#                 else: post_init_defaults[name] = [None] * size
+
+#         else:
+#             fields_[name] = field_type
+#             if not name in default_values:
+#                 if field_type == int: default_values[name] = 0
+#                 elif field_type == float: default_values[name] = 0.0
+#                 elif field_type == Decimal: default_values[name] = 0.0
+#                 elif field_type == bool: default_values[name] = False
+#                 elif field_type == string: default_values[name] = ""
+#                 else: default_values[name] = None         
+
+
+#     original_post_init = getattr(model, '__post_init__', None)
+
+#     def combined_post_init(self, *args, **kwargs):
+#         if original_post_init:
+#             original_post_init(self, *args, **kwargs)
+#         for name, default in post_init_defaults.items():
+#             setattr(self, name, default)
+
+#     def make_field(v):
+#         if callable(v):
+#             # Already a factory function
+#             return field(default_factory=v)
+#         elif isinstance(v, (list, dict, set)):
+#             # Mutable default — wrap in factory
+#             return field(default_factory=lambda v=v: v.copy())
+#         else:
+#             # Immutable default — safe to assign directly
+#             return field(default=v)
+        
+#     DataclassModel = dataclass(type(model.__name__ + string(random.randint(111111,999999)), (object,), {
+#         '__annotations__': fields_,
+#         '__post_init__': combined_post_init,
+#         # **{k: field(default=v) for k, v in default_values.items()}  # set default values
+#         **{k: make_field(v) for k, v in default_values.items()}
+#     }))
+#     return [], DataclassModel
+
+
 def create_model_like(model, additional_fields=None, default_values=None):
     if additional_fields is None:
         additional_fields = {}
     if default_values is None:
         default_values = {}
 
-    fields_ = {}
+    annotations = {}
     post_init_defaults = {}
 
+    # -----------------------------
+    # TYPE MAP
+    # -----------------------------
+    type_map = {
+        sa.Integer: int,
+        sa.String: str,
+        sa.Float: float,
+        sa.Boolean: bool,
+        sa.Date: date,
+        sa.DateTime: datetime,
+        sa.Text: str,
+        sa.Numeric: Decimal,
+        sa.LargeBinary: bytes,
+        CITEXT: str
+    }
+
+    # -----------------------------
+    # FROM DATACLASS
+    # -----------------------------
     if is_dataclass(model):
-        fields_.update({f.name: f.type for f in fields(model)})
-        for field_ in fields(model):
-            if not field_.name in default_values:
-                if field_.default is not MISSING:
-                    default_values[field_.name] = field_.default
-                elif field_.default_factory is not MISSING:
-                    default_values[field_.name] = field_.default_factory()
+        for f in fields(model):
+            annotations[f.name] = f.type
 
+            if f.name not in default_values:
+                if f.default is not MISSING:
+                    default_values[f.name] = f.default
+                elif f.default_factory is not MISSING:
+                    default_values[f.name] = f.default_factory
+
+    # -----------------------------
+    # FROM SQLALCHEMY MODEL
+    # -----------------------------
     else:
-        type_map = {
-            sa.Integer: int,
-            sa.String: string,
-            sa.Float: float,
-            sa.Boolean: bool,
-            sa.Date: date,
-            sa.DateTime: datetime,
-            sa.Text: string,
-            sa.Numeric: float,
-            sa.LargeBinary: bytes,
-            CITEXT: string
-        }
-
         for column in sa.inspect(model).columns:
             name = column.name
+
+            # ---------- ARRAY ----------
             if isinstance(column.type, sa.ARRAY):
                 inner_type = column.type.item_type
-                python_inner_type = type_map.get(type(inner_type), None)
+                py_inner = type_map.get(type(inner_type))
 
-                if python_inner_type is None:
-                    raise ValueError(f"Unsupported array inner type: {type(inner_type)}")
+                if py_inner is None:
+                    raise ValueError(f"Unsupported ARRAY inner type: {type(inner_type)}")
 
-                field_type = list[python_inner_type]
-                fields_[name] = field_type  # field type, defaults handled in post_init
+                annotations[name] = list[py_inner]
 
-                if not name in default_values:
-                    # If the column has a default value, add it to post_init_defaults
+                if name not in default_values:
+                    default_values[name] = list  # ✅ factory, not Field
+
                     if column.default is not None and column.default.is_scalar:
                         post_init_defaults[name] = column.default.arg
                     else:
                         post_init_defaults[name] = []
-                    default_values[name] = field(default_factory=list)
 
+            # ---------- SCALAR ----------
             else:
-                field_type = type_map.get(type(column.type), None)
-                if field_type is None:
+                py_type = type_map.get(type(column.type))
+                if py_type is None:
                     raise ValueError(f"Unsupported column type: {type(column.type)}")
 
-                fields_[name] = field_type
-                
-                if not name in default_values:
-                    # Handle default values for non-array fields
-                    if field_type == int:
+                annotations[name] = py_type
+
+                if name not in default_values:
+                    if py_type is int:
                         default_values[name] = 0
-                    elif field_type == float:
+                    elif py_type is float:
                         default_values[name] = 0.0
-                    elif field_type == bool:
+                    elif py_type is Decimal:
+                        default_values[name] = Decimal("0")
+                    elif py_type is bool:
                         default_values[name] = False
-                    elif field_type == string or field_type == sa.Text:
+                    elif py_type is str:
                         default_values[name] = ""
                     else:
                         default_values[name] = None
 
-    # Merge additional fields if provided
+    # -----------------------------
+    # ADDITIONAL FIELDS
+    # -----------------------------
     for name, field_type in additional_fields.items():
-        if type(field_type) == list:
-            inner_type = field_type[0]
+        if isinstance(field_type, list):
+            inner = field_type[0]
+            size = field_type[1] if len(field_type) == 2 else 0
 
-            fields_[name] = list[inner_type]
+            annotations[name] = list[inner]
 
-            if len(field_type) == 2:
-                size = field_type[1]
-            else:
-                size = 0
-            
-            if not name in default_values:
+            if name not in default_values:
+                default_values[name] = list
 
-                default_values[name] = lambda: []
-
-                if inner_type == int: post_init_defaults[name] = [0] * size
-                elif inner_type == float: post_init_defaults[name] = [0.0] * size
-                elif inner_type == Decimal: post_init_defaults[name] = [0.0] * size
-                elif inner_type == bool: post_init_defaults[name] = [False] * size
-                elif inner_type == string: post_init_defaults[name] = [""] * size
-                else: post_init_defaults[name] = [None] * size
+                if inner is int:
+                    post_init_defaults[name] = [0] * size
+                elif inner is float:
+                    post_init_defaults[name] = [0.0] * size
+                elif inner is Decimal:
+                    post_init_defaults[name] = [Decimal("0")] * size
+                elif inner is bool:
+                    post_init_defaults[name] = [False] * size
+                elif inner is str:
+                    post_init_defaults[name] = [""] * size
+                else:
+                    post_init_defaults[name] = [None] * size
 
         else:
-            fields_[name] = field_type
-            if not name in default_values:
-                if field_type == int: default_values[name] = 0
-                elif field_type == float: default_values[name] = 0.0
-                elif field_type == Decimal: default_values[name] = 0.0
-                elif field_type == bool: default_values[name] = False
-                elif field_type == string: default_values[name] = ""
-                else: default_values[name] = None         
+            annotations[name] = field_type
+            if name not in default_values:
+                if field_type is int:
+                    default_values[name] = 0
+                elif field_type is float:
+                    default_values[name] = 0.0
+                elif field_type is Decimal:
+                    default_values[name] = Decimal("0")
+                elif field_type is bool:
+                    default_values[name] = False
+                elif field_type is str:
+                    default_values[name] = ""
+                else:
+                    default_values[name] = None
 
+    # -----------------------------
+    # POST INIT (SAFE)
+    # -----------------------------
+    original_post_init = getattr(model, "__post_init__", None)
 
-    original_post_init = getattr(model, '__post_init__', None)
-
-    def combined_post_init(self, *args, **kwargs):
+    def combined_post_init(self):
         if original_post_init:
-            original_post_init(self, *args, **kwargs)
-        for name, default in post_init_defaults.items():
-            setattr(self, name, default)
+            original_post_init(self)
 
+        for name, default in post_init_defaults.items():
+            current = getattr(self, name)
+            if current in (None, [], {}):
+                setattr(self, name, default)
+
+    # -----------------------------
+    # FIELD CREATOR
+    # -----------------------------
     def make_field(v):
         if callable(v):
-            # Already a factory function
             return field(default_factory=v)
         elif isinstance(v, (list, dict, set)):
-            # Mutable default — wrap in factory
             return field(default_factory=lambda v=v: v.copy())
         else:
-            # Immutable default — safe to assign directly
             return field(default=v)
-        
-    DataclassModel = dataclass(type(model.__name__ + string(random.randint(111111,999999)), (object,), {
-        '__annotations__': fields_,
-        '__post_init__': combined_post_init,
-        # **{k: field(default=v) for k, v in default_values.items()}  # set default values
-        **{k: make_field(v) for k, v in default_values.items()}
-    }))
+
+    # -----------------------------
+    # BUILD DATACLASS
+    # -----------------------------
+    class_name = f"{model.__name__}_{random.randint(100000, 999999)}"
+
+    DataclassModel = dataclass(
+        type(
+            class_name,
+            (object,),
+            {
+                "__annotations__": annotations,
+                "__post_init__": combined_post_init,
+                **{k: make_field(v) for k, v in default_values.items()},
+            },
+        )
+    )
+
     return [], DataclassModel
 
 def run_program(function_name, *args):
@@ -1705,7 +1877,6 @@ def get_db_url(hotelCode):
         # return "postgresql://vhpadmin:VHPLogin2023@/vhp-dev.cjxtrsmbui3n.ap-southeast-1.rds.amazonaws.com:5432/vhp_rental"
     
     group = session.execute(sa.text("select name from public.hotelgroup where '" + hotelCode + "' = any(hotelcodes)")).fetchone()
-    # print("group:", DB_HOST, DB_NAME, group)
     if group:
         groupname = group[0]
     else:
@@ -1717,8 +1888,6 @@ def get_db_url(hotelCode):
         print(groupname)
         return ""        
     session.close()
-    
-    # print(f"Masuk EC2:{db_name}")
     # return "postgresql://" + username + ":" + decrypt(enc_pass) + "@" + ip + ":" + str(port) + "/" + db_name
 
     return "postgresql://" + username + ":" + enc_pass + "@" + ip + ":" + str(port) + "/" + db_name
