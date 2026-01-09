@@ -3,6 +3,9 @@
 
     Ticket ID: 22F25D
         remark: - only converted to python 
+        
+    _yusufwijasena_09/01/2026
+        remark: - deleted to_int in queasy.deci3 & queasy.deci2
 """
 from functions.additional_functions import *
 from decimal import Decimal
@@ -38,7 +41,12 @@ def vhp_payment_check_statusbl(bill_number: int, rsv_number: int):
 
     if bill_number == 0 and rsv_number != 0:
         for queasy in db_session.query(Queasy).filter(
-                (Queasy.key == 372) & (to_int(Queasy.deci3) == rsv_number)).order_by(Queasy.date1.desc(), Queasy.number3.desc()).all():
+                (Queasy.key == 372) &
+                (Queasy.deci3 == rsv_number)
+        ).order_by(
+            Queasy.date1.desc(),
+            Queasy.number3.desc()
+        ).all():
             payment_id = queasy.char1
             payment_channel = entry(0, queasy.char3, "|")
             payment_method = entry(1, queasy.char3, "|")
@@ -53,7 +61,12 @@ def vhp_payment_check_statusbl(bill_number: int, rsv_number: int):
 
     elif bill_number != 0 and rsv_number == 0:
         for queasy in db_session.query(Queasy).filter(
-                (Queasy.key == 372) & (to_int(Queasy.deci2) == bill_number)).order_by(Queasy.date1.desc(), Queasy.number3.desc()).all():
+                (Queasy.key == 372) &
+                (Queasy.deci2 == bill_number)
+        ).order_by(
+            Queasy.date1.desc(),
+            Queasy.number3.desc()
+        ).all():
             payment_id = queasy.char1
             payment_channel = entry(0, queasy.char3, "|")
             payment_method = entry(1, queasy.char3, "|")
@@ -67,7 +80,13 @@ def vhp_payment_check_statusbl(bill_number: int, rsv_number: int):
             return generate_output()
     else:
         for queasy in db_session.query(Queasy).filter(
-                (Queasy.key == 372) & (to_int(Queasy.deci2) == bill_number) & (to_int(Queasy.deci3) == rsv_number)).order_by(Queasy.date1.desc(), Queasy.number3.desc()).all():
+                (Queasy.key == 372) &
+                (Queasy.deci2 == bill_number) &
+                (Queasy.deci3 == rsv_number)
+        ).order_by(
+            Queasy.date1.desc(),
+            Queasy.number3.desc()
+        ).all():
             payment_id = queasy.char1
             payment_channel = entry(0, queasy.char3, "|")
             payment_method = entry(1, queasy.char3, "|")
