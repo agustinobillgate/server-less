@@ -517,7 +517,7 @@ def bil_selectbl(pvilanguage:int, sorttype:int, zinr:string, bil_int:int, curr_g
         nonlocal b1_list_data
 
         usr = None
-        Usr =  create_buffer("Usr",Bediener)
+        Usr =  create_buffer("Usr", Bediener)
         bl_saldo =  to_decimal("0")
 
         # bill_line = get_cache (Bill_line, {"rechnr": [(eq, bill.rechnr)]})
@@ -546,7 +546,7 @@ def bil_selectbl(pvilanguage:int, sorttype:int, zinr:string, bil_int:int, curr_g
         b1_list.zinr = bill.zinr
         b1_list.billnr = bill.billnr
         b1_list.rechnr = bill.rechnr
-        b1_list.name = bill.name
+        b1_list.name = handle_string_null(bill.name)
         b1_list.saldo =  to_decimal(bill.saldo)
         b1_list.resnr = bill.resnr
         b1_list.reslinnr = bill.reslinnr
