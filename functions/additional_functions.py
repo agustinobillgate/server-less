@@ -960,30 +960,50 @@ def run_program(function_name, *args):
     
     return None
 
-def buffer_copy(from_buffer, to_buffer, except_fields=[]):
+# def buffer_copy(from_buffer, to_buffer, except_fields=[]):
+#     from models.base import Base
+
+#     if from_buffer == None:
+#         return
+
+#     if isinstance(from_buffer,Base):  
+#         for col in sa.inspect(type(from_buffer)).columns:
+#             if col.name not in except_fields:
+#                 setattr(to_buffer, col.name, getattr(from_buffer, col.name))
+
+#         if isinstance(to_buffer,Base):
+#             setattr(to_buffer, "_recid", None)
+        
+#     else:
+#         if isinstance(to_buffer,Base):
+#             setattr(from_buffer, "_recid", to_buffer._recid)
+        
+#         for field in [field.name for field in fields(from_buffer)]:
+#                 setattr(to_buffer, field, getattr(from_buffer, field))
+
+#     return to_buffer
+
+def buffer_copy(from_buffer, to_buffer, except_fields=None):
     from models.base import Base
 
-    if from_buffer == None:
+    if from_buffer is None or to_buffer is None:
         return
 
-    if  isinstance(from_buffer,Base):  
+    local_except = set(except_fields or [])
+
+    if isinstance(to_buffer, Base):
+        local_except.add("_recid")
+
+    if isinstance(from_buffer, Base):
         for col in sa.inspect(type(from_buffer)).columns:
-            if col.name not in except_fields:
+            if col.name not in local_except:
                 setattr(to_buffer, col.name, getattr(from_buffer, col.name))
-
-        if isinstance(to_buffer,Base):
-            setattr(to_buffer, "_recid", None)
-        
     else:
-        if isinstance(to_buffer,Base):
-            setattr(from_buffer, "_recid", to_buffer._recid)
-        
-        for field in [field.name for field in fields(from_buffer)]:
-                setattr(to_buffer, field, getattr(from_buffer, field))
+        for f in fields(from_buffer):
+            if f.name not in local_except:
+                setattr(to_buffer, f.name, getattr(from_buffer, f.name))
 
-    return to_buffer
-
-def query(
+def query(     
           data_list: List[Type], 
           filters: Callable[[Type], bool] = None, 
           sort_by: Optional[List[Tuple[string, bool]]] = None,
