@@ -388,6 +388,7 @@ pjDepart4Custom,pj_depart_4_webbl
 pjDepart14Custom,pj_depart1_4_webbl
 rmFbysegment1,rm_fbysegment_btn_go_1bl
 reslineCreate3,mk_resline_go_3bl
+reslineCreate3Custom,mk_resline_go3_webbl
 dynaratesBookingGet1,get_dynarates_booking_1bl
 showRevenue1,view_staycost_1bl
 resRmrateViewRepeatCharge,res_rmrate_view_repeat_chargebl
