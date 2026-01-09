@@ -400,12 +400,18 @@ def check_gobl(pvilanguage:int, user_init:string, gastno:int, res_mode:string, c
             return
 
         guest_pr = get_cache (Guest_pr, {"gastnr": [(eq, gastno)]})
+        
+        # print(f"[LOG] reslin_list.reserve_int: {reslin_list.reserve_int}")
+        # print(f"[DEBUG] {reslin_list}")
 
         if guest_pr and reslin_list.reserve_int == 0:
 
             ratecode = get_cache (Ratecode, {"code": [(eq, origcontcode)],"startperiode": [(le, reslin_list.ankunft)],"endperiode": [(ge, reslin_list.ankunft)]})
+            
+            # print(f"[LOG] check if ratecode eq {origcontcode}, periode from {reslin_list.ankunft}")
 
             if ratecode:
+                # print(f"[LOG] ratecode: {ratecode.code} ({ratecode.startperiode} - {ratecode.endperiode})")
                 msg_str = translateExtended ("Market Segment not yet defined.", lvcarea, "")
                 error_number = 25
 
@@ -1021,6 +1027,9 @@ def check_gobl(pvilanguage:int, user_init:string, gastno:int, res_mode:string, c
     zinr_ecode[5] = translateExtended ("Room sharer already checked-in.", lvcarea, "")
 
     reslin_list = query(reslin_list_data, first=True)
+    
+    print(f"[LOG] reslin_list_data: {reslin_list.reserve_int}")
+    print(f"[DEBUG] reslin_list_data: {reslin_list_data}")
 
     prev_resline = query(prev_resline_data, first=True)
 
