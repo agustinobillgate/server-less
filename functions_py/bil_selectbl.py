@@ -40,6 +40,11 @@ def bil_selectbl(pvilanguage:int, sorttype:int, zinr:string, bil_int:int, curr_g
     to_name = to_name.strip()
     zinr = zinr.strip()
 
+    def handle_string_null(input):
+        if input == None:
+            return ""
+        return f"{input}"
+
     def generate_output():
         nonlocal b1_list_data, actflag, bl_saldo, lvcarea, res_line, guest, bill, bill_line, bediener, queasy, reservation, history
         nonlocal pvilanguage, sorttype, zinr, bil_int, curr_gastnr, ci_date, gastname, to_name, rechnr
@@ -75,11 +80,20 @@ def bil_selectbl(pvilanguage:int, sorttype:int, zinr:string, bil_int:int, curr_g
 
                     for bill in db_session.query(Bill).filter(
                              (Bill.resnr == res_line.resnr) & (Bill.parent_nr == res_line.reslinnr) & (Bill.flag == 0)).order_by(Bill._recid).all():
+                        
                         bl_saldo =  to_decimal("0")
 
-                        for bill_line in db_session.query(Bill_line).filter(
-                                 (Bill_line.rechnr == bill.rechnr)).order_by(Bill_line._recid).all():
-                            bl_saldo =  to_decimal(bl_saldo) + to_decimal(bill_line.betrag)
+                        # for bill_line in db_session.query(Bill_line).filter(
+                        #          (Bill_line.rechnr == bill.rechnr)).order_by(Bill_line._recid).all():
+                        #     bl_saldo =  to_decimal(bl_saldo) + to_decimal(bill_line.betrag)
+
+                        bl_saldo = (
+                            db_session.query(
+                                func.coalesce(func.sum(Bill_line.betrag), 0)
+                            )
+                            .filter(Bill_line.rechnr == bill.rechnr)
+                            .scalar()
+                        )
 
                         if bill.zinr != res_line.zinr:
                             bbuff = db_session.query(Bbuff).filter(Bbuff._recid == bill._recid).with_for_update().first()
@@ -259,11 +273,20 @@ def bil_selectbl(pvilanguage:int, sorttype:int, zinr:string, bil_int:int, curr_g
 
                         for bill in db_session.query(Bill).filter(
                                  (Bill.resnr == res_line.resnr) & (Bill.parent_nr == res_line.reslinnr) & (Bill.flag == 0)).order_by(Bill._recid).all():
+                            
                             bl_saldo =  to_decimal("0")
 
-                            for bill_line in db_session.query(Bill_line).filter(
-                                     (Bill_line.rechnr == bill.rechnr)).order_by(Bill_line._recid).all():
-                                bl_saldo =  to_decimal(bl_saldo) + to_decimal(bill_line.betrag)
+                            # for bill_line in db_session.query(Bill_line).filter(
+                            #          (Bill_line.rechnr == bill.rechnr)).order_by(Bill_line._recid).all():
+                            #     bl_saldo =  to_decimal(bl_saldo) + to_decimal(bill_line.betrag)
+
+                            bl_saldo = (
+                                db_session.query(
+                                    func.coalesce(func.sum(Bill_line.betrag), 0)
+                                )
+                                .filter(Bill_line.rechnr == bill.rechnr)
+                                .scalar()
+                            )
 
                             if bill.zinr != res_line.zinr:
                                 bbuff = db_session.query(Bbuff).filter(Bbuff._recid == bill._recid).with_for_update().first()
@@ -381,13 +404,21 @@ def bil_selectbl(pvilanguage:int, sorttype:int, zinr:string, bil_int:int, curr_g
         Usr =  create_buffer("Usr",Bediener)
         bl_saldo =  to_decimal("0")
 
-        bill_line = get_cache (Bill_line, {"rechnr": [(eq, bill.rechnr)]})
-        while None != bill_line:
-            bl_saldo =  to_decimal(bl_saldo) + to_decimal(bill_line.betrag)
+        # bill_line = get_cache (Bill_line, {"rechnr": [(eq, bill.rechnr)]})
+        # while None != bill_line:
+        #     bl_saldo =  to_decimal(bl_saldo) + to_decimal(bill_line.betrag)
 
-            curr_recid = bill_line._recid
-            bill_line = db_session.query(Bill_line).filter(
-                     (Bill_line.rechnr == bill.rechnr) & (Bill_line._recid > curr_recid)).first()
+        #     curr_recid = bill_line._recid
+        #     bill_line = db_session.query(Bill_line).filter(
+        #              (Bill_line.rechnr == bill.rechnr) & (Bill_line._recid > curr_recid)).first()
+
+        bl_saldo = (
+            db_session.query(
+                func.coalesce(func.sum(Bill_line.betrag), 0)
+            )
+            .filter(Bill_line.rechnr == bill.rechnr)
+            .scalar()
+        )
 
         if bl_saldo != bill.saldo:
             tbuff = db_session.query(Tbuff).filter(Tbuff._recid == bill._recid).with_for_update().first()
@@ -408,61 +439,71 @@ def bil_selectbl(pvilanguage:int, sorttype:int, zinr:string, bil_int:int, curr_g
         b1_list.vesrcod = bill.vesrcod
         b1_list.rec_id = bill._recid
 
-        mbill = get_cache (Bill, {"resnr": [(eq, bill.resnr)],"reslinnr": [(eq, 0)]})
+        # mbill = get_cache (Bill, {"resnr": [(eq, bill.resnr)],"reslinnr": [(eq, 0)]})
+        mbill = db_session.query(Mbill).filter((Mbill.resnr == bill.resnr) & (Mbill.reslinnr == 0)).first()
 
         if mbill:
             b1_list.fg_col = True
 
-        queasy = get_cache (Queasy, {"key": [(eq, 301)],"number1": [(eq, bill.resnr)],"logi1": [(eq, True)]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 301)],"number1": [(eq, bill.resnr)],"logi1": [(eq, True)]})
+        queasy = db_session.query(Queasy).filter((Queasy.key == 301) & (Queasy.number1 == bill.resnr) & (Queasy.logi1 == True)).first()
 
         if queasy:
             b1_list.repeat_charge = queasy.logi1
 
-        usr = get_cache (Bediener, {"userinit": [(eq, bill.vesrcod)]})
+        # usr = get_cache (Bediener, {"userinit": [(eq, bill.vesrcod)]})
+        usr = db_session.query(Usr).filter(Usr.userinit == bill.vesrcod).first()
 
         if usr:
-            b1_list.b_comments = translateExtended ("C/O by:", lvcarea, "") + " " + usr.username + chr_unicode(10)
+            b1_list.b_comments = translateExtended("C/O by:", lvcarea, "") + " " + handle_string_null(usr.username) + chr_unicode(10)
 
         if bill:
 
-            reservation = get_cache (Reservation, {"resnr": [(eq, bill.resnr)]})
+            # reservation = get_cache (Reservation, {"resnr": [(eq, bill.resnr)]})
+            reservation = db_session.query(Reservation).filter(Reservation.resnr == bill.resnr).first()
 
             if reservation:
 
-                resline = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"reslinnr": [(eq, bill.parent_nr)]})
+                # resline = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"reslinnr": [(eq, bill.parent_nr)]})
+                resline = db_session.query(Resline).filter((Resline.resnr == bill.resnr) & (Resline.reslinnr == bill.parent_nr)).first()
 
                 if resline:
 
-                    guestmember = get_cache (Guest, {"gastnr": [(eq, resline.gastnrmember)]})
-                    b1_list.resname = guestmember.name + ", " + guestmember.vorname1 + " " + guestmember.anrede1
-                    b1_list.guest_name = guestmember.anrede1 + " " + guestmember.name + ", " + guestmember.vorname1
-                    b1_list.address = guestmember.adresse1
-                    b1_list.city = guestmember.wohnort + " " + guestmember.plz
-                    b1_list.b_comments = b1_list.b_comments + translateExtended ("Departure:", lvcarea, "") + " " + to_string(resline.abreise) + chr_unicode(10)
+                    # guestmember = get_cache (Guest, {"gastnr": [(eq, resline.gastnrmember)]})
+                    guestmember = db_session.query(Guest).filter(Guest.gastnr == resline.gastnrmember).first()
+
+                    b1_list.resname = handle_string_null(guestmember.name) + ", " + handle_string_null(guestmember.vorname1) + " " + handle_string_null(guestmember.anrede1)
+                    b1_list.guest_name = handle_string_null(guestmember.anrede1) + " " + handle_string_null(guestmember.name) + ", " + handle_string_null(guestmember.vorname1)
+                    b1_list.address = handle_string_null(guestmember.adresse1)
+                    b1_list.city = handle_string_null(guestmember.wohnort) + " " + handle_string_null(guestmember.plz)
+                    b1_list.b_comments = b1_list.b_comments + translateExtended("Departure:", lvcarea, "") + " " + handle_string_null(to_string(resline.abreise)) + chr_unicode(10)
 
                     if guestmember.bemerkung != "":
-                        b1_list.b_comments = b1_list.b_comments + guestmember.bemerkung + chr_unicode(10)
+                        b1_list.b_comments = b1_list.b_comments + handle_string_null(guestmember.bemerkung) + chr_unicode(10)
 
                     if reservation.bemerk != "":
-                        b1_list.b_comments = b1_list.b_comments + reservation.bemerk + chr_unicode(10)
+                        b1_list.b_comments = b1_list.b_comments + handle_string_null(reservation.bemerk) + chr_unicode(10)
 
                     if resline.bemerk != "":
-                        b1_list.b_comments = b1_list.b_comments + resline.bemerk
+                        b1_list.b_comments = b1_list.b_comments + handle_string_null(resline.bemerk)
             else:
 
                 if bill.flag == 1:
 
-                    history = get_cache (History, {"resnr": [(eq, bill.resnr)],"reslinnr": [(eq, bill.parent_nr)],"zi_wechsel": [(eq, False)]})
+                    # history = get_cache (History, {"resnr": [(eq, bill.resnr)],"reslinnr": [(eq, bill.parent_nr)],"zi_wechsel": [(eq, False)]})
+                    history = db_session.query(History).filter((History.resnr == bill.resnr) & (History.resilnnr == bill.parent_nr) & (History.zi_wechsel == False)).first()
 
                     if history:
 
-                        guestmember = get_cache (Guest, {"gastnr": [(eq, history.gastnr)]})
-                        b1_list.resname = guestmember.name + ", " + guestmember.vorname1 + " " + guestmember.anrede1
-                        b1_list.guest_name = guestmember.anrede1 + " " + guestmember.name + ", " + guestmember.vorname1
-                        b1_list.address = guestmember.adresse1
-                        b1_list.city = guestmember.wohnort + " " + guestmember.plz
-                        b1_list.b_comments = b1_list.b_comments + translateExtended ("Departure:", lvcarea, "") + " " + to_string(history.abreise) + chr_unicode(10)
-                        b1_list.b_comments = b1_list.b_comments + history.bemerk
+                        # guestmember = get_cache (Guest, {"gastnr": [(eq, history.gastnr)]})
+                        guestmember = db_session.query(Guest).filter(Guest.gastnr == history.gastnr).first()
+
+                        b1_list.resname = handle_string_null(guestmember.name) + ", " + handle_string_null(guestmember.vorname1) + " " + handle_string_null(guestmember.anrede1)
+                        b1_list.guest_name = handle_string_null(guestmember.anrede1) + " " + handle_string_null(guestmember.name) + ", " + handle_string_null(guestmember.vorname1)
+                        b1_list.address = handle_string_null(guestmember.adresse1)
+                        b1_list.city = handle_string_null(guestmember.wohnort) + " " + handle_string_null(guestmember.plz)
+                        b1_list.b_comments = b1_list.b_comments + translateExtended("Departure:", lvcarea, "") + " " + handle_string_null(to_string(history.abreise)) + chr_unicode(10)
+                        b1_list.b_comments = b1_list.b_comments + handle_string_null(history.bemerk)
 
     actflag = bil_int + 1
 
