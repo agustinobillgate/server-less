@@ -2,6 +2,9 @@
 # ------------------------------------------
 # Rd, 13/8/2025
 # num_entries
+# 
+# yusufwijasena, 08/01/2026
+# fix query for segment
 # ------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -70,8 +73,9 @@ def prepare_mk_segmbl(gastnr: int):
     for guestseg in db_session.query(Guestseg).filter(
             (Guestseg.gastnr == gastnr)).order_by(Guestseg._recid).all():
 
-        segment = get_cache(
-            Segment, {"segmentcode": [(eq, guestseg.segmentcode)]})
+        # segment = get_cache(Segment, {"segmentcode": [(eq, guestseg.segmentcode)]})
+        segment = db_session.query(Segment).filter(Segment.segmentcode == guestseg.segmentcode).first()
+        
         gsegm_list = Gsegm_list()
         gsegm_list_data.append(gsegm_list)
 
