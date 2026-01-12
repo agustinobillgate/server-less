@@ -205,7 +205,7 @@ def bil_selectbl(pvilanguage:int, sorttype:int, zinr:string, bil_int:int, curr_g
                     for bill, rline in db_session.query(Bill, Rline).join(Rline, (Rline.resnr == Bill.resnr) & (Rline.reslinnr == Bill.parent_nr) & (Rline.active_flag == actflag)).filter(
                         (Bill.zinr > "") & 
                         (Bill.flag == bil_int) & 
-                        (Bill.name >= (fr_name).lower()) & 
+                        (func.lower(Bill.name) >= (fr_name).lower()) & 
                         (Bill.billtyp == 0)
                     ).order_by(
                         Bill.name, 
@@ -371,7 +371,7 @@ def bil_selectbl(pvilanguage:int, sorttype:int, zinr:string, bil_int:int, curr_g
                 rline = Res_line()
 
                 for bill, rline in db_session.query(Bill, Rline).join(Rline, (Rline.resnr == Bill.resnr) & (Rline.reslinnr == Bill.parent_nr) & (Rline.active_flag == actflag)).filter(
-                    (Bill.zinr == (zinr).lower()) & 
+                    (func.lower(Bill.zinr) == (zinr).lower()) & 
                     (Bill.flag == bil_int) & 
                     (Bill.rechnr != 0)
                 ).order_by(Bill.rechnr.desc()).yield_per(100):
@@ -431,7 +431,7 @@ def bil_selectbl(pvilanguage:int, sorttype:int, zinr:string, bil_int:int, curr_g
                     for bill, rline in db_session.query(Bill, Rline).join(Rline, (Rline.resnr == Bill.resnr) & (Rline.reslinnr == Bill.parent_nr) & (Rline.active_flag == actflag)).filter(
                         (Bill.zinr > "") & 
                         (Bill.flag == bil_int) & 
-                        (Bill.name >= (gastname).lower()) & 
+                        (func.lower(Bill.name) >= (gastname).lower()) & 
                         (Bill.billtyp == 0) & 
                         (Bill.rechnr != 0)
                     ).order_by(
