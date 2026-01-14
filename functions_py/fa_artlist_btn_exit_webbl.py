@@ -3,6 +3,11 @@
 # ==================================
 # Rulita, 27-11-2025
 # - Added with_for_update all query 
+# 
+# yusufwijasena, 13/01/2026
+# fix cannot create new fix asset item
+# cast value fa_art.anz_depn to integer
+# fix mathis.nr value with counters.counter
 # ==================================
 
 from functions.additional_functions import *
@@ -28,18 +33,13 @@ def fa_artlist_btn_exit_webbl(flag:int, mathis_nr:int, spec:string, locate:strin
     def generate_output():
         nonlocal curr_mathisnr, created, mathis, fa_artikel, counters, queasy, mhis_line
         nonlocal flag, mathis_nr, spec, locate, picture_file, upgrade_part, fibukonto, credit_fibu, debit_fibu, user_init, curr_location
-
-
         nonlocal m_list, fa_art
 
         return {"curr_mathisnr": curr_mathisnr}
 
     def new_mathis():
-
         nonlocal curr_mathisnr, created, mathis, fa_artikel, counters, queasy, mhis_line
         nonlocal flag, mathis_nr, spec, locate, picture_file, upgrade_part, fibukonto, credit_fibu, debit_fibu, user_init, curr_location
-
-
         nonlocal m_list, fa_art
 
         avail_counter:bool = False
@@ -60,15 +60,16 @@ def fa_artlist_btn_exit_webbl(flag:int, mathis_nr:int, spec:string, locate:strin
         last_counter = counters.counter + 1
         while avail_counter == False:
 
-            mathis = get_cache (Mathis, {"nr": [(eq, last_counter)]})
+            # mathis = get_cache (Mathis, {"nr": [(eq, last_counter)]})
+            mathis = db_session.query(Mathis).filter((Mathis.nr == last_counter)).with_for_update().first()
 
             if mathis:
                 last_counter = last_counter + 1
             else:
                 avail_counter = True
+                
         counters.counter = last_counter
         mathis = Mathis()
-        db_session.add(mathis)
 
         mathis.nr = counters.counter
         mathis.datum = m_list.datum
@@ -83,13 +84,15 @@ def fa_artlist_btn_exit_webbl(flag:int, mathis_nr:int, spec:string, locate:strin
         mathis.remark = m_list.remark
         mathis.fname = picture_file
         curr_mathisnr = mathis.nr
+        
+        db_session.add(mathis)
 
         if upgrade_part:
             mathis.flag = 2
         else:
             mathis.flag = 1
+            
         fa_artikel = Fa_artikel()
-        db_session.add(fa_artikel)
 
         fa_artikel.nr = counters.counter
         fa_artikel.lief_nr = fa_art.lief_nr
@@ -104,13 +107,14 @@ def fa_artlist_btn_exit_webbl(flag:int, mathis_nr:int, spec:string, locate:strin
         fa_artikel.warenwert =  to_decimal(fa_art.warenwert)
         fa_artikel.depn_wert =  to_decimal(fa_art.depn_wert)
         fa_artikel.book_wert =  to_decimal(fa_art.book_wert)
-        fa_artikel.anz_depn = fa_art.anz_depn
+        fa_artikel.anz_depn = to_int(fa_art.anz_depn)
         fa_artikel.next_depn = fa_art.next_depn
         fa_artikel.first_depn = fa_art.first_depn
         fa_artikel.last_depn = fa_art.last_depn
         fa_artikel.id = user_init
         created = True
-
+        
+        db_session.add(fa_artikel)
 
         queasy = Queasy()
         db_session.add(queasy)
@@ -118,20 +122,13 @@ def fa_artlist_btn_exit_webbl(flag:int, mathis_nr:int, spec:string, locate:strin
         queasy.key = 314
         queasy.number1 = counters.counter
         queasy.date1 = fa_art.start_date
+        
 
-
-        pass
-        pass
-        pass
-        pass
-
-
+        db_session.commit()
+        
     def chg_mathis():
-
         nonlocal curr_mathisnr, created, mathis, fa_artikel, counters, queasy, mhis_line
         nonlocal flag, mathis_nr, spec, locate, picture_file, upgrade_part, fibukonto, credit_fibu, debit_fibu, user_init, curr_location
-
-
         nonlocal m_list, fa_art
 
         next_date:date = None
@@ -141,9 +138,9 @@ def fa_artlist_btn_exit_webbl(flag:int, mathis_nr:int, spec:string, locate:strin
         # mathis = get_cache (Mathis, {"nr": [(eq, mathis_nr)]})
         mathis = db_session.query(Mathis).filter(
                  (Mathis.nr == mathis_nr)).with_for_update().first()
+        
 
         if mathis:
-            pass
             mathis.datum = m_list.datum
             mathis.name = m_list.name
             mathis.supplier = m_list.supplier
@@ -155,20 +152,21 @@ def fa_artlist_btn_exit_webbl(flag:int, mathis_nr:int, spec:string, locate:strin
             mathis.price =  to_decimal(m_list.price)
             mathis.remark = m_list.remark
             mathis.fname = picture_file
-
+            
             if upgrade_part:
                 mathis.flag = 2
             else:
                 mathis.flag = 1
+                
+            # print(f"[LOG] updating: {mathis.nr}")
             # pass
-            db_session.refresh(mathis,with_for_update=True)
+            # db_session.refresh(mathis,with_for_update=True)
 
             # fa_artikel = get_cache (Fa_artikel, {"nr": [(eq, mathis_nr)]})
             fa_artikel = db_session.query(Fa_artikel).filter(
                      (Fa_artikel.nr == mathis_nr)).with_for_update().first()
 
             if fa_artikel:
-                pass
                 fa_artikel.lief_nr = fa_art.lief_nr
                 fa_artikel.gnr = fa_art.gnr
                 fa_artikel.subgrp = fa_art.subgrp
@@ -181,12 +179,14 @@ def fa_artlist_btn_exit_webbl(flag:int, mathis_nr:int, spec:string, locate:strin
                 fa_artikel.warenwert =  to_decimal(fa_art.warenwert)
                 fa_artikel.depn_wert =  to_decimal(fa_art.depn_wert)
                 fa_artikel.book_wert =  to_decimal(fa_art.book_wert)
-                fa_artikel.anz_depn = fa_art.anz_depn
+                fa_artikel.anz_depn = to_int(fa_art.anz_depn)
                 fa_artikel.next_depn = fa_art.next_depn
                 fa_artikel.first_depn = fa_art.first_depn
                 fa_artikel.last_depn = fa_art.last_depn
                 fa_artikel.cid = user_init
                 fa_artikel.changed = get_current_date()
+                
+                # print(f"[LOG] Updating fa_artikel: {fa_artikel.lief_nr}")
 
                 queasy = get_cache (Queasy, {"key": [(eq, 314)],"number1": [(eq, mathis_nr)]})
 
@@ -211,22 +211,19 @@ def fa_artlist_btn_exit_webbl(flag:int, mathis_nr:int, spec:string, locate:strin
                     queasy.key = 314
                     queasy.number1 = mathis_nr
                     queasy.date1 = fa_art.start_date
-
-
+                    
                 # pass
-                db_session.refresh(fa_artikel,with_for_update=True)
+                # db_session.refresh(fa_artikel,with_for_update=True)
 
                 if curr_location != mathis.location:
                     mhis_line = Mhis_line()
-                    db_session.add(mhis_line)
 
                     mhis_line.nr = mathis_nr
                     mhis_line.datum = get_current_date()
                     mhis_line.remark = "Change Location From: " + curr_location +\
                             " To: " + mathis.location
 
-
-                    pass
+                    db_session.add(mhis_line)
 
     m_list = query(m_list_data, first=True)
 
