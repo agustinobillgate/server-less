@@ -3,6 +3,10 @@
 # ==================================
 # Rulita, 27-11-2025
 # - Added with_for_update all query 
+# 
+# yusufwijasena, 14/01/2026
+# - comment db_session.refresh
+# - cannot refresh deleted item
 # ==================================
 
 from functions.additional_functions import *
@@ -29,7 +33,7 @@ def fa_artlist_btn_del_webbl(mathis_nr:int):
         # pass
         db_session.delete(mathis)
         # pass
-        db_session.refresh(mathis,with_for_update=True)
+        # db_session.refresh(mathis,with_for_update=True)
 
         # fa_artikel = get_cache (Fa_artikel, {"nr": [(eq, mathis_nr)]})
         fa_artikel = db_session.query(Fa_artikel).filter(
@@ -39,7 +43,7 @@ def fa_artlist_btn_del_webbl(mathis_nr:int):
             # pass
             db_session.delete(fa_artikel)
             # pass
-            db_session.refresh(fa_artikel,with_for_update=True)
+            # db_session.refresh(fa_artikel,with_for_update=True)
 
         # queasy = get_cache (Queasy, {"key": [(eq, 314)],"number1": [(eq, mathis_nr)]})
         queasy = db_session.query(Queasy).filter(
@@ -49,6 +53,6 @@ def fa_artlist_btn_del_webbl(mathis_nr:int):
             # pass
             db_session.delete(queasy)
             # pass
-            db_session.refresh(queasy,with_for_update=True)
+            # db_session.refresh(queasy,with_for_update=True)
 
     return generate_output()
