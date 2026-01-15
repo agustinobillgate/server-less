@@ -31,7 +31,7 @@ def chg_comments_btn_exitbl(bill_recid:int, g_com_screen_value:string, res_com_s
         return generate_output()
 
     # guest = get_cache (Guest, {"gastnr": [(eq, bill.gastnr)]})
-    guest = db_session.query(Guest).filter(Guest.gastnr == bill.gastnr).first()
+    guest = db_session.query(Guest).filter(Guest.gastnr == bill.gastnr)
 
     if bill.resnr > 0:
 
@@ -41,33 +41,31 @@ def chg_comments_btn_exitbl(bill_recid:int, g_com_screen_value:string, res_com_s
     if bill.resnr > 0 and bill.reslinnr > 0:
 
         # res_line = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"reslinnr": [(eq, bill.reslinnr)]})
-        res_line = db_session.query(Res_line).filter(
-            (Res_line.resnr == bill.resnr) & (Res_line.reslinnr == bill.reslinnr)).first()
+        res_line = db_session.query(Res_line).filter((Res_line.resnr == bill.resnr) & (Res_line.reslinnr == bill.reslinnr)).first()
 
         # guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
-        guest = db_session(Guest).filter(Guest.gastnr == res_line.gastnrmember).first()
-    pass
+        guest = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnrmember)
+    # pass
 
-    guest = guest.with_for_update().all()
+    guest = guest.with_for_update().first()
     guest.bemerkung = g_com_screen_value
     # pass
 
     if reservation:
-        reservation = reservation.with_for_update().first()
+        db_session.refresh(reservation, with_for_update=True)
         # pass
         reservation.bemerk = res_com_screen_value
         # pass
 
     if res_line:
         # pass
-        res_line = res_line.with_for_update().first()
+        db_session.refresh(res_line, with_for_update=True)
         res_line.bemerk = resl_com_screen_value
         # pass
     # pass
-    bill = bill.with_for_update().first()
+    
+    db_session.refresh(bill, with_for_update=True)
     bill.vesrdepot = bill_com_screen_value
     # pass
-
-    db_session.commit()
 
     return generate_output()
