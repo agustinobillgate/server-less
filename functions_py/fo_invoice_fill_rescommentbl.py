@@ -7,6 +7,7 @@
 #
 #-----------------------------------------
 from functions.additional_functions import *
+from functions.more_additional_functions import handle_null_char
 from decimal import Decimal
 from models import Bediener, Res_line, Guest, Bill, Reservation, Queasy, Waehrung
 
@@ -58,47 +59,47 @@ def fo_invoice_fill_rescommentbl(bil_recid:int, fill_co:bool):
         usr = get_cache (Bediener, {"userinit": [(eq, bill.vesrcod)]})
 
         if usr:
-            rescomment = rescomment + "C/O by: " + usr.username + chr_unicode(10)
+            rescomment = rescomment + "C/O by: " + handle_null_char(usr.username) + chr_unicode(10)
 
     if resbuff and trim(entry(0, resbuff.memozinr, ";")) != "":
 
         rbuff = get_cache (Res_line, {"zinr": [(eq, trim(entry(0, resbuff.memozinr, ";")))],"resstatus": [(eq, 6)]})
 
         if rbuff:
-            rescomment = rescomment + "Transf " + resbuff.zinr + " -> " + entry(0, resbuff.memozinr, ";") + " " + rbuff.name + chr_unicode(10)
+            rescomment = rescomment + "Transf " + handle_null_char(resbuff.zinr) + " -> " + entry(0, handle_null_char(resbuff.memozinr), ";") + " " + handle_null_char(rbuff.name) + chr_unicode(10)
         else:
-            rescomment = rescomment + "Transf " + resbuff.zinr + " -> " + entry(0, resbuff.memozinr, ";") + chr_unicode(10)
+            rescomment = rescomment + "Transf " + handle_null_char(resbuff.zinr) + " -> " + entry(0, handle_null_char(resbuff.memozinr), ";") + chr_unicode(10)
 
     if resbuff and resbuff.code != "":
 
         queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code.strip()))]})
 
         if queasy:
-            rescomment = rescomment + queasy.char1 + chr_unicode(10)
+            rescomment = rescomment + handle_null_char(queasy.char1) + chr_unicode(10)
 
     if bill.vesrdepot != "":
-        rescomment = rescomment + bill.vesrdepot + chr_unicode(10)
+        rescomment = rescomment + handle_null_char(bill.vesrdepot) + chr_unicode(10)
 
     if res_line and res_line.bemerk != "":
-        rescomment = rescomment + res_line.bemerk + chr_unicode(10)
+        rescomment = rescomment + handle_null_char(res_line.bemerk) + chr_unicode(10)
 
     if reservation and reservation.bemerk != "":
-        rescomment = rescomment + reservation.bemerk + chr_unicode(10)
+        rescomment = rescomment + handle_null_char(reservation.bemerk) + chr_unicode(10)
 
     # Rd 30/7/2025
     # bemerk -> bemerkung
     if guestmember is not None:
         if guestmember.bemerkung != "":
-            rescomment = rescomment + guestmember.bemerkung + chr_unicode(10)
+            rescomment = rescomment + handle_null_char(guestmember.bemerkung) + chr_unicode(10)
 
     if res_line:
         waehrung = get_cache (Waehrung, {"waehrungsnr": [(eq, res_line.betriebsnr)]})
 
     if resbuff:
-        rescomment = rescomment + "Arr " + to_string(resbuff.ankunft) + " Dep " + to_string(resbuff.abreise) + " A " + to_string(resbuff.erwachs) + " Ch " + to_string(resbuff.kind1) + " Ch " + to_string(resbuff.kind2) + " Com " + to_string(resbuff.gratis) + chr_unicode(10) + "Argt " + resbuff.arrangement
+        rescomment = rescomment + "Arr " + to_string(resbuff.ankunft) + " Dep " + to_string(resbuff.abreise) + " A " + to_string(resbuff.erwachs) + " Ch " + to_string(resbuff.kind1) + " Ch " + to_string(resbuff.kind2) + " Com " + to_string(resbuff.gratis) + chr_unicode(10) + "Argt " + handle_null_char(resbuff.arrangement)
 
     if waehrung:
-        rescomment = rescomment + ">>Currency " + waehrung.wabkurz + chr_unicode(10)
+        rescomment = rescomment + ">>Currency " + handle_null_char(waehrung.wabkurz) + chr_unicode(10)
     else:
         rescomment = rescomment + chr_unicode(10)
 

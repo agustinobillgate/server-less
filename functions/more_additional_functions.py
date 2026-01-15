@@ -287,3 +287,17 @@ def formatting_int(data, format: str) -> str:
             result += char
 
     return result
+
+def handle_null_char(input:str):
+    """
+    Docstring for handle_null_char
+    for handling char null value to blank string
+    
+    :param input: string input for check
+    :type input: str
+    """
+
+    if input:
+        return input
+    else:
+        return ""
