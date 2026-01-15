@@ -1121,8 +1121,6 @@ def update_input_format(obj,input_data):
                 # outer_input_param_name = camelCase(param_name.removesuffix("_list"))
                 # inner_input_param_name = param_name.removesuffix("_list").replace("_","-")
 
-                tmp_input_data = input_data
-
                 #updated 1.0.0.4
                 if not outer_input_param_name in input_data:
                     for field_name in input_data:
@@ -1251,9 +1249,12 @@ def update_input_format(obj,input_data):
                                 if field.name.replace("_","-") in all_keys_from_input:
                                     fieldNameList.append(field.name)
                                 else:
-                                    for field_name in all_keys_from_input:
-                                        if field.name == field_name.lower():
-                                            fieldNameList.append(field_name)
+                                    for field_name_input in all_keys_from_input:
+                                        if field.name == field_name_input.lower():
+                                            fieldNameList.append(field.name)
+                                            break
+                                        elif field.name.replace("_", "-") == field_name_input.lower():
+                                            fieldNameList.append(field.name)
                                             break
 
                             # if (not field.name in data_list[0] and 
@@ -1267,13 +1268,18 @@ def update_input_format(obj,input_data):
                                     data["_recid"] = None
 
                             for name in fieldNameList:
-
+                                
                                 #updated 1.0.0.5
                                 data_field_name = name.replace("_","-")
                                     
                                 if data_field_name in data.keys():
                                     data[name.lower()] = data[data_field_name]
                                     data.pop(data_field_name)
+                                else:
+                                    for input_data_field in data.keys():
+                                        if data_field_name == input_data_field.lower():
+                                            data[name.lower()] = data[input_data_field]
+                                            break
                             
                             for name in dateFormatList:
                                 # data[name] = get_date_temp_table(data[name])
