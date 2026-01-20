@@ -3,6 +3,9 @@
 # =============================================
 # Rulita, 27-11-2025
 # - Added with_for_update all query
+# 
+# yusufwijasena, 20/01/2026
+# - fix fa_counter to generate new po number
 # =============================================
 
 from functions.additional_functions import *

@@ -4,6 +4,11 @@
 # Rulita, 27-11-2025
 # - Added with_for_update all query
 # - Fix progress not declare procedure print-it
+# 
+# yusufwijasena, 20/01/2026
+# - fix pyhton indentation
+# - fix error cannot create new po for fixed asset
+# - added log to trace new po header and order
 # =============================================
 
 from functions.additional_functions import *
@@ -275,7 +280,7 @@ def fa_mkpo_btn_go_webbl(tfa_order_data: [Tfa_order], cmb_curr_screen_value: str
     fa_ordheader.printed = None
     fa_ordheader.total_amount = to_decimal(t_amount)
     
-    log.write_log("fa_mkpo_btn_go_webbl", f"[LOG] new purchase order header: {fa_ordheader.__dict__}")
+    # log.write_log("fa_mkpo_btn_go_webbl", f"[LOG] new purchase order header: {fa_ordheader.__dict__}")
 
     
     for tfa_order in query(tfa_order_data, sort_by=[("fa_pos", False)]):
@@ -306,7 +311,7 @@ def fa_mkpo_btn_go_webbl(tfa_order_data: [Tfa_order], cmb_curr_screen_value: str
         fa_order.create_time = get_current_time_in_seconds()
         fa_order.activereason = to_string(tfa_order.nr_budget)
         
-        log.write_log("fa_mkpo_btn_go_webbl", f"[LOG] new purchase order: {fa_order.__dict__}")
+        # log.write_log("fa_mkpo_btn_go_webbl", f"[LOG] new purchase order: {fa_order.__dict__}")
 
         tfa_order_data.remove(tfa_order)
         

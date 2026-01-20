@@ -5,8 +5,10 @@
 #
 # yusufwijasena, 20/01/2026
 # - fix pyhton indentation
-# - added function calc_arive_and_order_amount()
-# - fix total calculation
+# - added function calc_arive_and_order_amount() to fix arive & order amount
+# - added function calc_tot_qty_price_amount() to fix total qty, price, amount
+# - optimize query for fa_order & fa_ordheader
+# - changed fa_op get_cache to db_session.query()
 # -----------------------------------------
 
 from functions.additional_functions import *
@@ -156,9 +158,9 @@ def fa_polist_btn_go_webbl(payload_list_data: [Payload_list], cost_list_data: [C
         nonlocal cost_list, w_list, username, temp, temp_detail, payload_list
         nonlocal temp_data, temp_detail_data
 
-        tot_qty = 0
-        tot_price = to_decimal("0")
-        tot_amount = to_decimal("0")
+        # tot_qty = 0
+        # tot_price = to_decimal("0")
+        # tot_amount = to_decimal("0")
 
         tot_qty = tot_qty + fa_order.order_qty
         tot_price = to_decimal(tot_price) + \
@@ -209,7 +211,10 @@ def fa_polist_btn_go_webbl(payload_list_data: [Payload_list], cost_list_data: [C
                 continue
             else:
                 fa_ordheader_obj_list[fa_ordheader._recid] = True
-
+            
+            tot_qty = 0
+            tot_price = to_decimal("0")
+            tot_amount = to_decimal("0")
             # print("Masuk create:", payload_list.po_number, ",", fa_ordheader.order_nr)
             # Rd, 17-July-25,
             # add strip()
@@ -463,7 +468,10 @@ def fa_polist_btn_go_webbl(payload_list_data: [Payload_list], cost_list_data: [C
             else:
                 fa_ordheader_obj_list[fa_ordheader._recid] = True
 
-
+            tot_qty = 0
+            tot_price = to_decimal("0")
+            tot_amount = to_decimal("0")
+            
             if ((payload_list.po_number.strip()) == "" or fa_ordheader.order_nr == payload_list.po_number):
                 temp = Temp()
                 temp_data.append(temp)
@@ -581,7 +589,10 @@ def fa_polist_btn_go_webbl(payload_list_data: [Payload_list], cost_list_data: [C
             else:
                 fa_ordheader_obj_list[fa_ordheader._recid] = True
 
-
+            tot_qty = 0
+            tot_price = to_decimal("0")
+            tot_amount = to_decimal("0")
+            
             if ((payload_list.po_number.strip()) == "" or fa_ordheader.order_nr == payload_list.po_number):
                 temp = Temp()
                 temp_data.append(temp)
@@ -706,6 +717,9 @@ def fa_polist_btn_go_webbl(payload_list_data: [Payload_list], cost_list_data: [C
                 else:
                     fa_ordheader_obj_list[fa_ordheader._recid] = True
 
+                tot_qty = 0
+                tot_price = to_decimal("0")
+                tot_amount = to_decimal("0")
 
                 if ((payload_list.po_number.strip()) == "" or fa_ordheader.order_nr == payload_list.po_number):
                     temp = Temp()
@@ -831,7 +845,10 @@ def fa_polist_btn_go_webbl(payload_list_data: [Payload_list], cost_list_data: [C
                 else:
                     fa_ordheader_obj_list[fa_ordheader._recid] = True
 
-
+                tot_qty = 0
+                tot_price = to_decimal("0")
+                tot_amount = to_decimal("0")
+                
                 if ((payload_list.po_number.strip()) == "" or fa_ordheader.order_nr == payload_list.po_number):
                     temp = Temp()
                     temp_data.append(temp)
