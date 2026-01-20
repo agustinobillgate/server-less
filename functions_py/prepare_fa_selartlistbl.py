@@ -60,8 +60,8 @@ def prepare_fa_selartlistbl():
         .order_by(Mathis.name)
     )
     for mathis, fa_grup, fa_artikel in query_mathis.yield_per(100):
-        print(f"[DEBUG] mathis: {mathis.nr} - {mathis.name}")
-        print(f"[DEBUG] fa grup: {fa_grup.bezeich}")
+        # print(f"[DEBUG] mathis: {mathis.nr} - {mathis.name}")
+        # print(f"[DEBUG] fa grup: {fa_grup.bezeich}")
         
         if mathis_obj_list.get(mathis._recid):
             continue
@@ -73,7 +73,7 @@ def prepare_fa_selartlistbl():
             Fa_order.fa_nr == fa_artikel.nr
         ).first()
         
-        print(f"[DEBUG] fa artikel: {fa_artikel.nr}")
+        # print(f"[DEBUG] fa artikel: {fa_artikel.nr}")
         
         if not fa_order:    
             tmp_faartikel = Tmp_faartikel()
@@ -89,7 +89,7 @@ def prepare_fa_selartlistbl():
             tmp_faartikel.bezeich = fa_grup.bezeich
 
         else:
-            # pass
-            print("[LOG] has fa_order")
+            pass
+            # print("[LOG] has fa_order")
 
     return generate_output()

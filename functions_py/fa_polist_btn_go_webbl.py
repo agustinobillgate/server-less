@@ -2,6 +2,11 @@
 # -----------------------------------------
 # Rd, 17-July-25
 # add strip()
+#
+# yusufwijasena, 20/01/2026
+# - fix pyhton indentation
+# - added function calc_arive_and_order_amount()
+# - fix total calculation
 # -----------------------------------------
 
 from functions.additional_functions import *
@@ -51,7 +56,8 @@ username_data, Username = create_model(
 
 def fa_polist_btn_go_webbl(payload_list_data: [Payload_list], cost_list_data: [Cost_list], w_list_data: [W_list], username_data: [Username]):
 
-    prepare_cache([L_lieferant, Fa_ordheader, Fa_op, Mathis, Fa_artikel, Fa_order])
+    prepare_cache([L_lieferant, Fa_ordheader, Fa_op,
+                  Mathis, Fa_artikel, Fa_order])
 
     temp_data = []
     temp_detail_data = []
@@ -145,6 +151,21 @@ def fa_polist_btn_go_webbl(payload_list_data: [Payload_list], cost_list_data: [C
         # temp_amount = to_decimal("0")
         # print(f"[LOG] temp_amount(2): {temp.order_amount}")
 
+    def calc_tot_qty_price_amount():
+        nonlocal temp_data, temp_detail_data, min_statorder, temp_amount, tot_qty, tot_price, tot_amount, l_lieferant, fa_ordheader, fa_op, mathis, fa_artikel, fa_order
+        nonlocal cost_list, w_list, username, temp, temp_detail, payload_list
+        nonlocal temp_data, temp_detail_data
+
+        tot_qty = 0
+        tot_price = to_decimal("0")
+        tot_amount = to_decimal("0")
+
+        tot_qty = tot_qty + fa_order.order_qty
+        tot_price = to_decimal(tot_price) + \
+            to_decimal(fa_order.order_price)
+        tot_amount = to_decimal(
+            tot_amount) + to_decimal(fa_order.order_amount)
+
     payload_list = query(payload_list_data, first=True)
 
     # -- STATUS EQ OUTSTANDING --
@@ -189,9 +210,6 @@ def fa_polist_btn_go_webbl(payload_list_data: [Payload_list], cost_list_data: [C
             else:
                 fa_ordheader_obj_list[fa_ordheader._recid] = True
 
-            tot_qty = 0
-            tot_price = to_decimal("0")
-            tot_amount = to_decimal("0")
             # print("Masuk create:", payload_list.po_number, ",", fa_ordheader.order_nr)
             # Rd, 17-July-25,
             # add strip()
@@ -225,13 +243,17 @@ def fa_polist_btn_go_webbl(payload_list_data: [Payload_list], cost_list_data: [C
                 temp.order_desc = fa_ordheader.order_desc
                 temp.order_name = fa_ordheader.order_name
                 temp.total_amount = to_decimal(username.total_amount)
-                
+
                 calc_arive_and_order_amount()
 
                 # log.write_log("fa_polist_btn_go_webbl", f"[LOG] data: {temp_data}")
 
-                fa_op = get_cache(
-                    Fa_op, {"docu_nr": [(eq, fa_ordheader.order_nr)]})
+                # fa_op = get_cache(
+                #     Fa_op, {"docu_nr": [(eq, fa_ordheader.order_nr)]})
+
+                fa_op = db_session.query(Fa_op).filter(
+                    Fa_op.docu_nr == fa_ordheader.order_nr
+                ).first()
 
                 if fa_op:
                     temp.devnote_no = fa_op.lscheinnr
@@ -265,13 +287,12 @@ def fa_polist_btn_go_webbl(payload_list_data: [Payload_list], cost_list_data: [C
                     temp_detail.price = to_decimal(fa_order.order_price)
                     temp_detail.amount = to_decimal(fa_order.order_amount)
                     temp_detail.order_number = fa_order.order_nr
+
+                    calc_tot_qty_price_amount()
                     
-                    tot_qty = tot_qty + fa_order.order_qty
-                    tot_price = to_decimal(tot_price) + to_decimal(fa_order.order_price)
-                    tot_amount = to_decimal(tot_amount) + to_decimal(fa_order.order_amount)
-                    
-                    print(f"[DEBUG][OUTSTANDING] tot_qty: {tot_qty} | tot_price: {tot_price} | tot_amount: {tot_amount} ")
-                    
+                    # print(
+                    #     f"[DEBUG][OUTSTANDING] tot_qty: {tot_qty} | tot_price: {tot_price} | tot_amount: {tot_amount} ")
+
                 temp_detail = Temp_detail()
                 temp_detail_data.append(temp_detail)
 
@@ -319,7 +340,7 @@ def fa_polist_btn_go_webbl(payload_list_data: [Payload_list], cost_list_data: [C
                 continue
             else:
                 fa_ordheader_obj_list[fa_ordheader._recid] = True
-                
+
             tot_qty = 0
             tot_price = to_decimal("0")
             tot_amount = to_decimal("0")
@@ -352,11 +373,11 @@ def fa_polist_btn_go_webbl(payload_list_data: [Payload_list], cost_list_data: [C
                 temp.order_desc = fa_ordheader.order_desc
                 temp.order_name = fa_ordheader.order_name
                 temp.total_amount = to_decimal(username.total_amount)
-                
+
                 calc_arive_and_order_amount()
 
-                fa_op = get_cache(
-                    Fa_op, {"docu_nr": [(eq, fa_ordheader.order_nr)]})
+                fa_op = db_session.query(Fa_op).filter(
+                    Fa_op.docu_nr == fa_ordheader.order_nr).first()
 
                 if fa_op:
                     temp.devnote_no = fa_op.lscheinnr
@@ -406,6 +427,7 @@ def fa_polist_btn_go_webbl(payload_list_data: [Payload_list], cost_list_data: [C
                 temp_detail.amount = to_decimal(tot_amount)
                 temp_detail.order_number = fa_ordheader.order_nr
 
+    # -- STATUS EQ EXPIRED --
     elif payload_list.stat_order == 2 and payload_list.all_supp:
 
         fa_ordheader_obj_list = {}
@@ -441,10 +463,7 @@ def fa_polist_btn_go_webbl(payload_list_data: [Payload_list], cost_list_data: [C
             else:
                 fa_ordheader_obj_list[fa_ordheader._recid] = True
 
-            tot_qty = 0
-            tot_price = to_decimal("0")
-            tot_amount = to_decimal("0")
-            
+
             if ((payload_list.po_number.strip()) == "" or fa_ordheader.order_nr == payload_list.po_number):
                 temp = Temp()
                 temp_data.append(temp)
@@ -473,11 +492,12 @@ def fa_polist_btn_go_webbl(payload_list_data: [Payload_list], cost_list_data: [C
                 temp.order_desc = fa_ordheader.order_desc
                 temp.order_name = fa_ordheader.order_name
                 temp.total_amount = to_decimal(username.total_amount)
-                
+
                 calc_arive_and_order_amount()
 
-                fa_op = get_cache(
-                    Fa_op, {"docu_nr": [(eq, fa_ordheader.order_nr)]})
+                fa_op = db_session.query(Fa_op).filter(
+                    Fa_op.docu_nr == fa_ordheader.order_nr
+                ).first()
 
                 if fa_op:
                     temp.devnote_no = fa_op.lscheinnr
@@ -511,12 +531,9 @@ def fa_polist_btn_go_webbl(payload_list_data: [Payload_list], cost_list_data: [C
                     temp_detail.price = to_decimal(fa_order.order_price)
                     temp_detail.amount = to_decimal(fa_order.order_amount)
                     temp_detail.order_number = fa_order.order_nr
-                    tot_qty = tot_qty + fa_order.order_qty
-
-                    tot_price = to_decimal(tot_price) + \
-                        to_decimal(fa_order.order_price)
-                    tot_amount = to_decimal(
-                        tot_amount) + to_decimal(fa_order.order_amount)
+                    
+                    calc_tot_qty_price_amount()
+                    
                 temp_detail = Temp_detail()
                 temp_detail_data.append(temp_detail)
 
@@ -564,10 +581,7 @@ def fa_polist_btn_go_webbl(payload_list_data: [Payload_list], cost_list_data: [C
             else:
                 fa_ordheader_obj_list[fa_ordheader._recid] = True
 
-            tot_qty = 0
-            tot_price = to_decimal("0")
-            tot_amount = to_decimal("0")
-            
+
             if ((payload_list.po_number.strip()) == "" or fa_ordheader.order_nr == payload_list.po_number):
                 temp = Temp()
                 temp_data.append(temp)
@@ -596,11 +610,12 @@ def fa_polist_btn_go_webbl(payload_list_data: [Payload_list], cost_list_data: [C
                 temp.order_desc = fa_ordheader.order_desc
                 temp.order_name = fa_ordheader.order_name
                 temp.total_amount = to_decimal(username.total_amount)
-                
+
                 calc_arive_and_order_amount()
 
-                fa_op = get_cache(
-                    Fa_op, {"docu_nr": [(eq, fa_ordheader.order_nr)]})
+                fa_op = db_session.query(Fa_op).filter(
+                    Fa_op.docu_nr == fa_ordheader.order_nr
+                ).first()
 
                 if fa_op:
                     temp.devnote_no = fa_op.lscheinnr
@@ -634,12 +649,9 @@ def fa_polist_btn_go_webbl(payload_list_data: [Payload_list], cost_list_data: [C
                     temp_detail.price = to_decimal(fa_order.order_price)
                     temp_detail.amount = to_decimal(fa_order.order_amount)
                     temp_detail.order_number = fa_order.order_nr
-                    tot_qty = tot_qty + fa_order.order_qty
-
-                    tot_price = to_decimal(tot_price) + \
-                        to_decimal(fa_order.order_price)
-                    tot_amount = to_decimal(
-                        tot_amount) + to_decimal(fa_order.order_amount)
+                    
+                    calc_tot_qty_price_amount()
+                    
                 temp_detail = Temp_detail()
                 temp_detail_data.append(temp_detail)
 
@@ -655,6 +667,7 @@ def fa_polist_btn_go_webbl(payload_list_data: [Payload_list], cost_list_data: [C
         if payload_list.stat_order == 1:
             min_statorder = 1
 
+        # -- STATUS EQ DELETED --
         if payload_list.stat_order == 3:
             min_statorder = 2
 
@@ -672,7 +685,7 @@ def fa_polist_btn_go_webbl(payload_list_data: [Payload_list], cost_list_data: [C
                 .order_by(Fa_ordheader._recid)
             )
             for fa_ordheader, l_lieferant in fa_ordheader_data.yield_per(100):
-                
+
                 w_list = query(
                     w_list_data, (lambda w_list: w_list.nr == fa_ordheader.currency), first=True)
                 if not w_list:
@@ -692,10 +705,7 @@ def fa_polist_btn_go_webbl(payload_list_data: [Payload_list], cost_list_data: [C
                     continue
                 else:
                     fa_ordheader_obj_list[fa_ordheader._recid] = True
-                    
-                tot_qty = 0
-                tot_price = to_decimal("0")
-                tot_amount = to_decimal("0")
+
 
                 if ((payload_list.po_number.strip()) == "" or fa_ordheader.order_nr == payload_list.po_number):
                     temp = Temp()
@@ -725,14 +735,15 @@ def fa_polist_btn_go_webbl(payload_list_data: [Payload_list], cost_list_data: [C
                     temp.order_desc = fa_ordheader.order_desc
                     temp.order_name = fa_ordheader.order_name
                     temp.total_amount = to_decimal(username.total_amount)
-                    
+
                     calc_arive_and_order_amount()
 
                     # log.write_log("fa_polist_btn_go_webbl",
                     #               f"[LOG] data: {temp_data}")
 
-                    fa_op = get_cache(
-                        Fa_op, {"docu_nr": [(eq, fa_ordheader.order_nr)]})
+                    fa_op = db_session.query(Fa_op).filter(
+                        Fa_op.docu_nr == fa_ordheader.order_nr
+                    ).first()
 
                     if fa_op:
                         temp.devnote_no = fa_op.lscheinnr
@@ -766,17 +777,15 @@ def fa_polist_btn_go_webbl(payload_list_data: [Payload_list], cost_list_data: [C
                         temp_detail.price = to_decimal(fa_order.order_price)
                         temp_detail.amount = to_decimal(fa_order.order_amount)
                         temp_detail.order_number = fa_order.order_nr
-                        
-                        tot_qty = tot_qty + fa_order.order_qty
-                        tot_price = to_decimal(
-                            tot_price) + to_decimal(fa_order.order_price)
-                        tot_amount = to_decimal(
-                            tot_amount) + to_decimal(fa_order.order_amount)
-                        
-                        print(f'[LOG] fa_order: {fa_order.order_nr} | fa_order.qty: {fa_order.order_qty} ')
-                        
-                        print(f"[DEBUG][CLOSED] tot_qty: {tot_qty} | tot_price: {tot_price} | tot_amount: {tot_amount}")
-                    
+
+                        calc_tot_qty_price_amount()
+
+                        # print(
+                        #     f'[LOG] fa_order: {fa_order.order_nr} | fa_order.qty: {fa_order.order_qty} ')
+
+                        # print(
+                        #     f"[DEBUG][CLOSED] tot_qty: {tot_qty} | tot_price: {tot_price} | tot_amount: {tot_amount}")
+
                     temp_detail = Temp_detail()
                     temp_detail_data.append(temp_detail)
 
@@ -821,10 +830,7 @@ def fa_polist_btn_go_webbl(payload_list_data: [Payload_list], cost_list_data: [C
                     continue
                 else:
                     fa_ordheader_obj_list[fa_ordheader._recid] = True
-                
-                tot_qty = 0
-                tot_price = to_decimal("0")
-                tot_amount = to_decimal("0")
+
 
                 if ((payload_list.po_number.strip()) == "" or fa_ordheader.order_nr == payload_list.po_number):
                     temp = Temp()
@@ -854,11 +860,12 @@ def fa_polist_btn_go_webbl(payload_list_data: [Payload_list], cost_list_data: [C
                     temp.order_desc = fa_ordheader.order_desc
                     temp.order_name = fa_ordheader.order_name
                     temp.total_amount = to_decimal(username.total_amount)
-                    
+
                     calc_arive_and_order_amount()
 
-                    fa_op = get_cache(
-                        Fa_op, {"docu_nr": [(eq, fa_ordheader.order_nr)]})
+                    fa_op = db_session.query(Fa_op).filter(
+                        Fa_op.docu_nr == fa_ordheader.order_nr
+                    ).first()
 
                     if fa_op:
                         temp.devnote_no = fa_op.lscheinnr
@@ -892,13 +899,9 @@ def fa_polist_btn_go_webbl(payload_list_data: [Payload_list], cost_list_data: [C
                         temp_detail.price = to_decimal(fa_order.order_price)
                         temp_detail.amount = to_decimal(fa_order.order_amount)
                         temp_detail.order_number = fa_order.order_nr
-                        
-                        tot_qty = tot_qty + fa_order.order_qty
-                        tot_price = to_decimal(
-                            tot_price) + to_decimal(fa_order.order_price)
-                        tot_amount = to_decimal(
-                            tot_amount) + to_decimal(fa_order.order_amount)
-                        
+
+                        calc_tot_qty_price_amount()
+
                     temp_detail = Temp_detail()
                     temp_detail_data.append(temp_detail)
 

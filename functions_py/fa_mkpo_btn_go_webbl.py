@@ -50,7 +50,7 @@ def fa_mkpo_btn_go_webbl(tfa_order_data: [Tfa_order], cmb_curr_screen_value: str
                 Fa_ordheader, {"order_nr": [(eq, order_nr)]})
 
             if fa_ordheader:
-                print(f"[RE_NUMBERING] fa_ordheader: {fa_ordheader.order_nr}")
+                # print(f"[RE_NUMBERING] fa_ordheader: {fa_ordheader.order_nr}")
                 
                 thereis = True
                 new_fapo_number()
@@ -112,13 +112,13 @@ def fa_mkpo_btn_go_webbl(tfa_order_data: [Tfa_order], cmb_curr_screen_value: str
                     fa_counter.counters = 0
                     fa_counter.docu_type = 0
                     
-                    print(f"[LOG] new fa_counter: {fa_counter.counters}")
+                    # print(f"[LOG] new fa_counter: {fa_counter.counters}")
 
                 else:
                     i = fa_counter.counters + 1
                     docu_nr = s + to_string(dd, "99") + to_string(i, "999")
                     
-                    print(f"[LOG] check docu_nr: {docu_nr}")
+                    # print(f"[LOG] check docu_nr: {docu_nr}")
                     
             else:
 
@@ -145,14 +145,14 @@ def fa_mkpo_btn_go_webbl(tfa_order_data: [Tfa_order], cmb_curr_screen_value: str
                     fa_counter.counters = 0
                     fa_counter.docu_type = 0
                     
-                    print(f"[LOG] new fa_counter: {fa_counter.counters}")
+                    # print(f"[LOG] new fa_counter: {fa_counter.counters}")
 
                 pass
                 i = fa_counter.counters + 1
                 docu_nr = s + to_string(i, "99999")
                 
         order_nr = docu_nr
-        print(f"[LOG] counter: {fa_counter.counters} | docu_nr: {docu_nr}")
+        # print(f"[LOG] counter: {fa_counter.counters} | docu_nr: {docu_nr}")
         
 
     def update_counters():
@@ -238,7 +238,7 @@ def fa_mkpo_btn_go_webbl(tfa_order_data: [Tfa_order], cmb_curr_screen_value: str
                     # pass
                     # db_session.refresh(fa_counter, with_for_update=True)
             
-            print(f"[UPDATE_COUNTERS] fa_counter: {fa_counter.counters}")
+            # print(f"[UPDATE_COUNTERS] fa_counter: {fa_counter.counters}")
 
     tfa_order = query(tfa_order_data, first=True)
 
@@ -266,7 +266,6 @@ def fa_mkpo_btn_go_webbl(tfa_order_data: [Tfa_order], cmb_curr_screen_value: str
     fa_ordheader.credit_term = credit_term
     fa_ordheader.currency = curr
     fa_ordheader.paymentdate = paymentdate
-    print(f"[LOG] expected date: {_expected_delivery}")
     fa_ordheader.expected_delivery = _expected_delivery
     fa_ordheader.created_by = user_init
     fa_ordheader.created_date = billdate
@@ -281,7 +280,7 @@ def fa_mkpo_btn_go_webbl(tfa_order_data: [Tfa_order], cmb_curr_screen_value: str
     
     for tfa_order in query(tfa_order_data, sort_by=[("fa_pos", False)]):
         
-        print(f"[LOG] fa_number: {tfa_order.fa_nr}")
+        # print(f"[LOG] fa_number: {tfa_order.fa_nr}")
         repos = repos + 1
         fa_order = Fa_order()
         db_session.add(fa_order)
