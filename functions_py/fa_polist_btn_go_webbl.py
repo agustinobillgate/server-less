@@ -1,72 +1,208 @@
-#using conversion tools version: 1.0.0.117
-#-----------------------------------------
+# using conversion tools version: 1.0.0.117
+# -----------------------------------------
 # Rd, 17-July-25
 # add strip()
-#-----------------------------------------
+#
+# yusufwijasena, 20/01/2026
+# - fix pyhton indentation
+# - added function calc_arive_and_order_amount() to fix arive & order amount
+# - added function calc_tot_qty_price_amount() to fix total qty, price, amount
+# - optimize query for fa_order & fa_ordheader
+# - changed fa_op get_cache to db_session.query()
+# -----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import L_lieferant, Fa_ordheader, Fa_op, Mathis, Fa_artikel, Fa_order
-"""
-09/24/2024
-"""
-payload_list_data, Payload_list = create_model("Payload_list", {"from_date":date, "to_date":date, "billdate":date, "stat_order":int, "lnumber":int, "all_supp":bool, "po_number":string})
-cost_list_data, Cost_list = create_model("Cost_list", {"nr":int, "bezeich":string, "sorting":string})
-w_list_data, W_list = create_model("W_list", {"nr":int, "wabkurz":string})
-username_data, Username = create_model("Username", {"order_nr":string, "create_by":string, "modify_by":string, "close_by":string, "close_date":date, "close_time":string, "last_arrival":date, "total_amount":Decimal})
 
-def fa_polist_btn_go_webbl(payload_list_data:[Payload_list], cost_list_data:[Cost_list], w_list_data:[W_list], username_data:[Username]):
+from functions import log_program as log
 
-    prepare_cache ([L_lieferant, Fa_ordheader, Fa_op, Mathis, Fa_artikel, Fa_order])
- 
+payload_list_data, Payload_list = create_model(
+    "Payload_list",
+    {
+        "from_date": date,
+        "to_date": date,
+        "billdate": date,
+        "stat_order": int,
+        "lnumber": int,
+        "all_supp": bool,
+        "po_number": string
+    })
+cost_list_data, Cost_list = create_model(
+    "Cost_list",
+    {
+        "nr": int,
+        "bezeich": string,
+        "sorting": string
+    })
+w_list_data, W_list = create_model(
+    "W_list",
+    {
+        "nr": int,
+        "wabkurz": string
+    })
+username_data, Username = create_model(
+    "Username",
+    {
+        "order_nr": string,
+        "create_by": string,
+        "modify_by": string,
+        "close_by": string,
+        "close_date": date,
+        "close_time": string,
+        "last_arrival": date,
+        "total_amount": Decimal
+    })
+
+
+def fa_polist_btn_go_webbl(payload_list_data: [Payload_list], cost_list_data: [Cost_list], w_list_data: [W_list], username_data: [Username]):
+
+    prepare_cache([L_lieferant, Fa_ordheader, Fa_op,
+                  Mathis, Fa_artikel, Fa_order])
+
     temp_data = []
     temp_detail_data = []
-    min_statorder:int = 0
-    temp_amount:Decimal = to_decimal("0.0")
-    tot_qty:int = 0
-    tot_price:Decimal = to_decimal("0.0")
-    tot_amount:Decimal = to_decimal("0.0")
+    min_statorder: int = 0
+    temp_amount: Decimal = to_decimal("0.0")
+    tot_qty: int = 0
+    tot_price: Decimal = to_decimal("0.0")
+    tot_amount: Decimal = to_decimal("0.0")
     l_lieferant = fa_ordheader = fa_op = mathis = fa_artikel = fa_order = None
 
     cost_list = w_list = username = temp = temp_detail = payload_list = None
 
-    temp_data, Temp = create_model("Temp", {"sorting":string, "Order_Date":date, "Order_Nr":string, "Order_Type":string, "bezeich":string, "firma":string, "wabkurz":string, 
-                                            "Released_Date":date, "create_by":string, "Created_Date":date, "printed":date, "Expected_Delivery":date, 
-                                            "modify_by":string, "modified_date":date, "close_by":string, "close_date":date, "close_time":string, "last_arrival":date, 
-                                            "Released_Flag":bool, "Supplier_Nr":int, "activeflag":int, "Order_Desc":string, 
-                                            "Order_Name":string, "total_amount":Decimal, "devnote_no":string, "arive_amount":Decimal, "order_amount":Decimal})
-    temp_detail_data, Temp_detail = create_model("Temp_detail", {"COA":string, "desc1":string, "qty":int, "price":Decimal, "amount":Decimal, "order_number":string})
+    temp_data, Temp = create_model(
+        "Temp",
+        {
+            "sorting": string,
+            "order_date": date,
+            "order_nr": string,
+            "order_type": string,
+            "bezeich": string,
+            "firma": string,
+            "wabkurz": string,
+            "released_date": date,
+            "create_by": string,
+            "created_date": date,
+            "printed": date,
+            "expected_delivery": date,
+            "modify_by": string,
+            "modified_date": date,
+            "close_by": string,
+            "close_date": date,
+            "close_time": string,
+            "last_arrival": date,
+            "released_flag": bool,
+            "supplier_nr": int,
+            "activeflag": int,
+            "order_desc": string,
+            "order_name": string,
+            "total_amount": Decimal,
+            "devnote_no": string,
+            "arive_amount": Decimal,
+            "order_amount": Decimal
+        })
+    temp_detail_data, Temp_detail = create_model(
+        "Temp_detail",
+        {
+            "coa": string,
+            "desc1": string,
+            "qty": int,
+            "price": Decimal,
+            "amount": Decimal,
+            "order_number": string
+        })
 
     db_session = local_storage.db_session
 
     def generate_output():
         nonlocal temp_data, temp_detail_data, min_statorder, temp_amount, tot_qty, tot_price, tot_amount, l_lieferant, fa_ordheader, fa_op, mathis, fa_artikel, fa_order
-
-
         nonlocal cost_list, w_list, username, temp, temp_detail, payload_list
         nonlocal temp_data, temp_detail_data
 
-        return {"temp": temp_data, "temp-detail": temp_detail_data}
+        return {
+            "temp": temp_data,
+            "temp-detail": temp_detail_data
+        }
 
+    def calc_arive_and_order_amount():
+        nonlocal temp_data, temp_detail_data, min_statorder, temp_amount, tot_qty, tot_price, tot_amount, l_lieferant, fa_ordheader, fa_op, mathis, fa_artikel, fa_order
+        nonlocal cost_list, w_list, username, temp, temp_detail, payload_list
+        nonlocal temp_data, temp_detail_data
+
+        temp.arive_amount = (
+            db_session.query(func.sum(Fa_op.warenwert))
+            .filter(
+                Fa_op.docu_nr == temp.order_nr,
+                Fa_op.lscheinnr == temp.devnote_no
+            )
+            .scalar()
+        ) or to_decimal("0")
+        # temp_amount = to_decimal("0")
+        # print(f"[LOG] temp_amount(1): {temp.arive_amount}")
+
+        temp.order_amount = (
+            db_session.query(func.sum(Fa_order.order_amount))
+            .filter(
+                Fa_order.order_nr == temp.order_nr
+            )
+            .scalar()
+        ) or to_decimal("0")
+
+        # temp_amount = to_decimal("0")
+        # print(f"[LOG] temp_amount(2): {temp.order_amount}")
+
+    def calc_tot_qty_price_amount():
+        nonlocal temp_data, temp_detail_data, min_statorder, temp_amount, tot_qty, tot_price, tot_amount, l_lieferant, fa_ordheader, fa_op, mathis, fa_artikel, fa_order
+        nonlocal cost_list, w_list, username, temp, temp_detail, payload_list
+        nonlocal temp_data, temp_detail_data
+
+        # tot_qty = 0
+        # tot_price = to_decimal("0")
+        # tot_amount = to_decimal("0")
+
+        tot_qty = tot_qty + fa_order.order_qty
+        tot_price = to_decimal(tot_price) + \
+            to_decimal(fa_order.order_price)
+        tot_amount = to_decimal(
+            tot_amount) + to_decimal(fa_order.order_amount)
 
     payload_list = query(payload_list_data, first=True)
 
+    # -- STATUS EQ OUTSTANDING --
     if payload_list.stat_order == 0 and payload_list.all_supp:
 
         fa_ordheader_obj_list = {}
-        for fa_ordheader, l_lieferant in db_session.query(Fa_ordheader, L_lieferant).join(L_lieferant,(L_lieferant.lief_nr == Fa_ordheader.supplier_nr)).filter(
-                 (Fa_ordheader.order_date >= payload_list.from_date) & (Fa_ordheader.order_date <= payload_list.to_date) & (Fa_ordheader.activeflag == 0) & (Fa_ordheader.expected_delivery >= payload_list.billdate)).order_by(Fa_ordheader._recid).all():
-            
-            w_list = query(w_list_data, (lambda w_list: w_list.nr == fa_ordheader.currency), first=True)
+        fa_ordheader_data = (
+            db_session.query(Fa_ordheader, L_lieferant)
+            .join(L_lieferant, (L_lieferant.lief_nr == Fa_ordheader.supplier_nr))
+            .filter(
+                (Fa_ordheader.order_date >= payload_list.from_date) &
+                (Fa_ordheader.order_date <= payload_list.to_date) &
+                (Fa_ordheader.activeflag == 0) &
+                (Fa_ordheader.expected_delivery >= payload_list.billdate)
+            )
+            .order_by(Fa_ordheader._recid)
+        )
+
+        for fa_ordheader, l_lieferant in fa_ordheader_data.yield_per(100):
+            # print(f"[DEBUG] fa_order header: {fa_ordheader.order_nr} | from {fa_ordheader.order_date} | is active? {fa_ordheader.activeflag} | billdate: {fa_ordheader.expected_delivery}")
+            # print(f"[LOG] supplier: {l_lieferant.lief_nr}")
+
+            w_list = query(w_list_data, (lambda w_list: w_list.nr ==
+                           fa_ordheader.currency), first=True)
             if not w_list:
                 continue
 
-            cost_list = query(cost_list_data, (lambda cost_list: cost_list.nr == fa_ordheader.dept_nr), first=True)
+            cost_list = query(
+                cost_list_data, (lambda cost_list: cost_list.nr == fa_ordheader.dept_nr), first=True)
+
             if not cost_list:
                 continue
 
-            username = query(username_data, (lambda username: username.order_nr == fa_ordheader.order_nr), first=True)
+            username = query(
+                username_data, (lambda username: username.order_nr == fa_ordheader.order_nr), first=True)
 
             if not username:
                 continue
@@ -75,17 +211,16 @@ def fa_polist_btn_go_webbl(payload_list_data:[Payload_list], cost_list_data:[Cos
                 continue
             else:
                 fa_ordheader_obj_list[fa_ordheader._recid] = True
-
-
+            
             tot_qty = 0
-            tot_price =  to_decimal("0")
-            tot_amount =  to_decimal("0")
-            print("Masuk create:", payload_list.po_number, ",", fa_ordheader.order_nr)
+            tot_price = to_decimal("0")
+            tot_amount = to_decimal("0")
+            # print("Masuk create:", payload_list.po_number, ",", fa_ordheader.order_nr)
             # Rd, 17-July-25,
             # add strip()
             # if (payload_list.po_number ==  " " or fa_ordheader.order_nr == payload_list.po_number):
-            if ((payload_list.po_number.strip()) ==  "" or fa_ordheader.order_nr == payload_list.po_number):
-                print("Masuk creating")
+            if ((payload_list.po_number.strip()) == "" or fa_ordheader.order_nr == payload_list.po_number):
+                # print("Masuk creating")
                 temp = Temp()
                 temp_data.append(temp)
 
@@ -112,24 +247,41 @@ def fa_polist_btn_go_webbl(payload_list_data:[Payload_list], cost_list_data:[Cos
                 temp.activeflag = fa_ordheader.activeflag
                 temp.order_desc = fa_ordheader.order_desc
                 temp.order_name = fa_ordheader.order_name
-                temp.total_amount =  to_decimal(username.total_amount)
-                
-                fa_op = get_cache (Fa_op, {"docu_nr": [(eq, fa_ordheader.order_nr)]})
+                temp.total_amount = to_decimal(username.total_amount)
+
+                calc_arive_and_order_amount()
+
+                # log.write_log("fa_polist_btn_go_webbl", f"[LOG] data: {temp_data}")
+
+                # fa_op = get_cache(
+                #     Fa_op, {"docu_nr": [(eq, fa_ordheader.order_nr)]})
+
+                fa_op = db_session.query(Fa_op).filter(
+                    Fa_op.docu_nr == fa_ordheader.order_nr
+                ).first()
 
                 if fa_op:
                     temp.devnote_no = fa_op.lscheinnr
 
                 fa_order_obj_list = {}
-                fa_order = Fa_order()
-                mathis = Mathis()
-                fa_artikel = Fa_artikel()
-                for fa_order.order_qty, fa_order.order_price, fa_order.order_amount, fa_order.order_nr, fa_order._recid, mathis.name, mathis._recid, fa_artikel.fibukonto, fa_artikel._recid in db_session.query(Fa_order.order_qty, Fa_order.order_price, Fa_order.order_amount, Fa_order.order_nr, Fa_order._recid, Mathis.name, Mathis._recid, Fa_artikel.fibukonto, Fa_artikel._recid).join(Mathis,(Mathis.nr == Fa_order.fa_nr)).join(Fa_artikel,(Fa_artikel.nr == Mathis.nr)).filter(
-                         (Fa_order.order_nr == fa_ordheader.order_nr)).order_by(Fa_order._recid).all():
+                # fa_order = Fa_order()
+                # mathis = Mathis()
+                # fa_artikel = Fa_artikel()
+                fa_order_data = (
+                    db_session.query(Fa_order, Mathis, Fa_artikel)
+                    .join(Mathis, (Mathis.nr == Fa_order.fa_nr))
+                    .join(Fa_artikel, (Fa_artikel.nr == Mathis.nr))
+                    .filter(
+                        (Fa_order.order_nr == fa_ordheader.order_nr)
+                    ).order_by(Fa_order._recid)
+                )
+
+                for fa_order, mathis, fa_artikel in fa_order_data.yield_per(100):
+
                     if fa_order_obj_list.get(fa_order._recid):
                         continue
                     else:
                         fa_order_obj_list[fa_order._recid] = True
-
 
                     temp_detail = Temp_detail()
                     temp_detail_data.append(temp_detail)
@@ -137,38 +289,55 @@ def fa_polist_btn_go_webbl(payload_list_data:[Payload_list], cost_list_data:[Cos
                     temp_detail.coa = fa_artikel.fibukonto
                     temp_detail.desc1 = mathis.name
                     temp_detail.qty = fa_order.order_qty
-                    temp_detail.price =  to_decimal(fa_order.order_price)
-                    temp_detail.amount =  to_decimal(fa_order.order_amount)
+                    temp_detail.price = to_decimal(fa_order.order_price)
+                    temp_detail.amount = to_decimal(fa_order.order_amount)
                     temp_detail.order_number = fa_order.order_nr
-                    tot_qty = tot_qty + fa_order.order_qty
 
+                    calc_tot_qty_price_amount()
+                    
+                    # print(
+                    #     f"[DEBUG][OUTSTANDING] tot_qty: {tot_qty} | tot_price: {tot_price} | tot_amount: {tot_amount} ")
 
-                    tot_price =  to_decimal(tot_price) + to_decimal(fa_order.order_price)
-                    tot_amount =  to_decimal(tot_amount) + to_decimal(fa_order.order_amount)
                 temp_detail = Temp_detail()
                 temp_detail_data.append(temp_detail)
 
                 temp_detail.coa = ""
                 temp_detail.desc1 = "T O T A L"
                 temp_detail.qty = tot_qty
-                temp_detail.price =  to_decimal(tot_price)
-                temp_detail.amount =  to_decimal(tot_amount)
+                temp_detail.price = to_decimal(tot_price)
+                temp_detail.amount = to_decimal(tot_amount)
                 temp_detail.order_number = fa_ordheader.order_nr
+
+                # log.write_log("fa_polist_btn_go_webbl", f"[LOG] detail_data: {temp_detail_data}")
 
     elif payload_list.stat_order == 0 and not payload_list.all_supp:
 
         fa_ordheader_obj_list = {}
-        for fa_ordheader, l_lieferant in db_session.query(Fa_ordheader, L_lieferant).join(L_lieferant,(L_lieferant.lief_nr == Fa_ordheader.supplier_nr)).filter(
-                 (Fa_ordheader.order_date >= payload_list.from_date) & (Fa_ordheader.order_date <= payload_list.to_date) & (Fa_ordheader.activeflag == 0) & (Fa_ordheader.supplier_nr == payload_list.lnumber) & (Fa_ordheader.expected_delivery >= payload_list.billdate)).order_by(Fa_ordheader._recid).all():
-            w_list = query(w_list_data, (lambda w_list: w_list.nr == fa_ordheader.currency), first=True)
+        fa_ordheader_data = (
+            db_session.query(Fa_ordheader, L_lieferant)
+            .join(L_lieferant, (L_lieferant.lief_nr == Fa_ordheader.supplier_nr))
+            .filter(
+                (Fa_ordheader.order_date >= payload_list.from_date) &
+                (Fa_ordheader.order_date <= payload_list.to_date) &
+                (Fa_ordheader.activeflag == 0) &
+                (Fa_ordheader.supplier_nr == payload_list.lnumber) &
+                (Fa_ordheader.expected_delivery >= payload_list.billdate)
+            )
+            .order_by(Fa_ordheader._recid)
+        )
+        for fa_ordheader, l_lieferant in fa_ordheader_data.yield_per(100):
+            w_list = query(w_list_data, (lambda w_list: w_list.nr ==
+                           fa_ordheader.currency), first=True)
             if not w_list:
                 continue
 
-            cost_list = query(cost_list_data, (lambda cost_list: cost_list.nr == fa_ordheader.dept_nr), first=True)
+            cost_list = query(
+                cost_list_data, (lambda cost_list: cost_list.nr == fa_ordheader.dept_nr), first=True)
             if not cost_list:
                 continue
 
-            username = query(username_data, (lambda username: username.order_nr == fa_ordheader.order_nr), first=True)
+            username = query(
+                username_data, (lambda username: username.order_nr == fa_ordheader.order_nr), first=True)
             if not username:
                 continue
 
@@ -177,7 +346,11 @@ def fa_polist_btn_go_webbl(payload_list_data:[Payload_list], cost_list_data:[Cos
             else:
                 fa_ordheader_obj_list[fa_ordheader._recid] = True
 
-            if (payload_list.po_number == "" or fa_ordheader.order_nr == payload_list.po_number):
+            tot_qty = 0
+            tot_price = to_decimal("0")
+            tot_amount = to_decimal("0")
+
+            if ((payload_list.po_number.strip()) == "" or fa_ordheader.order_nr == payload_list.po_number):
                 temp = Temp()
                 temp_data.append(temp)
 
@@ -204,24 +377,35 @@ def fa_polist_btn_go_webbl(payload_list_data:[Payload_list], cost_list_data:[Cos
                 temp.activeflag = fa_ordheader.activeflag
                 temp.order_desc = fa_ordheader.order_desc
                 temp.order_name = fa_ordheader.order_name
-                temp.total_amount =  to_decimal(username.total_amount)
+                temp.total_amount = to_decimal(username.total_amount)
 
-                fa_op = get_cache (Fa_op, {"docu_nr": [(eq, fa_ordheader.order_nr)]})
+                calc_arive_and_order_amount()
+
+                fa_op = db_session.query(Fa_op).filter(
+                    Fa_op.docu_nr == fa_ordheader.order_nr).first()
 
                 if fa_op:
                     temp.devnote_no = fa_op.lscheinnr
 
                 fa_order_obj_list = {}
-                fa_order = Fa_order()
-                mathis = Mathis()
-                fa_artikel = Fa_artikel()
-                for fa_order.order_qty, fa_order.order_price, fa_order.order_amount, fa_order.order_nr, fa_order._recid, mathis.name, mathis._recid, fa_artikel.fibukonto, fa_artikel._recid in db_session.query(Fa_order.order_qty, Fa_order.order_price, Fa_order.order_amount, Fa_order.order_nr, Fa_order._recid, Mathis.name, Mathis._recid, Fa_artikel.fibukonto, Fa_artikel._recid).join(Mathis,(Mathis.nr == Fa_order.fa_nr)).join(Fa_artikel,(Fa_artikel.nr == Mathis.nr)).filter(
-                         (Fa_order.order_nr == fa_ordheader.order_nr)).order_by(Fa_order._recid).all():
+                # fa_order = Fa_order()
+                # mathis = Mathis()
+                # fa_artikel = Fa_artikel()
+
+                fa_order_data = (
+                    db_session.query(Fa_order, Mathis, Fa_artikel)
+                    .join(Mathis, (Mathis.nr == Fa_order.fa_nr))
+                    .join(Fa_artikel, (Fa_artikel.nr == Mathis.nr))
+                    .filter(
+                        (Fa_order.order_nr == fa_ordheader.order_nr)
+                    )
+                    .order_by(Fa_order._recid)
+                )
+                for fa_order, mathis, fa_artikel in fa_order_data.yield_per(100):
                     if fa_order_obj_list.get(fa_order._recid):
                         continue
                     else:
                         fa_order_obj_list[fa_order._recid] = True
-
 
                     temp_detail = Temp_detail()
                     temp_detail_data.append(temp_detail)
@@ -229,39 +413,53 @@ def fa_polist_btn_go_webbl(payload_list_data:[Payload_list], cost_list_data:[Cos
                     temp_detail.coa = fa_artikel.fibukonto
                     temp_detail.desc1 = mathis.name
                     temp_detail.qty = fa_order.order_qty
-                    temp_detail.price =  to_decimal(fa_order.order_price)
-                    temp_detail.amount =  to_decimal(fa_order.order_amount)
+                    temp_detail.price = to_decimal(fa_order.order_price)
+                    temp_detail.amount = to_decimal(fa_order.order_amount)
                     temp_detail.order_number = fa_order.order_nr
                     tot_qty = tot_qty + fa_order.order_qty
 
-
-                    tot_price =  to_decimal(tot_price) + to_decimal(fa_order.order_price)
-                    tot_amount =  to_decimal(tot_amount) + to_decimal(fa_order.order_amount)
+                    tot_price = to_decimal(tot_price) + \
+                        to_decimal(fa_order.order_price)
+                    tot_amount = to_decimal(
+                        tot_amount) + to_decimal(fa_order.order_amount)
                 temp_detail = Temp_detail()
                 temp_detail_data.append(temp_detail)
 
                 temp_detail.coa = ""
                 temp_detail.desc1 = "T O T A L"
                 temp_detail.qty = tot_qty
-                temp_detail.price =  to_decimal(tot_price)
-                temp_detail.amount =  to_decimal(tot_amount)
+                temp_detail.price = to_decimal(tot_price)
+                temp_detail.amount = to_decimal(tot_amount)
                 temp_detail.order_number = fa_ordheader.order_nr
 
-
+    # -- STATUS EQ EXPIRED --
     elif payload_list.stat_order == 2 and payload_list.all_supp:
 
         fa_ordheader_obj_list = {}
-        for fa_ordheader, l_lieferant in db_session.query(Fa_ordheader, L_lieferant).join(L_lieferant,(L_lieferant.lief_nr == Fa_ordheader.supplier_nr)).filter(
-                 (Fa_ordheader.order_date >= payload_list.from_date) & (Fa_ordheader.order_date <= payload_list.to_date) & (Fa_ordheader.activeflag == 0) & (Fa_ordheader.expected_delivery < payload_list.billdate)).order_by(Fa_ordheader._recid).all():
-            w_list = query(w_list_data, (lambda w_list: w_list.nr == fa_ordheader.currency), first=True)
+        fa_ordheader_data = (
+            db_session.query(Fa_ordheader, L_lieferant)
+            .join(L_lieferant, (L_lieferant.lief_nr == Fa_ordheader.supplier_nr))
+            .filter(
+                (Fa_ordheader.order_date >= payload_list.from_date) &
+                (Fa_ordheader.order_date <= payload_list.to_date) &
+                (Fa_ordheader.activeflag == 0) &
+                (Fa_ordheader.expected_delivery < payload_list.billdate)
+            )
+            .order_by(Fa_ordheader._recid)
+        )
+        for fa_ordheader, l_lieferant in fa_ordheader_data.yield_per(100):
+            w_list = query(w_list_data, (lambda w_list: w_list.nr ==
+                           fa_ordheader.currency), first=True)
             if not w_list:
                 continue
 
-            cost_list = query(cost_list_data, (lambda cost_list: cost_list.nr == fa_ordheader.dept_nr), first=True)
+            cost_list = query(
+                cost_list_data, (lambda cost_list: cost_list.nr == fa_ordheader.dept_nr), first=True)
             if not cost_list:
                 continue
 
-            username = query(username_data, (lambda username: username.order_nr == fa_ordheader.order_nr), first=True)
+            username = query(
+                username_data, (lambda username: username.order_nr == fa_ordheader.order_nr), first=True)
             if not username:
                 continue
 
@@ -270,7 +468,11 @@ def fa_polist_btn_go_webbl(payload_list_data:[Payload_list], cost_list_data:[Cos
             else:
                 fa_ordheader_obj_list[fa_ordheader._recid] = True
 
-            if (payload_list.po_number == "" or fa_ordheader.order_nr == payload_list.po_number):
+            tot_qty = 0
+            tot_price = to_decimal("0")
+            tot_amount = to_decimal("0")
+            
+            if ((payload_list.po_number.strip()) == "" or fa_ordheader.order_nr == payload_list.po_number):
                 temp = Temp()
                 temp_data.append(temp)
 
@@ -297,24 +499,36 @@ def fa_polist_btn_go_webbl(payload_list_data:[Payload_list], cost_list_data:[Cos
                 temp.activeflag = fa_ordheader.activeflag
                 temp.order_desc = fa_ordheader.order_desc
                 temp.order_name = fa_ordheader.order_name
-                temp.total_amount =  to_decimal(username.total_amount)
+                temp.total_amount = to_decimal(username.total_amount)
 
-                fa_op = get_cache (Fa_op, {"docu_nr": [(eq, fa_ordheader.order_nr)]})
+                calc_arive_and_order_amount()
+
+                fa_op = db_session.query(Fa_op).filter(
+                    Fa_op.docu_nr == fa_ordheader.order_nr
+                ).first()
 
                 if fa_op:
                     temp.devnote_no = fa_op.lscheinnr
 
                 fa_order_obj_list = {}
-                fa_order = Fa_order()
-                mathis = Mathis()
-                fa_artikel = Fa_artikel()
-                for fa_order.order_qty, fa_order.order_price, fa_order.order_amount, fa_order.order_nr, fa_order._recid, mathis.name, mathis._recid, fa_artikel.fibukonto, fa_artikel._recid in db_session.query(Fa_order.order_qty, Fa_order.order_price, Fa_order.order_amount, Fa_order.order_nr, Fa_order._recid, Mathis.name, Mathis._recid, Fa_artikel.fibukonto, Fa_artikel._recid).join(Mathis,(Mathis.nr == Fa_order.fa_nr)).join(Fa_artikel,(Fa_artikel.nr == Mathis.nr)).filter(
-                         (Fa_order.order_nr == fa_ordheader.order_nr)).order_by(Fa_order._recid).all():
+                # fa_order = Fa_order()
+                # mathis = Mathis()
+                # fa_artikel = Fa_artikel()
+
+                fa_order_data = (
+                    db_session.query(Fa_order, Mathis, Fa_artikel)
+                    .join(Mathis, (Mathis.nr == Fa_order.fa_nr))
+                    .join(Fa_artikel, (Fa_artikel.nr == Mathis.nr))
+                    .filter(
+                        (Fa_order.order_nr == fa_ordheader.order_nr)
+                    )
+                    .order_by(Fa_order._recid)
+                )
+                for fa_order, mathis, fa_artikel in fa_order_data.yield_per(100):
                     if fa_order_obj_list.get(fa_order._recid):
                         continue
                     else:
                         fa_order_obj_list[fa_order._recid] = True
-
 
                     temp_detail = Temp_detail()
                     temp_detail_data.append(temp_detail)
@@ -322,39 +536,51 @@ def fa_polist_btn_go_webbl(payload_list_data:[Payload_list], cost_list_data:[Cos
                     temp_detail.coa = fa_artikel.fibukonto
                     temp_detail.desc1 = mathis.name
                     temp_detail.qty = fa_order.order_qty
-                    temp_detail.price =  to_decimal(fa_order.order_price)
-                    temp_detail.amount =  to_decimal(fa_order.order_amount)
+                    temp_detail.price = to_decimal(fa_order.order_price)
+                    temp_detail.amount = to_decimal(fa_order.order_amount)
                     temp_detail.order_number = fa_order.order_nr
-                    tot_qty = tot_qty + fa_order.order_qty
-
-
-                    tot_price =  to_decimal(tot_price) + to_decimal(fa_order.order_price)
-                    tot_amount =  to_decimal(tot_amount) + to_decimal(fa_order.order_amount)
+                    
+                    calc_tot_qty_price_amount()
+                    
                 temp_detail = Temp_detail()
                 temp_detail_data.append(temp_detail)
 
                 temp_detail.coa = ""
                 temp_detail.desc1 = "T O T A L"
                 temp_detail.qty = tot_qty
-                temp_detail.price =  to_decimal(tot_price)
-                temp_detail.amount =  to_decimal(tot_amount)
+                temp_detail.price = to_decimal(tot_price)
+                temp_detail.amount = to_decimal(tot_amount)
                 temp_detail.order_number = fa_ordheader.order_nr
-
 
     elif payload_list.stat_order == 2 and not payload_list.all_supp:
 
         fa_ordheader_obj_list = {}
-        for fa_ordheader, l_lieferant in db_session.query(Fa_ordheader, L_lieferant).join(L_lieferant,(L_lieferant.lief_nr == Fa_ordheader.supplier_nr)).filter(
-                 (Fa_ordheader.order_date >= payload_list.from_date) & (Fa_ordheader.order_date <= payload_list.to_date) & (Fa_ordheader.activeflag == 0) & (Fa_ordheader.supplier_nr == payload_list.lnumber) & (Fa_ordheader.expected_delivery < payload_list.billdate)).order_by(Fa_ordheader._recid).all():
-            w_list = query(w_list_data, (lambda w_list: w_list.nr == fa_ordheader.currency), first=True)
+        fa_ordheader_data = (
+            db_session.query(Fa_ordheader, L_lieferant)
+            .join(L_lieferant, (L_lieferant.lief_nr == Fa_ordheader.supplier_nr))
+            .filter(
+                (Fa_ordheader.order_date >= payload_list.from_date) &
+                (Fa_ordheader.order_date <= payload_list.to_date) &
+                (Fa_ordheader.activeflag == 0) &
+                (Fa_ordheader.supplier_nr == payload_list.lnumber) &
+                (Fa_ordheader.expected_delivery < payload_list.billdate)
+            )
+            .order_by(Fa_ordheader._recid)
+        )
+
+        for fa_ordheader, l_lieferant in fa_ordheader_data.yield_per(100):
+            w_list = query(w_list_data, (lambda w_list: w_list.nr ==
+                           fa_ordheader.currency), first=True)
             if not w_list:
                 continue
 
-            cost_list = query(cost_list_data, (lambda cost_list: cost_list.nr == fa_ordheader.dept_nr), first=True)
+            cost_list = query(
+                cost_list_data, (lambda cost_list: cost_list.nr == fa_ordheader.dept_nr), first=True)
             if not cost_list:
                 continue
 
-            username = query(username_data, (lambda username: username.order_nr == fa_ordheader.order_nr), first=True)
+            username = query(
+                username_data, (lambda username: username.order_nr == fa_ordheader.order_nr), first=True)
             if not username:
                 continue
 
@@ -363,7 +589,11 @@ def fa_polist_btn_go_webbl(payload_list_data:[Payload_list], cost_list_data:[Cos
             else:
                 fa_ordheader_obj_list[fa_ordheader._recid] = True
 
-            if (payload_list.po_number == "" or fa_ordheader.order_nr == payload_list.po_number):
+            tot_qty = 0
+            tot_price = to_decimal("0")
+            tot_amount = to_decimal("0")
+            
+            if ((payload_list.po_number.strip()) == "" or fa_ordheader.order_nr == payload_list.po_number):
                 temp = Temp()
                 temp_data.append(temp)
 
@@ -390,24 +620,36 @@ def fa_polist_btn_go_webbl(payload_list_data:[Payload_list], cost_list_data:[Cos
                 temp.activeflag = fa_ordheader.activeflag
                 temp.order_desc = fa_ordheader.order_desc
                 temp.order_name = fa_ordheader.order_name
-                temp.total_amount =  to_decimal(username.total_amount)
+                temp.total_amount = to_decimal(username.total_amount)
 
-                fa_op = get_cache (Fa_op, {"docu_nr": [(eq, fa_ordheader.order_nr)]})
+                calc_arive_and_order_amount()
+
+                fa_op = db_session.query(Fa_op).filter(
+                    Fa_op.docu_nr == fa_ordheader.order_nr
+                ).first()
 
                 if fa_op:
                     temp.devnote_no = fa_op.lscheinnr
 
                 fa_order_obj_list = {}
-                fa_order = Fa_order()
-                mathis = Mathis()
-                fa_artikel = Fa_artikel()
-                for fa_order.order_qty, fa_order.order_price, fa_order.order_amount, fa_order.order_nr, fa_order._recid, mathis.name, mathis._recid, fa_artikel.fibukonto, fa_artikel._recid in db_session.query(Fa_order.order_qty, Fa_order.order_price, Fa_order.order_amount, Fa_order.order_nr, Fa_order._recid, Mathis.name, Mathis._recid, Fa_artikel.fibukonto, Fa_artikel._recid).join(Mathis,(Mathis.nr == Fa_order.fa_nr)).join(Fa_artikel,(Fa_artikel.nr == Mathis.nr)).filter(
-                         (Fa_order.order_nr == fa_ordheader.order_nr)).order_by(Fa_order._recid).all():
+                # fa_order = Fa_order()
+                # mathis = Mathis()
+                # fa_artikel = Fa_artikel()
+                fa_order_data = (
+                    db_session.query(Fa_order, Mathis, Fa_artikel)
+                    .join(Mathis, (Mathis.nr == Fa_order.fa_nr))
+                    .join(Fa_artikel, (Fa_artikel.nr == Mathis.nr))
+                    .filter(
+                        (Fa_order.order_nr == fa_ordheader.order_nr)
+                    )
+                    .order_by(Fa_order._recid)
+                )
+
+                for fa_order, mathis, fa_artikel in fa_order_data.yield_per(100):
                     if fa_order_obj_list.get(fa_order._recid):
                         continue
                     else:
                         fa_order_obj_list[fa_order._recid] = True
-
 
                     temp_detail = Temp_detail()
                     temp_detail_data.append(temp_detail)
@@ -415,46 +657,58 @@ def fa_polist_btn_go_webbl(payload_list_data:[Payload_list], cost_list_data:[Cos
                     temp_detail.coa = fa_artikel.fibukonto
                     temp_detail.desc1 = mathis.name
                     temp_detail.qty = fa_order.order_qty
-                    temp_detail.price =  to_decimal(fa_order.order_price)
-                    temp_detail.amount =  to_decimal(fa_order.order_amount)
+                    temp_detail.price = to_decimal(fa_order.order_price)
+                    temp_detail.amount = to_decimal(fa_order.order_amount)
                     temp_detail.order_number = fa_order.order_nr
-                    tot_qty = tot_qty + fa_order.order_qty
-
-
-                    tot_price =  to_decimal(tot_price) + to_decimal(fa_order.order_price)
-                    tot_amount =  to_decimal(tot_amount) + to_decimal(fa_order.order_amount)
+                    
+                    calc_tot_qty_price_amount()
+                    
                 temp_detail = Temp_detail()
                 temp_detail_data.append(temp_detail)
 
                 temp_detail.coa = ""
                 temp_detail.desc1 = "T O T A L"
                 temp_detail.qty = tot_qty
-                temp_detail.price =  to_decimal(tot_price)
-                temp_detail.amount =  to_decimal(tot_amount)
+                temp_detail.price = to_decimal(tot_price)
+                temp_detail.amount = to_decimal(tot_amount)
                 temp_detail.order_number = fa_ordheader.order_nr
 
     else:
-
+        # -- STATUS EQ CLOSED --
         if payload_list.stat_order == 1:
             min_statorder = 1
 
+        # -- STATUS EQ DELETED --
         if payload_list.stat_order == 3:
             min_statorder = 2
 
         if payload_list.all_supp:
 
             fa_ordheader_obj_list = {}
-            for fa_ordheader, l_lieferant in db_session.query(Fa_ordheader, L_lieferant).join(L_lieferant,(L_lieferant.lief_nr == Fa_ordheader.supplier_nr)).filter(
-                     (Fa_ordheader.order_date >= payload_list.from_date) & (Fa_ordheader.order_date <= payload_list.to_date) & (Fa_ordheader.activeflag == min_statorder)).order_by(Fa_ordheader._recid).all():
-                w_list = query(w_list_data, (lambda w_list: w_list.nr == fa_ordheader.currency), first=True)
+            fa_ordheader_data = (
+                db_session.query(Fa_ordheader, L_lieferant)
+                .join(L_lieferant, (L_lieferant.lief_nr == Fa_ordheader.supplier_nr))
+                .filter(
+                    (Fa_ordheader.order_date >= payload_list.from_date) &
+                    (Fa_ordheader.order_date <= payload_list.to_date) &
+                    (Fa_ordheader.activeflag == min_statorder)
+                )
+                .order_by(Fa_ordheader._recid)
+            )
+            for fa_ordheader, l_lieferant in fa_ordheader_data.yield_per(100):
+
+                w_list = query(
+                    w_list_data, (lambda w_list: w_list.nr == fa_ordheader.currency), first=True)
                 if not w_list:
                     continue
 
-                cost_list = query(cost_list_data, (lambda cost_list: cost_list.nr == fa_ordheader.dept_nr), first=True)
+                cost_list = query(
+                    cost_list_data, (lambda cost_list: cost_list.nr == fa_ordheader.dept_nr), first=True)
                 if not cost_list:
                     continue
 
-                username = query(username_data, (lambda username: username.order_nr == fa_ordheader.order_nr), first=True)
+                username = query(
+                    username_data, (lambda username: username.order_nr == fa_ordheader.order_nr), first=True)
                 if not username:
                     continue
 
@@ -463,7 +717,11 @@ def fa_polist_btn_go_webbl(payload_list_data:[Payload_list], cost_list_data:[Cos
                 else:
                     fa_ordheader_obj_list[fa_ordheader._recid] = True
 
-                if (payload_list.po_number == "" or fa_ordheader.order_nr == payload_list.po_number):
+                tot_qty = 0
+                tot_price = to_decimal("0")
+                tot_amount = to_decimal("0")
+
+                if ((payload_list.po_number.strip()) == "" or fa_ordheader.order_nr == payload_list.po_number):
                     temp = Temp()
                     temp_data.append(temp)
 
@@ -490,24 +748,39 @@ def fa_polist_btn_go_webbl(payload_list_data:[Payload_list], cost_list_data:[Cos
                     temp.activeflag = fa_ordheader.activeflag
                     temp.order_desc = fa_ordheader.order_desc
                     temp.order_name = fa_ordheader.order_name
-                    temp.total_amount =  to_decimal(username.total_amount)
+                    temp.total_amount = to_decimal(username.total_amount)
 
-                    fa_op = get_cache (Fa_op, {"docu_nr": [(eq, fa_ordheader.order_nr)]})
+                    calc_arive_and_order_amount()
+
+                    # log.write_log("fa_polist_btn_go_webbl",
+                    #               f"[LOG] data: {temp_data}")
+
+                    fa_op = db_session.query(Fa_op).filter(
+                        Fa_op.docu_nr == fa_ordheader.order_nr
+                    ).first()
 
                     if fa_op:
                         temp.devnote_no = fa_op.lscheinnr
 
                     fa_order_obj_list = {}
-                    fa_order = Fa_order()
-                    mathis = Mathis()
-                    fa_artikel = Fa_artikel()
-                    for fa_order.order_qty, fa_order.order_price, fa_order.order_amount, fa_order.order_nr, fa_order._recid, mathis.name, mathis._recid, fa_artikel.fibukonto, fa_artikel._recid in db_session.query(Fa_order.order_qty, Fa_order.order_price, Fa_order.order_amount, Fa_order.order_nr, Fa_order._recid, Mathis.name, Mathis._recid, Fa_artikel.fibukonto, Fa_artikel._recid).join(Mathis,(Mathis.nr == Fa_order.fa_nr)).join(Fa_artikel,(Fa_artikel.nr == Mathis.nr)).filter(
-                             (Fa_order.order_nr == fa_ordheader.order_nr)).order_by(Fa_order._recid).all():
+                    # fa_order = Fa_order()
+                    # mathis = Mathis()
+                    # fa_artikel = Fa_artikel()
+
+                    fa_order_data = (
+                        db_session.query(Fa_order, Mathis, Fa_artikel)
+                        .join(Mathis, (Mathis.nr == Fa_order.fa_nr))
+                        .join(Fa_artikel, (Fa_artikel.nr == Mathis.nr))
+                        .filter(
+                            (Fa_order.order_nr == fa_ordheader.order_nr)
+                        )
+                        .order_by(Fa_order._recid)
+                    )
+                    for fa_order, mathis, fa_artikel in fa_order_data.yield_per(100):
                         if fa_order_obj_list.get(fa_order._recid):
                             continue
                         else:
                             fa_order_obj_list[fa_order._recid] = True
-
 
                         temp_detail = Temp_detail()
                         temp_detail_data.append(temp_detail)
@@ -515,38 +788,55 @@ def fa_polist_btn_go_webbl(payload_list_data:[Payload_list], cost_list_data:[Cos
                         temp_detail.coa = fa_artikel.fibukonto
                         temp_detail.desc1 = mathis.name
                         temp_detail.qty = fa_order.order_qty
-                        temp_detail.price =  to_decimal(fa_order.order_price)
-                        temp_detail.amount =  to_decimal(fa_order.order_amount)
+                        temp_detail.price = to_decimal(fa_order.order_price)
+                        temp_detail.amount = to_decimal(fa_order.order_amount)
                         temp_detail.order_number = fa_order.order_nr
-                        tot_qty = tot_qty + fa_order.order_qty
 
+                        calc_tot_qty_price_amount()
 
-                        tot_price =  to_decimal(tot_price) + to_decimal(fa_order.order_price)
-                        tot_amount =  to_decimal(tot_amount) + to_decimal(fa_order.order_amount)
+                        # print(
+                        #     f'[LOG] fa_order: {fa_order.order_nr} | fa_order.qty: {fa_order.order_qty} ')
+
+                        # print(
+                        #     f"[DEBUG][CLOSED] tot_qty: {tot_qty} | tot_price: {tot_price} | tot_amount: {tot_amount}")
+
                     temp_detail = Temp_detail()
                     temp_detail_data.append(temp_detail)
 
                     temp_detail.coa = ""
                     temp_detail.desc1 = "T O T A L"
                     temp_detail.qty = tot_qty
-                    temp_detail.price =  to_decimal(tot_price)
-                    temp_detail.amount =  to_decimal(tot_amount)
+                    temp_detail.price = to_decimal(tot_price)
+                    temp_detail.amount = to_decimal(tot_amount)
                     temp_detail.order_number = fa_ordheader.order_nr
 
         else:
-
             fa_ordheader_obj_list = {}
-            for fa_ordheader, l_lieferant in db_session.query(Fa_ordheader, L_lieferant).join(L_lieferant,(L_lieferant.lief_nr == Fa_ordheader.supplier_nr)).filter(
-                     (Fa_ordheader.order_date >= payload_list.from_date) & (Fa_ordheader.order_date <= payload_list.to_date) & (Fa_ordheader.activeflag == min_statorder) & (Fa_ordheader.supplier_nr == payload_list.lnumber)).order_by(Fa_ordheader._recid).all():
-                w_list = query(w_list_data, (lambda w_list: w_list.nr == fa_ordheader.currency), first=True)
+            fa_ordheader_data = (
+                db_session.query(Fa_ordheader, L_lieferant)
+                .join(L_lieferant, (L_lieferant.lief_nr == Fa_ordheader.supplier_nr))
+                .filter(
+                    (Fa_ordheader.order_date >= payload_list.from_date) &
+                    (Fa_ordheader.order_date <= payload_list.to_date) &
+                    (Fa_ordheader.activeflag == min_statorder) &
+                    (Fa_ordheader.supplier_nr == payload_list.lnumber)
+                )
+                .order_by(Fa_ordheader._recid)
+            )
+
+            for fa_ordheader, l_lieferant in fa_ordheader_data.yield_per(100):
+                w_list = query(
+                    w_list_data, (lambda w_list: w_list.nr == fa_ordheader.currency), first=True)
                 if not w_list:
                     continue
 
-                cost_list = query(cost_list_data, (lambda cost_list: cost_list.nr == fa_ordheader.dept_nr), first=True)
+                cost_list = query(
+                    cost_list_data, (lambda cost_list: cost_list.nr == fa_ordheader.dept_nr), first=True)
                 if not cost_list:
                     continue
 
-                username = query(username_data, (lambda username: username.order_nr == fa_ordheader.order_nr), first=True)
+                username = query(
+                    username_data, (lambda username: username.order_nr == fa_ordheader.order_nr), first=True)
                 if not username:
                     continue
 
@@ -555,7 +845,11 @@ def fa_polist_btn_go_webbl(payload_list_data:[Payload_list], cost_list_data:[Cos
                 else:
                     fa_ordheader_obj_list[fa_ordheader._recid] = True
 
-                if (payload_list.po_number == "" or fa_ordheader.order_nr == payload_list.po_number):
+                tot_qty = 0
+                tot_price = to_decimal("0")
+                tot_amount = to_decimal("0")
+                
+                if ((payload_list.po_number.strip()) == "" or fa_ordheader.order_nr == payload_list.po_number):
                     temp = Temp()
                     temp_data.append(temp)
 
@@ -582,24 +876,36 @@ def fa_polist_btn_go_webbl(payload_list_data:[Payload_list], cost_list_data:[Cos
                     temp.activeflag = fa_ordheader.activeflag
                     temp.order_desc = fa_ordheader.order_desc
                     temp.order_name = fa_ordheader.order_name
-                    temp.total_amount =  to_decimal(username.total_amount)
+                    temp.total_amount = to_decimal(username.total_amount)
 
-                    fa_op = get_cache (Fa_op, {"docu_nr": [(eq, fa_ordheader.order_nr)]})
+                    calc_arive_and_order_amount()
+
+                    fa_op = db_session.query(Fa_op).filter(
+                        Fa_op.docu_nr == fa_ordheader.order_nr
+                    ).first()
 
                     if fa_op:
                         temp.devnote_no = fa_op.lscheinnr
 
                     fa_order_obj_list = {}
-                    fa_order = Fa_order()
-                    mathis = Mathis()
-                    fa_artikel = Fa_artikel()
-                    for fa_order.order_qty, fa_order.order_price, fa_order.order_amount, fa_order.order_nr, fa_order._recid, mathis.name, mathis._recid, fa_artikel.fibukonto, fa_artikel._recid in db_session.query(Fa_order.order_qty, Fa_order.order_price, Fa_order.order_amount, Fa_order.order_nr, Fa_order._recid, Mathis.name, Mathis._recid, Fa_artikel.fibukonto, Fa_artikel._recid).join(Mathis,(Mathis.nr == Fa_order.fa_nr)).join(Fa_artikel,(Fa_artikel.nr == Mathis.nr)).filter(
-                             (Fa_order.order_nr == fa_ordheader.order_nr)).order_by(Fa_order._recid).all():
+                    # fa_order = Fa_order()
+                    # mathis = Mathis()
+                    # fa_artikel = Fa_artikel()
+
+                    fa_order_data = (
+                        db_session.query(Fa_order, Mathis, Fa_artikel)
+                        .join(Mathis, (Mathis.nr == Fa_order.fa_nr))
+                        .join(Fa_artikel, (Fa_artikel.nr == Mathis.nr))
+                        .filter(
+                            (Fa_order.order_nr == fa_ordheader.order_nr)
+                        )
+                        .order_by(Fa_order._recid)
+                    )
+                    for fa_order, mathis, fa_artikel in fa_order_data.yield_per(100):
                         if fa_order_obj_list.get(fa_order._recid):
                             continue
                         else:
                             fa_order_obj_list[fa_order._recid] = True
-
 
                         temp_detail = Temp_detail()
                         temp_detail_data.append(temp_detail)
@@ -607,37 +913,20 @@ def fa_polist_btn_go_webbl(payload_list_data:[Payload_list], cost_list_data:[Cos
                         temp_detail.coa = fa_artikel.fibukonto
                         temp_detail.desc1 = mathis.name
                         temp_detail.qty = fa_order.order_qty
-                        temp_detail.price =  to_decimal(fa_order.order_price)
-                        temp_detail.amount =  to_decimal(fa_order.order_amount)
+                        temp_detail.price = to_decimal(fa_order.order_price)
+                        temp_detail.amount = to_decimal(fa_order.order_amount)
                         temp_detail.order_number = fa_order.order_nr
-                        tot_qty = tot_qty + fa_order.order_qty
 
+                        calc_tot_qty_price_amount()
 
-                        tot_price =  to_decimal(tot_price) + to_decimal(fa_order.order_price)
-                        tot_amount =  to_decimal(tot_amount) + to_decimal(fa_order.order_amount)
                     temp_detail = Temp_detail()
                     temp_detail_data.append(temp_detail)
 
                     temp_detail.coa = ""
                     temp_detail.desc1 = "T O T A L"
                     temp_detail.qty = tot_qty
-                    temp_detail.price =  to_decimal(tot_price)
-                    temp_detail.amount =  to_decimal(tot_amount)
+                    temp_detail.price = to_decimal(tot_price)
+                    temp_detail.amount = to_decimal(tot_amount)
                     temp_detail.order_number = fa_ordheader.order_nr
-
-
-    for temp in query(temp_data):
-
-        for fa_op in db_session.query(Fa_op).filter(
-                 (Fa_op.docu_nr == temp.order_nr) & (Fa_op.lscheinnr == temp.devnote_no)).order_by(Fa_op._recid).all():
-            temp_amount =  to_decimal(temp_amount) + to_decimal(fa_op.warenwert)
-        temp.arive_amount =  to_decimal(temp_amount)
-        temp_amount =  to_decimal("0")
-
-        for fa_order in db_session.query(Fa_order).filter(
-                 (Fa_order.order_nr == temp.order_nr)).order_by(Fa_order._recid).all():
-            temp_amount =  to_decimal(temp_amount) + to_decimal(fa_order.order_amount)
-        temp.order_amount =  to_decimal(temp_amount)
-        temp_amount =  to_decimal("0")
 
     return generate_output()
