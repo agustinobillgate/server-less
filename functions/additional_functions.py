@@ -1268,7 +1268,7 @@ def camelCase(input_str):
                 output += char.lower()  # Default to lowercase
             was_digit = False
             capitalize_next = False
-    return output[0].lower() + output[1:] if output else output
+    return output[0] + output[1:] if output else output
 
 # def camelCase(input_str):
 #     output = ''.join(x for x in input_str.title() if x.isalnum())
