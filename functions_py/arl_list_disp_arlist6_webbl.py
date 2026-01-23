@@ -2673,7 +2673,11 @@ def arl_list_disp_arlist6_webbl(t_payload_list_data:[T_payload_list], show_rate:
         arl_list_data.append(arl_list)
 
         buffer_copy(b_arl_list, arl_list)
+
         resbemerk = b_arl_list.bemerk
+        if resbemerk == None:
+            resbemerk = ""
+
         resbemerk = replace_str(resbemerk, chr_unicode(10) , "")
         resbemerk = replace_str(resbemerk, chr_unicode(13) , "")
         resbemerk = replace_str(resbemerk, "~n", "")
@@ -2690,9 +2694,14 @@ def arl_list_disp_arlist6_webbl(t_payload_list_data:[T_payload_list], show_rate:
 
         if length(resbemerk) == None:
             resbemerk = ""
+
         arl_list.bemerk = trim(resbemerk)
         resbemerk = ""
+
         rescomment = b_arl_list.comments
+        if rescomment == None:
+            rescomment = ""
+
         rescomment = replace_str(rescomment, chr_unicode(10) , "")
         rescomment = replace_str(rescomment, chr_unicode(13) , "")
         rescomment = replace_str(rescomment, "~n", "")
@@ -2709,9 +2718,14 @@ def arl_list_disp_arlist6_webbl(t_payload_list_data:[T_payload_list], show_rate:
 
         if length(rescomment) == None:
             rescomment = ""
+
         arl_list.comments = trim(rescomment)
         rescomment = ""
+
         rsvbemerk = b_arl_list.rsv_bemerk
+        if rsvbemerk == None:
+            rsvbemerk = ""
+
         rsvbemerk = replace_str(rsvbemerk, chr_unicode(10) , "")
         rsvbemerk = replace_str(rsvbemerk, chr_unicode(13) , "")
         rsvbemerk = replace_str(rsvbemerk, "~n", "")
