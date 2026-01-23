@@ -18,6 +18,11 @@ from email.utils import formataddr
 from email.header import Header
 import mimetypes
 from typing import Any, Dict, List, Type
+from itertools import islice
+from typing import (
+    List, Callable, Optional, Tuple, Union, TypeVar
+)
+from dataclasses import is_dataclass
 
 # from models import Sourcetext, Desttext
 # from functions.additional_class import ExtendedDate
@@ -1003,66 +1008,126 @@ def buffer_copy(from_buffer, to_buffer, except_fields=None):
             if f.name not in local_except:
                 setattr(to_buffer, f.name, getattr(from_buffer, f.name))
 
+# def query(     
+#           data_list: List[Type], 
+#           filters: Callable[[Type], bool] = None, 
+#           sort_by: Optional[List[Tuple[string, bool]]] = None,
+#           first: bool = False,
+#           last: bool = False,
+#           curr_data:Type = None) -> Union[Type, List[Type], None]:
+
+#     if not data_list:
+#         return None if first or last else []
+
+#     if (first or last):
+#         if filters == None:
+#             if first:
+#                 return data_list[0]
+#             elif last:
+#                 return data_list[-1]
+
+#     # Filtering
+#     if filters:
+#         data_list = list(filter(filters, data_list))
+        
+#     if not data_list:
+#         return None if first or last else []
+
+#     # Sorting with multiple fields, corrected approach
+#     # if sort_by:
+#     #     for field, descending in reversed(sort_by):
+#     #         data_list.sort(key=lambda x: getattr(x, field) is None, reverse=descending)
+#     # Sorting
+#     if sort_by:
+#         def sort_key(obj):
+#             key = []
+#             for field, descending in sort_by:
+#                 val = getattr(obj, field, None)
+#                 # Normalize string values for case-insensitive sort
+#                 if isinstance(val, str):
+#                     val = val.lower()
+#                 # Use a tuple to flip order if descending
+#                 key.append((val if not descending else SortWrapper(val)))
+#             return tuple(key)
+
+#         # Helper class for reversing order in sort
+#         class SortWrapper:
+#             def __init__(self, value):
+#                 self.value = value
+#             def __lt__(self, other):
+#                 return self.value > other.value  # Reversed
+#             def __eq__(self, other):
+#                 return self.value == other.value
+
+#         data_list.sort(key=sort_key)
+
+#     # Handling first or last items
+#     if first:
+#         return data_list[0] if data_list else None
+#     if last:
+#         return data_list[-1] if data_list else None
+    
+#     return data_list
+
+
+
+T = TypeVar("T")
+
 def query(     
-          data_list: List[Type], 
-          filters: Callable[[Type], bool] = None, 
-          sort_by: Optional[List[Tuple[string, bool]]] = None,
+    data: List[T],
+    filters: Optional[Callable[[T], bool]] = None,
+    sort_by: Optional[List[Tuple[str, bool]]] = None,
           first: bool = False,
           last: bool = False,
-          curr_data:Type = None) -> Union[Type, List[Type], None]:
+) -> Union[T, List[T], None]:
 
-    if not data_list:
-        return None if first or last else []
+    if not data:
+        return None if (first or last) else []
 
-    if (first or last):
-        if filters == None:
-            if first:
-                return data_list[0]
-            elif last:
-                return data_list[-1]
-
-    # Filtering
     if filters:
-        data_list = list(filter(filters, data_list))
-        
-    if not data_list:
-        return None if first or last else []
+        data = [x for x in data if filters(x)]
+        if not data:
+            return None if (first or last) else []
 
-    # Sorting with multiple fields, corrected approach
-    # if sort_by:
-    #     for field, descending in reversed(sort_by):
-    #         data_list.sort(key=lambda x: getattr(x, field) is None, reverse=descending)
-    # Sorting
-    if sort_by:
-        def sort_key(obj):
-            key = []
-            for field, descending in sort_by:
-                val = getattr(obj, field, None)
-                # Normalize string values for case-insensitive sort
-                if isinstance(val, str):
-                    val = val.lower()
-                # Use a tuple to flip order if descending
-                key.append((val if not descending else SortWrapper(val)))
-            return tuple(key)
+    if not sort_by:
+        if first:
+            return data[0]
+        if last:
+            return data[-1]
+        return data
 
-        # Helper class for reversing order in sort
-        class SortWrapper:
-            def __init__(self, value):
-                self.value = value
-            def __lt__(self, other):
-                return self.value > other.value  # Reversed
-            def __eq__(self, other):
-                return self.value == other.value
+    if __debug__:
+        for item in data:
+            if not is_dataclass(item):
+                raise TypeError("query() expects a list of dataclass instances")
 
-        data_list.sort(key=sort_key)
+    def key_fn(obj: T):
+        return tuple(
+            (
+                getattr(obj, field).lower()
+                if isinstance(getattr(obj, field, None), str)
+                else getattr(obj, field, None)
+            )
+            for field, _ in sort_by
+        )
 
-    # Handling first or last items
     if first:
-        return data_list[0] if data_list else None
+        return min(data, key=key_fn)
     if last:
-        return data_list[-1] if data_list else None
+        return max(data, key=key_fn)
+
+    for field, descending in reversed(sort_by):
+        data.sort(
+            key=lambda x: (
+                getattr(x, field).lower()
+                if isinstance(getattr(x, field), str)
+                else getattr(x, field)
+            ),
+            reverse=descending,
+        )
     
-    return data_list
+    return data
+
 
 
 # def indexed_list(query_results,fields=[]):
@@ -1915,7 +1980,7 @@ def get_db_url(hotelCode):
 
 
 
-def set_db_and_schema(hotelCode):
+def set_db_and_schema_v1(hotelCode):
     from models import Htparam
 
     local_storage.db_session = None
@@ -1942,6 +2007,49 @@ def set_db_and_schema(hotelCode):
                 local_storage.timezone = htparam.fchar
             else:
                 local_storage.timezone = ""
+
+def set_db_and_schema(hotelCode):
+    from models import Htparam
+
+    local_storage.db_session = None
+    local_storage.hotelCode = ""
+    local_storage.pvILanguage = 1
+    local_storage.timezone = ""
+
+    db_session = create_db_session(hotelCode)
+    if not db_session:
+        return
+
+    schema_exists = db_session.execute(
+        sa.text("""
+            SELECT 1
+            FROM information_schema.schemata
+            WHERE schema_name = :schema
+            LIMIT 1
+        """),
+        {"schema": hotelCode}
+    ).scalar()
+
+    if not schema_exists:
+        return
+
+    db_session.execute(
+        sa.text("SET search_path TO shared, :schema"),
+        {"schema": hotelCode}
+    )
+
+    local_storage.db_session = db_session
+    local_storage.hotelCode = hotelCode
+    local_storage.pvILanguage = 1
+
+    htparam = (
+        db_session.query(Htparam)
+        .filter(Htparam.paramnr == 91)
+        .first()
+    )
+
+    local_storage.timezone = htparam.fchar if htparam else "Asia/Jakarta"
+
 
 def run_program(function_name:string, input_data=()):
     if re.match(r".*\.(p|r)",function_name):

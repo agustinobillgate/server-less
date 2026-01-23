@@ -80,6 +80,16 @@ from sqlalchemy.orm import sessionmaker
 from mangum import Mangum
 
 from models.guestbook import Guestbook
+
+load_dotenv()
+
+
+IS_DEV = os.getenv("APP_ENV", "prod").lower() != "prod"
+
+MODULE_CACHE = {}
+FUNCTION_CACHE = {}
+SERVICE_MAP_CACHE = {}
+
 log_agent = vhp_module = service_name = hotel_code = inputUsername = orig_infostr = existing_json_data = ""
 is_existing_json = False
 
@@ -94,7 +104,6 @@ response_headers = {
 }
 
 #------------ Log Table -------------------------------------
-load_dotenv()
 db_session = None
 dblogin_session = None
 url = URL.create(
@@ -178,6 +187,9 @@ def log_activity_end(log_id: int, error_message: str) -> int:
 
 #updated 1.0.0.14
 update_table_name_list = {}
+update_field_table_name_mapping = {}
+update_field_by_function_mapping = {}
+
 curr_module = ""
 curr_service = ""
 
@@ -189,14 +201,36 @@ def update_table_name(module, function_name, prev_table_name, updated_table_name
         update_table_name_list[module + "_" + function_name] = {}
     update_table_name_list[module + "_" + function_name][prev_table_name] = updated_table_name
 
+
+def update_field_table_name(module, function_name, table_name, prev_field_name, updated_field_name):
+    check_str = f"{module}_{function_name}"
+
+    if check_str not in update_field_table_name_mapping:
+        update_field_table_name_mapping[check_str] = {}
+
+    if table_name not in update_field_table_name_mapping[check_str]:
+        update_field_table_name_mapping[check_str][table_name] = {}
+
+    update_field_table_name_mapping[check_str][table_name][prev_field_name] = updated_field_name
+
+def update_field_by_function(module, function_name, old_field, updated_field_name):
+    check_str = f"{module}_{function_name}"
+
+    if check_str not in update_field_by_function_mapping:
+        update_field_by_function_mapping[check_str] = {}
+
+    update_field_by_function_mapping[check_str][old_field] = updated_field_name 
+    
+
 #updated 1.0.0.6
+# global mapping
 update_field_mapping = {
     "char":"CHAR",
-    "str":"STR",
+    # "str":"STR",
     "code":"CODE",
-    "id":"ID",
-    "name":"NAME",
-    "selected":"SELECTED",
+    # "id":"ID",
+    # "name":"NAME",
+    # "selected":"SELECTED",
 
     "flag":"Flag",
     "flag":"flag",
@@ -207,10 +241,10 @@ update_field_mapping = {
     "selectflag":"selectFlag",
     "finishflag":"finishFlag",
 
-    "gastid":"gastID",
-    "resno":"resNo",
-    "resnr":"resNr",
-    "reslinno":"reslinNo",
+    # "gastid":"gastID",
+    # "resno":"resNo",
+    # "resnr":"resNr",
+    # "reslinno":"reslinNo",
 
     "lnlFilepath":"LnLFilepath",
     "lnlFilepath1":"LnLFilepath1",
@@ -257,7 +291,7 @@ update_field_mapping = {
     "tdate": "tDate",
     "roomnr": "roomNr",
     "guestnr": "guestNr",
-    "guestname": "guestName",
+    # "guestname": "guestName",
     "totaladult": "totalAdult",
     "totalcompli": "totalCompli",
     "totalchild": "totalChild",
@@ -321,14 +355,14 @@ update_field_mapping = {
     "appstr": "appStr",
     "appflag": "appFlag",
 
-    "gname": "Gname",
+    # "gname": "Gname",
     "outstr": "outStr",
     "usefor": "Usefor",
     "groupid": "GroupID",
     "duration-nr": "Duration-nr",
     
     "skill": "Skill",
-    "plz": "PLZ",
+    # "plz": "PLZ",
     "rcvid": "rcvID",
     "rcvname": "rcvName",
     # "pi-type":"PI-type",
@@ -357,13 +391,13 @@ update_field_mapping = {
 
     #updated 1.0.0.19
     "tableno": "tableNo",
-    "billno": "billNo",
-    "artno": "artNo",
+    # "billno": "billNo",
+    # "artno": "artNo",
     "art": "Art",
     "kontnr-res":"Kontnr-res",
     
     #updated 1.0.0.20
-    "roomnumber": "roomNumber",
+    # "roomnumber": "roomNumber",
     "checkoutdate": "checkoutDate",
     "checkouttime": "checkoutTime",
     "checkintime": "checkinDate",
@@ -391,7 +425,7 @@ update_field_mapping = {
 
     "tLorderhdr": "tLOrderhdr",
     "addvat": "addVAT",
-    "vat":"VAT",
+    # "vat":"VAT",
 
     "tpushlist":"tPushList",
     "rcodevhp": "rcodeVHP",
@@ -518,7 +552,7 @@ update_field_mapping = {
     "menu":"MENU",
 
     #updated 1.0.0.37r (23-Mei-2025) vhpFOR/monthlyFcastDDown1List1",
-    "adult": "Adult",
+    # "adult": "Adult",
     "arrtime": ["ArrTime", "arrTime"],
     # "arrtime": "arrTime",
     "statstr":"statStr",
@@ -649,7 +683,7 @@ update_field_mapping = {
     # "PI-status":["pi-status", "pi-Status"],
     "pi_status":["pi-status", "PI-status"],
     "pi_type":["pi-type", "PI-type"],
-    "deptno": ["DeptNo","deptNo"],
+    # "deptno": ["DeptNo","deptNo"],
     # "deptno": "deptNo",
     # "deptno": "DeptNo",
     
@@ -658,7 +692,7 @@ update_field_mapping = {
     "availAddvat": ["availAddVat","availAddVAT","availAddVat"],
    
     "readequipment":"readEquipment",
-    "datum":"Datum",
+    # "datum":"Datum",
     "gruppenname":"Gruppenname",
     "bemerkung":"Bemerkung",
     "dekoration":"Dekoration",
@@ -764,7 +798,7 @@ update_field_mapping = {
     "vhpwebbased4-appservicename":"VHPWebBased4-AppServiceName",
     "vhpwebbased5-appservicename":"VHPWebBased5-AppServiceName",
 
-    "activeflag": ["ActiveFlag","activeFlag", "Activeflag"], 
+    "activeflag": ["activeflag", "ActiveFlag", "activeFlag", "Activeflag"], 
    
     "mtd-room": "mtd-Room",         # vhpSM/rmAtproductCreateUmsatz1
     "ytd-room": "ytd-Room",         # vhpSM/rmAtproductCreateUmsatz1
@@ -822,69 +856,69 @@ update_field_mapping = {
     # "tmaintain":"tMaintain",
 
     # vhpFA/faRecPOPrepare
-    "order-nr":"Order-Nr",
-    "pr-nr":"PR-Nr",
-    "pr-flag":"PR-Flag",
-    "order-date":"Order-Date",
-    "order-type":"Order-Type",
-    "order_date":["Order-Date","order-date"], 
+    "order_nr":"Order-Nr",
+    "pr_nr":"PR-Nr",
+    "pr_flag":"PR-Flag",
+    "order_date":"Order-Date",
     "order_type":"Order-Type",
-    "order-desc":"Order-Desc",
-    "order_desc":"Order-Desc",
-    "order-name":"Order-Name",
     "order_name":"Order-Name",
-    "supplier-nr":"Supplier-Nr",
+    "order_desc":"Order-Desc",
     "supplier_nr":"Supplier-Nr",
-    "credit-term":"Credit-Term",
-    "credit_term":"Credit-Term",
-    "dept-nr":"Dept-Nr",
-    "dept":"Dept-Nr",
+    "dept_nr":"Dept-Nr",
     "currency":"Currency",
+    "credit_term":"Credit-Term",
     "paymentdate":"PaymentDate",
-    # "expected-delivery":"Expected-Delivery",
-    # "approved-1":"Approved-1",
+    "expected_delivery":"Expected-Delivery",
     "approved_1":"Approved-1",
     "approved_2":"Approved-2",
     "approved_3":"Approved-3",
-    "approved-1-by":"Approved-1-By",
-    "approved-2-by":"Approved-2-By",
-    "approved-3-by":"Approved-3-By",
-    "approved-1-date":"Approved-1-Date",
-    "approved-2-date":"Approved-2-Date",
-    "approved-3-date":"Approved-3-Date",
-    "approved-1-time":"Approved-1-Time",
-    "approved-1-time":"Approved-1-time",
-    "approved-2-time":"Approved-2-Time",
-    "approved-2-time":"Approved-2-time",
-    "approved-3-time":"Approved-3-Time",
-    
+    "approved_1_by":"Approved-1-By",
+    "approved_2_by":"Approved-2-By",
+    "approved_3_by":"Approved-3-By",
+    "approved_1_date":"Approved-1-Date",
+    "approved_2_date":"Approved-2-Date",
+    "approved_3_date":"Approved-3-Date",
+    "approved_1_time":"Approved-1-time",
+    "approved_2_time":"Approved-2-time",
+    "approved_3_time":"Approved-3-Time",
+    "released_flag":"Released-Flag",
+    "released_by":"Released-By",
+    "released_date":"Released-Date",
+    "released_time":"Released-Time",
+    "created_by":"Created-By",
+    "created_date":"Created-Date",
+    "created_time":"Created-Time",
+    "cancel_by":"Cancel-By",
+    "cancel_date":"Cancel-Date",
+    "cancel_time":"Cancel-Time",
+    "delete_by":"Delete-By",
+    "delete_date":"Delete-Date",
+    "delete_time":"Delete-Time",
     "statflag":"statFlag",
-
-    "total-amount": "Total-Amount",
+    "modified_by":"Modified-By",
+    "modified_date":"Modified-Date",
+    "modified_time":"Modified-Time",
+    "total_amount": "Total-Amount",
     "printedtime":"PrintedTime",
-    "fa-pos":"Fa-Pos",
-    "fa-nr":"Fa-Nr",
-    
-    "order-qty":"Order-Qty",
-    "order-price":"Order-Price",
-    "order-amount":"Order-Amount",
+
+    "fa_pos":"Fa-Pos",
+    "fa_nr":"Fa-Nr",
+    "order_qty":"Order-Qty",
+    "order_price":"Order-Price",
+    "order_amount":"Order-Amount",
     "discount1":"Discount1",
     "discount2":"Discount2",
-
     "exchangerate":"ExchangeRate",
-    "fa-remarks":"Fa-remarks",
+    "fa_remarks":"Fa-remarks",
     "activereason":"ActiveReason",
-    "create-by":"Create-By",
-    "create-date":"Create-Date",
-    "create-time":"Create-Time",
-    "change-by":"Change-By",
-    "change-date":"Change-Date",
-    "change-time":"Change-Time",
+    "change_by":"Change-By",
+    "change_date":"Change-Date",
+    "change_time":"Change-Time",
     "closeflag":"CloseFlag",
-    "close-date":"Close-Date",
-    "close-time":"Close-Time",
-    "persons":"Persons",
+    "close_date":"Close-Date",
+    "close_time":"Close-Time",
 
+    "persons":"Persons",
     "chgdate":"chgDate",
     "totpok":"totpOK",
     "ratecode":"rateCode",
@@ -894,154 +928,214 @@ update_field_mapping = {
     }
 
 docker_version += ".r"
-# vhpOU/splitbillSelectLmenu
-#updated 1.0.0.14
-update_table_name("vhpOU","splitbillPrepare","lhbline","Lhbline")
-update_table_name("vhpOU","splitbillPrepareCustom","lhbline","Lhbline")
-update_table_name("vhpOU","splitbillSelectLmenu","rhbline","Rhbline")
 
-#updated 1.0.0.15
-update_table_name("HouseKeeping","getStoreRoomDiscrepancyList","hkdiscrepancyList","hkDiscrepancyList")
+# mapping table name
+(
+    # vhpOU/splitbillSelectLmenu
+    #updated 1.0.0.14
+    update_table_name("vhpOU","splitbillPrepare","lhbline","Lhbline"),
+    update_table_name("vhpOU","splitbillPrepareCustom","lhbline","Lhbline"),
+    update_table_name("vhpOU","splitbillSelectLmenu","rhbline","Rhbline"),
 
-update_table_name("vhpFOR","bonusNightCheck","resDynarate","ResDynarate")
-update_table_name("vhpFOR","searchByVoucher","tResVoucherno","tResVoucherNo")
+    #updated 1.0.0.15
+    update_table_name("HouseKeeping","getStoreRoomDiscrepancyList","hkdiscrepancyList","hkDiscrepancyList"),
 
-update_table_name("vhpSS","addRoomAdmin","dynarateList","dynaRateList")
-update_table_name("vhpSS","ratecodeAdmDynaratePrepare","dynarateList","dynaRateList")
+    update_table_name("vhpFOR","bonusNightCheck","resDynarate","ResDynarate"),
+    update_table_name("vhpFOR","searchByVoucher","tResVoucherno","tResVoucherNo"),
 
-update_table_name("vhpSS","ratecodeAdmWrite","tb3buff","tb3Buff")
+    update_table_name("vhpSS","addRoomAdmin","dynarateList","dynaRateList"),
+    update_table_name("vhpSS","ratecodeAdmDynaratePrepare","dynarateList","dynaRateList"),
 
-#updated 1.0.0.16
-update_table_name("vhpSS","egStaffPrepare","dept","Dept")
-update_table_name("vhpSS","egStaffPrepare","userskill","UserSkill")
+    update_table_name("vhpSS","ratecodeAdmWrite","tb3buff","tb3Buff"),
 
-#updated 1.0.0.17
-update_table_name("vhpSS","egStaffPrepare","userskill","UserSkill")
-update_table_name("vhpSS","egStaffPrepare","userSkill","UserSkill")
+    #updated 1.0.0.16
+    update_table_name("vhpSS","egStaffPrepare","dept","Dept"),
+    update_table_name("vhpSS","egStaffPrepare","userskill","UserSkill"),
 
-#updated 1.0.0.21
-update_table_name("vhpSC","rmAtproductCreateUmsatz1","b1list","b1List")
-update_table_name("vhpSC","rmAtproductCreateUmsatz1","rmatproduct","rmAtproduct")
+    #updated 1.0.0.17
+    update_table_name("vhpSS","egStaffPrepare","userskill","UserSkill"),
+    update_table_name("vhpSS","egStaffPrepare","userSkill","UserSkill"),
 
-#updated 1.0.0.22
-update_table_name("HouseKeeping","getStoreRoomDiscrepancyList","hkdiscrepancy-list","hk-discrepancy-list")
+    #updated 1.0.0.21
+    update_table_name("vhpSC","rmAtproductCreateUmsatz1","b1list","b1List"),
+    update_table_name("vhpSC","rmAtproductCreateUmsatz1","rmatproduct","rmAtproduct"),
 
-update_table_name("vhpENG","egMainschedulePrepare","Delete-Flag","delete-flag")
+    #updated 1.0.0.22
+    update_table_name("HouseKeeping","getStoreRoomDiscrepancyList","hkdiscrepancy-list","hk-discrepancy-list"),
 
-update_table_name("vhpENG","egRephistorymoveCreateBrowse","smove","sMove")
-update_table_name("vhpENG","egRephistorymoveBtnGo","smove","sMove")
+    update_table_name("vhpENG","egMainschedulePrepare","Delete-Flag","delete-flag"),
 
-#updated 1.0.0.23
-update_table_name("vhpSS","egStaffPrepare","dept","Dept")
-update_table_name("vhpAR","soaRelease","deptno","deptNo")
-# update_table_name("vhpAR","soaRelease","DeptNo","deptNo")
+    update_table_name("vhpENG","egRephistorymoveCreateBrowse","smove","sMove"),
+    update_table_name("vhpENG","egRephistorymoveBtnGo","smove","sMove"),
 
-#updated 1.0.0.24
-update_table_name("vhpINV","storeReqInsPrepare","deptno","deptNo")
+    #updated 1.0.0.23
+    update_table_name("vhpSS","egStaffPrepare","dept","Dept"),
+    update_table_name("vhpAR","soaRelease","deptno","deptNo"),
+    # update_table_name("vhpAR","soaRelease","DeptNo","deptNo")
 
-#updated 1.0.0.25
-update_table_name("vhpINV","chgStoreRequestLoadData","deptno","deptNo")
+    #updated 1.0.0.24
+    update_table_name("vhpINV","storeReqInsPrepare","deptno","deptNo"),
 
-#updated 1.0.0.28
-update_table_name("vhpENG","egPropertyListBtnGo","type","TYPE")
-update_table_name("vhpENG","egPropertyListBtnGo","spec","Spec")
+    #updated 1.0.0.25
+    update_table_name("vhpINV","chgStoreRequestLoadData","deptno","deptNo"),
 
-#updated 1.0.0.32, 16-4-2025
-update_table_name("vhpENG","egChgReqPrepare","tFstat","tFStat")
-update_table_name("vhpENG","egChgReqPrepare","svendor","sVendor")
-update_table_name("vhpENG","egPropertyLoad","svendor","tEgProperty")
+    #updated 1.0.0.28
+    update_table_name("vhpENG","egPropertyListBtnGo","type","TYPE"),
+    update_table_name("vhpENG","egPropertyListBtnGo","spec","Spec"),
 
-update_table_name("vhpENG","egReprequestcancelPrepare","mainaction","MainAction")
-update_table_name("vhpENG","egReprequestcancelPrepare","tmaintain","tMaintain")
-update_table_name("vhpENG","egReprequestcancelPrepare","tmaintask","tMaintask")
-update_table_name("vhpENG","egReprequestcancelPrepare","tlocation","tLocation")
-update_table_name("vhpENG","egReprequestcancelPrepare","tstatus","tStatus")
+    #updated 1.0.0.32, 16-4-2025
+    update_table_name("vhpENG","egChgReqPrepare","tFstat","tFStat"),
+    update_table_name("vhpENG","egChgReqPrepare","svendor","sVendor"),
+    update_table_name("vhpENG","egPropertyLoad","svendor","tEgProperty"),
 
-update_table_name("vhpSS","egMaintaskBtnDelart","flcode","flCode")
-update_table_name("vhpSS","egCategoryBtnExit","flcode","flCode")
+    update_table_name("vhpENG","egReprequestcancelPrepare","mainaction","MainAction"),
+    update_table_name("vhpENG","egReprequestcancelPrepare","tmaintain","tMaintain"),
+    update_table_name("vhpENG","egReprequestcancelPrepare","tmaintask","tMaintask"),
+    update_table_name("vhpENG","egReprequestcancelPrepare","tlocation","tLocation"),
+    update_table_name("vhpENG","egReprequestcancelPrepare","tstatus","tStatus"),
 
-update_table_name("HouseKeeping","updateAddLostAndFound","phoneno","PhoneNo")
-update_table_name("vhpGC","prepareAddGCPi","tGcPibline","tGcPIbline")
+    update_table_name("vhpSS","egMaintaskBtnDelart","flcode","flCode"),
+    update_table_name("vhpSS","egCategoryBtnExit","flcode","flCode"),
 
-update_table_name("vhpEG","egSelLookmaintainPrepare","tmaintain","tMaintain")
-update_table_name("vhpEG","egSelLookmaintainPrepare","mainaction","MainAction")
+    update_table_name("HouseKeeping","updateAddLostAndFound","phoneno","PhoneNo"),
+    update_table_name("vhpGC","prepareAddGCPi","tGcPibline","tGcPIbline"),
 
-update_table_name("vhpENG","egSelLookmaintainPrepare","tmaintain","tMaintain")
-update_table_name("vhpENG","egSelLookmaintainPrepare","mainaction","MainAction")
+    update_table_name("vhpEG","egSelLookmaintainPrepare","tmaintain","tMaintain"),
+    update_table_name("vhpEG","egSelLookmaintainPrepare","mainaction","MainAction"),
 
-#updated 1.0.0.33 2025-05-14
-# update_table_name("vhpINV","storeReqInsPrepare","deptno","deptNo")
-# update_table_name("vhpINV","storeReqInsPrepare","deptname","deptName")
-# update_table_name("vhpINV","storeReqInsPrepare","appstr","appStr")
-# update_table_name("vhpINV","storeReqInsPrepare","appflag","appFlag")
+    update_table_name("vhpENG","egSelLookmaintainPrepare","tmaintain","tMaintain"),
+    update_table_name("vhpENG","egSelLookmaintainPrepare","mainaction","MainAction"),
 
-#updated 1.0.0.36r (19-Mei-2025) egSubTaskPrepare
-#updated 1.0.0.37r (23-Mei-2025) vhpFOR/monthlyFcastDDown1List1",
+    #updated 1.0.0.33 2025-05-14
+    # update_table_name("vhpINV","storeReqInsPrepare","deptno","deptNo")
+    # update_table_name("vhpINV","storeReqInsPrepare","deptname","deptName")
+    # update_table_name("vhpINV","storeReqInsPrepare","appstr","appStr")
+    # update_table_name("vhpINV","storeReqInsPrepare","appflag","appFlag")
 
-update_table_name("vhpFOR","monthlyFcastDDown1List1","adult","Adult")
-# update_table_name("vhpFOR","monthlyFcastDDown1List1","arrtime","ArrTime")
-update_table_name("vhpFOR","monthlyFcastDDown1List1","deptime","DepTime")
+    #updated 1.0.0.36r (19-Mei-2025) egSubTaskPrepare
+    #updated 1.0.0.37r (23-Mei-2025) vhpFOR/monthlyFcastDDown1List1",
 
-#updated 1.0.0.38r (26-Mei-2025) vhpFOR/monthlyFcastDDown1List1",
-update_table_name("vhpENG","egReqlistLoad","copyrequest","copyRequest")
-update_table_name("vhpENG","egReqlistLoad","Action","action")
-update_table_name("vhpENG","egReqlistLoad","sMaintain","smaintain")
+    update_table_name("vhpFOR","monthlyFcastDDown1List1","adult","Adult"),
+    # update_table_name("vhpFOR","monthlyFcastDDown1List1","arrtime","ArrTime")
+    update_table_name("vhpFOR","monthlyFcastDDown1List1","deptime","DepTime"),
 
-#updated 1.0.0.39r (27-Mei-2025) fb_flashbl
-#updated 1.0.0.40r (3-Juli-2025) 
-update_table_name("vhpENG","egRepmaintainDisp","tlocation","tLocation")
-update_table_name("vhpENG","egRepmaintainDisp","tstatus","tStatus")
+    #updated 1.0.0.38r (26-Mei-2025) vhpFOR/monthlyFcastDDown1List1",
+    update_table_name("vhpENG","egReqlistLoad","copyrequest","copyRequest"),
+    update_table_name("vhpENG","egReqlistLoad","Action","action"),
+    update_table_name("vhpENG","egReqlistLoad","sMaintain","smaintain"),
 
-update_table_name("vhpENG","egMaincalendardelPrepare","tlocation","tLocation")
-update_table_name("vhpENG","egMaincalendardelPrepare","tstatus","tStatus")
-update_table_name("vhpENG","egMaincalendardelPrepare","tmaintask","tMaintask")
+    #updated 1.0.0.39r (27-Mei-2025) fb_flashbl
+    #updated 1.0.0.40r (3-Juli-2025) 
+    update_table_name("vhpENG","egRepmaintainDisp","tlocation","tLocation"),
+    update_table_name("vhpENG","egRepmaintainDisp","tstatus","tStatus"),
 
-update_table_name("vhpENG","egRepdurationDisp","tstatus","tStatus")
-update_table_name("vhpENG","egRepdurationDisp","tmaintask","tMaintask")
-update_table_name("vhpENG","egRepdurationDisp","tlocation","tLocation")
-update_table_name("vhpENG","egRepdurationDisp","copyrequest","copyRequest")
+    update_table_name("vhpENG","egMaincalendardelPrepare","tlocation","tLocation"),
+    update_table_name("vhpENG","egMaincalendardelPrepare","tstatus","tStatus"),
+    update_table_name("vhpENG","egMaincalendardelPrepare","tmaintask","tMaintask"),
 
-update_table_name("vhpENG","egMaincalendarPrepare","tlocation","tLocation")
-update_table_name("vhpENG","egMaincalendarPrepare","tstatus","tStatus")
-update_table_name("vhpENG","egMaincalendarPrepare","tmaintask","tMaintask")
+    update_table_name("vhpENG","egRepdurationDisp","tstatus","tStatus"),
+    update_table_name("vhpENG","egRepdurationDisp","tmaintask","tMaintask"),
+    update_table_name("vhpENG","egRepdurationDisp","tlocation","tLocation"),
+    update_table_name("vhpENG","egRepdurationDisp","copyrequest","copyRequest"),
 
-update_table_name("vhpENG","egRepmaintainPrepare","tlocation","tLocation")
-update_table_name("vhpENG","egRepmaintainPrepare","tmaintask","tMaintask")
-update_table_name("vhpENG","egRepmaintainPrepare","tfrequency","tFrequency")
-update_table_name("vhpENG","egRepmaintainPrepare","tstatus","tStatus")
+    update_table_name("vhpENG","egMaincalendarPrepare","tlocation","tLocation"),
+    update_table_name("vhpENG","egMaincalendarPrepare","tstatus","tStatus"),
+    update_table_name("vhpENG","egMaincalendarPrepare","tmaintask","tMaintask"),
 
-update_table_name("vhpENG","egRepdurationPrepare","tlocation","tLocation")
-update_table_name("vhpENG","egRepdurationPrepare","tmaintask","tMaintask")
+    update_table_name("vhpENG","egRepmaintainPrepare","tlocation","tLocation"),
+    update_table_name("vhpENG","egRepmaintainPrepare","tmaintask","tMaintask"),
+    update_table_name("vhpENG","egRepmaintainPrepare","tfrequency","tFrequency"),
+    update_table_name("vhpENG","egRepmaintainPrepare","tstatus","tStatus"),
 
-#updated 1.0.0.41r (4-Juli-2025) egPropertyPrepare
-update_table_name("vhpENG","egPropertyPrepare","location","Location")
-update_table_name("vhpENG","egPropertyPrepare","maintask","Maintask")
+    update_table_name("vhpENG","egRepdurationPrepare","tlocation","tLocation"),
+    update_table_name("vhpENG","egRepdurationPrepare","tmaintask","tMaintask"),
 
-update_table_name("vhpSS","dynaratecodeUpdateCreateDynarateList","dynarateList","dynaRateList")
-update_table_name("vhpAP","getAPListAddItemList","ttstock","ttStock")
+    #updated 1.0.0.41r (4-Juli-2025) egPropertyPrepare
+    update_table_name("vhpENG","egPropertyPrepare","location","Location"),
+    update_table_name("vhpENG","egPropertyPrepare","maintask","Maintask"),
 
-#update 1.0.0.42 (11-Juli-2025)
-update_table_name("vhpINV","chgInvArticlePrepare","ttguestbook","ttGuestBook")
-update_table_name("vhpINV","chgInvArticlePrepareCustom","ttguestbook","ttGuestBook")
-update_table_name("vhpFA","faValuatePrepare","lagerbuff","lagerBuff")
+    update_table_name("vhpSS","dynaratecodeUpdateCreateDynarateList","dynarateList","dynaRateList"),
+    update_table_name("vhpAP","getAPListAddItemList","ttstock","ttStock"),
 
-update_table_name("vhpFA","faArtlist2Prepare","tPrepareCreatpo","tPrepareCreatPO")
+    #update 1.0.0.42 (11-Juli-2025)
+    update_table_name("vhpINV","chgInvArticlePrepare","ttguestbook","ttGuestBook"),
+    update_table_name("vhpINV","chgInvArticlePrepareCustom","ttguestbook","ttGuestBook"),
+    update_table_name("vhpFA","faValuatePrepare","lagerbuff","lagerBuff"),
 
-#update 1.0.0.43 (17-Juli-2025)
-update_table_name("vhpENG","egReprequestcancelOpenQuery1","copyrequest","copyRequest")
+    update_table_name("vhpFA","faArtlist2Prepare","tPrepareCreatpo","tPrepareCreatPO"),
 
-#update 1.0.0.44 (23-Juli-2025)
-update_table_name("vhpPC","prInsPrepare","ins-list","insList")
+    #update 1.0.0.43 (17-Juli-2025)
+    update_table_name("vhpENG","egReprequestcancelOpenQuery1","copyrequest","copyRequest"),
 
-#update 1.0.0.45 (28-Juli-2025)
-update_table_name("vhpFA","prChgPrepare1","t-waehrung","tWaehrung")
-update_table_name("vhpFA","prChgPrepare1","t-parameters","tParameters")
-update_table_name("vhpFA","prChgPrepare1","t-l-orderhdr","tLOrderhdr")
-update_table_name("vhpFA","prChgPrepare1","t-l-artikel","tLArtikel")
+    #update 1.0.0.44 (23-Juli-2025)
+    update_table_name("vhpPC","prInsPrepare","ins-list","insList"),
 
-update_table_name("vhpOU","splitbillPrepare","menu","MENU")
-# update_table_name("vhpINV","storeReqInsPrepare","op-list","opList"
-# update_table_name("vhpOU","restInvWaiterTransfer1", "t-kellner", "t-kellner1")
+    #update 1.0.0.45 (28-Juli-2025)
+    update_table_name("vhpFA","prChgPrepare1","t-waehrung","tWaehrung"),
+    update_table_name("vhpFA","prChgPrepare1","t-parameters","tParameters"),
+    update_table_name("vhpFA","prChgPrepare1","t-l-orderhdr","tLOrderhdr"),
+    update_table_name("vhpFA","prChgPrepare1","t-l-artikel","tLArtikel"),
+    update_table_name("vhpFA","faIncomingPO","t-l-artikel","tLArtikel"),
+
+    update_table_name("vhpOU","splitbillPrepare","menu","MENU"),
+    # update_table_name("vhpINV","storeReqInsPrepare","op-list","opList"
+    # update_table_name("vhpOU","restInvWaiterTransfer1", "t-kellner", "t-kellner1")
+)
+
+# mapping based on API
+(
+    update_field_table_name("vhpFA", "faIncomingPO", "temp", "create_by", "Created-By"),
+
+    update_field_table_name("vhpFA", "faPOListBtnGoCustom", "temp", "order_date", "Order-Date"),
+    update_field_table_name("vhpFA", "faPOListBtnGoCustom", "temp", "order_nr", "Order-Nr"),
+    update_field_table_name("vhpFA", "faPOListBtnGoCustom", "temp", "order_type", "Order-Type"),
+    update_field_table_name("vhpFA", "faPOListBtnGoCustom", "temp", "release_date", "Release-Date"),
+    update_field_table_name("vhpFA", "faPOListBtnGoCustom", "temp", "created_date", "Created-Date"),
+    update_field_table_name("vhpFA", "faPOListBtnGoCustom", "temp", "_expected_delivery", "Expected-Delivery"),
+    update_field_table_name("vhpFA", "faPOListBtnGoCustom", "temp", "released_flag", "Released-Flag"),
+    update_field_table_name("vhpFA", "faPOListBtnGoCustom", "temp", "supplier_nr", "Supplier-Nr"),
+    update_field_table_name("vhpFA", "faPOListBtnGoCustom", "temp", "activeflag", "ActiveFlag"),
+    update_field_table_name("vhpFA", "faPOListBtnGoCustom", "temp", "order_desc", "Order-Desc"),
+    update_field_table_name("vhpFA", "faPOListBtnGoCustom", "temp", "order_name", "Order-Name"),
+    update_field_table_name("vhpFA", "faPOListBtnGoCustom", "temp", "total_amount", "total-amount"),
+    update_field_table_name("vhpFA", "faPOListBtnGoCustom", "temp", "order_amount", "order-amount"),
+    update_field_table_name("vhpFA", "faPOListBtnGoCustom", "temp", "modified_date", "modified-date"),
+    update_field_table_name("vhpFA", "faPOListBtnGoCustom", "temp", "close_date", "close-date"),
+    update_field_table_name("vhpFA", "faPOListBtnGoCustom", "temp", "close_time", "close-time"),
+    update_field_table_name("vhpFA", "faPOListBtnGoCustom", "temp-detail", "coa", "COA"),
+
+    update_field_table_name("vhpFA", "faModifyPOPrepareCustom", "disclist", "vat", "vat"),
+
+    update_field_table_name("vhpFA", "faModifyPOPrepareCustom", "t-fa-ordheader", "activeflag", "ActiveFlag"),
+
+    update_field_table_name("vhpFA", "faModifyPOPrepareCustom", "tfa-order", "vat", "VAT"),
+
+    update_field_table_name("vhpFA", "faModifyPOPrepareCustom", "t-dept-list", "name", "NAME"),
+
+    update_field_table_name("vhpFOR", "arlDisp6", "arl-list", "resnr", "resnr"),
+    update_field_table_name("vhpFOR", "arlDisp6", "arl-list", "grpflag", "grpflag"),
+    update_field_table_name("vhpFOR", "arlDisp6", "arl-list", "cash_basis", "cashbasis"),
+    update_field_table_name("vhpFOR", "arlDisp6", "arl-list", "ratecode", "ratecode"),
+
+    update_field_table_name("Common", "availabilityNotif", "room-summary", "date", "DATE"),
+
+    update_field_table_name("vhpFOR", "gcfList", "t-guest", "pr_flag", "pr-flag"),
+
+    update_field_table_name("vhpSM", "prCodeChg", "q1-list", "selected", "SELECTED"),
+    update_field_table_name("vhpSM", "prCodeChg", "q2-list", "selected", "SELECTED"),
+
+    ###############################################################################
+
+    update_field_by_function("vhpFA", "faPOListPrepare", "billdate", "billdate"),
+
+    update_field_by_function("vhpFA", "faModifyPOPrepareCustom", "t_amount", "tAmount"),
+    update_field_by_function("vhpFA", "faModifyPOPrepareCustom", "deptname", "deptname"),
+    update_field_by_function("vhpFA", "faModifyPOPrepareCustom", "billdate", "billdate"),
+
+    update_field_by_function("vhpFA", "faPOListBtnGoCustom", "billdate", "billdate"),
+    
+
+)
 
 
 def get_function_version(module_name, function_name, file_path):
@@ -1071,12 +1165,14 @@ def get_function_version(module_name, function_name, file_path):
     finally:
         file.close()
 
+
 def json_serializer(obj):
     if isinstance(obj, Decimal):
         return float(obj)  # Convert Decimal to float (or use str(obj) if needed)
     if isinstance(obj, datetime.date):
         return obj.isoformat()  # Convert date to string
     raise TypeError(f"Type {type(obj)} not serializable")
+
 
 class CustomJSONEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -1089,7 +1185,8 @@ class CustomJSONEncoder(json.JSONEncoder):
         # Let the base class default method raise the TypeError
         return json.JSONEncoder.default(self, obj)
 
-def update_input_format(obj,input_data):
+
+def update_input_format_v1(obj,input_data):
     # Update the input object if variable has "-"
     # Update date data from string into data                                      
     param_list = parameter_and_inner_types(obj)
@@ -1120,6 +1217,8 @@ def update_input_format(obj,input_data):
                 inner_input_param_name = param_name.removesuffix("_data").replace("_","-")
                 # outer_input_param_name = camelCase(param_name.removesuffix("_list"))
                 # inner_input_param_name = param_name.removesuffix("_list").replace("_","-")
+
+                tmp_input_data = input_data
 
                 #updated 1.0.0.4
                 if not outer_input_param_name in input_data:
@@ -1249,12 +1348,9 @@ def update_input_format(obj,input_data):
                                 if field.name.replace("_","-") in all_keys_from_input:
                                     fieldNameList.append(field.name)
                                 else:
-                                    for field_name_input in all_keys_from_input:
-                                        if field.name == field_name_input.lower():
-                                            fieldNameList.append(field.name)
-                                            break
-                                        elif field.name.replace("_", "-") == field_name_input.lower():
-                                            fieldNameList.append(field.name)
+                                    for field_name in all_keys_from_input:
+                                        if field.name == field_name.lower():
+                                            fieldNameList.append(field_name)
                                             break
 
                             # if (not field.name in data_list[0] and 
@@ -1268,18 +1364,13 @@ def update_input_format(obj,input_data):
                                     data["_recid"] = None
 
                             for name in fieldNameList:
-                                
+
                                 #updated 1.0.0.5
                                 data_field_name = name.replace("_","-")
                                     
                                 if data_field_name in data.keys():
                                     data[name.lower()] = data[data_field_name]
                                     data.pop(data_field_name)
-                                else:
-                                    for input_data_field in data.keys():
-                                        if data_field_name == input_data_field.lower():
-                                            data[name.lower()] = data[input_data_field]
-                                            break
                             
                             for name in dateFormatList:
                                 # data[name] = get_date_temp_table(data[name])
@@ -1316,8 +1407,134 @@ def update_input_format(obj,input_data):
     # for param_name in input_data.keys():
     #     if not param_name in param_list(obj)
 
+# Oscar - enchance speed
+def update_input_format(obj, input_data):
+    param_list = parameter_and_inner_types(obj)
+    param_name_list = list(param_list.keys())
 
-def update_output_format(output_data):
+    lower_key_map = {k.lower(): k for k in input_data}
+
+    for param_name, param_data_type in param_list.items():
+        param_lower = param_name.lower()
+        param_camel = camelCase(param_name)
+
+        # Normalize parameter name
+        if param_name not in input_data:
+            if param_camel in input_data:
+                input_data[param_name] = input_data.pop(param_camel)
+
+            elif param_lower in lower_key_map:
+                real_key = lower_key_map[param_lower]
+                input_data[param_name] = input_data.pop(real_key)
+
+            elif isinstance(param_data_type, list):
+                outer_name = camelCase(param_name.removesuffix("_data"))
+                inner_name = param_name.removesuffix("_data").replace("_", "-")
+
+                outer_key = lower_key_map.get(outer_name.lower())
+                if outer_key and isinstance(input_data.get(outer_key), dict):
+                    inner_map = {
+                        k.lower(): k for k in input_data[outer_key]
+                    }
+                    if inner_name.lower() in inner_map:
+                        real_inner = inner_map[inner_name.lower()]
+                        input_data[param_name] = input_data[outer_key].pop(real_inner)
+                        input_data.pop(outer_key)
+
+        # Default values
+        if param_name not in input_data:
+            if isinstance(param_data_type, list):
+                input_data[param_name] = []
+            elif param_data_type == bool:
+                input_data[param_name] = False
+            elif param_data_type == str:
+                input_data[param_name] = ""
+            elif param_data_type == int:
+                input_data[param_name] = 0
+            elif param_data_type in (float, Decimal):
+                input_data[param_name] = 0.0
+            else:
+                input_data[param_name] = None
+
+        value = input_data[param_name]
+
+        # Primitive conversions
+        if param_data_type == date:
+            input_data[param_name] = get_date_input(value)
+
+        elif param_data_type == bool and isinstance(value, str):
+            input_data[param_name] = convert_to_bool(value)
+
+        elif param_data_type == int and isinstance(value, str):
+            input_data[param_name] = convert_to_int(value.strip())
+
+        elif param_data_type == str and isinstance(value, int):
+            input_data[param_name] = str(value)
+
+        elif param_data_type == Decimal:
+            input_data[param_name] = to_decimal(value)
+
+        # List handling
+        elif isinstance(param_data_type, list):
+            inner_type = param_data_type[0]
+
+            if not isinstance(value, list):
+                value = [value]
+
+            # Primitive list types
+            if inner_type in (bool, int, date):
+                for i, v in enumerate(value):
+                    if inner_type == bool:
+                        value[i] = convert_to_bool(v)
+                    elif inner_type == int:
+                        value[i] = convert_to_int(v)
+                    elif inner_type == date:
+                        value[i] = get_date_input(v)
+
+            # Complex dataclass list
+            elif hasattr(inner_type, "__dataclass_fields__"):
+                field_defs = fields(inner_type)
+                field_names = {f.name for f in field_defs}
+
+                date_fields = {f.name for f in field_defs if f.type == date}
+                bool_fields = {f.name for f in field_defs if f.type == bool}
+                bytes_fields = {f.name for f in field_defs if f.type == bytes}
+                has_recid = "_recid" in field_names
+
+                normalized_list = []
+
+                for item in value:
+                    normalized = {}
+
+                    for k, v in item.items():
+                        key = k.replace("-", "_").lower()
+                        if key in field_names:
+                            normalized[key] = v
+
+                    if has_recid and not normalized.get("_recid"):
+                        normalized["_recid"] = None
+
+                    for k in date_fields:
+                        normalized[k] = get_date_temp_table(normalized.get(k))
+
+                    for k in bool_fields:
+                        normalized[k] = convert_to_bool(normalized.get(k))
+
+                    for k in bytes_fields:
+                        if normalized.get(k):
+                            normalized[k] = base64.b64decode(normalized[k])
+
+                    normalized_list.append(inner_type(**normalized))
+
+                input_data[param_name] = normalized_list
+
+    # Remove unknown parameters
+    for key in list(input_data.keys()):
+        if key not in param_name_list:
+            input_data.pop(key)
+
+
+def update_output_format_v1(output_data):
     key_list = list(output_data.keys())
 
     for key in key_list:
@@ -1488,10 +1705,204 @@ def update_output_format(output_data):
             output_data[update_table_name_list[curr_module_function][camelCaseKey]] = output_data[camelCaseKey]
             output_data.pop(camelCaseKey)
 
+# Oscar - enchance speed
+def update_output_format(output_data):
+    curr_module_function = f"{curr_module}_{curr_service}"
+
+    table_name_map = update_table_name_list.get(curr_module_function, {})
+    field_table_map = update_field_table_name_mapping.get(curr_module_function, {})
+    field_func_map = update_field_by_function_mapping.get(curr_module_function, {})
+
+    primitive_types = (
+        int, float, complex, str, list, tuple, range,
+        dict, set, frozenset, bool, bytes,
+        bytearray, memoryview, type(None)
+    )
+
+    for original_key in list(output_data.keys()):
+        key = original_key
+
+        if "__" in key:
+            new_key = key.replace("__", "")
+            output_data[new_key] = output_data.pop(key)
+            key = new_key
+
+        camel_key = camelCase(key)
+        value = output_data[key]
+
+        # LIST HANDLING
+        if isinstance(value, list):
+
+            # empty list
+            if not value:
+                output_data[camel_key] = {key: []}
+                if camel_key != key:
+                    output_data.pop(key)
+                continue
+
+            first_item = value[0]
+
+            # list of dates
+            if isinstance(first_item, date):
+                for i in range(len(value)):
+                    value[i] = create_output_date(value[i])
+
+            # list of objects / dict-like
+            elif not isinstance(first_item, primitive_types):
+
+                output_data[camel_key] = {key: value}
+                if camel_key != key:
+                    output_data.pop(key)
+
+                data_list = output_data[camel_key][key]
+
+                # convert dataclass objects → dict
+                if data_list and not isinstance(data_list[0], dict):
+                    for i, obj in enumerate(data_list):
+                        data_list[i] = {
+                            f.name: getattr(obj, f.name)
+                            for f in fields(obj)
+                        }
+
+                field_name_list = []
+                date_fields = []
+                date_array_fields = []
+                bytes_fields = []
+
+                sample = data_list[0]
+
+                for field_name, field_value in sample.items():
+                    if isinstance(field_value, list) and field_value and isinstance(field_value[0], date):
+                        date_array_fields.append(field_name)
+                    elif isinstance(field_value, date):
+                        date_fields.append(field_name)
+                    elif isinstance(field_value, bytes):
+                        bytes_fields.append(field_name)
+
+                    if (
+                        (field_name != "_recid" and "_" in field_name) 
+                        or ((key in field_table_map) and (field_name in field_table_map[key]))
+                        or (field_name in update_field_mapping)
+                    ):
+                        field_name_list.append(field_name)
+
+                if field_name_list or date_fields or date_array_fields or bytes_fields:
+                    for row in data_list:
+
+                        for f in date_fields:
+                            if row[f] is not None:
+                                row[f] = set_date_temp_table(row[f])
+
+                        for f in date_array_fields:
+                            for i in range(len(row[f])):
+                                if row[f][i] is not None:
+                                    row[f][i] = set_date_temp_table(row[f][i])
+
+                        for f in bytes_fields:
+                            if row[f] is not None:
+                                row[f] = base64_encode(row[f])
+
+                        for old_field in field_name_list:
+                            if (
+                                key in field_table_map and
+                                old_field in field_table_map[key]
+                            ):
+                                if type(field_table_map[key][old_field]) == list:
+                                    for n in field_table_map[key][old_field]:
+                                        row[n] = row[old_field]
+
+                                    if old_field not in field_table_map[key][old_field]:
+                                        row.pop(old_field)
+
+                                else:
+                                    row[field_table_map[key][old_field]] = row[old_field]
+
+                                    if field_table_map[key][old_field] != old_field:
+                                        row.pop(old_field)
+
+                                # new_field = old_field.replace("_", "-").replace("--", "_").lower()
+                                # row[new_field] = row.pop(old_field)
+
+                            elif old_field in update_field_mapping:
+                                if type(update_field_mapping[old_field]) == list:
+                                    for n in update_field_mapping[old_field]:
+                                        row[n] = row[old_field]
+
+                                    if old_field not in update_field_mapping[old_field]:
+                                        row.pop(old_field)
+
+                                else:
+                                    row[update_field_mapping[old_field]] = row[old_field]
+
+                                    if update_field_mapping[old_field] != old_field :
+                                        row.pop(old_field)
+
+                                # new_field = old_field.replace("_", "-").replace("--", "_").lower()
+                                # row[new_field] = row.pop(old_field)
+
+                            else:
+                                new_field = old_field.replace("_", "-").replace("--", "_").lower()
+                                row[new_field] = row[old_field]
+
+                                if new_field != old_field:
+                                    row.pop(old_field)
+
+            # final camelCase key normalization
+            if key != camel_key and key in output_data:
+                output_data[camel_key] = output_data.pop(key)
+
+        # NON-LIST HANDLING
+        else:
+            if isinstance(value, date):
+                output_data[key] = value.strftime('%Y-%m-%d')
+
+            elif isinstance(value, bool):
+                output_data[key] = "true" if value else "false"
+
+            if key in field_func_map:
+                if type(field_func_map[key]) == list:
+                    for n in field_func_map[key]:
+                        output_data[n] = output_data[key]
+
+                    if key not in field_func_map[key]:
+                        output_data.pop(key)
+
+                else:
+                    output_data[field_func_map[key]] = output_data[key]
+
+                    if field_func_map[key] != key:
+                        output_data.pop(key)
+
+
+            elif key in update_field_mapping:
+                if type(update_field_mapping[key]) == list:
+                    for n in update_field_mapping[key]:
+                        output_data[n] = output_data[key]
+
+                    if key not in update_field_mapping[key]:
+                        output_data.pop(key)
+                else:
+                    output_data[update_field_mapping[key]] = output_data[key]
+
+                    if update_field_mapping[key] != key:
+                        output_data.pop(key)
+
+            else:
+                output_data[camel_key] = output_data[key]
+
+                if camel_key != key:
+                    output_data.pop(key)
+
+        # TABLE NAME UPDATE
+        if camel_key in table_name_map:
+            output_data[table_name_map[camel_key]] = output_data.pop(camel_key)
+
+
 def decimal_converter(obj):
     if isinstance(obj, Decimal):
         return float(obj)  # or str(obj) if needed
     return obj
+
 
 def save_output_to_blob(session, json_data, ui_request_id, orig_infostr):
     record = session.query(Guestbook).filter_by(infostr=ui_request_id).first()
@@ -1576,7 +1987,8 @@ def handle_get_post(request: Request, input_data: Dict[str, Any] = {}, body_str:
 
     return handle_dynamic_data(url, headers, input_data, body_str)
 
-def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, Any] = {}, body_str:str = ""):
+
+def handle_dynamic_data_v1(url:str, headers: Dict[str, Any], input_data: Dict[str, Any] = {}, body_str:str = ""):
 
     #updated 1.0.0.18
     initialize_local_storage()
@@ -1950,6 +2362,161 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
 
     aws_request_id = request.headers.get("X-Amzn-RequestId", "Not Available")
     print("AWS Request ID:", aws_request_id)
+
+
+# Oscar - enchance speed
+# handle_dynamic_data new version for increase speed
+def handle_dynamic_data(url: str, headers: dict, input_data: dict = {}, body_str: str = ""):
+    initialize_local_storage()
+
+    global curr_module, curr_service
+
+    output_data = {}
+    ServerInfo = {}
+    db_session = None
+    error_message = ""
+    ok_flag = "false"
+
+    module_name = ""
+
+
+    def get_service_function(vhp_module: str, service_name: str) -> str:
+        if vhp_module not in SERVICE_MAP_CACHE:
+            mapping_path = Path(f"modules/{vhp_module}/_mapping.txt")
+            if not mapping_path.exists():
+                raise FileNotFoundError(f"Mapping file not found for module {vhp_module}")
+
+            with open(mapping_path, "r") as f:
+                SERVICE_MAP_CACHE[vhp_module] = {
+                    row["service"]: row["function"]
+                    for row in csv.DictReader(f)
+                }
+
+        service_map = SERVICE_MAP_CACHE[vhp_module]
+        if service_name not in service_map:
+            raise KeyError(f"Service not found: {vhp_module}/{service_name}")
+
+        return service_map[service_name]
+
+
+    def load_function(function_name: str):
+        nonlocal module_name
+        
+        cache_key = f"{module_name}.{function_name}"
+
+        if not IS_DEV and cache_key in FUNCTION_CACHE:
+            return FUNCTION_CACHE[cache_key]
+
+        module = MODULE_CACHE.get(module_name)
+        if not module or IS_DEV:
+            module = importlib.import_module(module_name)
+            if IS_DEV:
+                module = importlib.reload(module)
+            MODULE_CACHE[module_name] = module
+
+        if not hasattr(module, function_name):
+            raise AttributeError(f"Function {function_name} not found in {module_name}")
+
+        func = getattr(module, function_name)
+        FUNCTION_CACHE[cache_key] = func
+        return func
+
+
+    def validate_request(headers: dict, body_str: str):
+        signature = headers.get("x-signature")
+        nonce = headers.get("x-nonce")
+        timestamp = headers.get("x-timestamp")
+
+        if not signature:
+            raise HTTPException(400, "Missing signature")
+        if not nonce:
+            raise HTTPException(400, "Missing nonce")
+        if not timestamp:
+            raise HTTPException(400, "Missing timestamp")
+
+        if abs(to_int(timestamp) - int(datetime.now().timestamp())) > 600:
+            raise HTTPException(400, "Invalid timestamp")
+
+        if signature != sha1_hex(body_str + "|" + nonce + "|" + timestamp):
+            raise HTTPException(400, "Invalid signature")
+
+
+    def execute_service_function(
+        vhp_module: str,
+        service_name: str,
+        input_data: dict
+    ):
+        nonlocal module_name
+
+        function_name = get_service_function(vhp_module, service_name)
+        module_name = f"functions.{function_name}"
+
+        func = load_function(function_name)
+
+        update_input_format(func, input_data)
+        return func(**input_data)
+
+    try:
+        validate_request(headers, body_str)
+
+        if "request" in input_data:
+            input_data = input_data["request"]
+
+        hotel_schema = (input_data.get("hotel_schema") or "").lower()
+        if not hotel_schema:
+            raise HTTPException(400, "Missing hotel_schema")
+
+        path = url.replace("http://", "").replace("https://", "")
+        vhp_module = entry(2, path, "/")
+        service_name = entry(3, path, "/")
+
+        curr_module = vhp_module
+        curr_service = service_name
+
+        set_db_and_schema(hotel_schema)
+        db_session = local_storage.db_session
+
+        input_data.pop("hotel_schema", None)
+        input_data.pop("inputUserkey", None)
+        input_data.pop("inputUsername", None)
+
+        result = execute_service_function(vhp_module, service_name, input_data)
+
+        output_data = result or {}
+        output_data["output_Ok_Flag"] = "true"
+        ok_flag = "true"
+
+        update_output_format(output_data)
+
+        db_session.commit()
+
+    except Exception as e:
+        error_message = traceback.format_exc()
+        output_data = {"error": "Internal server error"}
+
+        if db_session:
+            db_session.rollback()
+
+    finally:
+        if db_session:
+            close_session()
+
+    if IS_DEV:
+        ServerInfo["mode"] = "DEV" if IS_DEV else "PROD"
+        ServerInfo["error"] = error_message
+        ServerInfo["modfunc"] = module_name
+        ServerInfo["ok"] = ok_flag
+        ServerInfo["path"] = vhp_module  + "/" + service_name
+
+        return {
+            "response": output_data,
+            "serverinfo": ServerInfo
+        }
+    
+    else:
+        return {
+            "response": output_data
+        }
 
 
 # infostr -> request Id
