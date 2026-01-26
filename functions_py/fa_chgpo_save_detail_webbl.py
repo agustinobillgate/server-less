@@ -65,7 +65,7 @@ def fa_chgpo_save_detail_webbl(s_order_data: [S_order], order_nr: string, credit
         # Rulita, 27-11-2025 | Fixing issue return generate_output() not correct position
         # return generate_output()
 
-        print(f"[DEBUG] set appr from {fa_ordheader.approved_1} to {appr_1}")
+        # print(f"[DEBUG] set appr from {fa_ordheader.approved_1} to {appr_1}")
         if fa_ordheader.approved_1 == False and appr_1:
             fa_ordheader.approved_1 = appr_1
             fa_ordheader.approved_1_by = user_init
@@ -81,10 +81,9 @@ def fa_chgpo_save_detail_webbl(s_order_data: [S_order], order_nr: string, credit
             fa_ordheader.approved_3_time = get_current_time_in_seconds()
 
         if fa_ordheader.released_flag == False:
-            print("[LOG] check release flag")
             if fa_ordheader.approved_1:
                 fa_ordheader.released_flag = True
-                print("[LOG] set released flag to True")
+                # print("[LOG] set released flag to True")
                 fa_ordheader.released_date = billdate
                 fa_ordheader.released_time = get_current_time_in_seconds()
 
@@ -129,7 +128,7 @@ def fa_chgpo_save_detail_webbl(s_order_data: [S_order], order_nr: string, credit
         fa_order.op_art = 2
         fa_order.last_id = user_init
         
-        log.write_log("fa_chgpo_save_detail_webbl", f"[LOG] update detail fa_order: {s_order.__dict__}")
+        # log.write_log("fa_chgpo_save_detail_webbl", f"[LOG] update detail fa_order: {s_order.__dict__}")
 
         # if s_order.ActiveReason != "" and s_order.ActiveReason != None:
         if s_order.activereason not in ("", None):
