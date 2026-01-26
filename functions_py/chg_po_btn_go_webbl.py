@@ -180,6 +180,7 @@ def chg_po_btn_go_webbl(t_l_orderhdr_data:[T_l_orderhdr], s_order_data:[S_order]
             if l_order.stornogrund != s_order.stornogrund:
                 logstring = "[CHG LORDER]DOC NO: " + l_order.docu_nr + " Article No: " + to_string(s_order.artnr) + " AcctNo Changed From: " + to_string(l_order.stornogrund) + " To: " + to_string(s_order.stornogrund)
                 create_log(logstring)
+
             l_order.lief_nr = lief_nr
             l_order.lieferdatum = get_current_date()
             l_order.lief_fax[0] = pr
@@ -192,9 +193,28 @@ def chg_po_btn_go_webbl(t_l_orderhdr_data:[T_l_orderhdr], s_order_data:[S_order]
             flag_modified(l_order, "lief_fax")
 
             if disc_list:
-                l_order.quality = to_string(disc_list.disc, "99.99 ") + to_string(disc_list.vat, "99.99") + to_string(disc_list.disc2, " 99.99") + to_string(disc_list.disc_val, " >>,>>>,>>>,>>9.99") + to_string(disc_list.disc2_val, " >>,>>>,>>>,>>9.99") + to_string(disc_list.vat_val, " >>,>>>,>>>,>>9.99") + to_string(disc_list.price0, " >>,>>>,>>>,>>9.99") + to_string(disc_list.brutto, " >>,>>>,>>>,>>9.99")
+                # l_order.quality = to_string(disc_list.disc, "99.99 ") + to_string(disc_list.vat, "99.99") + to_string(disc_list.disc2, " 99.99") + to_string(disc_list.disc_val, " >>,>>>,>>>,>>9.99") + to_string(disc_list.disc2_val, " >>,>>>,>>>,>>9.99") + to_string(disc_list.vat_val, " >>,>>>,>>>,>>9.99") + to_string(disc_list.price0, " >>,>>>,>>>,>>9.99") + to_string(disc_list.brutto, " >>,>>>,>>>,>>9.99")
+
+                l_order.quality = f"{to_string(disc_list.disc, "99.99")}" +\
+                    f" {to_string(disc_list.vat, "99.99")}" +\
+                    f" {to_string(disc_list.disc2, "99.99")}" +\
+                    f" {to_string(disc_list.disc_val, ">,>>>,>>>,>>9.999")}" +\
+                    f" {to_string(disc_list.disc2_val, ">,>>>,>>>,>>9.999")}" +\
+                    f" {to_string(disc_list.vat_val, ">,>>>,>>>,>>9.999")}" +\
+                    f" {to_string(disc_list.price0, ">>,>>>,>>>,>>9.99")}" +\
+                    f" {to_string(disc_list.brutto, ">>,>>>,>>>,>>9.99")}"
+                
             else:
-                l_order.quality = to_string(s_order.disc, "99.99 ") + to_string(s_order.vat, "99.99") + to_string(s_order.disc2, " 99.99") + to_string(s_order.disc_val, " >>,>>>,>>>,>>9.99") + to_string(s_order.disc2_val, " >>,>>>,>>>,>>9.99") + to_string(s_order.vat_val, " >>,>>>,>>>,>>9.99")
+                # l_order.quality = to_string(s_order.disc, "99.99 ") + to_string(s_order.vat, "99.99") + to_string(s_order.disc2, " 99.99") + to_string(s_order.disc_val, " >>,>>>,>>>,>>9.99") + to_string(s_order.disc2_val, " >>,>>>,>>>,>>9.99") + to_string(s_order.vat_val, " >>,>>>,>>>,>>9.99")
+
+                l_order.quality = f"{to_string(s_order.disc, "99.99")}" +\
+                    f" {to_string(s_order.vat, "99.99")}" +\
+                    f" {to_string(s_order.disc2, "99.99")}" +\
+                    f" {to_string(s_order.disc_val, ">,>>>,>>>,>>9.999")}" +\
+                    f" {to_string(s_order.disc2_val, ">,>>>,>>>,>>9.999")}" +\
+                    f" {to_string(s_order.vat_val, ">,>>>,>>>,>>9.999")}" +\
+                    f" {to_string(s_order.price0, ">>,>>>,>>>,>>9.99")}" +\
+                    f" {to_string(s_order.brutto, ">>,>>>,>>>,>>9.99")}"
 
             # queasy = get_cache (Queasy, {"key": [(eq, 304)],"char1": [(eq, l_order.docu_nr)],"number1": [(eq, l_order.artnr)]})
             queasy = db_session.query(Queasy).filter(
