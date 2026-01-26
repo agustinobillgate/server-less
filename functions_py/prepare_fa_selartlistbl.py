@@ -45,6 +45,7 @@ def prepare_fa_selartlistbl():
             "tmp-faartikel": tmp_faartikel_data
         }
 
+
     mathis_obj_list = {}
 
     query_mathis = (
