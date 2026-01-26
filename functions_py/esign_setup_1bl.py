@@ -56,8 +56,8 @@ def esign_setup_1bl(case_type: int, user_init: string, esign_list_data: [Esign_l
         }
 
     if case_type == 0:
-
-        query_type_0 = (
+        # -- get data esign for inventory --
+        guestbook_data = (
             db_session.query(Guestbook)
             .filter
             (
@@ -67,7 +67,7 @@ def esign_setup_1bl(case_type: int, user_init: string, esign_list_data: [Esign_l
             .order_by(Guestbook.reserve_int[inc_value(0)])
         )
 
-        for guestbook in query_type_0:
+        for guestbook in guestbook_data:
 
             esign_list = Esign_list()
             esign_list_data.append(esign_list)
@@ -95,7 +95,7 @@ def esign_setup_1bl(case_type: int, user_init: string, esign_list_data: [Esign_l
         res_history.action = "E-Signature Setup"
 
     elif case_type == 1:
-
+        # -- add esign for inventory --
         for esign_list in query(esign_list_data):
 
             # guestbook = get_cache (Guestbook, {"gastnr": [(eq, esign_list.sign_id)]})
@@ -149,7 +149,7 @@ def esign_setup_1bl(case_type: int, user_init: string, esign_list_data: [Esign_l
                         booknr = guestbook.gastnr - 1
                         break
                 else:
-                    booknr = - 271080
+                    booknr = -271080
 
                 guestbook = Guestbook()
                 db_session.add(guestbook)
@@ -183,7 +183,7 @@ def esign_setup_1bl(case_type: int, user_init: string, esign_list_data: [Esign_l
                 res_history.action = "E-Signature Setup"
 
     elif case_type == 2:
-
+        # -- delete esign for inventory --
         esign_list = query(esign_list_data, filters=(
             lambda esign_list: esign_list.sign_select), first=True)
 
@@ -207,8 +207,8 @@ def esign_setup_1bl(case_type: int, user_init: string, esign_list_data: [Esign_l
                 res_history.action = "E-Signature Setup"
 
     elif case_type == 3:
-
-        query_type_3 = (
+        # -- get data esign for po fixed asset --
+        guestbook_data = (
             db_session.query(Guestbook)
             .filter(
                 (Guestbook.gastnr >= -271350) &
@@ -217,7 +217,7 @@ def esign_setup_1bl(case_type: int, user_init: string, esign_list_data: [Esign_l
             .order_by(Guestbook.reserve_int[inc_value(0)])
         )
 
-        for guestbook in query_type_3:
+        for guestbook in guestbook_data:
             esign_list = Esign_list()
             esign_list_data.append(esign_list)
 
@@ -244,7 +244,7 @@ def esign_setup_1bl(case_type: int, user_init: string, esign_list_data: [Esign_l
         res_history.action = "FA E-Signature Setup"
 
     elif case_type == 4:
-
+        # -- add esign for po fixed asset --
         for esign_list in query(esign_list_data):
 
             # guestbook = get_cache (Guestbook, {"gastnr": [(eq, esign_list.sign_id)]})
@@ -252,6 +252,8 @@ def esign_setup_1bl(case_type: int, user_init: string, esign_list_data: [Esign_l
                 Guestbook.gastnr == esign_list.sign_id).with_for_update().first()
 
             if guestbook:
+                # print(f"[LOG] UPDATED booknr_fa: {booknr_fa} > guestbook.gastnr: {guestbook.gastnr}")
+                
                 guestbook.infostr = to_string(esign_list.sign_nr) + "|" +\
                     esign_list.sign_name + "|" +\
                     esign_list.sign_use_for + "|" +\
@@ -282,9 +284,9 @@ def esign_setup_1bl(case_type: int, user_init: string, esign_list_data: [Esign_l
                     (Gbook_fa.gastnr >= -271350) &
                     (Gbook_fa.gastnr <= -271280)).first()
 
+                # check if esign exists
                 if gbook_fa:
-
-                    query_gbook_fa = (
+                    gbook_fa_data = (
                         db_session.query(Guestbook)
                         .filter(
                             (Guestbook.gastnr >= -271350) &
@@ -293,16 +295,17 @@ def esign_setup_1bl(case_type: int, user_init: string, esign_list_data: [Esign_l
                         .order_by(Guestbook.gastnr)
                     )
 
-                    for guestbook in query_gbook_fa:
+                    for guestbook in gbook_fa_data:
                         booknr_fa = guestbook.gastnr - 1
                         break
                 else:
-                    booknr_fa = - 271280
+                    booknr_fa = -271280
 
                 guestbook = Guestbook()
                 db_session.add(guestbook)
 
                 guestbook.gastnr = booknr_fa
+                # print(f"[LOG] CREATED booknr_fa: {booknr_fa} > guestbook.gastnr: {guestbook.gastnr}")
                 guestbook.reserve_int[0] = esign_list.sign_nr
                 guestbook.infostr = to_string(esign_list.sign_nr) + "|" +\
                     esign_list.sign_name + "|" +\
@@ -331,14 +334,19 @@ def esign_setup_1bl(case_type: int, user_init: string, esign_list_data: [Esign_l
                 res_history.action = "FA E-Signature Setup"
 
     elif case_type == 5:
-
+        # -- delete esign for po fixed asset --
         esign_list = query(esign_list_data, filters=(
             lambda esign_list: esign_list.sign_select), first=True)
 
         if esign_list:
 
-            queasy = get_cache(Queasy, {"key": [(eq, 382)], "number2": [
-                               (eq, esign_list.sign_id)], "deci1": [(eq, 2)]})
+            # queasy = get_cache(Queasy, {"key": [(eq, 382)], "number2": [
+            #                    (eq, esign_list.sign_id)], "deci1": [(eq, 2)]})
+            
+            queasy = db_session.query(Queasy).filter(
+                (Queasy.key == 382) &
+                (Queasy.number2 == esign_list.sign_id) &
+                (Queasy.deci1 == Decimal(2))).first()
 
             if queasy:
 
@@ -349,7 +357,7 @@ def esign_setup_1bl(case_type: int, user_init: string, esign_list_data: [Esign_l
                 Guestbook.gastnr == esign_list.sign_id).with_for_update().first()
 
             if guestbook:
-
+                # print(f"[LOG] DELETED guestbook: {guestbook.gastnr}")
                 db_session.delete(guestbook)
 
                 bediener = get_cache(Bediener, {"userinit": [(eq, user_init)]})

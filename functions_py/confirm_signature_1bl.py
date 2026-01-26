@@ -1,6 +1,11 @@
-#using conversion tools version: 1.0.0.117
+#using conversion tools version: 1.0.0.119
 #------------------------------------------
 # Rd, 26/11/2025, with_for_update, skip, temp-table
+# 
+# yusufwijasena, 26/01/2026
+# - added update from Malik EF3176 - FA E-Sign PO
+# - fix usage lower func in flag_type validation
+# - changed get_cache queasy to db_session query with for update
 #------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -24,10 +29,9 @@ def confirm_signature_1bl(app_id:string, app_no:int, docu_nr:string, user_init:s
 
         return {}
 
-
+    # -- add esign --
     if confirmsign_flag :
-
-        if flag_type.lower()  == ("PR").lower() :
+        if flag_type.lower()  == "pr" :
             # queasy = get_cache (Queasy, {"key": [(eq, 227)],"char1": [(eq, docu_nr)],"number1": [(eq, app_no)]})
             queasy = db_session.query(Queasy).filter(
                      (Queasy.key == 227) &
@@ -56,9 +60,6 @@ def confirm_signature_1bl(app_id:string, app_no:int, docu_nr:string, user_init:s
                 res_history.action = "E-Signature"
 
 
-                pass
-                pass
-                pass
 
             if queasy:
                 queasy.char2 = user_init
@@ -77,11 +78,8 @@ def confirm_signature_1bl(app_id:string, app_no:int, docu_nr:string, user_init:s
                 res_history.action = "E-Signature"
 
 
-                pass
-                pass
-                pass
 
-        if flag_type.lower()  == ("PO").lower() :
+        if flag_type.lower()  == "po" :
 
             # queasy = get_cache (Queasy, {"key": [(eq, 245)],"char1": [(eq, docu_nr)],"number1": [(eq, app_no)]})
             queasy = db_session.query(Queasy).filter(
@@ -111,9 +109,6 @@ def confirm_signature_1bl(app_id:string, app_no:int, docu_nr:string, user_init:s
                 res_history.action = "E-Signature"
 
 
-                pass
-                pass
-                pass
 
             if queasy:
                 queasy.char2 = user_init
@@ -132,11 +127,8 @@ def confirm_signature_1bl(app_id:string, app_no:int, docu_nr:string, user_init:s
                 res_history.action = "E-Signature"
 
 
-                pass
-                pass
-                pass
 
-        if flag_type.lower()  == ("DML").lower() :
+        if flag_type.lower()  == "dml" :
 
             # queasy = get_cache (Queasy, {"key": [(eq, 352)],"char1": [(eq, docu_nr)],"number1": [(eq, app_no)]})
             queasy = db_session.query(Queasy).filter(
@@ -166,9 +158,6 @@ def confirm_signature_1bl(app_id:string, app_no:int, docu_nr:string, user_init:s
                 res_history.action = "E-Signature"
 
 
-                pass
-                pass
-                pass
 
             if queasy:
                 queasy.char2 = user_init
@@ -187,15 +176,58 @@ def confirm_signature_1bl(app_id:string, app_no:int, docu_nr:string, user_init:s
                 res_history.action = "E-Signature"
 
 
-                pass
-                pass
-                pass
 
+        if flag_type.lower()  == "fa po" :
+
+            # queasy = get_cache (Queasy, {"key": [(eq, 382)],"char1": [(eq, docu_nr)],"number1": [(eq, app_no)]})
+            queasy = db_session.query(Queasy).filter(
+                     (Queasy.key == 382) &
+                     (Queasy.char1 == docu_nr) &
+                     (Queasy.number1 == app_no) ).with_for_update().first()
+            
+            if not queasy:
+                queasy = Queasy()
+                db_session.add(queasy)
+
+                queasy.key = 382
+                queasy.char1 = docu_nr
+                queasy.char2 = user_init
+                queasy.char3 = app_id
+                queasy.number1 = app_no
+                queasy.number2 = sign_id
+                queasy.deci1 =  to_decimal("2")
+
+                bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})
+                res_history = Res_history()
+                db_session.add(res_history)
+
+                res_history.nr = bediener.nr
+                res_history.datum = get_current_date()
+                res_history.zeit = get_current_time_in_seconds()
+                res_history.aenderung = "Using FA E-Signature For PO: " + docu_nr + "|Approve No: " + to_string(app_no) + "|" + app_id
+                res_history.action = "FA E-Signature"
+
+
+
+            if queasy:
+                queasy.char2 = user_init
+                queasy.char3 = app_id
+                queasy.number1 = app_no
+                queasy.number2 = sign_id
+
+                bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})
+                res_history = Res_history()
+                db_session.add(res_history)
+
+                res_history.nr = bediener.nr
+                res_history.datum = get_current_date()
+                res_history.zeit = get_current_time_in_seconds()
+                res_history.aenderung = "Change FA E-Signature For PO: " + docu_nr + "|Approve No: " + to_string(app_no) + "|" + app_id
+                res_history.action = "FA E-Signature"
+
+    # -- remove esign --
     elif confirmsign_flag == False:
-
-        if flag_type.lower()  == ("PR").lower() :
-
-
+        if flag_type.lower()  == "pr" :
             # queasy = get_cache (Queasy, {"key": [(eq, 227)],"char1": [(eq, docu_nr)],"number1": [(eq, app_no)]})
             queasy = db_session.query(Queasy).filter(
                      (Queasy.key == 227) &
@@ -216,11 +248,7 @@ def confirm_signature_1bl(app_id:string, app_no:int, docu_nr:string, user_init:s
                 res_history.action = "E-Signature"
 
 
-                pass
-                pass
-                pass
-
-        if flag_type.lower()  == ("PO").lower() :
+        if flag_type.lower()  == "po" :
 
             # queasy = get_cache (Queasy, {"key": [(eq, 245)],"char1": [(eq, docu_nr)],"number1": [(eq, app_no)]})
             queasy = db_session.query(Queasy).filter(
@@ -242,11 +270,8 @@ def confirm_signature_1bl(app_id:string, app_no:int, docu_nr:string, user_init:s
                 res_history.action = "E-Signature"
 
 
-                pass
-                pass
-                pass
 
-        if flag_type.lower()  == ("DML").lower() :
+        if flag_type.lower()  == "dml" :
 
             # queasy = get_cache (Queasy, {"key": [(eq, 352)],"char1": [(eq, docu_nr)],"number1": [(eq, app_no)]})
             queasy = db_session.query(Queasy).filter(
@@ -268,8 +293,28 @@ def confirm_signature_1bl(app_id:string, app_no:int, docu_nr:string, user_init:s
                 res_history.action = "E-Signature"
 
 
-                pass
-                pass
-                pass
+
+        if flag_type.lower()  == "fa po" :
+
+            # queasy = get_cache (Queasy, {"key": [(eq, 382)],"char1": [(eq, docu_nr)],"number1": [(eq, app_no)],"deci1": [(eq, 2)]})
+            queasy = db_session.query(Queasy).filter(
+                     (Queasy.key == 382) &
+                     (Queasy.char1 == docu_nr) &
+                     (Queasy.number1 == app_no) &
+                     (Queasy.deci1 == 2) ).with_for_update().first()
+
+            if queasy:
+                db_session.delete(queasy)
+
+                bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})
+                res_history = Res_history()
+                db_session.add(res_history)
+
+                res_history.nr = bediener.nr
+                res_history.datum = get_current_date()
+                res_history.zeit = get_current_time_in_seconds()
+                res_history.aenderung = "Cancel FA E-Signature For PO: " + docu_nr + "|Approve No: " + to_string(app_no) + "|" + app_id
+                res_history.action = "FA E-Signature"
+                
 
     return generate_output()
