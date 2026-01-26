@@ -179,7 +179,7 @@ def prepare_fa_modifypo_webbl(docu_nr: string):
         )
 
         for fa_order in fa_order_data.yield_per(100):
-            print(f"[LOG] check fa_order: {fa_order.order_nr}")
+            # print(f"[LOG] check fa_order: {fa_order.order_nr}")
             if fa_order_obj_list.get(fa_order._recid):
                 continue
             else:
@@ -206,8 +206,8 @@ def prepare_fa_modifypo_webbl(docu_nr: string):
             budget_fix_asset_list = query(budget_fix_asset_list_data, filters=(
                 lambda budget_fix_asset_list: budget_fix_asset_list.nr_budget == fa_order.activereason), first=True)
 
-            print(
-                f"[LOG] check budget_fix_asset_list: {budget_fix_asset_list}")
+            # print(
+            #     f"[LOG] check budget_fix_asset_list: {budget_fix_asset_list}")
 
             if budget_fix_asset_list:
                 tfa_order.desc_budget = budget_fix_asset_list.desc_budget
@@ -259,8 +259,8 @@ def prepare_fa_modifypo_webbl(docu_nr: string):
             t_add_last.wabkurz = waehrung.wabkurz
 
 
-    print("[LOG] Check prepare_fa_modifypo_webbl")
-    print(f"[DEBUG] docu_nr: {docu_nr}")
+    # print("[LOG] Check prepare_fa_modifypo_webbl")
+    # print(f"[DEBUG] docu_nr: {docu_nr}")
     p_1093 = get_output(htpint(1093))
     p_464 = get_output(htpint(464))
     p_220 = get_output(htpint(220))
@@ -285,7 +285,7 @@ def prepare_fa_modifypo_webbl(docu_nr: string):
     )
 
     if fa_ordheader:
-        print(f"[LOG] found fa_ordheader: {fa_ordheader.order_nr}")
+        # print(f"[LOG] found fa_ordheader: {fa_ordheader.order_nr}")
         t_fa_ordheader = T_fa_ordheader()
         t_fa_ordheader_data.append(t_fa_ordheader)
 
@@ -425,6 +425,7 @@ def prepare_fa_modifypo_webbl(docu_nr: string):
             q245.sign_id = queasy.number2
             
     else:
-        print(f"[LOG] fa_ordheader not found: {docu_nr}")
+        pass
+        # print(f"[LOG] fa_ordheader not found: {docu_nr}")
 
     return generate_output()

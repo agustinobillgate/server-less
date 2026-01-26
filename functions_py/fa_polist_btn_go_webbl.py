@@ -296,6 +296,9 @@ def fa_polist_btn_go_webbl(payload_list_data: [Payload_list], cost_list_data: [C
                     calc_tot_qty_price_amount()
                     
                     # print(
+                    #         f'[LOG] fa_order: {fa_order.order_nr} | fa_order.qty: {fa_order.order_qty} ')
+
+                    # print(
                     #     f"[DEBUG][OUTSTANDING] tot_qty: {tot_qty} | tot_price: {tot_price} | tot_amount: {tot_amount} ")
 
                 temp_detail = Temp_detail()

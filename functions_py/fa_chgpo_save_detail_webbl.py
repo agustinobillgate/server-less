@@ -55,8 +55,6 @@ def fa_chgpo_save_detail_webbl(s_order_data: [S_order], order_nr: string, credit
         fa_ordheader.order_date = order_date
         fa_ordheader.supplier_nr = supplier_nr
         fa_ordheader.expected_delivery = _expected_delivery
-        print(
-            f"[DEBUG] expected_delivery: {_expected_delivery} | {fa_ordheader.expected_delivery}")
         fa_ordheader.order_type = order_type
         fa_ordheader.order_name = order_name
         fa_ordheader.order_desc = comments
@@ -64,10 +62,10 @@ def fa_chgpo_save_detail_webbl(s_order_data: [S_order], order_nr: string, credit
         fa_ordheader.modified_date = billdate
         fa_ordheader.modified_time = get_current_time_in_seconds()
         pr_nr = fa_ordheader.pr_nr
-    else:
         # Rulita, 27-11-2025 | Fixing issue return generate_output() not correct position
         # return generate_output()
 
+        print(f"[DEBUG] set appr from {fa_ordheader.approved_1} to {appr_1}")
         if fa_ordheader.approved_1 == False and appr_1:
             fa_ordheader.approved_1 = appr_1
             fa_ordheader.approved_1_by = user_init
@@ -83,9 +81,10 @@ def fa_chgpo_save_detail_webbl(s_order_data: [S_order], order_nr: string, credit
             fa_ordheader.approved_3_time = get_current_time_in_seconds()
 
         if fa_ordheader.released_flag == False:
-
+            print("[LOG] check release flag")
             if fa_ordheader.approved_1:
                 fa_ordheader.released_flag = True
+                print("[LOG] set released flag to True")
                 fa_ordheader.released_date = billdate
                 fa_ordheader.released_time = get_current_time_in_seconds()
 
