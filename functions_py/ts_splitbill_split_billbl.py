@@ -4,41 +4,52 @@
 # if not availble -> return
 # Rd, 28/11/2025, with_for_update added
 #----------------------------------------
+
+#----------------------------------------
+# Rulita, 09-01-2025
+# Fixing issue missing fiture Sub Menu 
+#----------------------------------------
+
 from functions.additional_functions import *
 from decimal import Decimal
-from models import H_bill_line, H_bill, H_artikel
+from models import H_bill_line, H_artikel, H_bill, H_mjourn
 
 def ts_splitbill_split_billbl(rec_id:int, dept:int, price_decimal:int):
 
-    prepare_cache ([H_bill, H_artikel])
+    prepare_cache ([H_artikel, H_bill])
 
     t_h_bill_line_data = []
-    h_bill_line = h_bill = h_artikel = None
+    h_bill_line = h_artikel = h_bill = h_mjourn = None
 
-    t_h_bill_line = art_list = None
+    t_h_bill_line = art_list = h_artikel_buff = None
 
     t_h_bill_line_data, T_h_bill_line = create_model_like(H_bill_line, {"rec_id":int})
-    art_list_data, Art_list = create_model_like(H_bill_line)
+    art_list_data, Art_list = create_model_like(H_bill_line, {"rec_id":int})
+
+    H_artikel_buff = create_buffer("H_artikel_buff",H_artikel)
+
 
     db_session = local_storage.db_session
 
     def generate_output():
-        nonlocal t_h_bill_line_data, h_bill_line, h_bill, h_artikel
+        nonlocal t_h_bill_line_data, h_bill_line, h_artikel, h_bill, h_mjourn
         nonlocal rec_id, dept, price_decimal
+        nonlocal h_artikel_buff
 
 
-        nonlocal t_h_bill_line, art_list
+        nonlocal t_h_bill_line, art_list, h_artikel_buff
         nonlocal t_h_bill_line_data, art_list_data
 
         return {"t-h-bill-line": t_h_bill_line_data}
 
     def split_bill():
 
-        nonlocal t_h_bill_line_data, h_bill_line, h_bill, h_artikel
+        nonlocal t_h_bill_line_data, h_bill_line, h_artikel, h_bill, h_mjourn
         nonlocal rec_id, dept, price_decimal
+        nonlocal h_artikel_buff
 
 
-        nonlocal t_h_bill_line, art_list
+        nonlocal t_h_bill_line, art_list, h_artikel_buff
         nonlocal t_h_bill_line_data, art_list_data
 
         h_artart:int = 0
@@ -46,18 +57,32 @@ def ts_splitbill_split_billbl(rec_id:int, dept:int, price_decimal:int):
         amount:Decimal = to_decimal("0.0")
         splitamount:Decimal = to_decimal("0.0")
         pos_anz:int = 0
+        rec_id_h_bill_line:int = 0
+        h_mjourn_buff = None
+        rqst_str:string = ""
+        counter:int = 0
+        H_mjourn_buff =  create_buffer("H_mjourn_buff",H_mjourn)
 
         for h_bill_line in db_session.query(H_bill_line).filter(
                  (H_bill_line.rechnr == h_bill.rechnr) & (H_bill_line.departement == dept)).order_by(H_bill_line._recid).all():
 
+            if h_bill_line.waehrungsnr != 0:
+                continue
+            rec_id_h_bill_line = h_bill_line._recid
+
             if h_bill_line.artnr != 0:
 
                 h_artikel = get_cache (H_artikel, {"artnr": [(eq, h_bill_line.artnr)],"departement": [(eq, h_bill_line.departement)]})
-                h_artart = h_artikel.artart
+
+                if h_artikel:
+                    h_artart = h_artikel.artart
+
+                    if h_artikel.betriebsnr > 0:
+                        continue
             else:
                 h_artart = 2
 
-            art_list = query(art_list_data, filters=(lambda art_list: art_list.artnr == h_bill_line.artnr and art_list.departement == h_bill_line.departement and art_list.bezeich == h_bill_line.bezeich and art_list.waehrungsnr == h_bill_line.waehrungsnr and art_list.betriebsnr == h_bill_line.betriebsnr), first=True)
+            art_list = query(art_list_data, filters=(lambda art_list: art_list.artnr == h_bill_line.artnr and art_list.departement == h_bill_line.departement and art_list.bezeich == h_bill_line.bezeich and art_list.waehrungsnr == h_bill_line.waehrungsnr and art_list.betriebsnr == h_bill_line.betriebsnr and art_list.rec_id == rec_id_h_bill_line), first=True)
 
             if not art_list or (art_list and h_artart != 0):
                 art_list = Art_list()
@@ -75,6 +100,7 @@ def ts_splitbill_split_billbl(rec_id:int, dept:int, price_decimal:int):
                 art_list.sysdate = h_bill_line.sysdate
                 art_list.waehrungsnr = h_bill_line.waehrungsnr
                 art_list.betriebsnr = h_bill_line.betriebsnr
+                art_list.rec_id = rec_id_h_bill_line
 
 
             art_list.anzahl = art_list.anzahl + h_bill_line.anzahl
@@ -88,6 +114,16 @@ def ts_splitbill_split_billbl(rec_id:int, dept:int, price_decimal:int):
 
         for h_bill_line in db_session.query(H_bill_line).filter(
                  (H_bill_line.rechnr == h_bill.rechnr) & (H_bill_line.departement == dept)).order_by(H_bill_line._recid).with_for_update().all():
+
+            h_artikel = get_cache (H_artikel, {"artnr": [(eq, h_bill_line.artnr)],"departement": [(eq, h_bill_line.departement)]})
+
+            if h_artikel:
+
+                if h_artikel.betriebsnr > 0:
+                    continue
+
+            if h_bill_line.waehrungsnr != 0:
+                continue
             db_session.delete(h_bill_line)
         pass
 
@@ -131,15 +167,17 @@ def ts_splitbill_split_billbl(rec_id:int, dept:int, price_decimal:int):
         art_list_data.clear()
 
     h_bill = get_cache (H_bill, {"_recid": [(eq, rec_id)]})
-    # Rd 3/8/2025
-    # if not avail return
-    if h_bill is None:
-        return generate_output()
-    
     split_bill()
 
-    for h_bill_line in db_session.query(H_bill_line).filter(
+    h_bill_line_obj_list = {}
+    for h_bill_line, h_artikel in db_session.query(H_bill_line, H_artikel).join(H_artikel,(H_artikel.artnr == H_bill_line.artnr) & (H_artikel.departement == dept)).filter(
              (H_bill_line.departement == dept) & (H_bill_line.rechnr == h_bill.rechnr) & (H_bill_line.waehrungsnr == 0)).order_by(H_bill_line.bezeich).all():
+        if h_bill_line_obj_list.get(h_bill_line._recid):
+            continue
+        else:
+            h_bill_line_obj_list[h_bill_line._recid] = True
+
+
         t_h_bill_line = T_h_bill_line()
         t_h_bill_line_data.append(t_h_bill_line)
 

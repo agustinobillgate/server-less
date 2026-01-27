@@ -873,7 +873,7 @@ def fa_valuate_btn_go2_webbl(pvilanguage:int, lager_buff_data:[Lager_buff], mi_l
                         out_list.flag = 1
                         out_list.bezeich = mathis.name
                         out_list.refno = mathis.asset
-                        out_list.received = mathis.datu
+                        out_list.received = mathis.datum
                         out_list.qty =  to_decimal(fa_artikel.anzahl)
                         out_list.init_val =  to_decimal(fa_artikel.warenwert)
                         out_list.depn_val =  to_decimal(fa_artikel.depn_wert)

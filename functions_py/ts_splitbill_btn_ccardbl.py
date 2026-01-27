@@ -79,7 +79,7 @@ def ts_splitbill_btn_ccardbl(rec_id_h_bill:int, billart:int, balance:Decimal, pa
         amount =  - to_decimal(balance)
     else:
         amount =  to_decimal(paid)
-    bill_date = get_output(ts_splitbill_update_billbl(rec_id_h_bill, h_artikel._recid, h_artikel.artart, h_artikel.artnrfront, dept, amount, transdate, billart, description, change_str, qty, tischnr, price, add_zeit, curr_select, hoga_card, cancel_str, curr_waiter, amount_foreign, curr_room, user_init, cc_comment, guestnr))
+    bill_date = get_output(ts_splitbill_update_billbl(rec_id_h_bill, h_artikel._recid, h_artikel.artart, h_artikel.artnrfront, dept, amount, transdate, billart, description, change_str, qty, h_bill.tischnr, price, add_zeit, curr_select, hoga_card, cancel_str, curr_waiter, amount_foreign, curr_room, user_init, cc_comment, guestnr))
 
     if round(h_bill.saldo, price_decimal) == 0:
         del_queasy()

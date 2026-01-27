@@ -1,8 +1,11 @@
-#using conversion tools version: 1.0.0.117
+#using conversion tools version: 1.0.0.119
 
 # =======================================
 # Rulita, 17-10-2025 
 # Tiket ID : 6526C2 | New compile program
+
+# Rulita, 13-01-2026 
+# Added filter sub-menu
 # =======================================
 
 from functions.additional_functions import *
@@ -744,13 +747,28 @@ def print_hbill1bl(pvilanguage:int, session_parameter:string, user_init:string, 
             if price_decimal == 0:
 
                 if not long_digit:
-                    output_list.str = output_list.str + to_string(art_list.amount, "->>>,>>>,>>9")
+
+                    if art_list.amount > 999999999 or art_list.amount < -999999999:
+                        output_list.str = substring(output_list.str, 0, length(output_list.str) - 2) + to_string(art_list.amount, "->,>>>,>>>,>>9")
+                    else:
+                        output_list.str = output_list.str + to_string(art_list.amount, "->>>,>>>,>>9")
                 else:
-                    output_list.str = output_list.str + to_string(art_list.amount, "->>>,>>>,>>9")
+
+                    if art_list.amount > 999999999 or art_list.amount < -999999999:
+                        output_list.str = substring(output_list.str, 0, length(output_list.str) - 2) + to_string(art_list.amount, "->,>>>,>>>,>>9")
+                    else:
+                        output_list.str = output_list.str + to_string(art_list.amount, "->>>,>>>,>>9")
             else:
-                output_list.str = output_list.str + to_string(art_list.amount, "->>>,>>>,>>9.99")
-            curr_j = curr_j + 1
-            printed_line = printed_line + 1
+
+                if art_list.amount > 999999999 or art_list.amount < -999999999:
+                    output_list.str = substring(output_list.str, 0, length(output_list.str) - 6) + to_string(art_list.amount, "->,>>>,>>>,>>9.99")
+
+                elif art_list.amount > 999999 or art_list.amount < -999999:
+                    output_list.str = substring(output_list.str, 0, length(output_list.str) - 4) + to_string(art_list.amount, "->,>>>,>>>,>>9.99")
+                else:
+                    output_list.str = output_list.str + to_string(art_list.amount, "->>>,>>9.99")
+                curr_j = curr_j + 1
+                printed_line = printed_line + 1
 
 
         output_list = Output_list()
@@ -902,21 +920,36 @@ def print_hbill1bl(pvilanguage:int, session_parameter:string, user_init:string, 
             if price_decimal == 0:
 
                 if not long_digit:
-                    output_list.str = output_list.str + to_string(subtotal, "->>>,>>>,>>9")
+
+                    if subtotal > 999999999 or subtotal < -999999999:
+                        output_list.str = substring(output_list.str, 0, length(output_list.str) - 2) + to_string(subtotal, "->,>>>,>>>,>>9")
+                    else:
+                        output_list.str = output_list.str + to_string(subtotal, "->>>,>>>,>>9")
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
                     output_list.sort_i = sort_i
                     sort_i = sort_i + 1
                 else:
-                    output_list.str = output_list.str + to_string(subtotal, "->,>>>,>>>,>>9")
+
+                    if subtotal > 999999999 or subtotal < -999999999:
+                        output_list.str = substring(output_list.str, 0, length(output_list.str) - 2) + to_string(subtotal, "->,>>>,>>>,>>9")
+                    else:
+                        output_list.str = output_list.str + to_string(subtotal, "->>>,>>>,>>9")
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
                     output_list.sort_i = sort_i
                     sort_i = sort_i + 1
             else:
-                output_list.str = output_list.str + to_string(subtotal, "->>>,>>>,>>9.99")
+
+                if subtotal > 999999999 or subtotal < -999999999:
+                    output_list.str = substring(output_list.str, 0, length(output_list.str) - 6) + to_string(subtotal, "->,>>>,>>>,>>9.99")
+
+                elif subtotal > 999999 or subtotal < -999999:
+                    output_list.str = substring(output_list.str, 0, length(output_list.str) - 4) + to_string(subtotal, "->>>,>>>,>>9.99")
+                else:
+                    output_list.str = output_list.str + to_string(subtotal, "->>>,>>9.99")
                 output_list = Output_list()
                 output_list_data.append(output_list)
 
@@ -965,21 +998,36 @@ def print_hbill1bl(pvilanguage:int, session_parameter:string, user_init:string, 
                 if price_decimal == 0:
 
                     if not long_digit:
-                        output_list.str = output_list.str + to_string(service, "->>>,>>>,>>9")
+
+                        if service > 999999999 or service < -999999999:
+                            output_list.str = substring(output_list.str, 0, length(output_list.str) - 2) + to_string(service, "->,>>>,>>>,>>9")
+                        else:
+                            output_list.str = output_list.str + to_string(service, "->>>,>>>,>>9")
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
                         output_list.sort_i = sort_i
                         sort_i = sort_i + 1
                     else:
-                        output_list.str = output_list.str + to_string(service, "->,>>>,>>>,>>9")
+
+                        if service > 999999999 or service < -999999999:
+                            output_list.str = substring(output_list.str, 0, length(output_list.str) - 2) + to_string(service, "->,>>>,>>>,>>9")
+                        else:
+                            output_list.str = output_list.str + to_string(service, "->>>,>>>,>>9")
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
                         output_list.sort_i = sort_i
                         sort_i = sort_i + 1
                 else:
-                    output_list.str = output_list.str + to_string(service, "->>,>>>,>>9.99")
+
+                    if service > 999999999 or service < -999999999:
+                        output_list.str = substring(output_list.str, 0, length(output_list.str) - 6) + to_string(service, "->,>>>,>>>,>>9.99")
+
+                    elif service > 999999 or service < -999999:
+                        output_list.str = substring(output_list.str, 0, length(output_list.str) - 4) + to_string(service, "->>>,>>>,>>9.99")
+                    else:
+                        output_list.str = output_list.str + to_string(service, "->>>,>>9.99")
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
@@ -1000,21 +1048,36 @@ def print_hbill1bl(pvilanguage:int, session_parameter:string, user_init:string, 
                 if price_decimal == 0:
 
                     if not long_digit:
-                        output_list.str = output_list.str + to_string(mwst, "->>>,>>>,>>9")
+
+                        if mwst > 999999999 or mwst < -999999999:
+                            output_list.str = substring(output_list.str, 0, length(output_list.str) - 2) + to_string(mwst, "->,>>>,>>>,>>9")
+                        else:
+                            output_list.str = output_list.str + to_string(mwst, "->>>,>>>,>>9")
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
                         output_list.sort_i = sort_i
                         sort_i = sort_i + 1
                     else:
-                        output_list.str = output_list.str + to_string(mwst, "->,>>>,>>>,>>9")
+
+                        if mwst > 999999999 or mwst < -999999999:
+                            output_list.str = substring(output_list.str, 0, length(output_list.str) - 2) + to_string(mwst, "->,>>>,>>>,>>9")
+                        else:
+                            output_list.str = output_list.str + to_string(mwst, "->>>,>>>,>>9")
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
                         output_list.sort_i = sort_i
                         sort_i = sort_i + 1
                 else:
-                    output_list.str = output_list.str + to_string(mwst, "->>,>>>,>>9.99")
+
+                    if mwst > 999999999 or mwst < -999999999:
+                        output_list.str = substring(output_list.str, 0, length(output_list.str) - 6) + to_string(mwst, "->,>>>,>>>,>>9.99")
+
+                    elif mwst > 999999 or mwst < -999999:
+                        output_list.str = substring(output_list.str, 0, length(output_list.str) - 4) + to_string(mwst, "->>>,>>>,>>9.99")
+                    else:
+                        output_list.str = output_list.str + to_string(mwst, "->>>,>>9.99")
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
@@ -1069,21 +1132,36 @@ def print_hbill1bl(pvilanguage:int, session_parameter:string, user_init:string, 
         if price_decimal == 0:
 
             if not long_digit:
-                output_list.str = output_list.str + to_string(tot_amount, "->>>,>>>,>>9")
+
+                if tot_amount > 999999999 or tot_amount < -999999999:
+                    output_list.str = substring(output_list.str, 0, length(output_list.str) - 2) + to_string(tot_amount, "->,>>>,>>>,>>9")
+                else:
+                    output_list.str = output_list.str + to_string(tot_amount, "->>>,>>>,>>9")
                 output_list = Output_list()
                 output_list_data.append(output_list)
 
                 output_list.sort_i = sort_i
                 sort_i = sort_i + 1
             else:
-                output_list.str = output_list.str + to_string(tot_amount, "->,>>>,>>>,>>9")
+
+                if tot_amount > 999999999 or tot_amount < -999999999:
+                    output_list.str = substring(output_list.str, 0, length(output_list.str) - 2) + to_string(tot_amount, "->,>>>,>>>,>>9")
+                else:
+                    output_list.str = output_list.str + to_string(tot_amount, "->,>>>,>>>,>>9")
                 output_list = Output_list()
                 output_list_data.append(output_list)
 
                 output_list.sort_i = sort_i
                 sort_i = sort_i + 1
         else:
-            output_list.str = output_list.str + to_string(tot_amount, "->>>,>>>,>>9.99")
+
+            if tot_amount > 999999999 or tot_amount < -999999999:
+                output_list.str = substring(output_list.str, 0, length(output_list.str) - 6) + to_string(tot_amount, "->,>>>,>>>,>>9.99")
+
+            elif tot_amount > 999999 or tot_amount < -999999:
+                output_list.str = substring(output_list.str, 0, length(output_list.str) - 4) + to_string(tot_amount, "->>>,>>>,>>9.99")
+            else:
+                output_list.str = output_list.str + to_string(tot_amount, "->>>,>>9.99")
             output_list = Output_list()
             output_list_data.append(output_list)
 
@@ -1172,21 +1250,36 @@ def print_hbill1bl(pvilanguage:int, session_parameter:string, user_init:string, 
                     if price_decimal == 0:
 
                         if not long_digit:
-                            output_list.str = output_list.str + to_string(amt, "->>>,>>>,>>9")
+
+                            if amt > 999999999 or amt < -999999999:
+                                output_list.str = substring(output_list.str, 0, length(output_list.str) - 2) + to_string(amt, "->,>>>,>>>,>>9")
+                            else:
+                                output_list.str = output_list.str + to_string(amt, "->>>,>>>,>>9")
                             output_list = Output_list()
                             output_list_data.append(output_list)
 
                             output_list.sort_i = sort_i
                             sort_i = sort_i + 1
                         else:
-                            output_list.str = output_list.str + to_string(amt, "->,>>>,>>>,>>9")
+
+                            if amt > 999999999 or amt < -999999999:
+                                output_list.str = substring(output_list.str, 0, length(output_list.str) - 2) + to_string(amt, "->,>>>,>>>,>>9")
+                            else:
+                                output_list.str = output_list.str + to_string(amt, "->,>>>,>>>,>>9")
                             output_list = Output_list()
                             output_list_data.append(output_list)
 
                             output_list.sort_i = sort_i
                             sort_i = sort_i + 1
                     else:
-                        output_list.str = output_list.str + to_string(amt, "->>>,>>>,>>9.99")
+
+                        if amt > 999999999 or amt < -999999999:
+                            output_list.str = substring(output_list.str, 0, length(output_list.str) - 6) + to_string(amt, "->,>>>,>>>,>>9.99")
+
+                        elif amt > 999999 or amt < -999999:
+                            output_list.str = substring(output_list.str, 0, length(output_list.str) - 4) + to_string(amt, "->>>,>>>,>>9.99")
+                        else:
+                            output_list.str = output_list.str + to_string(amt, "->>>,>>9.99")
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
@@ -1204,21 +1297,36 @@ def print_hbill1bl(pvilanguage:int, session_parameter:string, user_init:string, 
                     if price_decimal == 0:
 
                         if not long_digit:
-                            output_list.str = output_list.str + to_string(art_list.amount, "->>>,>>>,>>9")
+
+                            if art_list.amount > 999999999 or art_list.amount < -999999999:
+                                output_list.str = substring(output_list.str, 0, length(output_list.str) - 2) + to_string(art_list.amount, "->,>>>,>>>,>>9")
+                            else:
+                                output_list.str = output_list.str + to_string(art_list.amount, "->>>,>>>,>>9")
                             output_list = Output_list()
                             output_list_data.append(output_list)
 
                             output_list.sort_i = sort_i
                             sort_i = sort_i + 1
                         else:
-                            output_list.str = output_list.str + to_string(art_list.amount, "->,>>>,>>>,>>9")
+
+                            if art_list.amount > 999999999 or art_list.amount < -999999999:
+                                output_list.str = substring(output_list.str, 0, length(output_list.str) - 2) + to_string(art_list.amount, "->,>>>,>>>,>>9")
+                            else:
+                                output_list.str = output_list.str + to_string(art_list.amount, "->,>>>,>>>,>>9")
                             output_list = Output_list()
                             output_list_data.append(output_list)
 
                             output_list.sort_i = sort_i
                             sort_i = sort_i + 1
                     else:
-                        output_list.str = output_list.str + to_string(art_list.amount, "->>>,>>>,>>9.99")
+
+                        if art_list.amount > 999999999 or art_list.amount < -999999999:
+                            output_list.str = substring(output_list.str, 0, length(output_list.str) - 6) + to_string(art_list.amount, "->,>>>,>>>,>>9.99")
+
+                        elif art_list.amount > 999999 or art_list.amount < -999999:
+                            output_list.str = substring(output_list.str, 0, length(output_list.str) - 4) + to_string(art_list.amount, "->>>,>>>,>>9.99")
+                        else:
+                            output_list.str = output_list.str + to_string(art_list.amount, "->>>,>>9.99")
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
@@ -1270,21 +1378,36 @@ def print_hbill1bl(pvilanguage:int, session_parameter:string, user_init:string, 
                 if price_decimal == 0:
 
                     if not long_digit:
-                        output_list.str = output_list.str + to_string(balance, "->>>,>>>,>>9")
+
+                        if balance > 999999999 or balance < -999999999:
+                            output_list.str = substring(output_list.str, 0, length(output_list.str) - 2) + to_string(balance, "->,>>>,>>>,>>9")
+                        else:
+                            output_list.str = output_list.str + to_string(balance, "->>>,>>>,>>9")
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
                         output_list.sort_i = sort_i
                         sort_i = sort_i + 1
                     else:
-                        output_list.str = output_list.str + to_string(balance, "->,>>>,>>>,>>9")
+
+                        if balance > 999999999 or balance < -999999999:
+                            output_list.str = substring(output_list.str, 0, length(output_list.str) - 2) + to_string(balance, "->,>>>,>>>,>>9")
+                        else:
+                            output_list.str = output_list.str + to_string(balance, "->>>,>>>,>>9")
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
                         output_list.sort_i = sort_i
                         sort_i = sort_i + 1
                 else:
-                    output_list.str = output_list.str + to_string(balance, "->>>,>>>,>>9.99")
+
+                    if balance > 999999999 or balance < -999999999:
+                        output_list.str = substring(output_list.str, 0, length(output_list.str) - 6) + to_string(balance, "->,>>>,>>>,>>9.99")
+
+                    elif balance > 999999 or balance < -999999:
+                        output_list.str = substring(output_list.str, 0, length(output_list.str) - 4) + to_string(balance, "->>>,>>>,>>9.99")
+                    else:
+                        output_list.str = output_list.str + to_string(balance, "->>>,>>9.99")
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
@@ -1303,21 +1426,36 @@ def print_hbill1bl(pvilanguage:int, session_parameter:string, user_init:string, 
             if price_decimal == 0:
 
                 if not long_digit:
-                    output_list.str = output_list.str + to_string(- balance, "->>>,>>>,>>9")
+
+                    if balance > 999999999 or balance < -999999999:
+                        output_list.str = substring(output_list.str, 0, length(output_list.str) - 2) + to_string(- balance, "->,>>>,>>>,>>9")
+                    else:
+                        output_list.str = output_list.str + to_string(- balance, "->>>,>>>,>>9")
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
                     output_list.sort_i = sort_i
                     sort_i = sort_i + 1
                 else:
-                    output_list.str = output_list.str + to_string(- balance, "->,>>>,>>>,>>9")
+
+                    if balance > 999999999 or balance < -999999999:
+                        output_list.str = substring(output_list.str, 0, length(output_list.str) - 2) + to_string(- balance, "->,>>>,>>>,>>9")
+                    else:
+                        output_list.str = output_list.str + to_string(- balance, "->,>>>,>>>,>>9")
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
                     output_list.sort_i = sort_i
                     sort_i = sort_i + 1
             else:
-                output_list.str = output_list.str + to_string(- balance, "->>>,>>>,>>9.99")
+
+                if balance > 999999999 or balance < -999999999:
+                    output_list.str = substring(output_list.str, 0, length(output_list.str) - 6) + to_string(- balance, "->,>>>,>>>,>>9.99")
+
+                elif balance > 999999 or balance < -999999:
+                    output_list.str = substring(output_list.str, 0, length(output_list.str) - 4) + to_string(- balance, "->>>,>>>,>>9.99")
+                else:
+                    output_list.str = output_list.str + to_string(- balance, "->>>,>>9.99")
                 output_list = Output_list()
                 output_list_data.append(output_list)
 
@@ -1631,7 +1769,22 @@ def print_hbill1bl(pvilanguage:int, session_parameter:string, user_init:string, 
                     output_list.str = output_list.str + to_string(" ")
                 else:
                     output_list.str = output_list.str + to_string(substring(s, i - 1, 1) , "x(1)")
-            output_list.str = output_list.str + to_string(total_food, "->>>,>>>,>>9")
+
+            if price_decimal == 0:
+
+                if total_food > 999999999 or total_food < -999999999:
+                    output_list.str = substring(output_list.str, 0, length(output_list.str) - 2) + to_string(total_food, "->,>>>,>>>,>>9")
+                else:
+                    output_list.str = output_list.str + to_string(total_food, "->>>,>>>,>>9")
+            else:
+
+                if total_food > 999999999 or total_food < -999999999:
+                    output_list.str = substring(output_list.str, 0, length(output_list.str) - 6) + to_string(total_food, "->,>>>,>>>,>>9.99")
+
+                elif total_food > 999999 or total_food < -999999:
+                    output_list.str = substring(output_list.str, 0, length(output_list.str) - 4) + to_string(total_food, "->>>,>>>,>>9.99")
+                else:
+                    output_list.str = output_list.str + to_string(total_food, "->>>,>>9.99")
             output_list = Output_list()
             output_list_data.append(output_list)
 
@@ -1649,7 +1802,22 @@ def print_hbill1bl(pvilanguage:int, session_parameter:string, user_init:string, 
                     output_list.str = output_list.str + to_string(" ")
                 else:
                     output_list.str = output_list.str + to_string(substring(s, i - 1, 1) , "x(1)")
-            output_list.str = output_list.str + to_string(total_bev, "->>>,>>>,>>9")
+
+            if price_decimal == 0:
+
+                if total_bev > 999999999 or total_bev < -999999999:
+                    output_list.str = substring(output_list.str, 0, length(output_list.str) - 2) + to_string(total_bev, "->,>>>,>>>,>>9")
+                else:
+                    output_list.str = output_list.str + to_string(total_bev, "->>>,>>>,>>9")
+            else:
+
+                if total_bev > 999999999 or total_bev < -999999999:
+                    output_list.str = substring(output_list.str, 0, length(output_list.str) - 6) + to_string(total_bev, "->,>>>,>>>,>>9.99")
+
+                elif total_bev > 999999 or total_bev < -999999:
+                    output_list.str = substring(output_list.str, 0, length(output_list.str) - 4) + to_string(total_bev, "->>>,>>>,>>9.99")
+                else:
+                    output_list.str = output_list.str + to_string(total_bev, "->>>,>>9.99")
             output_list = Output_list()
             output_list_data.append(output_list)
 
@@ -1667,7 +1835,22 @@ def print_hbill1bl(pvilanguage:int, session_parameter:string, user_init:string, 
                     output_list.str = output_list.str + to_string(" ")
                 else:
                     output_list.str = output_list.str + to_string(substring(s, i - 1, 1) , "x(1)")
-            output_list.str = output_list.str + to_string(total_other, "->>>,>>>,>>9")
+
+            if price_decimal == 0:
+
+                if total_other > 999999999 or total_other < -999999999:
+                    output_list.str = substring(output_list.str, 0, length(output_list.str) - 2) + to_string(total_other, "->,>>>,>>>,>>9")
+                else:
+                    output_list.str = output_list.str + to_string(total_other, "->>>,>>>,>>9")
+            else:
+
+                if total_other > 999999999 or total_other < -999999999:
+                    output_list.str = substring(output_list.str, 0, length(output_list.str) - 6) + to_string(total_other, "->,>>>,>>>,>>9.99")
+
+                elif total_other > 999999 or total_other < -999999:
+                    output_list.str = substring(output_list.str, 0, length(output_list.str) - 4) + to_string(total_other, "->>>,>>>,>>9.99")
+                else:
+                    output_list.str = output_list.str + to_string(total_other, "->>>,>>9.99")
             output_list = Output_list()
             output_list_data.append(output_list)
 
@@ -1685,7 +1868,22 @@ def print_hbill1bl(pvilanguage:int, session_parameter:string, user_init:string, 
                     output_list.str = output_list.str + to_string(" ")
                 else:
                     output_list.str = output_list.str + to_string(substring(s, i - 1, 1) , "x(1)")
-            output_list.str = output_list.str + to_string(total_fdisc, "->>>,>>>,>>9")
+
+            if price_decimal == 0:
+
+                if total_fdisc > 999999999 or total_fdisc < -999999999:
+                    output_list.str = substring(output_list.str, 0, length(output_list.str) - 2) + to_string(total_fdisc, "->,>>>,>>>,>>9")
+                else:
+                    output_list.str = output_list.str + to_string(total_fdisc, "->>>,>>>,>>9")
+            else:
+
+                if total_fdisc > 999999999 or total_fdisc < -999999999:
+                    output_list.str = substring(output_list.str, 0, length(output_list.str) - 6) + to_string(total_fdisc, "->,>>>,>>>,>>9.99")
+
+                elif total_fdisc > 999999 or total_fdisc < -999999:
+                    output_list.str = substring(output_list.str, 0, length(output_list.str) - 4) + to_string(total_fdisc, "->>>,>>>,>>9.99")
+                else:
+                    output_list.str = output_list.str + to_string(total_fdisc, "->>>,>>9.99")
             output_list = Output_list()
             output_list_data.append(output_list)
 
@@ -1703,7 +1901,22 @@ def print_hbill1bl(pvilanguage:int, session_parameter:string, user_init:string, 
                     output_list.str = output_list.str + to_string(" ")
                 else:
                     output_list.str = output_list.str + to_string(substring(s, i - 1, 1) , "x(1)")
-            output_list.str = output_list.str + to_string(total_bdisc, "->>>,>>>,>>9")
+
+            if price_decimal == 0:
+
+                if total_bdisc > 999999999 or total_bdisc < -999999999:
+                    output_list.str = substring(output_list.str, 0, length(output_list.str) - 2) + to_string(total_bdisc, "->,>>>,>>>,>>9")
+                else:
+                    output_list.str = output_list.str + to_string(total_bdisc, "->>>,>>>,>>9")
+            else:
+
+                if total_bdisc > 999999999 or total_bdisc < -999999999:
+                    output_list.str = substring(output_list.str, 0, length(output_list.str) - 6) + to_string(total_bdisc, "->,>>>,>>>,>>9.99")
+
+                elif total_bdisc > 999999 or total_bdisc < -999999:
+                    output_list.str = substring(output_list.str, 0, length(output_list.str) - 4) + to_string(total_bdisc, "->>>,>>>,>>9.99")
+                else:
+                    output_list.str = output_list.str + to_string(total_bdisc, "->>>,>>9.99")
             output_list = Output_list()
             output_list_data.append(output_list)
 
@@ -1721,7 +1934,22 @@ def print_hbill1bl(pvilanguage:int, session_parameter:string, user_init:string, 
                     output_list.str = output_list.str + to_string(" ")
                 else:
                     output_list.str = output_list.str + to_string(substring(s, i - 1, 1) , "x(1)")
-            output_list.str = output_list.str + to_string(total_odisc, "->>>,>>>,>>9")
+
+            if price_decimal == 0:
+
+                if total_odisc > 999999999 or total_odisc < -999999999:
+                    output_list.str = substring(output_list.str, 0, length(output_list.str) - 2) + to_string(total_odisc, "->,>>>,>>>,>>9")
+                else:
+                    output_list.str = output_list.str + to_string(total_odisc, "->>>,>>>,>>9")
+            else:
+
+                if total_odisc > 999999999 or total_odisc < -999999999:
+                    output_list.str = substring(output_list.str, 0, length(output_list.str) - 6) + to_string(total_odisc, "->,>>>,>>>,>>9.99")
+
+                elif total_odisc > 999999 or total_odisc < -999999:
+                    output_list.str = substring(output_list.str, 0, length(output_list.str) - 4) + to_string(total_odisc, "->>>,>>>,>>9.99")
+                else:
+                    output_list.str = output_list.str + to_string(total_odisc, "->>>,>>9.99")
             output_list = Output_list()
             output_list_data.append(output_list)
 
@@ -2484,11 +2712,7 @@ def print_hbill1bl(pvilanguage:int, session_parameter:string, user_init:string, 
                 art_list.amount =  to_decimal(art_list.amount) + to_decimal(amount)
 
             if h_bill_line.artnr != 0:
-
-                if h_bill_line.betriebsnr != 1:
-                    art_list.qty = art_list.qty + qty
-                else:
-                    art_list.qty = qty
+                art_list.qty = art_list.qty + qty
 
         for art_list in query(art_list_data):
 

@@ -1,13 +1,9 @@
 #using conversion tools version: 1.0.0.119
 
-# ======================================
-# Rulita, 10-11-2025 | C553A2
-# Issue :
-# - New Compile Program
-# - Fixing inden
-# - Fixing printter.emu -> printcod.emu
-# Rd, 01/12/2025, with_for_update added
-# ======================================
+# =============================
+# Rulita, 19-01-2026
+# Update fitur sub menu
+# =============================
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -16,8 +12,7 @@ from models import H_bill_line, H_artikel, Queasy, H_bill, Wgrpdep, Hoteldpt, Ke
 
 submenu_list_data, Submenu_list = create_model("Submenu_list", {"menurecid":int, "zeit":int, "nr":int, "artnr":int, "bezeich":string, "anzahl":int, "zknr":int, "request":string})
 
-def ts_restinv_print_orderticket_webbl(submenu_list_data:[Submenu_list], pvilanguage:int, close_it:bool, reprint_it:bool, 
-                                       h_bill_rechnr:int, curr_dept:int, disc_art1:int, disc_art2:int, disc_art3:int, prorder:int, desclength:int):
+def ts_restinv_print_orderticket_webbl(submenu_list_data:[Submenu_list], pvilanguage:int, close_it:bool, reprint_it:bool, h_bill_rechnr:int, curr_dept:int, disc_art1:int, disc_art2:int, disc_art3:int, prorder:int, desclength:int):
 
     prepare_cache ([H_bill_line, H_artikel, Queasy, H_bill, Wgrpdep, Hoteldpt, Kellner, Printcod, H_journal, H_mjourn])
 
@@ -88,8 +83,6 @@ def ts_restinv_print_orderticket_webbl(submenu_list_data:[Submenu_list], pvilang
 
         qsy = get_cache (Queasy, {"key": [(eq, 10)],"number1": [(eq, h_bill.betriebsnr)]})
 
-        # Rulita, 10-11-2025
-        # Fixing inden
         if qsy:
             header_list.ordertaker = qsy.char1 + "-" + qsy.char2
         else:
@@ -135,9 +128,7 @@ def ts_restinv_print_orderticket_webbl(submenu_list_data:[Submenu_list], pvilang
 
         if hbuff.anzahl < 0:
 
-            # Rulita, 10-11-2025
-            # Fixing printter.emu -> printcod.emu
-            printcod = get_cache (Printcod, {"emu": [(eq, printcod.emu)],"code": [(eq, "redpr")]})
+            printcod = get_cache (Printcod, {"emu": [(eq, printer.emu)],"code": [(eq, "redpr")]})
 
             if printcod:
                 output_list = Output_list()
@@ -150,9 +141,7 @@ def ts_restinv_print_orderticket_webbl(submenu_list_data:[Submenu_list], pvilang
         if prev_zknr != wgrpdep.zknr:
             prev_zknr = wgrpdep.zknr
             output_list.subgrp = "[" + wgrpdep.bezeich + "]"
-        
-        # Rulita, 10-11-2025
-        # Fixing inden
+
         if desclength == 0 or length(hbuff.bezeich) <= desclength:
             output_list.pax = to_string(hbuff.anzahl)
             output_list.bezeich = hbuff.bezeich
@@ -165,6 +154,8 @@ def ts_restinv_print_orderticket_webbl(submenu_list_data:[Submenu_list], pvilang
 
             if desclength == 0 or length(qbuff.char3) <= desclength:
                 output_list.bezeich2 = qbuff.char3
+
+
             else:
                 write_descript(to_string("", "x(5)"), to_string(qbuff.char3))
 
@@ -180,9 +171,7 @@ def ts_restinv_print_orderticket_webbl(submenu_list_data:[Submenu_list], pvilang
 
         if hbuff.anzahl < 0:
 
-            # Rulita, 10-11-2025
-            # Fixing printter.emu -> printcod.emu
-            printcod = get_cache (Printcod, {"emu": [(eq, printcod.emu)],"code": [(eq, "redpr-")]})
+            printcod = get_cache (Printcod, {"emu": [(eq, printer.emu)],"code": [(eq, "redpr-")]})
 
             if printcod:
                 output_list.printcod_concod = printcod.contcod
@@ -320,9 +309,7 @@ def ts_restinv_print_orderticket_webbl(submenu_list_data:[Submenu_list], pvilang
 
                 if close_it:
 
-                    # hbline = get_cache (H_bill_line, {"_recid": [(eq, hbuff._recid)]})
-                    hbline = db_session.query(H_bill_line).filter(
-                        (H_bill_line._recid == hbuff._recid)).with_for_update().first()
+                    hbline = get_cache (H_bill_line, {"_recid": [(eq, hbuff._recid)]})
 
                     if hbline.steuercode == 0:
                         hbuff.steuercode = - prorder

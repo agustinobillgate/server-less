@@ -210,10 +210,10 @@ def ts_splitbill_update_billbl(rec_id_h_bill:int, rec_id_h_artikel:int, h_artart
         Debt =  create_buffer("Debt",Debitor)
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 143)]})
-        foreign_rate = htparam.fLOGICAL
+        foreign_rate = htparam.flogical
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 240)]})
-        double_currency = htparam.fLOGICAL
+        double_currency = htparam.flogical
 
         if foreign_rate:
 

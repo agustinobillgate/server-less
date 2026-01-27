@@ -1,4 +1,4 @@
-#using conversion tools version: 1.0.0.117
+#using conversion tools version: 1.0.0.119
 """_yusufwijasena_17/10/2025
 
     TicketID: D202E2 
@@ -10,17 +10,14 @@
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
-# from functions.htpchar import htpchar
-# from functions.print_hbill1_phbl import print_hbill1_phbl
-# from functions.prepare_pr_sphbill1bl import prepare_pr_sphbill1bl
-from functions_py.htpchar import htpchar
-from functions_py.print_hbill1_phbl import print_hbill1_phbl
-from functions_py.prepare_pr_sphbill1bl import prepare_pr_sphbill1bl
-from models import Printer, Artikel, H_bill, H_bill_line, Htparam, Hoteldpt, Queasy, H_queasy, Kellner, H_artikel, Kontplan, Paramtext, Bediener, Tisch, Res_line, Mc_guest, H_mjourn, Printcod, H_journal, Waehrung
+from functions.htpchar import htpchar
+from functions.print_hbill1_phbl import print_hbill1_phbl
+from functions.prepare_pr_sphbill1bl import prepare_pr_sphbill1bl
+from models import H_mjourn, Printer, Artikel, H_bill, H_bill_line, Htparam, Hoteldpt, Queasy, H_queasy, Kellner, H_artikel, Kontplan, Paramtext, Bediener, Tisch, Res_line, Mc_guest, Printcod, H_journal, Waehrung
 
 def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bool, session_parameter:string, user_init:string, billnr:int, print_all:bool):
 
-    prepare_cache ([Artikel, H_bill, H_bill_line, Htparam, Hoteldpt, Queasy, H_queasy, Kellner, Kontplan, Paramtext, Bediener, Tisch, Res_line, Mc_guest, H_mjourn, Printcod, H_journal, Waehrung])
+    prepare_cache ([Artikel, H_bill, H_bill_line, Htparam, Hoteldpt, Queasy, H_queasy, Kellner, Kontplan, Paramtext, Bediener, Tisch, Res_line, Mc_guest, Printcod, H_journal, Waehrung])
 
     winprinterflag = False
     filename = ""
@@ -116,7 +113,7 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
     serv_code:int = 0
     vat_code:int = 0
     servtax_use_foart:bool = False
-    printer = artikel = h_bill = h_bill_line = htparam = hoteldpt = queasy = h_queasy = kellner = h_artikel = kontplan = paramtext = bediener = tisch = res_line = mc_guest = h_mjourn = printcod = h_journal = waehrung = None
+    h_mjourn = printer = artikel = h_bill = h_bill_line = htparam = hoteldpt = queasy = h_queasy = kellner = h_artikel = kontplan = paramtext = bediener = tisch = res_line = mc_guest = printcod = h_journal = waehrung = None
 
     art_list = art_list_submenu = t_printer = vat_list = output_list = bline_vatlist = artbuff = abuff = bart_list_submenu = None
 
@@ -183,7 +180,7 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
     db_session = local_storage.db_session
 
     def generate_output():
-        nonlocal winprinterflag, filename, msg_str, output_list_data, t_printer_data, lvcarea, disc_bezeich, amount, sort_i, order_id, disc_zwkum, print_balance, disc_art1, disc_art2, disc_art3, incl_service, incl_mwst, service_taxable, print_fbtotal, prdisc_flag, mwst_str, service_str, hmargin, bmargin, lpage, nbezeich, nwidth, npause, bill_date110, bill_date, price_decimal, n11, long_digit, prtwoline, printed_line, last_amount, zeit, comp_flag, service, mwst, tot_amount, comp_taxserv, tot_sales, new_item, printed, qty, do_it, rm_transfer, new_fbart, tot_line, h_service, h_mwst, serv_perc, mwst_perc, fact, mwst1, subtotal, bline_exist, qty1000, i, n, curr_j, npage, tot_ndisc_line, tot_disc_line, buttom_lines, prtabledesc, header1, header2, foot1, foot2, foot3, anz_foot, overhead1, overhead2, overhead3, overhead4, total_food, total_bev, total_other, total_fdisc, total_bdisc, total_odisc, gst_logic, serv_disc, vat_disc, f_discart, str451, sc_art, mwst_perc, serv_perc, serv_code, vat_code, servtax_use_foart, printer, artikel, h_bill, h_bill_line, htparam, hoteldpt, queasy, h_queasy, kellner, h_artikel, kontplan, paramtext, bediener, tisch, res_line, mc_guest, h_mjourn, printcod, h_journal, waehrung
+        nonlocal winprinterflag, filename, msg_str, output_list_data, t_printer_data, lvcarea, disc_bezeich, amount, sort_i, order_id, disc_zwkum, print_balance, disc_art1, disc_art2, disc_art3, incl_service, incl_mwst, service_taxable, print_fbtotal, prdisc_flag, mwst_str, service_str, hmargin, bmargin, lpage, nbezeich, nwidth, npause, bill_date110, bill_date, price_decimal, n11, long_digit, prtwoline, printed_line, last_amount, zeit, comp_flag, service, mwst, tot_amount, comp_taxserv, tot_sales, new_item, printed, qty, do_it, rm_transfer, new_fbart, tot_line, h_service, h_mwst, serv_perc, mwst_perc, fact, mwst1, subtotal, bline_exist, qty1000, i, n, curr_j, npage, tot_ndisc_line, tot_disc_line, buttom_lines, prtabledesc, header1, header2, foot1, foot2, foot3, anz_foot, overhead1, overhead2, overhead3, overhead4, total_food, total_bev, total_other, total_fdisc, total_bdisc, total_odisc, gst_logic, serv_disc, vat_disc, f_discart, str451, sc_art, mwst_perc, serv_perc, serv_code, vat_code, servtax_use_foart, h_mjourn, printer, artikel, h_bill, h_bill_line, htparam, hoteldpt, queasy, h_queasy, kellner, h_artikel, kontplan, paramtext, bediener, tisch, res_line, mc_guest, printcod, h_journal, waehrung
         nonlocal pvilanguage, hbrecid, printnr, use_h_queasy, session_parameter, user_init, billnr, print_all
         nonlocal artbuff, abuff, bart_list_submenu
         nonlocal art_list, art_list_submenu, t_printer, vat_list, output_list, bline_vatlist, artbuff, abuff, bart_list_submenu
@@ -199,7 +196,7 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
         }
 
     def optional_params():
-        nonlocal winprinterflag, filename, msg_str, output_list_data, t_printer_data, lvcarea, disc_bezeich, amount, sort_i, order_id, disc_zwkum, print_balance, disc_art1, disc_art2, disc_art3, incl_service, incl_mwst, service_taxable, print_fbtotal, prdisc_flag, mwst_str, service_str, hmargin, bmargin, lpage, nbezeich, nwidth, npause, bill_date110, bill_date, price_decimal, n11, long_digit, prtwoline, printed_line, last_amount, zeit, comp_flag, service, mwst, tot_amount, comp_taxserv, tot_sales, new_item, printed, qty, do_it, rm_transfer, new_fbart, tot_line, h_service, h_mwst, serv_perc, mwst_perc, fact, mwst1, subtotal, bline_exist, qty1000, i, n, curr_j, npage, tot_ndisc_line, tot_disc_line, buttom_lines, prtabledesc, header1, header2, foot1, foot2, foot3, anz_foot, overhead1, overhead2, overhead3, overhead4, total_food, total_bev, total_other, total_fdisc, total_bdisc, total_odisc, gst_logic, serv_disc, vat_disc, f_discart, str451, sc_art, mwst_perc, serv_perc, serv_code, vat_code, servtax_use_foart, printer, artikel, h_bill, h_bill_line, htparam, hoteldpt, queasy, h_queasy, kellner, h_artikel, kontplan, paramtext, bediener, tisch, res_line, mc_guest, h_mjourn, printcod, h_journal, waehrung
+        nonlocal winprinterflag, filename, msg_str, output_list_data, t_printer_data, lvcarea, disc_bezeich, amount, sort_i, order_id, disc_zwkum, print_balance, disc_art1, disc_art2, disc_art3, incl_service, incl_mwst, service_taxable, print_fbtotal, prdisc_flag, mwst_str, service_str, hmargin, bmargin, lpage, nbezeich, nwidth, npause, bill_date110, bill_date, price_decimal, n11, long_digit, prtwoline, printed_line, last_amount, zeit, comp_flag, service, mwst, tot_amount, comp_taxserv, tot_sales, new_item, printed, qty, do_it, rm_transfer, new_fbart, tot_line, h_service, h_mwst, serv_perc, mwst_perc, fact, mwst1, subtotal, bline_exist, qty1000, i, n, curr_j, npage, tot_ndisc_line, tot_disc_line, buttom_lines, prtabledesc, header1, header2, foot1, foot2, foot3, anz_foot, overhead1, overhead2, overhead3, overhead4, total_food, total_bev, total_other, total_fdisc, total_bdisc, total_odisc, gst_logic, serv_disc, vat_disc, f_discart, str451, sc_art, mwst_perc, serv_perc, serv_code, vat_code, servtax_use_foart, h_mjourn, printer, artikel, h_bill, h_bill_line, htparam, hoteldpt, queasy, h_queasy, kellner, h_artikel, kontplan, paramtext, bediener, tisch, res_line, mc_guest, printcod, h_journal, waehrung
         nonlocal pvilanguage, hbrecid, printnr, use_h_queasy, session_parameter, user_init, billnr, print_all
         nonlocal artbuff, abuff, bart_list_submenu
         nonlocal art_list, art_list_submenu, t_printer, vat_list, output_list, bline_vatlist, artbuff, abuff, bart_list_submenu
@@ -275,7 +272,7 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
                 anz_foot = 2
 
     def cal_servat(depart:int, h_artnr:int, service_code:int, mwst_code:int, inpdate:date):
-        nonlocal winprinterflag, filename, msg_str, output_list_data, t_printer_data, lvcarea, disc_bezeich, amount, sort_i, order_id, disc_zwkum, print_balance, disc_art1, disc_art2, disc_art3, incl_service, incl_mwst, service_taxable, print_fbtotal, prdisc_flag, mwst_str, service_str, hmargin, bmargin, lpage, nbezeich, nwidth, npause, bill_date110, bill_date, price_decimal, n11, long_digit, prtwoline, printed_line, last_amount, zeit, comp_flag, service, mwst, tot_amount, comp_taxserv, tot_sales, new_item, printed, qty, do_it, rm_transfer, new_fbart, tot_line, h_service, h_mwst, serv_perc, mwst_perc, fact, mwst1, subtotal, bline_exist, qty1000, i, n, curr_j, npage, tot_ndisc_line, tot_disc_line, buttom_lines, prtabledesc, header1, header2, foot1, foot2, foot3, anz_foot, overhead1, overhead2, overhead3, overhead4, total_food, total_bev, total_other, total_fdisc, total_bdisc, total_odisc, gst_logic, serv_disc, vat_disc, f_discart, str451, sc_art, mwst_perc, serv_perc, serv_code, vat_code, servtax_use_foart, printer, artikel, h_bill, h_bill_line, htparam, hoteldpt, queasy, h_queasy, kellner, h_artikel, kontplan, paramtext, bediener, tisch, res_line, mc_guest, h_mjourn, printcod, h_journal, waehrung
+        nonlocal winprinterflag, filename, msg_str, output_list_data, t_printer_data, lvcarea, disc_bezeich, amount, sort_i, order_id, disc_zwkum, print_balance, disc_art1, disc_art2, disc_art3, incl_service, incl_mwst, service_taxable, print_fbtotal, prdisc_flag, mwst_str, service_str, hmargin, bmargin, lpage, nbezeich, nwidth, npause, bill_date110, bill_date, price_decimal, n11, long_digit, prtwoline, printed_line, last_amount, zeit, comp_flag, service, mwst, tot_amount, comp_taxserv, tot_sales, new_item, printed, qty, do_it, rm_transfer, new_fbart, tot_line, h_service, h_mwst, serv_perc, mwst_perc, fact, mwst1, subtotal, bline_exist, qty1000, i, n, curr_j, npage, tot_ndisc_line, tot_disc_line, buttom_lines, prtabledesc, header1, header2, foot1, foot2, foot3, anz_foot, overhead1, overhead2, overhead3, overhead4, total_food, total_bev, total_other, total_fdisc, total_bdisc, total_odisc, gst_logic, serv_disc, vat_disc, f_discart, str451, sc_art, mwst_perc, serv_perc, serv_code, vat_code, servtax_use_foart, h_mjourn, printer, artikel, h_bill, h_bill_line, htparam, hoteldpt, queasy, h_queasy, kellner, h_artikel, kontplan, paramtext, bediener, tisch, res_line, mc_guest, printcod, h_journal, waehrung
         nonlocal pvilanguage, hbrecid, printnr, use_h_queasy, session_parameter, user_init, billnr, print_all
         nonlocal artbuff, abuff, bart_list_submenu
         nonlocal art_list, art_list_submenu, t_printer, vat_list, output_list, bline_vatlist, artbuff, abuff, bart_list_submenu
@@ -300,14 +297,9 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
             hbuff = db_session.query(Hbuff).filter(
                     (Hbuff.artnr == h_artnr) & (Hbuff.departement == depart)).first()
 
-            abuff = get_cache (Artikel, {
-                "artnr": [(eq, hbuff.artnrfront)],
-                "departement": [(eq, depart)]})
+            abuff = get_cache (Artikel, {"artnr": [(eq, hbuff.artnrfront)],"departement": [(eq, depart)]})
 
-            kontplan = get_cache (Kontplan, {
-                "betriebsnr": [(eq, depart)],
-                "kontignr": [(eq, abuff.artnr)],
-                "datum": [(eq, inpdate)]})
+            kontplan = get_cache (Kontplan, {"betriebsnr": [(eq, depart)],"kontignr": [(eq, abuff.artnr)],"datum": [(eq, inpdate)]})
 
             if kontplan:
                 serv_htp =  to_decimal(kontplan.anzkont) / to_decimal("10000")
@@ -326,9 +318,7 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
             hbuff = db_session.query(Hbuff).filter(
                     (Hbuff.artnr == h_artnr) & (Hbuff.departement == depart)).first()
 
-            abuff = get_cache (Artikel, {
-                "artnr": [(eq, hbuff.artnrfront)],
-                "departement": [(eq, depart)]})
+            abuff = get_cache (Artikel, {"artnr": [(eq, hbuff.artnrfront)],"departement": [(eq, depart)]})
 
             if abuff:
                 service_code = abuff.service_code
@@ -362,7 +352,7 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
         return generate_inner_output()
 
     def add_unitprice_text():
-        nonlocal winprinterflag, filename, msg_str, output_list_data, t_printer_data, lvcarea, disc_bezeich, amount, sort_i, order_id, disc_zwkum, print_balance, disc_art1, disc_art2, disc_art3, incl_service, incl_mwst, service_taxable, print_fbtotal, prdisc_flag, mwst_str, service_str, hmargin, bmargin, lpage, nbezeich, nwidth, npause, bill_date110, bill_date, price_decimal, n11, long_digit, prtwoline, printed_line, last_amount, zeit, comp_flag, service, mwst, tot_amount, comp_taxserv, tot_sales, new_item, printed, qty, do_it, rm_transfer, new_fbart, tot_line, h_service, h_mwst, serv_perc, mwst_perc, fact, mwst1, subtotal, bline_exist, qty1000, i, curr_j, npage, tot_ndisc_line, tot_disc_line, buttom_lines, prtabledesc, header1, header2, foot1, foot2, foot3, anz_foot, overhead1, overhead2, overhead3, overhead4, total_food, total_bev, total_other, total_fdisc, total_bdisc, total_odisc, gst_logic, serv_disc, vat_disc, f_discart, str451, sc_art, mwst_perc, serv_perc, serv_code, vat_code, servtax_use_foart, printer, artikel, h_bill, h_bill_line, htparam, hoteldpt, queasy, h_queasy, kellner, h_artikel, kontplan, paramtext, bediener, tisch, res_line, mc_guest, h_mjourn, printcod, h_journal, waehrung
+        nonlocal winprinterflag, filename, msg_str, output_list_data, t_printer_data, lvcarea, disc_bezeich, amount, sort_i, order_id, disc_zwkum, print_balance, disc_art1, disc_art2, disc_art3, incl_service, incl_mwst, service_taxable, print_fbtotal, prdisc_flag, mwst_str, service_str, hmargin, bmargin, lpage, nbezeich, nwidth, npause, bill_date110, bill_date, price_decimal, n11, long_digit, prtwoline, printed_line, last_amount, zeit, comp_flag, service, mwst, tot_amount, comp_taxserv, tot_sales, new_item, printed, qty, do_it, rm_transfer, new_fbart, tot_line, h_service, h_mwst, serv_perc, mwst_perc, fact, mwst1, subtotal, bline_exist, qty1000, i, curr_j, npage, tot_ndisc_line, tot_disc_line, buttom_lines, prtabledesc, header1, header2, foot1, foot2, foot3, anz_foot, overhead1, overhead2, overhead3, overhead4, total_food, total_bev, total_other, total_fdisc, total_bdisc, total_odisc, gst_logic, serv_disc, vat_disc, f_discart, str451, sc_art, mwst_perc, serv_perc, serv_code, vat_code, servtax_use_foart, h_mjourn, printer, artikel, h_bill, h_bill_line, htparam, hoteldpt, queasy, h_queasy, kellner, h_artikel, kontplan, paramtext, bediener, tisch, res_line, mc_guest, printcod, h_journal, waehrung
         nonlocal pvilanguage, hbrecid, printnr, use_h_queasy, session_parameter, user_init, billnr, print_all
         nonlocal artbuff, abuff, bart_list_submenu
         nonlocal art_list, art_list_submenu, t_printer, vat_list, output_list, bline_vatlist, artbuff, abuff, bart_list_submenu
@@ -391,7 +381,7 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
                 art_list.bezeich = substring(art_list.bezeich, 0, nbezeich - length(s)) + s
 
     def check_pages():
-        nonlocal winprinterflag, filename, msg_str, output_list_data, t_printer_data, lvcarea, disc_bezeich, amount, sort_i, order_id, disc_zwkum, print_balance, disc_art1, disc_art2, disc_art3, incl_service, incl_mwst, service_taxable, print_fbtotal, prdisc_flag, mwst_str, service_str, hmargin, bmargin, lpage, nbezeich, nwidth, npause, bill_date110, bill_date, price_decimal, n11, long_digit, prtwoline, printed_line, last_amount, zeit, comp_flag, service, mwst, tot_amount, comp_taxserv, tot_sales, new_item, printed, qty, do_it, rm_transfer, new_fbart, tot_line, h_service, h_mwst, serv_perc, mwst_perc, fact, mwst1, subtotal, bline_exist, qty1000, i, n, curr_j, npage, tot_ndisc_line, tot_disc_line, buttom_lines, prtabledesc, header1, header2, foot1, foot2, foot3, anz_foot, overhead1, overhead2, overhead3, overhead4, total_food, total_bev, total_other, total_fdisc, total_bdisc, total_odisc, gst_logic, serv_disc, vat_disc, f_discart, str451, sc_art, mwst_perc, serv_perc, serv_code, vat_code, servtax_use_foart, printer, artikel, h_bill, h_bill_line, htparam, hoteldpt, queasy, h_queasy, kellner, h_artikel, kontplan, paramtext, bediener, tisch, res_line, mc_guest, h_mjourn, printcod, h_journal, waehrung
+        nonlocal winprinterflag, filename, msg_str, output_list_data, t_printer_data, lvcarea, disc_bezeich, amount, sort_i, order_id, disc_zwkum, print_balance, disc_art1, disc_art2, disc_art3, incl_service, incl_mwst, service_taxable, print_fbtotal, prdisc_flag, mwst_str, service_str, hmargin, bmargin, lpage, nbezeich, nwidth, npause, bill_date110, bill_date, price_decimal, n11, long_digit, prtwoline, printed_line, last_amount, zeit, comp_flag, service, mwst, tot_amount, comp_taxserv, tot_sales, new_item, printed, qty, do_it, rm_transfer, new_fbart, tot_line, h_service, h_mwst, serv_perc, mwst_perc, fact, mwst1, subtotal, bline_exist, qty1000, i, n, curr_j, npage, tot_ndisc_line, tot_disc_line, buttom_lines, prtabledesc, header1, header2, foot1, foot2, foot3, anz_foot, overhead1, overhead2, overhead3, overhead4, total_food, total_bev, total_other, total_fdisc, total_bdisc, total_odisc, gst_logic, serv_disc, vat_disc, f_discart, str451, sc_art, mwst_perc, serv_perc, serv_code, vat_code, servtax_use_foart, h_mjourn, printer, artikel, h_bill, h_bill_line, htparam, hoteldpt, queasy, h_queasy, kellner, h_artikel, kontplan, paramtext, bediener, tisch, res_line, mc_guest, printcod, h_journal, waehrung
         nonlocal pvilanguage, hbrecid, printnr, use_h_queasy, session_parameter, user_init, billnr, print_all
         nonlocal artbuff, abuff, bart_list_submenu
         nonlocal art_list, art_list_submenu, t_printer, vat_list, output_list, bline_vatlist, artbuff, abuff, bart_list_submenu
@@ -421,6 +411,15 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
             overhead3 = overhead3 + 2
 
         if h_bill.saldo == 0 or print_all:
+
+            paramtext = get_cache (Paramtext, {"txtnr": [(eq, 713)]})
+
+            if paramtext:
+
+                if foot3 == "" and paramtext.ptexte != "":
+                    foot3 = paramtext.ptexte
+                    anz_foot = 3
+
             paramtext = get_cache (Paramtext, {"txtnr": [(eq, 712)]})
 
             if foot2 == "" and paramtext.ptexte != "":
@@ -439,6 +438,7 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
             overhead4 = 0
         else:
             overhead4 = anz_foot + 2
+
         npage = 1
         total_line = overhead1 + tot_line + overhead2 + overhead3 + overhead4
 
@@ -451,11 +451,12 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
 
 
     def print_overhead1():
-        nonlocal winprinterflag, filename, msg_str, output_list_data, t_printer_data, lvcarea, disc_bezeich, amount, sort_i, order_id, disc_zwkum, print_balance, disc_art1, disc_art2, disc_art3, incl_service, incl_mwst, service_taxable, print_fbtotal, prdisc_flag, mwst_str, service_str, hmargin, bmargin, lpage, nbezeich, nwidth, npause, bill_date110, bill_date, price_decimal, n11, long_digit, prtwoline, printed_line, last_amount, zeit, comp_flag, service, mwst, tot_amount, comp_taxserv, tot_sales, new_item, printed, qty, do_it, rm_transfer, new_fbart, tot_line, h_service, h_mwst, serv_perc, mwst_perc, fact, mwst1, subtotal, bline_exist, qty1000, n, curr_j, npage, tot_ndisc_line, tot_disc_line, buttom_lines, prtabledesc, header1, header2, foot1, foot2, foot3, anz_foot, overhead1, overhead2, overhead3, overhead4, total_food, total_bev, total_other, total_fdisc, total_bdisc, total_odisc, gst_logic, serv_disc, vat_disc, f_discart, str451, sc_art, mwst_perc, serv_perc, serv_code, vat_code, servtax_use_foart, printer, artikel, h_bill, h_bill_line, htparam, hoteldpt, queasy, h_queasy, kellner, h_artikel, kontplan, paramtext, bediener, tisch, res_line, mc_guest, h_mjourn, printcod, h_journal, waehrung
+        nonlocal winprinterflag, filename, msg_str, output_list_data, t_printer_data, lvcarea, disc_bezeich, amount, sort_i, order_id, disc_zwkum, print_balance, disc_art1, disc_art2, disc_art3, incl_service, incl_mwst, service_taxable, print_fbtotal, prdisc_flag, mwst_str, service_str, hmargin, bmargin, lpage, nbezeich, nwidth, npause, bill_date110, bill_date, price_decimal, n11, long_digit, prtwoline, printed_line, last_amount, zeit, comp_flag, service, mwst, tot_amount, comp_taxserv, tot_sales, new_item, printed, qty, do_it, rm_transfer, new_fbart, tot_line, h_service, h_mwst, serv_perc, mwst_perc, fact, mwst1, subtotal, bline_exist, qty1000, n, curr_j, npage, tot_ndisc_line, tot_disc_line, buttom_lines, prtabledesc, header1, header2, foot1, foot2, foot3, anz_foot, overhead1, overhead2, overhead3, overhead4, total_food, total_bev, total_other, total_fdisc, total_bdisc, total_odisc, gst_logic, serv_disc, vat_disc, f_discart, str451, sc_art, mwst_perc, serv_perc, serv_code, vat_code, servtax_use_foart, h_mjourn, printer, artikel, h_bill, h_bill_line, htparam, hoteldpt, queasy, h_queasy, kellner, h_artikel, kontplan, paramtext, bediener, tisch, res_line, mc_guest, printcod, h_journal, waehrung
         nonlocal pvilanguage, hbrecid, printnr, use_h_queasy, session_parameter, user_init, billnr, print_all
-        nonlocal artbuff, abuff
-        nonlocal art_list, t_printer, vat_list, output_list, bline_vatlist, artbuff, abuff
-        nonlocal art_list_data, t_printer_data, vat_list_data, output_list_data, bline_vatlist_data
+        nonlocal artbuff, abuff, bart_list_submenu
+
+        nonlocal art_list, art_list_submenu, t_printer, vat_list, output_list, bline_vatlist, artbuff, abuff, bart_list_submenu
+        nonlocal art_list_data, art_list_submenu_data, t_printer_data, vat_list_data, output_list_data, bline_vatlist_data
 
         i:int = 0
         rechnr_str:string = ""
@@ -521,11 +522,19 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
             if h_bill.bilname != "":
                 if gst_logic:
                     output_list.str_pos = 1
-                    output_list.str = output_list.str + " " + to_string(bill_date) + "|" + to_string(get_current_time_in_seconds(), "HH:MM") + "|" + translateExtended ("Tax Invoice No", lvcarea, "") + "|" + rechnr_str
+                    output_list.str = output_list.str +\
+                        " " + to_string(bill_date) + "|" +\
+                        to_string(get_current_time_in_seconds(), "HH:MM") + "|" +\
+                        translateExtended ("Tax Invoice No", lvcarea, "") + "|" +\
+                        rechnr_str
 
                 else:
                     output_list.str_pos = 1
-                    output_list.str = output_list.str + " " + to_string(bill_date) + "|" + to_string(get_current_time_in_seconds(), "HH:MM") + "|" + translateExtended ("BillNo", lvcarea, "") + "|" + rechnr_str
+                    output_list.str = output_list.str +\
+                        " " + to_string(bill_date) + "|" +\
+                        to_string(get_current_time_in_seconds(), "HH:MM") + "|" +\
+                        translateExtended ("BillNo", lvcarea, "") + "|" +\
+                        rechnr_str
 
                 output_list = Output_list()
                 output_list_data.append(output_list)
@@ -548,9 +557,7 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
                 sort_i = sort_i + 1
 
                 if prtabledesc:
-                    tisch = get_cache (Tisch, {
-                        "tischnr": [(eq, h_bill.tischnr)],
-                        "departement": [(eq, h_bill.departement)]})
+                    tisch = get_cache (Tisch, {"tischnr": [(eq, h_bill.tischnr)],"departement": [(eq, h_bill.departement)]})
 
                     if tisch and tisch.bezeich != "":
                         output_list.str_pos = 4
@@ -564,11 +571,7 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
                 output_list.str_pos = 5
                 output_list.str = output_list.str + to_string("     " + translateExtended ("Guest", lvcarea, "") + "|" + h_bill.bilname, "x(32)")
 
-                queasy = get_cache (Queasy, {
-                    "key": [(eq, 286)],
-                    "number1": [(eq, h_bill.rechnr)],
-                    "number2": [(eq, h_bill.departement)],
-                    "number3": [(eq, billnr)]})
+                queasy = get_cache (Queasy, {"key": [(eq, 286)],"number1": [(eq, h_bill.rechnr)],"number2": [(eq, h_bill.departement)],"number3": [(eq, billnr)]})
 
                 if queasy:
                     if output_list.str != "":
@@ -607,9 +610,7 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
                 printed_line = printed_line + 4
 
                 if h_bill.resnr > 0 and h_bill.reslinnr > 0:
-                    res_line = get_cache (Res_line, {
-                        "resnr": [(eq, h_bill.resnr)],
-                        "reslinnr": [(eq, h_bill.reslinnr)]})
+                    res_line = get_cache (Res_line, {"resnr": [(eq, h_bill.resnr)],"reslinnr": [(eq, h_bill.reslinnr)]})
 
                     if res_line:
                         mc_guest = db_session.query(Mc_guest).filter(
@@ -691,9 +692,7 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
                     sort_i = sort_i + 1
 
                 if prtabledesc:
-                    tisch = get_cache (Tisch, {
-                        "tischnr": [(eq, h_bill.tischnr)],
-                        "departement": [(eq, h_bill.departement)]})
+                    tisch = get_cache (Tisch, {"tischnr": [(eq, h_bill.tischnr)],"departement": [(eq, h_bill.departement)]})
 
                     if tisch and tisch.bezeich != "":
                         output_list.str_pos = 4
@@ -717,11 +716,12 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
                 sort_i = sort_i + 1
 
     def print_billine():
-        nonlocal winprinterflag, filename, msg_str, output_list_data, t_printer_data, lvcarea, disc_bezeich, amount, sort_i, order_id, disc_zwkum, print_balance, disc_art1, disc_art2, disc_art3, incl_service, incl_mwst, service_taxable, print_fbtotal, prdisc_flag, mwst_str, service_str, hmargin, bmargin, lpage, nbezeich, nwidth, npause, bill_date110, bill_date, price_decimal, n11, long_digit, prtwoline, printed_line, last_amount, zeit, comp_flag, service, mwst, tot_amount, comp_taxserv, tot_sales, new_item, printed, qty, do_it, rm_transfer, new_fbart, tot_line, h_service, h_mwst, serv_perc, mwst_perc, fact, mwst1, subtotal, bline_exist, qty1000, n, curr_j, npage, tot_ndisc_line, tot_disc_line, buttom_lines, prtabledesc, header1, header2, foot1, foot2, foot3, anz_foot, overhead1, overhead2, overhead3, overhead4, total_food, total_bev, total_other, total_fdisc, total_bdisc, total_odisc, gst_logic, serv_disc, vat_disc, f_discart, str451, sc_art, mwst_perc, serv_perc, serv_code, vat_code, servtax_use_foart, printer, artikel, h_bill, h_bill_line, htparam, hoteldpt, queasy, h_queasy, kellner, h_artikel, kontplan, paramtext, bediener, tisch, res_line, mc_guest, h_mjourn, printcod, h_journal, waehrung
+        nonlocal winprinterflag, filename, msg_str, output_list_data, t_printer_data, lvcarea, disc_bezeich, amount, sort_i, order_id, disc_zwkum, print_balance, disc_art1, disc_art2, disc_art3, incl_service, incl_mwst, service_taxable, print_fbtotal, prdisc_flag, mwst_str, service_str, hmargin, bmargin, lpage, nbezeich, nwidth, npause, bill_date110, bill_date, price_decimal, n11, long_digit, prtwoline, printed_line, last_amount, zeit, comp_flag, service, mwst, tot_amount, comp_taxserv, tot_sales, new_item, printed, qty, do_it, rm_transfer, new_fbart, tot_line, h_service, h_mwst, serv_perc, mwst_perc, fact, mwst1, subtotal, bline_exist, qty1000, n, curr_j, npage, tot_ndisc_line, tot_disc_line, buttom_lines, prtabledesc, header1, header2, foot1, foot2, foot3, anz_foot, overhead1, overhead2, overhead3, overhead4, total_food, total_bev, total_other, total_fdisc, total_bdisc, total_odisc, gst_logic, serv_disc, vat_disc, f_discart, str451, sc_art, mwst_perc, serv_perc, serv_code, vat_code, servtax_use_foart, h_mjourn, printer, artikel, h_bill, h_bill_line, htparam, hoteldpt, queasy, h_queasy, kellner, h_artikel, kontplan, paramtext, bediener, tisch, res_line, mc_guest, printcod, h_journal, waehrung
         nonlocal pvilanguage, hbrecid, printnr, use_h_queasy, session_parameter, user_init, billnr, print_all
-        nonlocal artbuff, abuff
-        nonlocal art_list, t_printer, vat_list, output_list, bline_vatlist, artbuff, abuff
-        nonlocal art_list_data, t_printer_data, vat_list_data, output_list_data, bline_vatlist_data
+        nonlocal artbuff, abuff, bart_list_submenu
+
+        nonlocal art_list, art_list_submenu, t_printer, vat_list, output_list, bline_vatlist, artbuff, abuff, bart_list_submenu
+        nonlocal art_list_data, art_list_submenu_data, t_printer_data, vat_list_data, output_list_data, bline_vatlist_data
 
         i:int = 0
         anz:int = 0
@@ -735,10 +735,10 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
         if qty1000:
             output_list.str_pos = 10
             output_list.str = output_list.str + to_string("   ") + to_string(art_list.qty, "->>>> ") + "|"
-
         else:
             output_list.str_pos = 10
             output_list.str = output_list.str + to_string("   ") + to_string(art_list.qty) + "|"
+
         for i in range(1,nbezeich + 1) :
             if i > length(bezeich):
                 output_list.str = output_list.str + to_string(" ")
@@ -800,7 +800,7 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
                 (H_mjourn.departement == art_list.dept) & (H_mjourn.h_artnr == art_list.artnr) & (H_mjourn.rechnr == h_bill.rechnr) & (H_mjourn.bill_datum == art_list.datum) & (H_mjourn.sysdate == art_list.sysdate) & (H_mjourn.zeit == art_list.zeit)).order_by(H_mjourn._recid).all():
 
             h_art = db_session.query(H_art).filter(
-                    (H_art.artnr == h_mjourn.artnr) & (H_art.departement == dept)).first()
+                    (H_art.artnr == h_mjourn.artnr) & (H_art.departement == h_mjourn.departement)).first()
 
             if h_art:
                 # bezeich = h_art.bezeich
@@ -840,7 +840,7 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
 
 
     def print_overhead2(prall_flag:int):
-        nonlocal winprinterflag, filename, msg_str, output_list_data, t_printer_data, lvcarea, disc_bezeich, amount, sort_i, order_id, disc_zwkum, print_balance, disc_art1, disc_art2, disc_art3, incl_service, incl_mwst, service_taxable, print_fbtotal, prdisc_flag, mwst_str, service_str, hmargin, bmargin, lpage, nbezeich, nwidth, npause, bill_date110, bill_date, price_decimal, n11, long_digit, prtwoline, printed_line, last_amount, zeit, comp_flag, service, mwst, tot_amount, comp_taxserv, tot_sales, new_item, printed, qty, do_it, rm_transfer, new_fbart, tot_line, h_service, h_mwst, serv_perc, mwst_perc, fact, mwst1, subtotal, bline_exist, qty1000, n, curr_j, npage, tot_ndisc_line, tot_disc_line, buttom_lines, prtabledesc, header1, header2, foot1, foot2, foot3, anz_foot, overhead1, overhead2, overhead3, overhead4, total_food, total_bev, total_other, total_fdisc, total_bdisc, total_odisc, gst_logic, serv_disc, vat_disc, f_discart, str451, sc_art, mwst_perc, serv_perc, serv_code, vat_code, servtax_use_foart, printer, artikel, h_bill, h_bill_line, htparam, hoteldpt, queasy, h_queasy, kellner, h_artikel, kontplan, paramtext, bediener, tisch, res_line, mc_guest, h_mjourn, printcod, h_journal, waehrung
+        nonlocal winprinterflag, filename, msg_str, output_list_data, t_printer_data, lvcarea, disc_bezeich, amount, sort_i, order_id, disc_zwkum, print_balance, disc_art1, disc_art2, disc_art3, incl_service, incl_mwst, service_taxable, print_fbtotal, prdisc_flag, mwst_str, service_str, hmargin, bmargin, lpage, nbezeich, nwidth, npause, bill_date110, bill_date, price_decimal, n11, long_digit, prtwoline, printed_line, last_amount, zeit, comp_flag, service, mwst, tot_amount, comp_taxserv, tot_sales, new_item, printed, qty, do_it, rm_transfer, new_fbart, tot_line, h_service, h_mwst, serv_perc, mwst_perc, fact, mwst1, subtotal, bline_exist, qty1000, n, curr_j, npage, tot_ndisc_line, tot_disc_line, buttom_lines, prtabledesc, header1, header2, foot1, foot2, foot3, anz_foot, overhead1, overhead2, overhead3, overhead4, total_food, total_bev, total_other, total_fdisc, total_bdisc, total_odisc, gst_logic, serv_disc, vat_disc, f_discart, str451, sc_art, mwst_perc, serv_perc, serv_code, vat_code, servtax_use_foart, h_mjourn, printer, artikel, h_bill, h_bill_line, htparam, hoteldpt, queasy, h_queasy, kellner, h_artikel, kontplan, paramtext, bediener, tisch, res_line, mc_guest, printcod, h_journal, waehrung
         nonlocal pvilanguage, hbrecid, printnr, use_h_queasy, session_parameter, user_init, billnr, print_all
         nonlocal artbuff, abuff, bart_list_submenu
         nonlocal art_list, art_list_submenu, t_printer, vat_list, output_list, bline_vatlist, artbuff, abuff, bart_list_submenu
@@ -896,6 +896,7 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
                     output_list.str = output_list.str + to_string("", "x(6)")
                 else:
                     output_list.str = output_list.str + to_string("", "x(5)")
+
                 for i in range(1,(nbezeich + n11)  + 1) :
                     if i < (nbezeich + n11):
                         output_list.str = output_list.str + to_string("-", "x(1)")
@@ -906,16 +907,20 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
 
                         output_list.sort_i = sort_i
                         sort_i = sort_i + 1
+
                 printed_line = printed_line + 1
+
             else:
                 s = translateExtended ("subtotal", lvcarea, "")
+
             for i in range(1,pos + 1) :
                 output_list.str = output_list.str + to_string(" ")
+
             for i in range(1,nbez1 + 1) :
+
                 if i > length(s):
                     output_list.str_pos = 11
                     output_list.str = output_list.str + to_string(" ")
-
                 else:
                     output_list.str_pos = 11
                     output_list.str = output_list.str + to_string(substring(s, i - 1, 1) , "x(1)")
@@ -946,6 +951,7 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
 
             if prall_flag == 0:
                 return
+            
             cal_totalfb()
             print_totalfb()
 
@@ -954,6 +960,7 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
                     output_list.str = output_list.str + to_string("", "x(6)")
                 else:
                     output_list.str = output_list.str + to_string("", "x(5)")
+
                 for i in range(1,(nbezeich + n11)  + 1) :
                     if i < (nbezeich + n11):
                         output_list.str = output_list.str + to_string("-", "x(1)")
@@ -964,6 +971,7 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
 
                         output_list.sort_i = sort_i
                         sort_i = sort_i + 1
+
                 printed_line = printed_line + 1
                 tot_amount =  to_decimal(subtotal)
 
@@ -972,11 +980,11 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
             if service != 0:
                 for i in range(1,pos + 1) :
                     output_list.str = output_list.str + to_string(" ")
+
                 for i in range(1,nbez1 + 1) :
                     if i > length(service_str):
                         output_list.str_pos = 12
                         output_list.str = output_list.str + to_string(" ")
-
                     else:
                         output_list.str_pos = 12
                         output_list.str = output_list.str + to_string(substring(service_str, i - 1, 1) , "x(1)")
@@ -1008,11 +1016,11 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
             if mwst != 0:
                 for i in range(1,pos + 1) :
                     output_list.str = output_list.str + to_string(" ")
+
                 for i in range(1,nbez1 + 1) :
                     if i > length(mwst_str):
                         output_list.str_pos = 12
                         output_list.str = output_list.str + to_string(" ")
-
                     else:
                         output_list.str_pos = 12
                         output_list.str = output_list.str + to_string(substring(mwst_str, i - 1, 1) , "x(1)")
@@ -1045,6 +1053,7 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
             output_list.str = output_list.str + to_string("", "x(6)")
         else:
             output_list.str = output_list.str + to_string("", "x(5)")
+
         for i in range(1,(nbezeich + n11 + 4)  + 1) :
             if i < (nbezeich + n11 + 4):
                 output_list.str = output_list.str + to_string("-", "x(1)")
@@ -1055,6 +1064,7 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
 
                 output_list.sort_i = sort_i
                 sort_i = sort_i + 1
+
         printed_line = printed_line + 1
         for i in range(1,pos + 1) :
             output_list.str = output_list.str + to_string(" ")
@@ -1065,11 +1075,11 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
             tot_str = translateExtended ("TOTAL", lvcarea, "")
         else:
             tot_str = htparam.fchar
+
         for i in range(1,nbez1 + 1) :
             if i > length(tot_str):
                 output_list.str_pos = 13
                 output_list.str = output_list.str + to_string(" ")
-
             else:
                 output_list.str_pos = 13
                 output_list.str = output_list.str + to_string(substring(tot_str, i - 1, 1) , "x(1)")
@@ -1117,11 +1127,12 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
         multi_currency()
 
     def print_overhead3():
-        nonlocal winprinterflag, filename, msg_str, output_list_data, t_printer_data, lvcarea, disc_bezeich, amount, sort_i, order_id, disc_zwkum, print_balance, disc_art1, disc_art2, disc_art3, incl_service, incl_mwst, service_taxable, print_fbtotal, prdisc_flag, mwst_str, service_str, hmargin, bmargin, lpage, nbezeich, nwidth, npause, bill_date110, bill_date, price_decimal, n11, long_digit, prtwoline, printed_line, last_amount, zeit, comp_flag, service, mwst, tot_amount, comp_taxserv, tot_sales, new_item, printed, qty, do_it, rm_transfer, new_fbart, tot_line, h_service, h_mwst, serv_perc, mwst_perc, fact, mwst1, subtotal, bline_exist, qty1000, n, curr_j, npage, tot_ndisc_line, tot_disc_line, buttom_lines, prtabledesc, header1, header2, foot1, foot2, foot3, anz_foot, overhead1, overhead2, overhead3, overhead4, total_food, total_bev, total_other, total_fdisc, total_bdisc, total_odisc, gst_logic, serv_disc, vat_disc, f_discart, str451, sc_art, mwst_perc, serv_perc, serv_code, vat_code, servtax_use_foart, printer, artikel, h_bill, h_bill_line, htparam, hoteldpt, queasy, h_queasy, kellner, h_artikel, kontplan, paramtext, bediener, tisch, res_line, mc_guest, h_mjourn, printcod, h_journal, waehrung
+        nonlocal winprinterflag, filename, msg_str, output_list_data, t_printer_data, lvcarea, disc_bezeich, amount, sort_i, order_id, disc_zwkum, print_balance, disc_art1, disc_art2, disc_art3, incl_service, incl_mwst, service_taxable, print_fbtotal, prdisc_flag, mwst_str, service_str, hmargin, bmargin, lpage, nbezeich, nwidth, npause, bill_date110, bill_date, price_decimal, n11, long_digit, prtwoline, printed_line, last_amount, zeit, comp_flag, service, mwst, tot_amount, comp_taxserv, tot_sales, new_item, printed, qty, do_it, rm_transfer, new_fbart, tot_line, h_service, h_mwst, serv_perc, mwst_perc, fact, mwst1, subtotal, bline_exist, qty1000, n, curr_j, npage, tot_ndisc_line, tot_disc_line, buttom_lines, prtabledesc, header1, header2, foot1, foot2, foot3, anz_foot, overhead1, overhead2, overhead3, overhead4, total_food, total_bev, total_other, total_fdisc, total_bdisc, total_odisc, gst_logic, serv_disc, vat_disc, f_discart, str451, sc_art, mwst_perc, serv_perc, serv_code, vat_code, servtax_use_foart, h_mjourn, printer, artikel, h_bill, h_bill_line, htparam, hoteldpt, queasy, h_queasy, kellner, h_artikel, kontplan, paramtext, bediener, tisch, res_line, mc_guest, printcod, h_journal, waehrung
         nonlocal pvilanguage, hbrecid, printnr, use_h_queasy, session_parameter, user_init, billnr, print_all
-        nonlocal artbuff, abuff
-        nonlocal art_list, t_printer, vat_list, output_list, bline_vatlist, artbuff, abuff
-        nonlocal art_list_data, t_printer_data, vat_list_data, output_list_data, bline_vatlist_data
+        nonlocal artbuff, abuff, bart_list_submenu
+
+        nonlocal art_list, art_list_submenu, t_printer, vat_list, output_list, bline_vatlist, artbuff, abuff, bart_list_submenu
+        nonlocal art_list_data, art_list_submenu_data, t_printer_data, vat_list_data, output_list_data, bline_vatlist_data
 
         nbez1:int = 0
         i:int = 0
@@ -1166,11 +1177,11 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
                     output_list.str = output_list.str + to_string("", "x(6)")
                 else:
                     output_list.str = output_list.str + to_string("", "x(5)")
+
                 for i in range(1,nbez1 + 1) :
                     if i > length(art_list.bezeich):
                         output_list.str_pos = 14
                         output_list.str = output_list.str + to_string(" ")
-
                     else:
                         output_list.str_pos = 14
                         output_list.str = output_list.str + to_string(substring(art_list.bezeich, i - 1, 1) , "x(1)")
@@ -1180,6 +1191,7 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
                     amt =  to_decimal(subtotal)
                 else:
                     amt =  - to_decimal(subtotal)
+
                 balance =  to_decimal(balance) + to_decimal(amt)
                 last_amount =  to_decimal(last_amount) + to_decimal(amt)
                 compli_notax = True
@@ -1200,6 +1212,7 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
 
                             output_list.sort_i = sort_i
                             sort_i = sort_i + 1
+
                     else:
                         output_list.str = output_list.str + "|" + to_string(amt, "->>,>>>,>>>,>>9.99")
                         output_list = Output_list()
@@ -1207,10 +1220,14 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
 
                         output_list.sort_i = sort_i
                         sort_i = sort_i + 1
+
                     printed_line = printed_line + 1
+
             else:
+
                 if not art_list.printed or print_all:
                     balance =  to_decimal(balance) + to_decimal(art_list.amount)
+
                 last_amount =  to_decimal(last_amount) + to_decimal(art_list.amount)
 
                 if new_sold_item or not art_list.printed:
@@ -1242,6 +1259,7 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
             output_list.str = output_list.str + to_string("", "x(6)")
         else:
             output_list.str = output_list.str + to_string("", "x(5)")
+
         for i in range(1,(nbezeich + n11 + 4)  + 1) :
             if i < (nbezeich + n11 + 4):
                 output_list.str = output_list.str + to_string("-", "x(1)")
@@ -1252,6 +1270,7 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
 
                 output_list.sort_i = sort_i
                 sort_i = sort_i + 1
+
         printed_line = printed_line + 1
         pos = 5
 
@@ -1274,7 +1293,6 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
                     if i > length(bal_str):
                         output_list.str_pos = 15
                         output_list.str = output_list.str + to_string(" ")
-
                     else:
                         output_list.str_pos = 15
                         output_list.str = output_list.str + to_string(substring(bal_str, i - 1, 1) , "x(1)")
@@ -1308,7 +1326,6 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
                 if i > length(chg_str):
                     output_list.str_pos = 16
                     output_list.str = output_list.str + to_string(" ")
-
                 else:
                     output_list.str_pos = 16
                     output_list.str = output_list.str + to_string(substring(chg_str, i - 1, 1) , "x(1)")
@@ -1341,9 +1358,7 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
 
         if h_bill.bilname != "":
             if h_bill.resnr > 0 and h_bill.reslinnr > 0:
-                res_line = get_cache (Res_line, {
-                    "resnr": [(eq, h_bill.resnr)],
-                    "reslinnr": [(eq, h_bill.reslinnr)]})
+                res_line = get_cache (Res_line, {"resnr": [(eq, h_bill.resnr)],"reslinnr": [(eq, h_bill.reslinnr)]})
 
                 if res_line:
                     output_list.str = output_list.str + to_string("")
@@ -1357,6 +1372,7 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
                         output_list.str = output_list.str + to_string("", "x(5)")
                     else:
                         output_list.str = output_list.str + to_string("", "x(5)")
+
                     output_list.str_pos = 17
                     output_list.str = output_list.str + to_string(translateExtended ("Room :", lvcarea, "") + " " + res_line.zinr)
                     output_list = Output_list()
@@ -1371,6 +1387,7 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
 
                     output_list.sort_i = sort_i
                     sort_i = sort_i + 1
+
             else:
                 output_list.str = output_list.str + to_string("")
                 output_list = Output_list()
@@ -1383,6 +1400,7 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
                 output_list.str = output_list.str + to_string("", "x(6)")
             else:
                 output_list.str = output_list.str + to_string("", "x(5)")
+
             output_list.str_pos = 18
             output_list.str = output_list.str + to_string(" ") + to_string(h_bill.bilname, "x(30)")
             output_list = Output_list()
@@ -1395,6 +1413,7 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
                 output_list.str = output_list.str + to_string("", "x(6)")
             else:
                 output_list.str = output_list.str + to_string("", "x(5)")
+
             output_list.str = output_list.str + to_string(translateExtended ("Time :", lvcarea, "") + " " + to_string(get_current_time_in_seconds(), "HH:MM:SS") , "x(20)")
             output_list = Output_list()
             output_list_data.append(output_list)
@@ -1419,6 +1438,7 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
 
             output_list.sort_i = sort_i
             sort_i = sort_i + 1
+
         multi_currency()
 
         if gst_logic:
@@ -1461,11 +1481,12 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
             sort_i = sort_i + 1
 
     def print_overhead4():
-        nonlocal winprinterflag, filename, msg_str, output_list_data, t_printer_data, lvcarea, disc_bezeich, amount, sort_i, order_id, disc_zwkum, print_balance, disc_art1, disc_art2, disc_art3, incl_service, incl_mwst, service_taxable, print_fbtotal, prdisc_flag, mwst_str, service_str, hmargin, bmargin, lpage, nbezeich, nwidth, npause, bill_date110, bill_date, price_decimal, n11, long_digit, prtwoline, printed_line, last_amount, zeit, comp_flag, service, mwst, tot_amount, comp_taxserv, tot_sales, new_item, printed, qty, do_it, rm_transfer, new_fbart, tot_line, h_service, h_mwst, serv_perc, mwst_perc, fact, mwst1, subtotal, bline_exist, qty1000, n, curr_j, npage, tot_ndisc_line, tot_disc_line, buttom_lines, prtabledesc, header1, header2, foot1, foot2, foot3, anz_foot, overhead1, overhead2, overhead3, overhead4, total_food, total_bev, total_other, total_fdisc, total_bdisc, total_odisc, gst_logic, serv_disc, vat_disc, f_discart, str451, sc_art, mwst_perc, serv_perc, serv_code, vat_code, servtax_use_foart, printer, artikel, h_bill, h_bill_line, htparam, hoteldpt, queasy, h_queasy, kellner, h_artikel, kontplan, paramtext, bediener, tisch, res_line, mc_guest, h_mjourn, printcod, h_journal, waehrung
+        nonlocal winprinterflag, filename, msg_str, output_list_data, t_printer_data, lvcarea, disc_bezeich, amount, sort_i, order_id, disc_zwkum, print_balance, disc_art1, disc_art2, disc_art3, incl_service, incl_mwst, service_taxable, print_fbtotal, prdisc_flag, mwst_str, service_str, hmargin, bmargin, lpage, nbezeich, nwidth, npause, bill_date110, bill_date, price_decimal, n11, long_digit, prtwoline, printed_line, last_amount, zeit, comp_flag, service, mwst, tot_amount, comp_taxserv, tot_sales, new_item, printed, qty, do_it, rm_transfer, new_fbart, tot_line, h_service, h_mwst, serv_perc, mwst_perc, fact, mwst1, subtotal, bline_exist, qty1000, n, curr_j, npage, tot_ndisc_line, tot_disc_line, buttom_lines, prtabledesc, header1, header2, foot1, foot2, foot3, anz_foot, overhead1, overhead2, overhead3, overhead4, total_food, total_bev, total_other, total_fdisc, total_bdisc, total_odisc, gst_logic, serv_disc, vat_disc, f_discart, str451, sc_art, mwst_perc, serv_perc, serv_code, vat_code, servtax_use_foart, h_mjourn, printer, artikel, h_bill, h_bill_line, htparam, hoteldpt, queasy, h_queasy, kellner, h_artikel, kontplan, paramtext, bediener, tisch, res_line, mc_guest, printcod, h_journal, waehrung
         nonlocal pvilanguage, hbrecid, printnr, use_h_queasy, session_parameter, user_init, billnr, print_all
-        nonlocal artbuff, abuff
-        nonlocal art_list, t_printer, vat_list, output_list, bline_vatlist, artbuff, abuff
-        nonlocal art_list_data, t_printer_data, vat_list_data, output_list_data, bline_vatlist_data
+        nonlocal artbuff, abuff, bart_list_submenu
+
+        nonlocal art_list, art_list_submenu, t_printer, vat_list, output_list, bline_vatlist, artbuff, abuff, bart_list_submenu
+        nonlocal art_list_data, art_list_submenu_data, t_printer_data, vat_list_data, output_list_data, bline_vatlist_data
 
         i:int = 0
 
@@ -1497,6 +1518,17 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
             sort_i = sort_i + 1
             printed_line = printed_line + 1
 
+        if foot3 != "":
+            output_list.str_pos = 19
+            output_list.str = output_list.str + to_string(foot3)
+            output_list.pos = 6
+            output_list = Output_list()
+            output_list_data.append(output_list)
+
+            output_list.sort_i = sort_i
+            sort_i = sort_i + 1
+            printed_line = printed_line + 1
+
         if buttom_lines >= 1:
             for i in range(1,buttom_lines + 1) :
                 output_list.str = output_list.str + to_string("")
@@ -1509,15 +1541,14 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
 
     def cut_it():
 
-        nonlocal winprinterflag, filename, msg_str, output_list_data, t_printer_data, lvcarea, disc_bezeich, amount, sort_i, order_id, disc_zwkum, print_balance, disc_art1, disc_art2, disc_art3, incl_service, incl_mwst, service_taxable, print_fbtotal, prdisc_flag, mwst_str, service_str, hmargin, bmargin, lpage, nbezeich, nwidth, npause, bill_date110, bill_date, price_decimal, n11, long_digit, prtwoline, printed_line, last_amount, zeit, comp_flag, service, mwst, tot_amount, comp_taxserv, tot_sales, new_item, printed, qty, do_it, rm_transfer, new_fbart, tot_line, h_service, h_mwst, serv_perc, mwst_perc, fact, mwst1, subtotal, bline_exist, qty1000, i, n, curr_j, npage, tot_ndisc_line, tot_disc_line, buttom_lines, prtabledesc, header1, header2, foot1, foot2, foot3, anz_foot, overhead1, overhead2, overhead3, overhead4, total_food, total_bev, total_other, total_fdisc, total_bdisc, total_odisc, gst_logic, serv_disc, vat_disc, f_discart, str451, sc_art, mwst_perc, serv_perc, serv_code, vat_code, servtax_use_foart, printer, artikel, h_bill, h_bill_line, htparam, hoteldpt, queasy, h_queasy, kellner, h_artikel, kontplan, paramtext, bediener, tisch, res_line, mc_guest, h_mjourn, printcod, h_journal, waehrung
+        nonlocal winprinterflag, filename, msg_str, output_list_data, t_printer_data, lvcarea, disc_bezeich, amount, sort_i, order_id, disc_zwkum, print_balance, disc_art1, disc_art2, disc_art3, incl_service, incl_mwst, service_taxable, print_fbtotal, prdisc_flag, mwst_str, service_str, hmargin, bmargin, lpage, nbezeich, nwidth, npause, bill_date110, bill_date, price_decimal, n11, long_digit, prtwoline, printed_line, last_amount, zeit, comp_flag, service, mwst, tot_amount, comp_taxserv, tot_sales, new_item, printed, qty, do_it, rm_transfer, new_fbart, tot_line, h_service, h_mwst, serv_perc, mwst_perc, fact, mwst1, subtotal, bline_exist, qty1000, i, n, curr_j, npage, tot_ndisc_line, tot_disc_line, buttom_lines, prtabledesc, header1, header2, foot1, foot2, foot3, anz_foot, overhead1, overhead2, overhead3, overhead4, total_food, total_bev, total_other, total_fdisc, total_bdisc, total_odisc, gst_logic, serv_disc, vat_disc, f_discart, str451, sc_art, mwst_perc, serv_perc, serv_code, vat_code, servtax_use_foart, h_mjourn, printer, artikel, h_bill, h_bill_line, htparam, hoteldpt, queasy, h_queasy, kellner, h_artikel, kontplan, paramtext, bediener, tisch, res_line, mc_guest, printcod, h_journal, waehrung
         nonlocal pvilanguage, hbrecid, printnr, use_h_queasy, session_parameter, user_init, billnr, print_all
-        nonlocal artbuff, abuff
-        nonlocal art_list, t_printer, vat_list, output_list, bline_vatlist, artbuff, abuff
-        nonlocal art_list_data, t_printer_data, vat_list_data, output_list_data, bline_vatlist_data
+        nonlocal artbuff, abuff, bart_list_submenu
 
-        printcod = get_cache (Printcod, {
-            "emu": [(eq, printer.emu)],
-            "code": [(eq, "cut")]})
+        nonlocal art_list, art_list_submenu, t_printer, vat_list, output_list, bline_vatlist, artbuff, abuff, bart_list_submenu
+        nonlocal art_list_data, art_list_submenu_data, t_printer_data, vat_list_data, output_list_data, bline_vatlist_data
+
+        printcod = get_cache (Printcod, {"emu": [(eq, printer.emu)],"code": [(eq, "cut")]})
 
         if printcod:
             output_list.str = output_list.str + to_string("")
@@ -1535,11 +1566,12 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
 
 
     def cal_totalfb():
-        nonlocal winprinterflag, filename, msg_str, output_list_data, t_printer_data, lvcarea, disc_bezeich, amount, sort_i, order_id, disc_zwkum, print_balance, disc_art1, disc_art2, disc_art3, incl_service, incl_mwst, service_taxable, print_fbtotal, prdisc_flag, mwst_str, service_str, hmargin, bmargin, lpage, nbezeich, nwidth, npause, bill_date110, bill_date, price_decimal, n11, long_digit, prtwoline, printed_line, last_amount, zeit, comp_flag, service, mwst, tot_amount, comp_taxserv, tot_sales, new_item, printed, qty, do_it, rm_transfer, new_fbart, tot_line, h_service, h_mwst, serv_perc, mwst_perc, mwst1, subtotal, bline_exist, qty1000, i, n, curr_j, npage, tot_ndisc_line, tot_disc_line, buttom_lines, prtabledesc, header1, header2, foot1, foot2, foot3, anz_foot, overhead1, overhead2, overhead3, overhead4, total_food, total_bev, total_other, total_fdisc, total_bdisc, total_odisc, gst_logic, serv_disc, vat_disc, f_discart, str451, sc_art, mwst_perc, serv_perc, serv_code, vat_code, servtax_use_foart, printer, artikel, h_bill, h_bill_line, htparam, hoteldpt, queasy, h_queasy, kellner, h_artikel, kontplan, paramtext, bediener, tisch, res_line, mc_guest, h_mjourn, printcod, h_journal, waehrung
+        nonlocal winprinterflag, filename, msg_str, output_list_data, t_printer_data, lvcarea, disc_bezeich, amount, sort_i, order_id, disc_zwkum, print_balance, disc_art1, disc_art2, disc_art3, incl_service, incl_mwst, service_taxable, print_fbtotal, prdisc_flag, mwst_str, service_str, hmargin, bmargin, lpage, nbezeich, nwidth, npause, bill_date110, bill_date, price_decimal, n11, long_digit, prtwoline, printed_line, last_amount, zeit, comp_flag, service, mwst, tot_amount, comp_taxserv, tot_sales, new_item, printed, qty, do_it, rm_transfer, new_fbart, tot_line, h_service, h_mwst, serv_perc, mwst_perc, mwst1, subtotal, bline_exist, qty1000, i, n, curr_j, npage, tot_ndisc_line, tot_disc_line, buttom_lines, prtabledesc, header1, header2, foot1, foot2, foot3, anz_foot, overhead1, overhead2, overhead3, overhead4, total_food, total_bev, total_other, total_fdisc, total_bdisc, total_odisc, gst_logic, serv_disc, vat_disc, f_discart, str451, sc_art, mwst_perc, serv_perc, serv_code, vat_code, servtax_use_foart, h_mjourn, printer, artikel, h_bill, h_bill_line, htparam, hoteldpt, queasy, h_queasy, kellner, h_artikel, kontplan, paramtext, bediener, tisch, res_line, mc_guest, printcod, h_journal, waehrung
         nonlocal pvilanguage, hbrecid, printnr, use_h_queasy, session_parameter, user_init, billnr, print_all
-        nonlocal artbuff, abuff
-        nonlocal art_list, t_printer, vat_list, output_list, bline_vatlist, artbuff, abuff
-        nonlocal art_list_data, t_printer_data, vat_list_data, output_list_data, bline_vatlist_data
+        nonlocal artbuff, abuff, bart_list_submenu
+
+        nonlocal art_list, art_list_submenu, t_printer, vat_list, output_list, bline_vatlist, artbuff, abuff, bart_list_submenu
+        nonlocal art_list_data, art_list_submenu_data, t_printer_data, vat_list_data, output_list_data, bline_vatlist_data
 
         billdate:date = None
         fact:int = 0
@@ -1551,6 +1583,7 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
 
         if not h_bill_line:
             return
+        
         billdate = h_bill_line.bill_datum
 
         h_journal_obj_list = {}
@@ -1586,11 +1619,12 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
 
 
     def print_totalfb():
-        nonlocal winprinterflag, filename, msg_str, output_list_data, t_printer_data, lvcarea, disc_bezeich, amount, sort_i, order_id, disc_zwkum, print_balance, disc_art1, disc_art2, disc_art3, incl_service, incl_mwst, service_taxable, print_fbtotal, prdisc_flag, mwst_str, service_str, hmargin, bmargin, lpage, nbezeich, nwidth, npause, bill_date110, bill_date, price_decimal, n11, long_digit, prtwoline, printed_line, last_amount, zeit, comp_flag, service, mwst, tot_amount, comp_taxserv, tot_sales, new_item, printed, qty, do_it, rm_transfer, new_fbart, tot_line, h_service, h_mwst, serv_perc, mwst_perc, fact, mwst1, subtotal, bline_exist, qty1000, n, curr_j, npage, tot_ndisc_line, tot_disc_line, buttom_lines, prtabledesc, header1, header2, foot1, foot2, foot3, anz_foot, overhead1, overhead2, overhead3, overhead4, total_food, total_bev, total_other, total_fdisc, total_bdisc, total_odisc, gst_logic, serv_disc, vat_disc, f_discart, str451, sc_art, mwst_perc, serv_perc, serv_code, vat_code, servtax_use_foart, printer, artikel, h_bill, h_bill_line, htparam, hoteldpt, queasy, h_queasy, kellner, h_artikel, kontplan, paramtext, bediener, tisch, res_line, mc_guest, h_mjourn, printcod, h_journal, waehrung
+        nonlocal winprinterflag, filename, msg_str, output_list_data, t_printer_data, lvcarea, disc_bezeich, amount, sort_i, order_id, disc_zwkum, print_balance, disc_art1, disc_art2, disc_art3, incl_service, incl_mwst, service_taxable, print_fbtotal, prdisc_flag, mwst_str, service_str, hmargin, bmargin, lpage, nbezeich, nwidth, npause, bill_date110, bill_date, price_decimal, n11, long_digit, prtwoline, printed_line, last_amount, zeit, comp_flag, service, mwst, tot_amount, comp_taxserv, tot_sales, new_item, printed, qty, do_it, rm_transfer, new_fbart, tot_line, h_service, h_mwst, serv_perc, mwst_perc, fact, mwst1, subtotal, bline_exist, qty1000, n, curr_j, npage, tot_ndisc_line, tot_disc_line, buttom_lines, prtabledesc, header1, header2, foot1, foot2, foot3, anz_foot, overhead1, overhead2, overhead3, overhead4, total_food, total_bev, total_other, total_fdisc, total_bdisc, total_odisc, gst_logic, serv_disc, vat_disc, f_discart, str451, sc_art, mwst_perc, serv_perc, serv_code, vat_code, servtax_use_foart, h_mjourn, printer, artikel, h_bill, h_bill_line, htparam, hoteldpt, queasy, h_queasy, kellner, h_artikel, kontplan, paramtext, bediener, tisch, res_line, mc_guest, printcod, h_journal, waehrung
         nonlocal pvilanguage, hbrecid, printnr, use_h_queasy, session_parameter, user_init, billnr, print_all
-        nonlocal artbuff, abuff
-        nonlocal art_list, t_printer, vat_list, output_list, bline_vatlist, artbuff, abuff
-        nonlocal art_list_data, t_printer_data, vat_list_data, output_list_data, bline_vatlist_data
+        nonlocal artbuff, abuff, bart_list_submenu
+
+        nonlocal art_list, art_list_submenu, t_printer, vat_list, output_list, bline_vatlist, artbuff, abuff, bart_list_submenu
+        nonlocal art_list_data, art_list_submenu_data, t_printer_data, vat_list_data, output_list_data, bline_vatlist_data
 
         pos:int = 0
         s:string = ""
@@ -1606,6 +1640,7 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
 
         if qty1000:
             pos = 6
+
         nbez1 = nbezeich
 
         if prtwoline:
@@ -1623,12 +1658,14 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
         if total_food != 0:
             for i in range(1,pos + 1) :
                 output_list.str = output_list.str + to_string(" ")
+
             s = translateExtended ("FOOD", lvcarea, "")
             for i in range(1,nbez1 + 1) :
                 if i > length(s):
                     output_list.str = output_list.str + to_string(" ")
                 else:
                     output_list.str = output_list.str + to_string(substring(s, i - 1, 1) , "x(1)")
+
             output_list.str = output_list.str + to_string(total_food, "->>>,>>>,>>9")
             output_list = Output_list()
             output_list_data.append(output_list)
@@ -1660,11 +1697,11 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
                 output_list.str = output_list.str + to_string(" ")
             s = translateExtended ("OTHER", lvcarea, "")
             for i in range(1,nbez1 + 1) :
-
                 if i > length(s):
                     output_list.str = output_list.str + to_string(" ")
                 else:
                     output_list.str = output_list.str + to_string(substring(s, i - 1, 1) , "x(1)")
+
             output_list.str = output_list.str + to_string(total_other, "->>>,>>>,>>9")
             output_list = Output_list()
             output_list_data.append(output_list)
@@ -1676,12 +1713,14 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
         if total_fdisc != 0:
             for i in range(1,pos + 1) :
                 output_list.str = output_list.str + to_string(" ")
+
             s = translateExtended ("DISC FOOD", lvcarea, "")
             for i in range(1,nbez1 + 1) :
                 if i > length(s):
                     output_list.str = output_list.str + to_string(" ")
                 else:
                     output_list.str = output_list.str + to_string(substring(s, i - 1, 1) , "x(1)")
+
             output_list.str = output_list.str + to_string(total_fdisc, "->>>,>>>,>>9")
             output_list = Output_list()
             output_list_data.append(output_list)
@@ -1695,6 +1734,7 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
                 output_list.str = output_list.str + to_string(" ")
             s = translateExtended ("DISC BEVERAGE", lvcarea, "")
             for i in range(1,nbez1 + 1) :
+
                 if i > length(s):
                     output_list.str = output_list.str + to_string(" ")
                 else:
@@ -1710,12 +1750,14 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
         if total_odisc != 0:
             for i in range(1,pos + 1) :
                 output_list.str = output_list.str + to_string(" ")
+
             s = translateExtended ("DISC OTHER", lvcarea, "")
             for i in range(1,nbez1 + 1) :
                 if i > length(s):
                     output_list.str = output_list.str + to_string(" ")
                 else:
                     output_list.str = output_list.str + to_string(substring(s, i - 1, 1) , "x(1)")
+
             output_list.str = output_list.str + to_string(total_odisc, "->>>,>>>,>>9")
             output_list = Output_list()
             output_list_data.append(output_list)
@@ -1732,11 +1774,12 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
         printed_line = printed_line + 1
 
     def multi_currency():
-        nonlocal winprinterflag, filename, msg_str, output_list_data, t_printer_data, lvcarea, disc_bezeich, amount, sort_i, order_id, disc_zwkum, print_balance, disc_art1, disc_art2, disc_art3, incl_service, incl_mwst, service_taxable, print_fbtotal, prdisc_flag, mwst_str, service_str, hmargin, bmargin, lpage, nbezeich, nwidth, npause, bill_date110, bill_date, price_decimal, n11, long_digit, prtwoline, printed_line, last_amount, zeit, comp_flag, service, mwst, tot_amount, comp_taxserv, tot_sales, new_item, printed, qty, do_it, rm_transfer, new_fbart, tot_line, h_service, h_mwst, serv_perc, mwst_perc, fact, mwst1, subtotal, bline_exist, qty1000, curr_j, npage, tot_ndisc_line, tot_disc_line, buttom_lines, prtabledesc, header1, header2, foot1, foot2, foot3, anz_foot, overhead1, overhead2, overhead3, overhead4, total_food, total_bev, total_other, total_fdisc, total_bdisc, total_odisc, gst_logic, serv_disc, vat_disc, f_discart, str451, sc_art, mwst_perc, serv_perc, serv_code, vat_code, servtax_use_foart, printer, artikel, h_bill, h_bill_line, htparam, hoteldpt, queasy, h_queasy, kellner, h_artikel, kontplan, paramtext, bediener, tisch, res_line, mc_guest, h_mjourn, printcod, h_journal, waehrung
+        nonlocal winprinterflag, filename, msg_str, output_list_data, t_printer_data, lvcarea, disc_bezeich, amount, sort_i, order_id, disc_zwkum, print_balance, disc_art1, disc_art2, disc_art3, incl_service, incl_mwst, service_taxable, print_fbtotal, prdisc_flag, mwst_str, service_str, hmargin, bmargin, lpage, nbezeich, nwidth, npause, bill_date110, bill_date, price_decimal, n11, long_digit, prtwoline, printed_line, last_amount, zeit, comp_flag, service, mwst, tot_amount, comp_taxserv, tot_sales, new_item, printed, qty, do_it, rm_transfer, new_fbart, tot_line, h_service, h_mwst, serv_perc, mwst_perc, fact, mwst1, subtotal, bline_exist, qty1000, curr_j, npage, tot_ndisc_line, tot_disc_line, buttom_lines, prtabledesc, header1, header2, foot1, foot2, foot3, anz_foot, overhead1, overhead2, overhead3, overhead4, total_food, total_bev, total_other, total_fdisc, total_bdisc, total_odisc, gst_logic, serv_disc, vat_disc, f_discart, str451, sc_art, mwst_perc, serv_perc, serv_code, vat_code, servtax_use_foart, h_mjourn, printer, artikel, h_bill, h_bill_line, htparam, hoteldpt, queasy, h_queasy, kellner, h_artikel, kontplan, paramtext, bediener, tisch, res_line, mc_guest, printcod, h_journal, waehrung
         nonlocal pvilanguage, hbrecid, printnr, use_h_queasy, session_parameter, user_init, billnr, print_all
-        nonlocal artbuff, abuff
-        nonlocal art_list, t_printer, vat_list, output_list, bline_vatlist, artbuff, abuff
-        nonlocal art_list_data, t_printer_data, vat_list_data, output_list_data, bline_vatlist_data
+        nonlocal artbuff, abuff, bart_list_submenu
+
+        nonlocal art_list, art_list_submenu, t_printer, vat_list, output_list, bline_vatlist, artbuff, abuff, bart_list_submenu
+        nonlocal art_list_data, art_list_submenu_data, t_printer_data, vat_list_data, output_list_data, bline_vatlist_data
 
         i:int = 0
         n:int = 0
@@ -1764,11 +1807,13 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
                     output_list.str = output_list.str + to_string("", "x(6)")
                 else:
                     output_list.str = output_list.str + to_string("", "x(5)")
+
                 for n in range(1,(nbezeich - 2)  + 1) :
                     if n > length(s):
                         output_list.str = output_list.str + to_string(" ")
                     else:
                         output_list.str = output_list.str + to_string(substring(s, n - 1, 1) , "x(1)")
+
                 output_list.str = output_list.str + to_string(foreign_amt, "->>>,>>>,>>9.99")
                 output_list = Output_list()
                 output_list_data.append(output_list)
@@ -1779,11 +1824,12 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
                 printed_line = printed_line + 1
 
     def print_net_vat():
-        nonlocal winprinterflag, filename, msg_str, output_list_data, t_printer_data, lvcarea, disc_bezeich, amount, sort_i, order_id, disc_zwkum, print_balance, disc_art1, disc_art2, disc_art3, incl_service, incl_mwst, service_taxable, print_fbtotal, prdisc_flag, mwst_str, service_str, hmargin, bmargin, lpage, nbezeich, nwidth, npause, bill_date110, bill_date, price_decimal, n11, long_digit, prtwoline, printed_line, last_amount, zeit, comp_flag, service, mwst, tot_amount, comp_taxserv, tot_sales, new_item, printed, qty, do_it, rm_transfer, new_fbart, tot_line, h_service, h_mwst, serv_perc, mwst_perc, fact, mwst1, subtotal, bline_exist, qty1000, i, n, curr_j, npage, tot_ndisc_line, tot_disc_line, buttom_lines, prtabledesc, header1, header2, foot1, foot2, foot3, anz_foot, overhead1, overhead2, overhead3, overhead4, total_food, total_bev, total_other, total_fdisc, total_bdisc, total_odisc, gst_logic, serv_disc, vat_disc, f_discart, str451, sc_art, mwst_perc, serv_perc, serv_code, vat_code, servtax_use_foart, printer, artikel, h_bill, h_bill_line, htparam, hoteldpt, queasy, h_queasy, kellner, h_artikel, kontplan, paramtext, bediener, tisch, res_line, mc_guest, h_mjourn, printcod, h_journal, waehrung
+        nonlocal winprinterflag, filename, msg_str, output_list_data, t_printer_data, lvcarea, disc_bezeich, amount, sort_i, order_id, disc_zwkum, print_balance, disc_art1, disc_art2, disc_art3, incl_service, incl_mwst, service_taxable, print_fbtotal, prdisc_flag, mwst_str, service_str, hmargin, bmargin, lpage, nbezeich, nwidth, npause, bill_date110, bill_date, price_decimal, n11, long_digit, prtwoline, printed_line, last_amount, zeit, comp_flag, service, mwst, tot_amount, comp_taxserv, tot_sales, new_item, printed, qty, do_it, rm_transfer, new_fbart, tot_line, h_service, h_mwst, serv_perc, mwst_perc, fact, mwst1, subtotal, bline_exist, qty1000, i, n, curr_j, npage, tot_ndisc_line, tot_disc_line, buttom_lines, prtabledesc, header1, header2, foot1, foot2, foot3, anz_foot, overhead1, overhead2, overhead3, overhead4, total_food, total_bev, total_other, total_fdisc, total_bdisc, total_odisc, gst_logic, serv_disc, vat_disc, f_discart, str451, sc_art, mwst_perc, serv_perc, serv_code, vat_code, servtax_use_foart, h_mjourn, printer, artikel, h_bill, h_bill_line, htparam, hoteldpt, queasy, h_queasy, kellner, h_artikel, kontplan, paramtext, bediener, tisch, res_line, mc_guest, printcod, h_journal, waehrung
         nonlocal pvilanguage, hbrecid, printnr, use_h_queasy, session_parameter, user_init, billnr, print_all
-        nonlocal artbuff, abuff
-        nonlocal art_list, t_printer, vat_list, output_list, bline_vatlist, artbuff, abuff
-        nonlocal art_list_data, t_printer_data, vat_list_data, output_list_data, bline_vatlist_data
+        nonlocal artbuff, abuff, bart_list_submenu
+
+        nonlocal art_list, art_list_submenu, t_printer, vat_list, output_list, bline_vatlist, artbuff, abuff, bart_list_submenu
+        nonlocal art_list_data, art_list_submenu_data, t_printer_data, vat_list_data, output_list_data, bline_vatlist_data
 
         lpage1:int = 0
         net_amt:Decimal = to_decimal("0.0")
@@ -1798,6 +1844,7 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
 
         if not htparam.flogical:
             return
+        
         vat_list_data.clear()
 
         h_bill_line_obj_list = {}
@@ -1818,7 +1865,6 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
                     vat_list_data.append(vat_list)
 
                     vat_list.vat_amt =  to_decimal(htparam.fdecimal)
-
 
                 vat_list.betrag_amt =  to_decimal(vat_list.betrag_amt) + to_decimal(h_bill_line.betrag)
 
@@ -1901,6 +1947,7 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
 
             output_list.sort_i = sort_i
             sort_i = sort_i + 1
+
         printed_line = printed_line + 2
 
         if qty1000:
@@ -1929,11 +1976,12 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
         printed_line = printed_line + 2
 
     def print_in_word():
-        nonlocal winprinterflag, filename, msg_str, output_list_data, t_printer_data, lvcarea, disc_bezeich, amount, sort_i, order_id, disc_zwkum, print_balance, disc_art1, disc_art2, disc_art3, incl_service, incl_mwst, service_taxable, print_fbtotal, prdisc_flag, mwst_str, service_str, hmargin, bmargin, lpage, nbezeich, nwidth, npause, bill_date110, bill_date, price_decimal, n11, long_digit, prtwoline, printed_line, last_amount, zeit, comp_flag, service, mwst, tot_amount, comp_taxserv, tot_sales, new_item, printed, qty, do_it, rm_transfer, new_fbart, tot_line, h_service, h_mwst, serv_perc, mwst_perc, fact, mwst1, subtotal, bline_exist, qty1000, n, curr_j, npage, tot_ndisc_line, tot_disc_line, buttom_lines, prtabledesc, header1, header2, foot1, foot2, foot3, anz_foot, overhead1, overhead2, overhead3, overhead4, total_food, total_bev, total_other, total_fdisc, total_bdisc, total_odisc, gst_logic, serv_disc, vat_disc, f_discart, str451, sc_art, mwst_perc, serv_perc, serv_code, vat_code, servtax_use_foart, printer, artikel, h_bill, h_bill_line, htparam, hoteldpt, queasy, h_queasy, kellner, h_artikel, kontplan, paramtext, bediener, tisch, res_line, mc_guest, h_mjourn, printcod, h_journal, waehrung
+        nonlocal winprinterflag, filename, msg_str, output_list_data, t_printer_data, lvcarea, disc_bezeich, amount, sort_i, order_id, disc_zwkum, print_balance, disc_art1, disc_art2, disc_art3, incl_service, incl_mwst, service_taxable, print_fbtotal, prdisc_flag, mwst_str, service_str, hmargin, bmargin, lpage, nbezeich, nwidth, npause, bill_date110, bill_date, price_decimal, n11, long_digit, prtwoline, printed_line, last_amount, zeit, comp_flag, service, mwst, tot_amount, comp_taxserv, tot_sales, new_item, printed, qty, do_it, rm_transfer, new_fbart, tot_line, h_service, h_mwst, serv_perc, mwst_perc, fact, mwst1, subtotal, bline_exist, qty1000, n, curr_j, npage, tot_ndisc_line, tot_disc_line, buttom_lines, prtabledesc, header1, header2, foot1, foot2, foot3, anz_foot, overhead1, overhead2, overhead3, overhead4, total_food, total_bev, total_other, total_fdisc, total_bdisc, total_odisc, gst_logic, serv_disc, vat_disc, f_discart, str451, sc_art, mwst_perc, serv_perc, serv_code, vat_code, servtax_use_foart, h_mjourn, printer, artikel, h_bill, h_bill_line, htparam, hoteldpt, queasy, h_queasy, kellner, h_artikel, kontplan, paramtext, bediener, tisch, res_line, mc_guest, printcod, h_journal, waehrung
         nonlocal pvilanguage, hbrecid, printnr, use_h_queasy, session_parameter, user_init, billnr, print_all
-        nonlocal artbuff, abuff
-        nonlocal art_list, t_printer, vat_list, output_list, bline_vatlist, artbuff, abuff
-        nonlocal art_list_data, t_printer_data, vat_list_data, output_list_data, bline_vatlist_data
+        nonlocal artbuff, abuff, bart_list_submenu
+
+        nonlocal art_list, art_list_submenu, t_printer, vat_list, output_list, bline_vatlist, artbuff, abuff, bart_list_submenu
+        nonlocal art_list_data, art_list_submenu_data, t_printer_data, vat_list_data, output_list_data, bline_vatlist_data
 
         lpage1:int = 0
         progname:string = ""
@@ -1989,8 +2037,10 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
             output_list.str = output_list.str + to_string("", "x(6)")
         else:
             output_list.str = output_list.str + to_string("", "x(5)")
+
         for i in range(1,length(str1)  + 1) :
             output_list.str = output_list.str + to_string(substring(str1, i - 1, 1) , "x(1)")
+
         output_list.str = output_list.str + to_string("")
         output_list = Output_list()
         output_list_data.append(output_list)
@@ -2004,8 +2054,10 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
                 output_list.str = output_list.str + to_string("", "x(6)")
             else:
                 output_list.str = output_list.str + to_string("", "x(5)")
+
             for i in range(1,length(str2)  + 1) :
                 output_list.str = output_list.str + to_string(substring(str2, i - 1, 1) , "x(1)")
+
             output_list.str = output_list.str + to_string("")
             output_list = Output_list()
             output_list_data.append(output_list)
@@ -2024,10 +2076,7 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
     if sc_art != 0:
         h_bill = get_cache (H_bill, {"_recid": [(eq, hbrecid)]})
 
-        h_bill_line = get_cache (H_bill_line, {
-            "rechnr": [(eq, h_bill.rechnr)],
-            "departement": [(eq, h_bill.departement)],
-            "artnr": [(eq, sc_art)]})
+        h_bill_line = get_cache (H_bill_line, {"rechnr": [(eq, h_bill.rechnr)],"departement": [(eq, h_bill.departement)],"artnr": [(eq, sc_art)]})
 
         if h_bill_line:
             print_all = True
@@ -2106,7 +2155,7 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
         lpage = htparam.finteger
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 871)]})
-        nbezeich = htparam.finteger
+        nbezeich = 50
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 831)]})
         nwidth = htparam.finteger
@@ -2150,11 +2199,7 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
             n11 = 1
 
         if not use_h_queasy:
-            queasy = get_cache (Queasy, {
-                "key": [(eq, 4)],
-                "number1": [(eq, (h_bill.departement + h_bill.rechnr * 100))],
-                "number2": [(eq, 0)],
-                "deci2": [(eq, billnr)]})
+            queasy = get_cache (Queasy, {"key": [(eq, 4)],"number1": [(eq, (h_bill.departement + h_bill.rechnr * 100))],"number2": [(eq, 0)],"deci2": [(eq, billnr)]})
 
             if queasy and not print_all:
                 printed_line = queasy.number3
@@ -2174,10 +2219,7 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
 
         else:
 
-            h_queasy = get_cache (H_queasy, {
-                "number1": [(eq, (h_bill.departement + h_bill.rechnr * 100))],
-                "number2": [(eq, 0)],
-                "billno": [(eq, billnr)]})
+            h_queasy = get_cache (H_queasy, {"number1": [(eq, (h_bill.departement + h_bill.rechnr * 100))],"number2": [(eq, 0)],"billno": [(eq, billnr)]})
 
             if h_queasy and not print_all:
                 printed_line = h_queasy.number3
@@ -2285,7 +2327,7 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
 
                 art_list.printed = printed
                 art_list.artnr = h_bill_line.artnr
-                art_list.dept = h_bill_line.departemen
+                art_list.dept = h_bill_line.departement
                 art_list.bezeich = h_bill_line.bezeich
                 art_list.price =  to_decimal(h_bill_line.epreis)
                 art_list.datum = h_bill_line.bill_datum
@@ -2296,7 +2338,6 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
                 if h_bill_line.artnr != 0:
                     art_list.artart = h_artikel.artart
                     art_list.zwkum = h_artikel.zwkum
-
                 else:
                     art_list.artart = 2
 
@@ -2448,6 +2489,7 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
 
         elif printnr < 0:
             filename = "billdir\\" + to_string(h_bill.tischnr) + "_" + to_string(h_bill.departement, "99")
+
         for i in range(1,printed_line + 1) :
             output_list = Output_list()
             output_list_data.append(output_list)
@@ -2455,6 +2497,7 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
             output_list.str = output_list.str + to_string("")
             output_list.sort_i = sort_i
             sort_i = sort_i + 1
+
         output_list = Output_list()
         output_list_data.append(output_list)
 
@@ -2468,7 +2511,9 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
             for i in range(1,npage + 1) :
                 if not art_list:
                     i = npage
+
                 print_overhead1()
+
                 while None != art_list and (curr_j <= lpage) :
                     print_billine()
 
@@ -2509,10 +2554,13 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
             art_list = query(art_list_data, filters=(lambda art_list: art_list.artart == 0 and not art_list.printed), first=True)
             n = 0
             curr_j = printed_line
+
             for i in range(1,npage + 1) :
                 if not art_list:
                     i = npage
+
                 print_overhead1()
+
                 while None != art_list and (curr_j <= lpage) :
                     print_billine()
 
@@ -2555,14 +2603,11 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
                 queasy.number3 = printed_line
                 queasy.deci1 =  to_decimal(tot_amount)
 
-                pass
             else:
                 h_queasy = get_cache (H_queasy, {"number1": [(eq, (h_bill.departement + h_bill.rechnr * 100))],"number2": [(eq, 0)],"billno": [(eq, billnr)]})
-
+                
                 if h_queasy:
                     h_queasy.number3 = printed_line
                     h_queasy.deci1 =  to_decimal(tot_amount)
-
-                    pass
 
     return generate_output()
