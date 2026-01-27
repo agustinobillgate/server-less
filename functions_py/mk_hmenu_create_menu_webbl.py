@@ -1,6 +1,11 @@
 #using conversion tools version: 1.0.0.119
 #-------------------------------------------------------
 # Rd, 27/11/2025, with_for_update added
+
+# Rulita, 19-01-2026
+# - Fixing error validate query Queasy
+#   From (Queasy.char1 == ("Qty-sub-menu"))
+#   To (Queasy.char1 == ("fixed-sub-menu"))
 #-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -52,18 +57,17 @@ def mk_hmenu_create_menu_webbl(hmenu_list_data:[Hmenu_list], menu_list_data:[Men
             nr = get_nr()
         else:
             nr = h_art.betriebsnr
+
         output_list.menu_nr = nr
 
         if h_art and h_art.betriebsnr != 0:
 
             for h_menu in db_session.query(H_menu).filter(
-                     (H_menu.departement == payload_list.dept) & (H_menu.nr == h_art.betriebsnr)).order_by(H_menu._recid).with_for_update().all():
+                     (H_menu.departement == payload_list.dept) & (H_menu.nr == h_art.betriebsnr)).order_by(H_menu._recid).all():
                 db_session.delete(h_menu)
 
             for queasy in db_session.query(Queasy).filter(
-                     (Queasy.key == 361) & (Queasy.number2 == payload_list.dept) & 
-                     (Queasy.char1 == ("Qty-Sub-Menu")) & 
-                     (Queasy.number3 == h_art.betriebsnr)).order_by(Queasy._recid).with_for_update().all():
+                     (Queasy.key == 361) & (Queasy.number2 == payload_list.dept) & (Queasy.char1 == ("Qty-Sub-Menu").lower()) & (Queasy.number3 == h_art.betriebsnr)).order_by(Queasy._recid).all():
                 db_session.delete(queasy)
 
         for menu_list in query(menu_list_data):
@@ -103,9 +107,13 @@ def mk_hmenu_create_menu_webbl(hmenu_list_data:[Hmenu_list], menu_list_data:[Men
         elif not created and h_art.betriebsnr != 0:
 
             # queasy = get_cache (Queasy, {"key": [(eq, 361)],"number2": [(eq, payload_list.dept)],"char1": [(eq, "fixed-sub-menu")],"number3": [(eq, h_art.betriebsnr)]})
+
+            # Rulita, 19-01-2026
+            # - Fixing error validate query Queasy
+            #   where char1 eq "Qty-sub-menu"
             queasy = db_session.query(Queasy).filter(
                      (Queasy.key == 361) & (Queasy.number2 == payload_list.dept) & 
-                     (Queasy.char1 == ("Qty-Sub-Menu")) & 
+                     (Queasy.char1 == ("fixed-sub-menu")) & 
                      (Queasy.number3 == h_art.betriebsnr)).with_for_update().first()
 
             if queasy:

@@ -1,4 +1,4 @@
-#using conversion tools version: 1.0.0.117
+#using conversion tools version: 1.0.0.119
 #------------------------------------------------
 # Rulita, 22/08/2025
 # Modify
@@ -7,6 +7,9 @@
 # Rulita, 11-11-2025 | D814C7
 # - Fix dept -> h_mjourn.departement
 # - Fixing missing table h_bill.billnr
+
+# Rulita, 13-01-2026
+# - Added fitur Sub Menu
 #------------------------------------------------
 
 from functions.additional_functions import *
@@ -171,12 +174,12 @@ def print_hbilllnl_cldbl(pvilanguage:int, session_parameter:string, user_init:st
             elif lvcleft == "TableDesc":
                 lvcval = entry(1, lvctmp, "=")
 
-                if lvcval  == ("YES") :
+                if lvcval.lower()  == ("YES").lower() :
                     prtabledesc = True
             elif lvcleft == "Pr2Line":
                 lvcval = entry(1, lvctmp, "=")
 
-                if lvcval  == ("YES") :
+                if lvcval.lower()  == ("YES").lower() :
                     prtwoline = True
             elif lvcleft == "print-all":
                 lvitmp = to_int(entry(1, lvctmp, "="))
@@ -283,7 +286,7 @@ def print_hbilllnl_cldbl(pvilanguage:int, session_parameter:string, user_init:st
         else:
 
             hbuff = db_session.query(Hbuff).filter(
-                     (Hbuff.artnr == h_artnr) & (Hbuff.departement == depart)).first()
+                        (Hbuff.artnr == h_artnr) & (Hbuff.departement == depart)).first()
 
             if hbuff:
                 service_code = hbuff.service_code
@@ -447,6 +450,7 @@ def print_hbilllnl_cldbl(pvilanguage:int, session_parameter:string, user_init:st
             kname = kellner.kellnername
         else:
             bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})
+
             if bediener:
                 kname = bediener.username
 
@@ -1143,6 +1147,30 @@ def print_hbilllnl_cldbl(pvilanguage:int, session_parameter:string, user_init:st
         if h_bill.bilname != "":
             output_list.str_pos = 18
             output_list.str = output_list.str + to_string(" ") + to_string(h_bill.bilname, "x(64)")
+
+            if h_bill.resnr > 0 and h_bill.reslinnr > 0:
+
+                res_line = get_cache (Res_line, {"resnr": [(eq, h_bill.resnr)],"reslinnr": [(eq, h_bill.reslinnr)]})
+
+                if res_line:
+                    output_list.str = output_list.str + to_string("")
+                    output_list = Output_list()
+                    output_list_data.append(output_list)
+
+                    output_list.sort_i = sort_i
+                    sort_i = sort_i + 1
+
+                    if qty1000:
+                        output_list.str = output_list.str + to_string("", "x(5)")
+                    else:
+                        output_list.str = output_list.str + to_string("", "x(5)")
+                    output_list.str_pos = 17
+                    output_list.str = output_list.str + to_string(translateExtended ("Room :", lvcarea, "") + " " + res_line.zinr)
+                    output_list = Output_list()
+                    output_list_data.append(output_list)
+
+                    output_list.sort_i = sort_i
+                    sort_i = sort_i + 1
         printed_line = printed_line + 1
         curr_j = curr_j + 6
         multi_currency()
@@ -1706,7 +1734,7 @@ def print_hbilllnl_cldbl(pvilanguage:int, session_parameter:string, user_init:st
         nbez1:int = 0
 
         h_bill_line = db_session.query(H_bill_line).filter(
-                 (H_bill_line.rechnr == h_bill.rechnr) & (H_bill_line.departement == h_bill.departement) & (H_bill_line.artnr == f_discart) & (substring(H_bill_line.bezeich, length(H_bill_line.bezeich) - 1) == ("*"))).first()
+                 (H_bill_line.rechnr == h_bill.rechnr) & (H_bill_line.departement == h_bill.departement) & (H_bill_line.artnr == f_discart) & (substring(H_bill_line.bezeich, length(H_bill_line.bezeich) - 1) == ("*").lower())).first()
 
         if h_bill_line:
 
@@ -2173,7 +2201,7 @@ def print_hbilllnl_cldbl(pvilanguage:int, session_parameter:string, user_init:st
 
     if htparam:
 
-        if not htparam.flogical and entry(0, htparam.fchar, ";") == ("GST(MA)") :
+        if not htparam.flogical and entry(0, htparam.fchar, ";") == ("GST(MA)").lower() :
             gst_logic = True
 
     if printnr > 0:
@@ -2230,7 +2258,7 @@ def print_hbilllnl_cldbl(pvilanguage:int, session_parameter:string, user_init:st
             lpage = htparam.finteger
 
             htparam = get_cache (Htparam, {"paramnr": [(eq, 871)]})
-            nbezeich = htparam.finteger
+            nbezeich = 50
 
             htparam = get_cache (Htparam, {"paramnr": [(eq, 831)]})
             nwidth = htparam.finteger
@@ -2499,11 +2527,7 @@ def print_hbilllnl_cldbl(pvilanguage:int, session_parameter:string, user_init:st
                 art_list.amount =  to_decimal(art_list.amount) + to_decimal(amount)
 
                 if h_bill_line.artnr != 0:
-
-                    if h_bill_line.betriebsnr != 1:
-                        art_list.qty = art_list.qty + qty
-                    else:
-                        art_list.qty = qty
+                    art_list.qty = art_list.qty + qty
 
             for art_list in query(art_list_data):
 
@@ -2550,7 +2574,7 @@ def print_hbilllnl_cldbl(pvilanguage:int, session_parameter:string, user_init:st
             for abuff in query(abuff_data, filters=(lambda abuff:(abuff.zwkum == disc_zwkum) and matches(abuff.bezeich,r"*-*"))):
                 disc_bezeich = replace_str(abuff.bezeich, "-", "")
 
-                art_list = query(art_list_data, filters=(lambda art_list: art_list.artnr == abuff.artnr and art_list.bezeich  == (disc_bezeich)  and art_list.amount == - abuff.amount), first=True)
+                art_list = query(art_list_data, filters=(lambda art_list: art_list.artnr == abuff.artnr and art_list.bezeich.lower()  == (disc_bezeich).lower()  and art_list.amount == - abuff.amount), first=True)
 
                 if art_list:
                     art_list_data.remove(art_list)
@@ -2560,7 +2584,7 @@ def print_hbilllnl_cldbl(pvilanguage:int, session_parameter:string, user_init:st
             for abuff in query(abuff_data, filters=(lambda abuff: abuff.disc_flag)):
                 disc_bezeich = abuff.bezeich
 
-                art_list = query(art_list_data, filters=(lambda art_list: art_list.artnr == abuff.artnr and art_list.bezeich  == (disc_bezeich)  and art_list.amount == - abuff.amount), first=True)
+                art_list = query(art_list_data, filters=(lambda art_list: art_list.artnr == abuff.artnr and art_list.bezeich.lower()  == (disc_bezeich).lower()  and art_list.amount == - abuff.amount), first=True)
 
                 if art_list:
                     art_list_data.remove(art_list)
@@ -2684,9 +2708,7 @@ def print_hbilllnl_cldbl(pvilanguage:int, session_parameter:string, user_init:st
 
 
                         curr_j = 0
-                        printed_line = 
-                        
-
+                        printed_line = 0
             tot_amount =  to_decimal("0")
 
             for h_bill_line in db_session.query(H_bill_line).filter(

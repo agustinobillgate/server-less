@@ -1,14 +1,19 @@
-#using conversion tools version: 1.0.0.117
+#using conversion tools version: 1.0.0.119
 #-----------------------------------------
 # Rd 31/7/2025
 # gitlab: 510
 # generate_output: diff key, edit manual di generate_output
 #-----------------------------------------
 
+#----------------------------------------
+# Rulita, 09-01-2025
+# Fixing issue missing fiture Sub Menu 
+#----------------------------------------
+
 from functions.additional_functions import *
 from decimal import Decimal
 from functions.ts_splitbill_build_lmenubl import ts_splitbill_build_lmenubl
-from models import H_bill, H_bill_line, Htparam, Waehrung, Hoteldpt
+from models import H_bill, H_bill_line, H_artikel, Htparam, Waehrung, Hoteldpt
 
 def prepare_ts_splitbillbl(dept:int, tischnr:int):
 
@@ -30,23 +35,31 @@ def prepare_ts_splitbillbl(dept:int, tischnr:int):
     t_h_bill_line_data = []
     menu_data = []
     lhbline_data = []
-    h_bill = h_bill_line = htparam = waehrung = hoteldpt = None
+    list_reqst:List[string] = create_empty_list(15,"")
+    counter:int = 0
+    nr:int = 0
+    h_bill_line_recid:int = 0
+    h_bill = h_bill_line = h_artikel = htparam = waehrung = hoteldpt = None
 
-    menu = lhbline = t_h_bill = t_h_bill_line = None
+    menu = lhbline = t_h_bill = t_h_bill_line = h_artikel_buff = None
 
     menu_data, Menu = create_model("Menu", {"pos":int, "bezeich":string, "artnr":int})
     lhbline_data, Lhbline = create_model("Lhbline", {"nr":int, "rid":int})
     t_h_bill_data, T_h_bill = create_model_like(H_bill, {"rec_id":int})
     t_h_bill_line_data, T_h_bill_line = create_model_like(H_bill_line, {"rec_id":int})
 
+    H_artikel_buff = create_buffer("H_artikel_buff",H_artikel)
+
+
     db_session = local_storage.db_session
 
     def generate_output():
-        nonlocal multi_vat, zero_flag, multi_cash, price_decimal, foreign_rate, double_currency, exchg_rate, deptname, must_print, fl_warn, max_lapos, cashless_flag, t_h_bill_data, t_h_bill_line_data, menu_data, lhbline_data, h_bill, h_bill_line, htparam, waehrung, hoteldpt
+        nonlocal multi_vat, zero_flag, multi_cash, price_decimal, foreign_rate, double_currency, exchg_rate, deptname, must_print, fl_warn, max_lapos, cashless_flag, t_h_bill_data, t_h_bill_line_data, menu_data, lhbline_data, list_reqst, counter, nr, h_bill_line_recid, h_bill, h_bill_line, h_artikel, htparam, waehrung, hoteldpt
         nonlocal dept, tischnr
+        nonlocal h_artikel_buff
 
 
-        nonlocal menu, lhbline, t_h_bill, t_h_bill_line
+        nonlocal menu, lhbline, t_h_bill, t_h_bill_line, h_artikel_buff
         nonlocal menu_data, lhbline_data, t_h_bill_data, t_h_bill_line_data
 
         # Rd 31/7/2025
@@ -114,8 +127,15 @@ def prepare_ts_splitbillbl(dept:int, tischnr:int):
         if h_bill_line:
             fl_warn = True
 
-    for h_bill_line in db_session.query(H_bill_line).filter(
+    h_bill_line_obj_list = {}
+    for h_bill_line, h_artikel in db_session.query(H_bill_line, H_artikel).join(H_artikel,(H_artikel.artnr == H_bill_line.artnr) & (H_artikel.departement == dept)).filter(
              (H_bill_line.departement == dept) & (H_bill_line.tischnr == tischnr) & (H_bill_line.rechnr == h_bill.rechnr)).order_by(H_bill_line._recid).all():
+        if h_bill_line_obj_list.get(h_bill_line._recid):
+            continue
+        else:
+            h_bill_line_obj_list[h_bill_line._recid] = True
+
+
         t_h_bill_line = T_h_bill_line()
         t_h_bill_line_data.append(t_h_bill_line)
 

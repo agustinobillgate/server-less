@@ -1,6 +1,9 @@
-#using conversion tools version: 1.0.0.117
+#using conversion tools version: 1.0.0.119
 #-------------------------------------------------------
 # Rd, 01/12/2025, with_for_update added
+
+# Rulita, 14-01-2026
+# Added fitur Sub Menu
 #-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -54,7 +57,7 @@ def print_hbill_webbl(pvilanguage:int, user_init:string, print_all:bool, printnr
     t_print_head = t_print_line = output_list2 = t_printer = print_list = paylist = q_33 = None
 
     t_print_head_data, T_print_head = create_model("T_print_head", {"str_date":string, "str_time":string, "bill_no":string, "resto_name":string, "table_usr_id":string, "curr_time":string, "guest_member":string, "od_taker":string, "table_desc":string}, {"str_date": "", "str_time": "", "bill_no": "", "resto_name": "", "table_usr_id": "", "curr_time": "", "guest_member": "", "od_taker": "", "table_desc": ""})
-    t_print_line_data, T_print_line = create_model("T_print_line", {"str_qty":string, "descrip":string, "str_price":string, "foot_note1":string, "foot_note2":string, "foot_note3":string}, {"str_qty": "", "descrip": "", "str_price": "", "foot_note1": "", "foot_note2": "", "foot_note3": ""})
+    t_print_line_data, T_print_line = create_model("T_print_line", {"str_qty":string, "descrip":string, "str_price":string, "foot_note1":string, "foot_note2":string, "foot_note3":string, "ismain":bool}, {"str_qty": "", "descrip": "", "str_price": "", "foot_note1": "", "foot_note2": "", "foot_note3": "", "ismain": True})
     output_list2_data, Output_list2 = create_model("Output_list2", {"str":string, "str_pos":int, "pos":int, "flag_popup":bool, "npause":int, "sort_i":int})
     t_printer_data, T_printer = create_model_like(Printer)
 
@@ -176,6 +179,12 @@ def print_hbill_webbl(pvilanguage:int, user_init:string, print_all:bool, printnr
         t_print_line.descrip = trim(entry(1, print_list.str, "|"))
         t_print_line.str_price = trim(entry(2, print_list.str, "|"))
 
+        if trim(entry(3, print_list.str, "|")) == ("1").lower() :
+            t_print_line.ismain = True
+
+        elif trim(entry(3, print_list.str, "|")) == ("2").lower() :
+            t_print_line.ismain = False
+
     print_list = query(print_list_data, filters=(lambda print_list: print_list.str_pos == 11), first=True)
 
     if print_list:
@@ -259,7 +268,7 @@ def print_hbill_webbl(pvilanguage:int, user_init:string, print_all:bool, printnr
 
                 if matches(paylist.str,'*' + gs + '*'):
 
-                    if (gs  == ("Compl")  or gs  == ("Compliment")  or gs  == ("A&G")  or gs  == ("Eng")  or gs  == ("FB")  or gs  == ("FO")  or gs  == ("HK")  or gs  == ("HRD")  or gs  == ("Owner")  or gs  == ("Sales")) and (matches(paylist.str,("*Compliment*")) or matches(paylist.str,r"*Compl*") or matches(paylist.str,r"*Entertaint*") or matches(paylist.str,r"*Officer Check*")):
+                    if (gs.lower()  == ("Compl").lower()  or gs.lower()  == ("Compliment").lower()  or gs.lower()  == ("A&G").lower()  or gs.lower()  == ("Eng").lower()  or gs.lower()  == ("FB").lower()  or gs.lower()  == ("FO").lower()  or gs.lower()  == ("HK").lower()  or gs.lower()  == ("HRD").lower()  or gs.lower()  == ("Owner").lower()  or gs.lower()  == ("Sales").lower()) and (matches(paylist.str,("*Compliment*")) or matches(paylist.str,r"*Compl*") or matches(paylist.str,r"*Entertaint*") or matches(paylist.str,r"*Officer Check*")):
                         t_print_line.descrip = trim(substring(translateExtended (entry(0, paylist.str, "|") , lvcarea, "") , length(gs) - 1))
                     else:
                         t_print_line.descrip = translateExtended (trim(entry(0, paylist.str, "|")) , lvcarea, "")

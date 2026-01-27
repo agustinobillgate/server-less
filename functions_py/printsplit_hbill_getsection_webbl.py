@@ -1,6 +1,9 @@
-#using conversion tools version: 1.0.0.117
+#using conversion tools version: 1.0.0.119
 #-------------------------------------------------------
 # Rd, 28/11/2025, with_for_update added
+
+# Rulita, 19/01/2026
+# Fixing input param session:parameter in cloud string ""
 #-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -54,7 +57,7 @@ def printsplit_hbill_getsection_webbl(pvilanguage:int, user_init:string, print_a
     t_printer_data, T_printer = create_model_like(Printer)
     output_list_data, Output_list = create_model("Output_list", {"str":string, "pos":int, "flag_popup":bool, "npause":int, "sort_i":int})
     print_list_data, Print_list = create_model("Print_list", {"str":string, "str_pos":int, "pos":int, "flag_popup":bool, "npause":int, "sort_i":int})
-    outlet_split_bill_data, Outlet_split_bill = create_model("Outlet_split_bill", {"sort_i":int, "str_date":string, "str_time":string, "bill_no":string, "resto_name":string, "table_usr_id":string, "curr_time":string, "guest_name":string, "guest_member":string, "od_taker":string, "str_qty":string, "descrip":string, "str_price":string, "foot_note1":string, "foot_note2":string, "foot_note3":string}, {"str_date": "", "str_time": "", "bill_no": "", "resto_name": "", "table_usr_id": "", "curr_time": "", "guest_name": "", "guest_member": "", "od_taker": "", "str_qty": "", "descrip": "", "str_price": "", "foot_note1": "", "foot_note2": "", "foot_note3": ""})
+    outlet_split_bill_data, Outlet_split_bill = create_model("Outlet_split_bill", {"sort_i":int, "str_date":string, "str_time":string, "bill_no":string, "resto_name":string, "table_usr_id":string, "curr_time":string, "guest_name":string, "guest_member":string, "od_taker":string, "str_qty":string, "descrip":string, "str_price":string, "foot_note1":string, "foot_note2":string, "foot_note3":string, "ismain":bool, "empty_line":bool}, {"str_date": "", "str_time": "", "bill_no": "", "resto_name": "", "table_usr_id": "", "curr_time": "", "guest_name": "", "guest_member": "", "od_taker": "", "str_qty": "", "descrip": "", "str_price": "", "foot_note1": "", "foot_note2": "", "foot_note3": "", "ismain": True})
 
     Paylist = Print_list
     paylist_data = print_list_data
@@ -79,26 +82,33 @@ def printsplit_hbill_getsection_webbl(pvilanguage:int, user_init:string, print_a
         msg_str = "1-Printer Not Found."
 
         return generate_output()
-    print_all, winprinterflag, filename, msg_str, print_list_data, t_printer_data = get_output(pr_sphbill1_cldbl(pvilanguage, hbrecid, printnr, use_h_queasy, session:parameter, user_init, billnr, print_all))
+    
+    # Rulita, 19/01/2026
+    # Fixing input param session:parameter in cloud string ""
+    # print_all, winprinterflag, filename, msg_str, print_list_data, t_printer_data = get_output(pr_sphbill1_cldbl(pvilanguage, hbrecid, printnr, use_h_queasy, session:parameter, user_init, billnr, print_all))
+    print_all, winprinterflag, filename, msg_str, print_list_data, t_printer_data = get_output(pr_sphbill1_cldbl(pvilanguage, hbrecid, printnr, use_h_queasy, "", user_init, billnr, print_all))
 
     if msg_str != "":
 
         return generate_output()
 
-    for print_list in query(print_list_data, sort_by=[("str_pos",False)]):
+    for print_list in query(print_list_data, sort_by=[("str_pos",False),("sort_i",False)]):
         outlet_split_bill = Outlet_split_bill()
         outlet_split_bill_data.append(outlet_split_bill)
 
         outlet_split_bill.sort_i = print_list.sort_i
+        outlet_split_bill.empty_line = True
 
         if print_list.str_pos == 1:
             outlet_split_bill.str_date = trim(entry(0, print_list.str, "|"))
             outlet_split_bill.str_time = trim(entry(1, print_list.str, "|"))
             outlet_split_bill.bill_no = trim(entry(3, print_list.str, "|"))
             outlet_split_bill.curr_time = to_string(get_current_time_in_seconds(), "HH:MM:SS")
+            outlet_split_bill.empty_line = False
 
         elif print_list.str_pos == 2:
             outlet_split_bill.resto_name = trim(print_list.str)
+            outlet_split_bill.empty_line = False
 
         elif print_list.str_pos == 3:
             table_no = trim(entry(1, print_list.str, "|"))
@@ -107,6 +117,7 @@ def printsplit_hbill_getsection_webbl(pvilanguage:int, user_init:string, print_a
 
 
             outlet_split_bill.table_usr_id = translateExtended ("Table", lvcarea, "") + " " + table_no + "/" + usr_id.upper() + split_no
+            outlet_split_bill.empty_line = False
 
         elif print_list.str_pos == 5:
             outlet_split_bill.guest_name = trim(entry(1, print_list.str, "|"))
@@ -115,18 +126,28 @@ def printsplit_hbill_getsection_webbl(pvilanguage:int, user_init:string, print_a
 
             if num_entries(print_list.str, "|") > 2 and guest_name != "":
                 outlet_split_bill.guest_name = outlet_split_bill.guest_name + " | " + trim(entry(2, print_list.str, "|"))
+            outlet_split_bill.empty_line = False
 
         elif print_list.str_pos == 8:
             outlet_split_bill.guest_member = trim(print_list.str)
+            outlet_split_bill.empty_line = False
 
         elif print_list.str_pos == 10:
             outlet_split_bill.str_qty = trim(entry(0, print_list.str, "|"))
             outlet_split_bill.descrip = trim(entry(1, print_list.str, "|"))
             outlet_split_bill.str_price = trim(entry(2, print_list.str, "|"))
 
+            if trim(entry(3, print_list.str, "|")) == ("1").lower() :
+                outlet_split_bill.ismain = True
+
+            elif trim(entry(3, print_list.str, "|")) == ("2").lower() :
+                outlet_split_bill.ismain = False
+            outlet_split_bill.empty_line = False
+
         elif print_list.str_pos == 11:
             outlet_split_bill.descrip = trim(entry(0, print_list.str, "|"))
             outlet_split_bill.str_price = trim(entry(1, print_list.str, "|"))
+            outlet_split_bill.empty_line = False
 
 
             outlet_split_bill = Outlet_split_bill()
@@ -135,25 +156,30 @@ def printsplit_hbill_getsection_webbl(pvilanguage:int, user_init:string, print_a
             outlet_split_bill.sort_i = -1
             outlet_split_bill.descrip = fill("-", 42)
             outlet_split_bill.str_price = fill("-", 19)
+            outlet_split_bill.empty_line = False
 
         elif print_list.str_pos == 12 and matches(print_list.str,r"*Service*"):
             outlet_split_bill.descrip = translateExtended (trim(entry(0, print_list.str, "|")) , lvcarea, "")
             outlet_split_bill.str_price = trim(entry(1, print_list.str, "|"))
+            outlet_split_bill.empty_line = False
 
         elif print_list.str_pos == 12 and matches(print_list.str,r"*gov*"):
             outlet_split_bill.descrip = translateExtended (trim(entry(0, print_list.str, "|")) , lvcarea, "")
             outlet_split_bill.str_price = trim(entry(1, print_list.str, "|"))
+            outlet_split_bill.empty_line = False
 
         elif print_list.str_pos == 13:
             outlet_split_bill.sort_i = -1
             outlet_split_bill.descrip = fill("-", 42)
             outlet_split_bill.str_price = fill("-", 19)
+            outlet_split_bill.empty_line = False
             outlet_split_bill = Outlet_split_bill()
             outlet_split_bill_data.append(outlet_split_bill)
 
             outlet_split_bill.sort_i = print_list.sort_i
             outlet_split_bill.descrip = translateExtended ("TOTAL", lvcarea, "")
             outlet_split_bill.str_price = trim(entry(1, print_list.str, "|"))
+            outlet_split_bill.empty_line = False
 
         elif print_list.str_pos == 14:
 
@@ -169,21 +195,25 @@ def printsplit_hbill_getsection_webbl(pvilanguage:int, user_init:string, print_a
             else:
                 outlet_split_bill.descrip = translateExtended (trim(entry(0, print_list.str, "|")) , lvcarea, "")
             outlet_split_bill.str_price = trim(entry(1, print_list.str, "|"))
+            outlet_split_bill.empty_line = False
 
         elif print_list.str_pos == 16:
             outlet_split_bill.descrip = translateExtended (trim(entry(0, print_list.str, "|")) , lvcarea, "")
             outlet_split_bill.str_price = trim(entry(1, print_list.str, "|"))
+            outlet_split_bill.empty_line = False
 
         elif print_list.str_pos == 15:
             outlet_split_bill.sort_i = -1
             outlet_split_bill.descrip = fill("-", 42)
             outlet_split_bill.str_price = fill("-", 19)
+            outlet_split_bill.empty_line = False
             outlet_split_bill = Outlet_split_bill()
             outlet_split_bill_data.append(outlet_split_bill)
 
             outlet_split_bill.sort_i = print_list.sort_i
             outlet_split_bill.descrip = translateExtended (trim(entry(0, print_list.str, "|")) , lvcarea, "")
             outlet_split_bill.str_price = trim(entry(1, print_list.str, "|"))
+            outlet_split_bill.empty_line = False
 
         elif print_list.str_pos == 17:
 
@@ -197,18 +227,24 @@ def printsplit_hbill_getsection_webbl(pvilanguage:int, user_init:string, print_a
             if print_list.str == None:
                 print_list.str = ""
             outlet_split_bill.foot_note1 = trim(print_list.str)
+            outlet_split_bill.empty_line = False
 
         elif print_list.str_pos == 20:
 
             if print_list.str == None:
                 print_list.str = ""
             outlet_split_bill.foot_note2 = trim(print_list.str)
+            outlet_split_bill.empty_line = False
 
         elif print_list.str_pos == 21:
 
             if print_list.str == None:
                 print_list.str = ""
             outlet_split_bill.foot_note3 = trim(print_list.str)
+            outlet_split_bill.empty_line = False
+
+    for outlet_split_bill in query(outlet_split_bill_data, filters=(lambda outlet_split_bill: outlet_split_bill.empty_line)):
+        outlet_split_bill_data.remove(outlet_split_bill)
 
     # h_bill = get_cache (H_bill, {"_recid": [(eq, hbrecid)]})
     h_bill = db_session.query(H_bill).filter(H_bill._recid == hbrecid).with_for_update().first()

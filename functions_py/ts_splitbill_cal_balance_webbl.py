@@ -1,6 +1,10 @@
-#using conversion tools version: 1.0.0.119
+# using conversion tools version: 1.0.0.119
+"""_yusufwijasena_24/11/2025
+        _issue_:    - cannot post item on split bill
+                    - fix h_artikel.departement eq ordered_item.dept
+"""
 # =========================================
-# Rulita, 06/01/2026
+# Rulita, 13/01/2026
 # - Recompile program update fitur sub menu
 # =========================================
 
@@ -126,7 +130,6 @@ def ts_splitbill_cal_balance_webbl(curr_dept:int, curr_select:int, t_rechnr:int)
 
     if hoteldpt:
         servtax_use_foart = hoteldpt.defult
-        
     serv_vat = get_output(htplogic(479))
     tax_vat = get_output(htplogic(483))
 
@@ -151,6 +154,7 @@ def ts_splitbill_cal_balance_webbl(curr_dept:int, curr_select:int, t_rechnr:int)
             buffer_copy(h_bill_line, t_h_bill_line)
             t_h_bill_line.rec_id = h_bill_line._recid
 
+
             ordered_item = Ordered_item()
             ordered_item_data.append(ordered_item)
 
@@ -162,6 +166,7 @@ def ts_splitbill_cal_balance_webbl(curr_dept:int, curr_select:int, t_rechnr:int)
             ordered_item.net_bet =  to_decimal(t_h_bill_line.nettobetrag)
             ordered_item.bill_date = t_h_bill_line.bill_datum
             ordered_item.betrag =  to_decimal(t_h_bill_line.betrag)
+
 
             t_h_bill_line.menu_flag = 1
 
@@ -213,6 +218,7 @@ def ts_splitbill_cal_balance_webbl(curr_dept:int, curr_select:int, t_rechnr:int)
                             t_h_bill_line.segmentcode = None
                             t_h_bill_line.transferred = None
 
+
     else:
 
         for h_bill_line in db_session.query(H_bill_line).filter(
@@ -235,6 +241,7 @@ def ts_splitbill_cal_balance_webbl(curr_dept:int, curr_select:int, t_rechnr:int)
             ordered_item.net_bet =  to_decimal(t_h_bill_line.nettobetrag)
             ordered_item.bill_date = t_h_bill_line.bill_datum
             ordered_item.betrag =  to_decimal(t_h_bill_line.betrag)
+
 
             t_h_bill_line.menu_flag = 1
 
@@ -298,12 +305,15 @@ def ts_splitbill_cal_balance_webbl(curr_dept:int, curr_select:int, t_rechnr:int)
         h_artikel = get_cache (H_artikel, {"departement": [(eq, ordered_item.dept)],"artnr": [(eq, ordered_item.artnr)],"artart": [(eq, 0)]})
 
         if h_artikel:
-            netto_bet = to_decimal(netto_bet) + to_decimal((ordered_item.epreis) * to_decimal(ordered_item.qty))
+            netto_bet =  to_decimal(netto_bet) + to_decimal((ordered_item.epreis) * to_decimal(ordered_item.qty))
 
             if not servtax_use_foart:
                 serv_code = h_artikel.service_code
                 vat_code = h_artikel.mwst_code
+
+
             else:
+
                 artikel = get_cache (Artikel, {"artnr": [(eq, h_artikel.artnrfront)],"departement": [(eq, h_artikel.departement)]})
 
                 if artikel:
@@ -322,6 +332,8 @@ def ts_splitbill_cal_balance_webbl(curr_dept:int, curr_select:int, t_rechnr:int)
 
                         if num_entries(htparam.fchar, chr_unicode(2)) >= 2:
                             t_h_service =  to_decimal(to_decimal(entry(1 , htparam.fchar , chr_unicode(2)))) / to_decimal("10000")
+
+
                         else:
                             t_h_service =  to_decimal(htparam.fdecimal)
 
@@ -333,21 +345,25 @@ def ts_splitbill_cal_balance_webbl(curr_dept:int, curr_select:int, t_rechnr:int)
 
                         if num_entries(htparam.fchar, chr_unicode(2)) >= 2:
                             t_h_mwst =  to_decimal(to_decimal(entry(1 , htparam.fchar , chr_unicode(2)))) / to_decimal("10000")
+
+
                         else:
                             t_h_mwst =  to_decimal(htparam.fdecimal)
 
                         if serv_vat and not tax_vat:
                             t_h_mwst =  to_decimal(t_h_mwst) + to_decimal(t_h_mwst) * to_decimal(t_h_service) / to_decimal("100")
+
                         elif serv_vat and tax_vat:
                             t_h_mwst =  to_decimal(t_h_mwst) + to_decimal(t_h_mwst) * to_decimal((t_h_service) + to_decimal(t_h_mwst2)) / to_decimal("100")
+
                         elif not serv_vat and tax_vat:
                             t_h_mwst =  to_decimal(t_h_mwst) + to_decimal(t_h_mwst) * to_decimal(t_h_mwst2) / to_decimal("100")
-
                         ct = replace_str(to_string(t_h_mwst) , ".", ",")
                         l_deci = length(entry(1, ct, ","))
 
                         if l_deci <= 2:
                             t_h_mwst = to_decimal(round(t_h_mwst , 2))
+
                         elif l_deci == 3:
                             t_h_mwst = to_decimal(round(t_h_mwst , 3))
                         else:
@@ -357,6 +373,7 @@ def ts_splitbill_cal_balance_webbl(curr_dept:int, curr_select:int, t_rechnr:int)
                     t_h_service =  to_decimal(t_h_service) / to_decimal("100")
                     t_h_mwst =  to_decimal(t_h_mwst) / to_decimal("100")
                     t_h_mwst2 =  to_decimal(t_h_mwst2) / to_decimal("100")
+
 
                     fact_scvat =  to_decimal("1") + to_decimal(t_h_service) + to_decimal(t_h_mwst) + to_decimal(t_h_mwst2)
                     h_service =  to_decimal(ordered_item.betrag) / to_decimal(fact_scvat) * to_decimal(t_h_service)
@@ -380,6 +397,8 @@ def ts_splitbill_cal_balance_webbl(curr_dept:int, curr_select:int, t_rechnr:int)
 
                         if num_entries(htparam.fchar, chr_unicode(2)) >= 2:
                             t_h_service =  to_decimal(to_decimal(entry(1 , htparam.fchar , chr_unicode(2)))) / to_decimal("10000")
+
+
                         else:
                             t_h_service =  to_decimal(htparam.fdecimal)
 
@@ -391,21 +410,25 @@ def ts_splitbill_cal_balance_webbl(curr_dept:int, curr_select:int, t_rechnr:int)
 
                         if num_entries(htparam.fchar, chr_unicode(2)) >= 2:
                             t_h_mwst =  to_decimal(to_decimal(entry(1 , htparam.fchar , chr_unicode(2)))) / to_decimal("10000")
+
+
                         else:
                             t_h_mwst =  to_decimal(htparam.fdecimal)
 
                         if serv_vat and not tax_vat:
                             t_h_mwst =  to_decimal(t_h_mwst) + to_decimal(t_h_mwst) * to_decimal(t_h_service) / to_decimal("100")
+
                         elif serv_vat and tax_vat:
                             t_h_mwst =  to_decimal(t_h_mwst) + to_decimal(t_h_mwst) * to_decimal((t_h_service) + to_decimal(t_h_mwst2)) / to_decimal("100")
+
                         elif not serv_vat and tax_vat:
                             t_h_mwst =  to_decimal(t_h_mwst) + to_decimal(t_h_mwst) * to_decimal(t_h_mwst2) / to_decimal("100")
-
                         ct = replace_str(to_string(t_h_mwst) , ".", ",")
                         l_deci = length(entry(1, ct, ","))
 
                         if l_deci <= 2:
                             t_h_mwst = to_decimal(round(t_h_mwst , 2))
+
                         elif l_deci == 3:
                             t_h_mwst = to_decimal(round(t_h_mwst , 3))
                         else:
@@ -417,6 +440,7 @@ def ts_splitbill_cal_balance_webbl(curr_dept:int, curr_select:int, t_rechnr:int)
                         t_h_service =  to_decimal(t_h_service) / to_decimal("100")
                         t_h_mwst =  to_decimal(t_h_mwst) / to_decimal("100")
                         t_h_mwst2 =  to_decimal(t_h_mwst2) / to_decimal("100")
+
 
                         fact_scvat =  to_decimal("1") + to_decimal(t_h_service) + to_decimal(t_h_mwst) + to_decimal(t_h_mwst2)
                         h_service =  to_decimal(ordered_item.betrag) / to_decimal(fact_scvat) * to_decimal(t_h_service)
@@ -430,7 +454,6 @@ def ts_splitbill_cal_balance_webbl(curr_dept:int, curr_select:int, t_rechnr:int)
                         if not incl_mwst:
                             mwst =  to_decimal(mwst) + to_decimal(h_mwst)
                             mwst1 =  to_decimal(mwst1) + to_decimal(h_mwst)
-
             ordered_item.service =  to_decimal(service)
             ordered_item.tax =  to_decimal(mwst)
 
@@ -438,7 +461,6 @@ def ts_splitbill_cal_balance_webbl(curr_dept:int, curr_select:int, t_rechnr:int)
         sub_tot =  to_decimal(netto_bet)
         tot_serv =  to_decimal(tot_serv) + to_decimal(ordered_item.service)
         tot_tax =  to_decimal(tot_tax) + to_decimal(ordered_item.tax)
-        
     grand_tot =  to_decimal(sub_tot) + to_decimal(tot_serv) + to_decimal(tot_tax)
     summary_bill = Summary_bill()
     summary_bill_data.append(summary_bill)

@@ -1,6 +1,10 @@
 #using conversion tools version: 1.0.0.117
 #-------------------------------------------------------
 # Rd, 01/12/2025, with_for_update added
+
+# Rulita, 19/01/2026
+# Fixing code from == dept -> == h_mjourn.departement
+# Fixing code from hbill.billnr -> h_bill.billnr
 #-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -742,7 +746,7 @@ def print_hbill1_phbl(pvilanguage:int, session_parameter:string, user_init:strin
                  (H_mjourn.departement == art_list.dept) & (H_mjourn.h_artnr == art_list.artnr) & (H_mjourn.rechnr == h_bill.rechnr) & (H_mjourn.bill_datum == art_list.datum) & (H_mjourn.sysdate == art_list.sysdate) & (H_mjourn.zeit == art_list.zeit)).order_by(H_mjourn._recid).all():
 
             h_art = db_session.query(H_art).filter(
-                     (H_art.artnr == h_mjourn.artnr) & (H_art.departement == dept)).first()
+                     (H_art.artnr == h_mjourn.artnr) & (H_art.departement == h_mjourn.departement)).first()
 
             if h_art:
                 bezeich = h_art.bezeich
@@ -2391,7 +2395,7 @@ def print_hbill1_phbl(pvilanguage:int, session_parameter:string, user_init:strin
                         h_queasy.number1 = (h_bill.departement +\
                                 h_bill.rechnr * 100)
                         h_queasy.number2 = to_int(h_bill_line._recid)
-                        h_queasy.billno = hbill.billnr
+                        h_queasy.billno = h_bill.billnr
 
             if new_item or print_all:
                 printed = False

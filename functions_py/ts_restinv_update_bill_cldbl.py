@@ -1,4 +1,4 @@
-#using conversion tools version: 1.0.0.117
+#using conversion tools version: 1.0.0.119
 #---------------------------------------------------------------------
 # Rd, 24/11/2025, Update last counter dengan next_counter_for_update
 #---------------------------------------------------------------------
@@ -824,7 +824,7 @@ def ts_restinv_update_bill_cldbl(pvilanguage:int, rec_id:int, rec_id_h_artikel:i
 
         if not cancel_order:
 
-            for submenu_list in query(submenu_list_data, filters=(lambda submenu_list: submenu_list.nr == h_artikel.betriebsnr and submenu_list.menurecid == menurecid)):
+            for submenu_list in query(submenu_list_data, filters=(lambda submenu_list: submenu_list.nr == h_artikel.betriebsnr)):
                 submenu_list.zeit = zeit
                 h_mjourn = H_mjourn()
                 db_session.add(h_mjourn)
@@ -835,9 +835,9 @@ def ts_restinv_update_bill_cldbl(pvilanguage:int, rec_id:int, rec_id_h_artikel:i
                 h_mjourn.nr = submenu_list.nr
                 h_mjourn.artnr = submenu_list.artnr
                 h_mjourn.h_artnr = h_artikel.artnr
-                h_mjourn.anzahl = qty
+                h_mjourn.anzahl = submenu_list.anzahl
                 h_mjourn.zeit = zeit
-                h_mjourn.request = submenu_list.request
+                h_mjourn.request = to_string(recid_h_bill_line) + "|" + submenu_list.request
                 h_mjourn.kellner_nr = curr_waiter
                 h_mjourn.bill_datum = bill_date
                 h_mjourn.sysdate = sysdate
@@ -886,12 +886,6 @@ def ts_restinv_update_bill_cldbl(pvilanguage:int, rec_id:int, rec_id_h_artikel:i
 
     elif pay_type == 2:
         h_journal.zinr = transfer_zinr
-
-    if condiment:
-        h_bill_line.betriebsnr = 1
-        h_journal.betriebsnr = 1
-
-
     pass
     pass
 

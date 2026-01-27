@@ -1,10 +1,13 @@
-#using conversion tools version: 1.0.0.117
+#using conversion tools version: 1.0.0.119
 
 # =======================================
 # Rulita, 15-10-2025 
 # Tiket ID : 6526C2 | New compile program
 # =======================================
 # Rd, 27/11/2025, with_for_update added
+
+# Rulita, 19-01-2026
+# Update program fitur Sub Menu
 # =======================================
 from functions.additional_functions import *
 from decimal import Decimal
