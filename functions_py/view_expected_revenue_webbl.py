@@ -3,6 +3,10 @@
 # Rd, 08/10/2025
 # kurang nama table: t_res_line.
 # perbaikan cara baca data dari query() ke cara standard
+
+# Rulita, 26-01-2026
+# - No data available
+# - change variable query
 #------------------------------------------
 
 from functions.additional_functions import *
@@ -13,6 +17,8 @@ from functions.ratecode_rate import ratecode_rate
 from functions.pricecod_rate import pricecod_rate
 from sqlalchemy import func
 from models import Waehrung, Htparam, Reservation, Res_line, Guest_pr, Zimkateg, Arrangement, Reslin_queasy, Queasy, Katpreis, Argt_line, Artikel, Zwkum, Fixleist
+
+# from functions import log_program
 
 def view_expected_revenue_webbl(pvilanguage:int, resno:int):
 
@@ -385,17 +391,17 @@ def view_expected_revenue_webbl(pvilanguage:int, resno:int):
 
                             if argt_line.vt_percnt == 0:
                                 
-                                query = db_session.query(Reslin_queasy).filter((Reslin_queasy.key == 'fargt-line') & (Reslin_queasy.char1 == '') & (Reslin_queasy.number1 == argt_line.departement) & (Reslin_queasy.number2 == argt_line.argtnr) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (Reslin_queasy.date1 <= bill_date) & (Reslin_queasy.date2 >= bill_date) & (Reslin_queasy.deci1 != 0))
+                                tmp_query = db_session.query(Reslin_queasy).filter((Reslin_queasy.key == 'fargt-line') & (Reslin_queasy.char1 == '') & (Reslin_queasy.number1 == argt_line.departement) & (Reslin_queasy.number2 == argt_line.argtnr) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (Reslin_queasy.date1 <= bill_date) & (Reslin_queasy.date2 >= bill_date) & (Reslin_queasy.deci1 != 0))
 
                             elif argt_line.vt_percnt == 1:
 
-                                query = db_session.query(Reslin_queasy).filter((Reslin_queasy.key == 'fargt-line') & (Reslin_queasy.char1 == '') & (Reslin_queasy.number1 == argt_line.departement) & (Reslin_queasy.number2 == argt_line.argtnr) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (Reslin_queasy.date1 <= bill_date) & (Reslin_queasy.date2 >= bill_date) & (Reslin_queasy.deci2 != 0))
+                                tmp_query = db_session.query(Reslin_queasy).filter((Reslin_queasy.key == 'fargt-line') & (Reslin_queasy.char1 == '') & (Reslin_queasy.number1 == argt_line.departement) & (Reslin_queasy.number2 == argt_line.argtnr) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (Reslin_queasy.date1 <= bill_date) & (Reslin_queasy.date2 >= bill_date) & (Reslin_queasy.deci2 != 0))
 
                             elif argt_line.vt_percnt == 2:
 
-                                query = db_session.query(Reslin_queasy).filter((Reslin_queasy.key == 'fargt-line') & (Reslin_queasy.char1 == '') & (Reslin_queasy.number1 == argt_line.departement) & (Reslin_queasy.number2 == argt_line.argtnr) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (Reslin_queasy.date1 <= bill_date) & (Reslin_queasy.date2 >= bill_date) & (Reslin_queasy.deci3 != 0))
+                                tmp_query = db_session.query(Reslin_queasy).filter((Reslin_queasy.key == 'fargt-line') & (Reslin_queasy.char1 == '') & (Reslin_queasy.number1 == argt_line.departement) & (Reslin_queasy.number2 == argt_line.argtnr) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (Reslin_queasy.date1 <= bill_date) & (Reslin_queasy.date2 >= bill_date) & (Reslin_queasy.deci3 != 0))
                                 
-                            for reslin_queasy in query.all():
+                            for reslin_queasy in tmp_query.all():
 
                                 argt_defined = True
 
@@ -449,18 +455,18 @@ def view_expected_revenue_webbl(pvilanguage:int, resno:int):
 
                                 if argt_line.vt_percnt == 0:
 
-                                    query = db_session.query(Reslin_queasy).filter((Reslin_queasy.key == 'argt-line') & (Reslin_queasy.char1 == t_res_line.contcode) & (Reslin_queasy.number1 == res_line.reserve_int) & (Reslin_queasy.number2 == arrangement.argtnr) & (Reslin_queasy.reslinnr == curr_zikatnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (Reslin_queasy.resnr == argt_line.departement) & (Reslin_queasy.date1 <= bill_date) & (Reslin_queasy.date2 >= bill_date) & (Reslin_queasy.deci1 != 0))
+                                    tmp_query = db_session.query(Reslin_queasy).filter((Reslin_queasy.key == 'argt-line') & (Reslin_queasy.char1 == t_res_line.contcode) & (Reslin_queasy.number1 == res_line.reserve_int) & (Reslin_queasy.number2 == arrangement.argtnr) & (Reslin_queasy.reslinnr == curr_zikatnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (Reslin_queasy.resnr == argt_line.departement) & (Reslin_queasy.date1 <= bill_date) & (Reslin_queasy.date2 >= bill_date) & (Reslin_queasy.deci1 != 0))
                                     
 
                                 elif argt_line.vt_percnt == 1:
 
-                                    query = db_session.query(Reslin_queasy).filter((Reslin_queasy.key == 'argt-line') & (Reslin_queasy.char1 == t_res_line.contcode) & (Reslin_queasy.number1 == res_line.reserve_int) & (Reslin_queasy.number2 == arrangement.argtnr) & (Reslin_queasy.reslinnr == curr_zikatnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (Reslin_queasy.resnr == argt_line.departement) & (Reslin_queasy.date1 <= bill_date) & (Reslin_queasy.date2 >= bill_date) & (Reslin_queasy.deci1 != 0))
+                                    tmp_query = db_session.query(Reslin_queasy).filter((Reslin_queasy.key == 'argt-line') & (Reslin_queasy.char1 == t_res_line.contcode) & (Reslin_queasy.number1 == res_line.reserve_int) & (Reslin_queasy.number2 == arrangement.argtnr) & (Reslin_queasy.reslinnr == curr_zikatnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (Reslin_queasy.resnr == argt_line.departement) & (Reslin_queasy.date1 <= bill_date) & (Reslin_queasy.date2 >= bill_date) & (Reslin_queasy.deci1 != 0))
 
                                 elif argt_line.vt_percnt == 2:
 
-                                    query = db_session.query(Reslin_queasy).filter((Reslin_queasy.key == 'argt-line') & (Reslin_queasy.char1 == t_res_line.contcode) & (Reslin_queasy.number1 == res_line.reserve_int) & (Reslin_queasy.number2 == arrangement.argtnr) & (Reslin_queasy.reslinnr == curr_zikatnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (Reslin_queasy.resnr == argt_line.departement) & (Reslin_queasy.date1 <= bill_date) & (Reslin_queasy.date2 >= bill_date) & (Reslin_queasy.deci1 != 0))
+                                    tmp_query = db_session.query(Reslin_queasy).filter((Reslin_queasy.key == 'argt-line') & (Reslin_queasy.char1 == t_res_line.contcode) & (Reslin_queasy.number1 == res_line.reserve_int) & (Reslin_queasy.number2 == arrangement.argtnr) & (Reslin_queasy.reslinnr == curr_zikatnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (Reslin_queasy.resnr == argt_line.departement) & (Reslin_queasy.date1 <= bill_date) & (Reslin_queasy.date2 >= bill_date) & (Reslin_queasy.deci1 != 0))
 
-                                for reslin_queasy in query.all():
+                                for reslin_queasy in tmp_query.all():
 
                                     argt_defined = True
 
@@ -605,17 +611,17 @@ def view_expected_revenue_webbl(pvilanguage:int, resno:int):
                             
                             if argt_line.vt_percnt == 0:
 
-                                query = db_session.query(Reslin_queasy).filter((Reslin_queasy.key == 'fargt-line') & (Reslin_queasy.char1 == '') & (Reslin_queasy.number1 == argt_line.departement) & (Reslin_queasy.number2 == argt_line.argtnr) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (Reslin_queasy.date1 <= bill_date) & (Reslin_queasy.date2 >= bill_date) & (Reslin_queasy.deci1 != 0))
+                                tmp_query = db_session.query(Reslin_queasy).filter((Reslin_queasy.key == 'fargt-line') & (Reslin_queasy.char1 == '') & (Reslin_queasy.number1 == argt_line.departement) & (Reslin_queasy.number2 == argt_line.argtnr) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (Reslin_queasy.date1 <= bill_date) & (Reslin_queasy.date2 >= bill_date) & (Reslin_queasy.deci1 != 0))
 
                             elif argt_line.vt_percnt == 1:
 
-                                query = db_session.query(Reslin_queasy).filter((Reslin_queasy.key == 'fargt-line') & (Reslin_queasy.char1 == '') & (Reslin_queasy.number1 == argt_line.departement) & (Reslin_queasy.number2 == argt_line.argtnr) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (Reslin_queasy.date1 <= bill_date) & (Reslin_queasy.date2 >= bill_date) & (Reslin_queasy.deci2 != 0))
+                                tmp_query = db_session.query(Reslin_queasy).filter((Reslin_queasy.key == 'fargt-line') & (Reslin_queasy.char1 == '') & (Reslin_queasy.number1 == argt_line.departement) & (Reslin_queasy.number2 == argt_line.argtnr) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (Reslin_queasy.date1 <= bill_date) & (Reslin_queasy.date2 >= bill_date) & (Reslin_queasy.deci2 != 0))
 
                             elif argt_line.vt_percnt == 2:
 
-                                query = db_session.query(Reslin_queasy).filter((Reslin_queasy.key == 'fargt-line') & (Reslin_queasy.char1 == '') & (Reslin_queasy.number1 == argt_line.departement) & (Reslin_queasy.number2 == argt_line.argtnr) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (Reslin_queasy.date1 <= bill_date) & (Reslin_queasy.date2 >= bill_date) & (Reslin_queasy.deci3 != 0))
+                                tmp_query = db_session.query(Reslin_queasy).filter((Reslin_queasy.key == 'fargt-line') & (Reslin_queasy.char1 == '') & (Reslin_queasy.number1 == argt_line.departement) & (Reslin_queasy.number2 == argt_line.argtnr) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (Reslin_queasy.date1 <= bill_date) & (Reslin_queasy.date2 >= bill_date) & (Reslin_queasy.deci3 != 0))
 
-                            for reslin_queasy in query.all():
+                            for reslin_queasy in tmp_query.all():
                                 argt_defined = True
 
                                 if reslin_queasy.char2  != "" and reslin_queasy.char2  != ("0") :
@@ -668,17 +674,17 @@ def view_expected_revenue_webbl(pvilanguage:int, resno:int):
 
                                 if argt_line.vt_percnt == 0:
 
-                                    query = db_session.query(Reslin_queasy).filter((Reslin_queasy.key == 'argt-line') & (Reslin_queasy.char1 == t_res_line.contcode) & (Reslin_queasy.number1 == res_line.reserve_int) & (Reslin_queasy.number2 == arrangement.argtnr) & (Reslin_queasy.reslinnr == curr_zikatnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (Reslin_queasy.resnr == argt_line.departement) & (Reslin_queasy.date1 <= bill_date) & (Reslin_queasy.date2 >= bill_date) & (Reslin_queasy.deci1 != 0))
+                                    tmp_query = db_session.query(Reslin_queasy).filter((Reslin_queasy.key == 'argt-line') & (Reslin_queasy.char1 == t_res_line.contcode) & (Reslin_queasy.number1 == res_line.reserve_int) & (Reslin_queasy.number2 == arrangement.argtnr) & (Reslin_queasy.reslinnr == curr_zikatnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (Reslin_queasy.resnr == argt_line.departement) & (Reslin_queasy.date1 <= bill_date) & (Reslin_queasy.date2 >= bill_date) & (Reslin_queasy.deci1 != 0))
 
                                 elif argt_line.vt_percnt == 1:
 
-                                    query = db_session.query(Reslin_queasy).filter((Reslin_queasy.key == 'argt-line') & (Reslin_queasy.char1 == t_res_line.contcode) & (Reslin_queasy.number1 == res_line.reserve_int) & (Reslin_queasy.number2 == arrangement.argtnr) & (Reslin_queasy.reslinnr == curr_zikatnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (Reslin_queasy.resnr == argt_line.departement) & (Reslin_queasy.date1 <= bill_date) & (Reslin_queasy.date2 >= bill_date) & (Reslin_queasy.deci2 != 0))
+                                    tmp_query = db_session.query(Reslin_queasy).filter((Reslin_queasy.key == 'argt-line') & (Reslin_queasy.char1 == t_res_line.contcode) & (Reslin_queasy.number1 == res_line.reserve_int) & (Reslin_queasy.number2 == arrangement.argtnr) & (Reslin_queasy.reslinnr == curr_zikatnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (Reslin_queasy.resnr == argt_line.departement) & (Reslin_queasy.date1 <= bill_date) & (Reslin_queasy.date2 >= bill_date) & (Reslin_queasy.deci2 != 0))
 
                                 elif argt_line.vt_percnt == 2:
 
-                                    query = db_session.query(Reslin_queasy).filter((Reslin_queasy.key == 'argt-line') & (Reslin_queasy.char1 == t_res_line.contcode) & (Reslin_queasy.number1 == res_line.reserve_int) & (Reslin_queasy.number2 == arrangement.argtnr) & (Reslin_queasy.reslinnr == curr_zikatnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (Reslin_queasy.resnr == argt_line.departement) & (Reslin_queasy.date1 <= bill_date) & (Reslin_queasy.date2 >= bill_date) & (Reslin_queasy.deci3 != 0))
+                                    tmp_query = db_session.query(Reslin_queasy).filter((Reslin_queasy.key == 'argt-line') & (Reslin_queasy.char1 == t_res_line.contcode) & (Reslin_queasy.number1 == res_line.reserve_int) & (Reslin_queasy.number2 == arrangement.argtnr) & (Reslin_queasy.reslinnr == curr_zikatnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (Reslin_queasy.resnr == argt_line.departement) & (Reslin_queasy.date1 <= bill_date) & (Reslin_queasy.date2 >= bill_date) & (Reslin_queasy.deci3 != 0))
 
-                                for reslin_queasy in query.all():
+                                for reslin_queasy in tmp_query.all():
                                     argt_defined = True
 
                                     if reslin_queasy.deci1 != 0 and argt_line.vt_percnt == 0:
@@ -1341,9 +1347,15 @@ def view_expected_revenue_webbl(pvilanguage:int, resno:int):
 
     if reservation:
         rsv_name = reservation.name
-
-    for res_line in db_session.query(Res_line).filter(
-             (Res_line.resnr == resno) & (Res_line.resstatus != 99) & (not_ (Res_line.resstatus <= 12) & (Res_line.resstatus >= 9))).order_by(Res_line.reslinnr).all():
+    
+    # Rulita, 26-01-2026
+    # No data available
+    resline_data = db_session.query(Res_line).filter(
+             (Res_line.resnr == resno) & 
+             (Res_line.resstatus != 99) &
+                (not_(Res_line.resstatus.between(9, 12)))
+                ).order_by(Res_line.reslinnr)
+    for res_line in resline_data.yield_per(100):
 
         if res_line.abreise > res_line.ankunft:
             abreise_date = res_line.abreise - timedelta(days=1)

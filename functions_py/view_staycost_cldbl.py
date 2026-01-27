@@ -12,55 +12,36 @@ from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 import re
-# from functions.ratecode_rate import ratecode_rate
-# from functions.pricecod_rate import pricecod_rate
-from functions_py.ratecode_rate import ratecode_rate
-from functions_py.pricecod_rate import pricecod_rate
+from functions.ratecode_rate import ratecode_rate
+from functions.pricecod_rate import pricecod_rate
+# from functions_py.ratecode_rate import ratecode_rate
+# from functions_py.pricecod_rate import pricecod_rate
 from models import Reservation, Htparam, Res_line, Arrangement, Guest_pr, Waehrung, Genstat, Reslin_queasy, Queasy, Katpreis, Argt_line, Artikel, Fixleist
 
+from functions import log_program
 
-def view_staycost_cldbl(pvilanguage: int, resnr: int, reslinnr: int, contcode: str, repeat_charge: bool):
+def view_staycost_cldbl(pvilanguage:int, resnr:int, reslinnr:int, contcode:string, repeat_charge:bool):
 
-    prepare_cache([Reservation, Htparam, Res_line, Arrangement, Guest_pr, Genstat, Reslin_queasy, Queasy, Katpreis, Argt_line, Artikel, Fixleist])
+    prepare_cache ([Reservation, Htparam, Res_line, Arrangement, Guest_pr, Genstat, Reslin_queasy, Queasy, Katpreis, Argt_line, Artikel, Fixleist])
 
     output_list_data = []
-    ci_date: date = None
-    new_contrate: bool = False
-    wd_array: List[int] = [7, 1, 2, 3, 4, 5, 6, 7]
-    bonus_array: List[bool] = create_empty_list(999, False)
-    periode: date = None
-    loopi: date = None
+    ci_date:date = None
+    new_contrate:bool = False
+    wd_array:List[int] = [7, 1, 2, 3, 4, 5, 6, 7]
+    bonus_array:List[bool] = create_empty_list(999, False)
+    periode:date = None
+    loopi:date = None
     curr_diff:Decimal = to_decimal("0.0")
-    month_str1: List[int] = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-    month_str2: List[int] = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-    lvcarea: str = "view-staycost"
+    month_str1:List[int] = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+    month_str2:List[int] = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+    lvcarea:string = "view-staycost"
     reservation = htparam = res_line = arrangement = guest_pr = waehrung = genstat = reslin_queasy = queasy = katpreis = argt_line = artikel = fixleist = None
 
     output_list = periode_list = output_list1 = None
 
-    output_list_data, Output_list = create_model(
-        "Output_list",
-        {
-            "flag": int,
-            "str": str,
-            "str1": str
-        })
-    periode_list_data, Periode_list = create_model(
-        "Periode_list",
-        {
-            "counter": int,
-            "periode1": date,
-            "periode2": date,
-            "diff_day": int,
-            "amt_periode": Decimal,
-            "tamount": Decimal
-        })
-    output_list1_data, Output_list1 = create_model(
-        "Output_list1",
-        {
-            "datum": date,
-            "rate": Decimal
-        })
+    output_list_data, Output_list = create_model("Output_list", {"flag":int, "str":string, "str1":string})
+    periode_list_data, Periode_list = create_model("Periode_list", {"counter":int, "periode1":date, "periode2":date, "diff_day":int, "amt_periode":Decimal, "tamount":Decimal})
+    output_list1_data, Output_list1 = create_model("Output_list1", {"datum":date, "rate":Decimal})
 
     db_session = local_storage.db_session
 
@@ -70,23 +51,19 @@ def view_staycost_cldbl(pvilanguage: int, resnr: int, reslinnr: int, contcode: s
         nonlocal output_list, periode_list, output_list1
         nonlocal output_list_data, periode_list_data, output_list1_data
 
-        return {
-            "output-list": output_list_data
-        }
+        return {"output-list": output_list_data}
 
-    def get_rackrate(erwachs: int, kind1: int, kind2: int):
+    def get_rackrate(erwachs:int, kind1:int, kind2:int):
         nonlocal output_list_data, ci_date, new_contrate, wd_array, bonus_array, periode, loopi, curr_diff, month_str1, month_str2, lvcarea, reservation, htparam, res_line, arrangement, guest_pr, waehrung, genstat, reslin_queasy, queasy, katpreis, argt_line, artikel, fixleist
         nonlocal pvilanguage, resnr, reslinnr, contcode, repeat_charge
         nonlocal output_list, periode_list, output_list1
         nonlocal output_list_data, periode_list_data, output_list1_data
 
-        rate: Decimal = to_decimal("0.0")
+        rate:Decimal = to_decimal("0.0")
 
         if erwachs >= 1 and erwachs <= 4:
-            rate = to_decimal(rate) + \
-                to_decimal(katpreis.perspreis[erwachs - 1])
-        rate = to_decimal(rate) + to_decimal(kind1) * to_decimal(
-            katpreis.kindpreis[0] + kind2) * to_decimal(katpreis.kindpreis[1])
+            rate = to_decimal(rate) + to_decimal(katpreis.perspreis[erwachs - 1])
+        rate = to_decimal(rate) + to_decimal(kind1) * to_decimal(katpreis.kindpreis[0] + kind2) * to_decimal(katpreis.kindpreis[1])
         return rate
 
     def check_bonus():
@@ -95,21 +72,21 @@ def view_staycost_cldbl(pvilanguage: int, resnr: int, reslinnr: int, contcode: s
         nonlocal output_list, periode_list, output_list1
         nonlocal output_list_data, periode_list_data, output_list1_data
 
-        i: int = 0
-        j: int = 1
-        k: int = 0
-        n: int = 0
-        stay: int = 0
-        pay: int = 0
-        num_bonus: int = 0
+        i:int = 0
+        j:int = 1
+        k:int = 0
+        n:int = 0
+        stay:int = 0
+        pay:int = 0
+        num_bonus:int = 0
         j = 1
-        for i in range(1, 4 + 1):
+        for i in range(1, 4 + 1) :
             stay = to_int(substring(arrangement.options, j - 1, 2))
             pay = to_int(substring(arrangement.options, j + 2 - 1, 2))
 
             if (stay - pay) > 0:
                 n = num_bonus + pay + 1
-                for k in range(n, stay + 1):
+                for k in range(n, stay + 1) :
                     bonus_array[k - 1] = True
                 num_bonus = stay - pay
             j = j + 4
@@ -120,40 +97,40 @@ def view_staycost_cldbl(pvilanguage: int, resnr: int, reslinnr: int, contcode: s
         nonlocal output_list, periode_list, output_list1
         nonlocal output_list_data, periode_list_data, output_list1_data
 
-        datum: date = None
-        co_date: date = None
-        argt_rate: Decimal = to_decimal("0.0")
-        argt_rate2: Decimal = to_decimal("0.0")
-        rm_rate: Decimal = to_decimal("0.0")
-        daily_rate: Decimal = to_decimal("0.0")
-        tot_rate: Decimal = to_decimal("0.0")
-        add_it: bool = False
-        c = ""
-        fixed_rate: bool = False
-        argt_defined: bool = False
-        delta: int = 0
-        start_date: date = None
-        qty: int = 0
-        it_exist: bool = False
-        exrate1: Decimal = 1
-        ex2: Decimal = 1
-        pax: int = 0
-        child1: int = 0
-        n: int = 0
-        created_date: date = None
-        bill_date: date = None
-        curr_zikatnr: int = 0
-        curr_i: int = 0
-        w_day: int = 0
-        rack_rate: bool = False
-        ebdisc_flag: bool = False
-        kbdisc_flag: bool = False
-        rate_found: bool = False
-        early_flag: bool = False
-        kback_flag: bool = False
-        ratecode_qsy = ""
-        count_break: Decimal = to_decimal("0.0")
-        fixcost_rate: Decimal = to_decimal("0.0")
+        datum:date = None
+        co_date:date = None
+        argt_rate:Decimal = to_decimal("0.0")
+        argt_rate2:Decimal = to_decimal("0.0")
+        rm_rate:Decimal = to_decimal("0.0")
+        daily_rate:Decimal = to_decimal("0.0")
+        tot_rate:Decimal = to_decimal("0.0")
+        add_it:bool = False
+        c:string = ""
+        fixed_rate:bool = False
+        argt_defined:bool = False
+        delta:int = 0
+        start_date:date = None
+        qty:int = 0
+        it_exist:bool = False
+        exrate1:Decimal = 1
+        ex2:Decimal = 1
+        pax:int = 0
+        child1:int = 0
+        n:int = 0
+        created_date:date = None
+        bill_date:date = None
+        curr_zikatnr:int = 0
+        curr_i:int = 0
+        w_day:int = 0
+        rack_rate:bool = False
+        ebdisc_flag:bool = False
+        kbdisc_flag:bool = False
+        rate_found:bool = False
+        early_flag:bool = False
+        kback_flag:bool = False
+        ratecode_qsy:string = ""
+        count_break:Decimal = to_decimal("0.0")
+        fixcost_rate:Decimal = to_decimal("0.0")
         w1 = None
         W1 = create_buffer("W1", Waehrung)
         n = 0
@@ -163,8 +140,7 @@ def view_staycost_cldbl(pvilanguage: int, resnr: int, reslinnr: int, contcode: s
 
         if n > 0:
             c = substring(res_line.zimmer_wunsch, n + 5 - 1, 8)
-            created_date = date_mdy(to_int(substring(c, 4, 2)), to_int(
-                substring(c, 6, 2)), to_int(substring(c, 0, 4)))
+            created_date = date_mdy(to_int(substring(c, 4, 2)), to_int(substring(c, 6, 2)), to_int(substring(c, 0, 4)))
         else:
             created_date = reservation.resdat
         ebdisc_flag = matches(res_line.zimmer_wunsch, ("*ebdisc*"))
@@ -179,9 +155,8 @@ def view_staycost_cldbl(pvilanguage: int, resnr: int, reslinnr: int, contcode: s
             co_date = res_line.abreise - timedelta(days=1)
         else:
             co_date = res_line.abreise
-        
         rm_rate = to_decimal(res_line.zipreis)
-        for datum in date_range(res_line.ankunft, co_date):
+        for datum in date_range(res_line.ankunft, co_date) :
             curr_i = curr_i + 1
             bill_date = datum
             argt_rate = to_decimal("0")
@@ -195,15 +170,13 @@ def view_staycost_cldbl(pvilanguage: int, resnr: int, reslinnr: int, contcode: s
             if datum < ci_date:
                 rm_rate = to_decimal(None)
 
-                genstat = get_cache(
-                    Genstat, {"datum": [(eq, datum)], "resnr": [(eq, res_line.resnr)], "res_int[0]": [(eq, res_line.reslinnr)]})
+                genstat = get_cache (Genstat, {"datum": [(eq, datum)],"resnr": [(eq, res_line.resnr)], "res_int[0]": [(eq, res_line.reslinnr)]})
 
                 if genstat:
                     rm_rate = to_decimal(genstat.zipreis)
                     pax = genstat.erwachs
 
-                    reslin_queasy = get_cache(
-                        Reslin_queasy, {"key": [(eq, "arrangement")], "resnr": [(eq, genstat.resnr)], "reslinnr": [(eq, genstat.res_int[0])], "date1": [(le, datum)], "date2": [(ge, datum)]})
+                    reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "arrangement")], "resnr": [(eq, genstat.resnr)], "reslinnr": [(eq, genstat.res_int[0])], "date1": [(le, datum)], "date2": [(ge, datum)]})
 
                     if reslin_queasy:
                         if reslin_queasy.char2 != "":
@@ -211,16 +184,13 @@ def view_staycost_cldbl(pvilanguage: int, resnr: int, reslinnr: int, contcode: s
                         else:
                             ratecode_qsy = "Undefined"
 
-                    arrangement = get_cache(
-                        Arrangement, {"arrangement": [(eq, genstat.argt)]})
+                    arrangement = get_cache (Arrangement, {"arrangement": [(eq, genstat.argt)]})
 
             if datum >= ci_date or not arrangement:
-                arrangement = get_cache(
-                    Arrangement, {"arrangement": [(eq, res_line.arrangement)]})
+                arrangement = get_cache (Arrangement, {"arrangement": [(eq, res_line.arrangement)]})
 
-            if (datum >= ci_date) or rm_rate is None:
-                reslin_queasy = get_cache(Reslin_queasy, {"key": [(eq, "arrangement")], "resnr": [(
-                    eq, res_line.resnr)], "reslinnr": [(eq, res_line.reslinnr)], "date1": [(le, datum)], "date2": [(ge, datum)]})
+            if (datum >= ci_date) or rm_rate == None:
+                reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "arrangement")], "resnr": [( eq, res_line.resnr)], "reslinnr": [(eq, res_line.reslinnr)], "date1": [(le, datum)], "date2": [(ge, datum)]})
 
                 if reslin_queasy:
                     fixed_rate = True
@@ -235,29 +205,25 @@ def view_staycost_cldbl(pvilanguage: int, resnr: int, reslinnr: int, contcode: s
                         pax = reslin_queasy.number3
 
                     if reslin_queasy.char1 != "":
-                        arrangement = get_cache(
-                            Arrangement, {"arrangement": [(eq, reslin_queasy.char1)]})
+                        arrangement = get_cache (Arrangement, {"arrangement": [(eq, reslin_queasy.char1)]})
 
                 if not fixed_rate:
                     if not it_exist:
                         if guest_pr:
-                            queasy = get_cache(
-                                Queasy, {"key": [(eq, 18)], "number1": [(eq, res_line.reserve_int)]})
+                            queasy = get_cache (Queasy, {"key": [(eq, 18)],"number1": [(eq, res_line.reserve_int)]})
 
                             if queasy and queasy.logi3:
                                 bill_date = res_line.ankunft
 
                             if new_contrate:
-                                rate_found, rm_rate, early_flag, kback_flag = get_output(
-                                    ratecode_rate(ebdisc_flag, kbdisc_flag, res_line.resnr, res_line.reslinnr, contcode, None, bill_date, res_line.ankunft, res_line.abreise, res_line.reserve_int, arrangement.argtnr, curr_zikatnr, res_line.erwachs, res_line.kind1, res_line.kind2, res_line.reserve_dec, res_line.betriebsnr))
+                                rate_found, rm_rate, early_flag, kback_flag = get_output(ratecode_rate(ebdisc_flag, kbdisc_flag, res_line.resnr, res_line.reslinnr, contcode, None, bill_date, res_line.ankunft, res_line.abreise, res_line.reserve_int, arrangement.argtnr, curr_zikatnr, res_line.erwachs, res_line.kind1, res_line.kind2, res_line.reserve_dec, res_line.betriebsnr))
                             else:
-                                rm_rate, rate_found = get_output(
-                                    pricecod_rate(res_line.resnr, res_line.reslinnr, guest_pr.code, bill_date, res_line.ankunft, res_line.abreise, res_line.reserve_int, arrangement.argtnr, curr_zikatnr, res_line.erwachs, res_line.kind1, res_line.kind2, res_line.reserve_dec, res_line.betriebsnr))
+                                rm_rate, rate_found = get_output(pricecod_rate(res_line.resnr, res_line.reslinnr, guest_pr.code, bill_date, res_line.ankunft, res_line.abreise, res_line.reserve_int, arrangement.argtnr, curr_zikatnr, res_line.erwachs, res_line.kind1, res_line.kind2, res_line.reserve_dec, res_line.betriebsnr))
 
                                 if it_exist:
                                     rate_found = True
 
-                                if not it_exist and bonus_array[curr_i - 1]:
+                                if not it_exist and bonus_array[curr_i - 1] :
                                     rm_rate = to_decimal("0")
 
                         if not rate_found:
@@ -266,35 +232,30 @@ def view_staycost_cldbl(pvilanguage: int, resnr: int, reslinnr: int, contcode: s
                             if (bill_date == ci_date) or (bill_date == res_line.ankunft):
                                 rm_rate = to_decimal(res_line.zipreis)
 
-                                katpreis = get_cache(
-                                    Katpreis, {"zikatnr": [(eq, curr_zikatnr)], "argtnr": [(eq, arrangement.argtnr)], "startperiode": [(le, bill_date)], "endperiode": [(ge, bill_date)], "betriebsnr": [(eq, w_day)]})
+                                katpreis = get_cache (Katpreis, {"zikatnr": [(eq, curr_zikatnr)],"argtnr": [(eq, arrangement.argtnr)],"startperiode": [(le, bill_date)],"endperiode": [(ge, bill_date)],"betriebsnr": [(eq, w_day)]})
 
                                 if not katpreis:
-                                    katpreis = get_cache(
-                                        Katpreis, {"zikatnr": [(eq, curr_zikatnr)], "argtnr": [(eq, arrangement.argtnr)], "startperiode": [(le, bill_date)], "endperiode": [(ge, bill_date)], "betriebsnr": [(eq, 0)]})
 
-                                if katpreis and get_rackrate(res_line.erwachs, res_line.kind1, res_line.kind2) == rm_rate:
+                                    katpreis = get_cache (Katpreis, {"zikatnr": [(eq, curr_zikatnr)],"argtnr": [(eq, arrangement.argtnr)],"startperiode": [(le, bill_date)],"endperiode": [(ge, bill_date)],"betriebsnr": [(eq, 0)]})
+
+                                if katpreis and get_rackrate (res_line.erwachs, res_line.kind1, res_line.kind2) == rm_rate:
                                     rack_rate = True
 
                             elif rack_rate:
-                                katpreis = get_cache(
-                                    Katpreis, {"zikatnr": [(eq, curr_zikatnr)], "argtnr": [(eq, arrangement.argtnr)], "startperiode": [(le, bill_date)], "endperiode": [(ge, bill_date)], "betriebsnr": [(eq, w_day)]})
+                                katpreis = get_cache (Katpreis, {"zikatnr": [(eq, curr_zikatnr)],"argtnr": [(eq, arrangement.argtnr)],"startperiode": [(le, bill_date)],"endperiode": [(ge, bill_date)],"betriebsnr": [(eq, w_day)]})
 
                                 if not katpreis:
-                                    katpreis = get_cache(
-                                        Katpreis, {"zikatnr": [(eq, curr_zikatnr)], "argtnr": [(eq, arrangement.argtnr)], "startperiode": [(le, bill_date)], "endperiode": [(ge, bill_date)], "betriebsnr": [(eq, 0)]})
+                                    katpreis = get_cache (Katpreis, {"zikatnr": [(eq, curr_zikatnr)],"argtnr": [(eq, arrangement.argtnr)],"startperiode": [(le, bill_date)],"endperiode": [(ge, bill_date)],"betriebsnr": [(eq, 0)]})
 
-                                if katpreis and get_rackrate(res_line.erwachs, res_line.kind1, res_line.kind2) > 0:
-                                    rm_rate = to_decimal(get_rackrate(
-                                        res_line.erwachs, res_line.kind1, res_line.kind2))
+                                if katpreis and get_rackrate (res_line.erwachs, res_line.kind1, res_line.kind2) > 0:
+                                    rm_rate = to_decimal(get_rackrate (res_line.erwachs, res_line.kind1, res_line.kind2))
 
-                            if bonus_array[curr_i - 1]:
+                            if bonus_array[curr_i - 1] :
                                 rm_rate = to_decimal("0")
             output_list = Output_list()
             output_list_data.append(output_list)
 
-            str = to_string(datum) + "   " + translateExtended("Roomrate", lvcarea, "") + \
-                "   = " + trim(to_string(rm_rate, "->>>,>>>,>>9.99")) + " - " + trim(ratecode_qsy)
+            output_list.str = to_string(datum) + "   " + translateExtended ("Roomrate", lvcarea, "") + "   = " + trim(to_string(rm_rate, "->>>,>>>,>>9.99")) + " - " + trim(ratecode_qsy)
             tot_rate = to_decimal(tot_rate) + to_decimal(rm_rate)
             daily_rate = to_decimal(rm_rate)
             count_break = to_decimal("0")
@@ -339,42 +300,34 @@ def view_staycost_cldbl(pvilanguage: int, resnr: int, reslinnr: int, contcode: s
                                 add_it = True
 
                     if add_it:
-                        artikel = get_cache(
-                            Artikel, {"artnr": [(eq, argt_line.argt_artnr)], "departement": [(eq, argt_line.departement)]})
+                        artikel = get_cache (Artikel, {"artnr": [(eq, argt_line.argt_artnr)],"departement": [(eq, argt_line.departement)]})
                         argt_rate = to_decimal("0")
                         argt_rate2 = to_decimal(argt_line.betrag)
                         argt_defined = False
 
-                        reslin_queasy = get_cache(
-                            Reslin_queasy, {"key": [(eq, "fargt-line")], "char1": [(eq, "")], "number1": [(eq, argt_line.departement)], "number2": [(eq, argt_line.argtnr)], "resnr": [(eq, res_line.resnr)], "reslinnr": [(eq, res_line.reslinnr)], "number3": [(eq, argt_line.argt_artnr)], "date1": [(le, bill_date)], "date2": [(ge, bill_date)]})
+                        reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "fargt-line")],"char1": [(eq, "")],"number1": [(eq, argt_line.departement)],"number2": [(eq, argt_line.argtnr)],"resnr": [(eq, res_line.resnr)],"reslinnr": [(eq, res_line.reslinnr)],"number3": [(eq, argt_line.argt_artnr)],"date1": [(le, bill_date)],"date2": [(ge, bill_date)]})
 
                         if reslin_queasy:
                             for reslin_queasy in db_session.query(Reslin_queasy).filter(
-                                    (Reslin_queasy.key == "fargt-line") & (Reslin_queasy.char1 == "") & (Reslin_queasy.number1 == argt_line.departement) & (Reslin_queasy.number2 == argt_line.argtnr) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (bill_date >= Reslin_queasy.date1) & (bill_date <= Reslin_queasy.date2)).order_by(Reslin_queasy._recid).all():
+                                    (Reslin_queasy.key == ("fargt-line").lower()) & (Reslin_queasy.char1 == "") & (Reslin_queasy.number1 == argt_line.departement) & (Reslin_queasy.number2 == argt_line.argtnr) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (bill_date >= Reslin_queasy.date1) & (bill_date <= Reslin_queasy.date2)).order_by(Reslin_queasy._recid).all():
                                 argt_defined = True
 
-                                if reslin_queasy.char2.lower() != "" and reslin_queasy.char2.lower() != "0":
-                                    argt_rate = to_decimal(
-                                        rm_rate) * to_decimal(to_int(reslin_queasy.char2)) / to_decimal("100")
+                                if reslin_queasy.char2.lower() != "" and reslin_queasy.char2.lower() != ("0").lower() :
+                                    argt_rate = to_decimal(rm_rate) * to_decimal(to_int(reslin_queasy.char2)) / to_decimal("100")
                                 else:
                                     if reslin_queasy.deci1 != 0:
-                                        argt_rate = to_decimal(
-                                            reslin_queasy.deci1)
+                                        argt_rate = to_decimal(reslin_queasy.deci1)
 
                                     elif reslin_queasy.deci2 != 0:
-                                        argt_rate = to_decimal(
-                                            reslin_queasy.deci2)
+                                        argt_rate = to_decimal(reslin_queasy.deci2)
 
                                     elif reslin_queasy.deci3 != 0:
-                                        argt_rate = to_decimal(
-                                            reslin_queasy.deci3)
+                                        argt_rate = to_decimal(reslin_queasy.deci3)
 
                                 if argt_rate > 0:
-                                    argt_rate = to_decimal(
-                                        argt_rate) * to_decimal(qty)
+                                    argt_rate = to_decimal(argt_rate) * to_decimal(qty)
                                 else:
-                                    argt_rate = (to_decimal(
-                                        rm_rate) * to_decimal(- to_decimal(argt_rate) / to_decimal(100))) * to_decimal(qty)
+                                    argt_rate = ( to_decimal(rm_rate) * to_decimal(- to_decimal(argt_rate) / to_decimal(100))) * to_decimal(qty)
 
                                 if argt_rate != 0:
                                     output_list = Output_list()
@@ -382,39 +335,30 @@ def view_staycost_cldbl(pvilanguage: int, resnr: int, reslinnr: int, contcode: s
 
                                     output_list.flag = 1
                                     c = to_string(qty) + " " + artikel.bezeich
-                                    str = to_string(translateExtended("     Incl.", lvcarea, ""), "x(10)") + \
-                                        " " + to_string(c, "x(16)") + \
-                                        " = " + trim(to_string(argt_rate, "->>>,>>>,>>9.99"))
-                                    count_break = to_decimal(
-                                        count_break) + to_decimal(argt_rate)
+                                    output_list.str = to_string(translateExtended ("     Incl.", lvcarea, ""), "x(10)") + " " + to_string(c, "x(16)") + " = " + trim(to_string(argt_rate, "->>>,>>>,>>9.99"))
+                                    count_break = to_decimal(count_break) + to_decimal(argt_rate)
 
                         if guest_pr and not argt_defined:
-                            reslin_queasy = get_cache(
-                                Reslin_queasy, {"key": [(eq, "argt-line")], "char1": [(eq, contcode)], "number1": [(eq, res_line.reserve_int)], "number2": [(eq, arrangement.argtnr)], "reslinnr": [(eq, res_line.zikatnr)], "number3": [(eq, argt_line.argt_artnr)], "resnr": [(eq, argt_line.departement)], "date1": [(le, bill_date)], "date2": [(ge, bill_date)]})
+                            reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "argt-line")],"char1": [(eq, contcode)],"number1": [(eq, res_line.reserve_int)],"number2": [(eq, arrangement.argtnr)],"reslinnr": [(eq, res_line.zikatnr)],"number3": [(eq, argt_line.argt_artnr)],"resnr": [(eq, argt_line.departement)],"date1": [(le, bill_date)],"date2": [(ge, bill_date)]})
 
                             if reslin_queasy:
                                 for reslin_queasy in db_session.query(Reslin_queasy).filter(
-                                        (Reslin_queasy.key == "argt-line") & (Reslin_queasy.char1 == (contcode).lower()) & (Reslin_queasy.number1 == res_line.reserve_int) & (Reslin_queasy.number2 == arrangement.argtnr) & (Reslin_queasy.reslinnr == res_line.zikatnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (Reslin_queasy.resnr == argt_line.departement) & (bill_date >= Reslin_queasy.date1) & (bill_date <= Reslin_queasy.date2)).order_by(Reslin_queasy._recid).all():
+                                        (Reslin_queasy.key == ("argt-line").lower()) & (Reslin_queasy.char1 == (contcode).lower()) & (Reslin_queasy.number1 == res_line.reserve_int) & (Reslin_queasy.number2 == arrangement.argtnr) & (Reslin_queasy.reslinnr == res_line.zikatnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (Reslin_queasy.resnr == argt_line.departement) & (bill_date >= Reslin_queasy.date1) & (bill_date <= Reslin_queasy.date2)).order_by(Reslin_queasy._recid).all():
                                     argt_defined = True
 
                                     if argt_line.vt_percnt == 0:
-                                        argt_rate = to_decimal(
-                                            reslin_queasy.deci1)
+                                        argt_rate = to_decimal(reslin_queasy.deci1)
 
                                     elif argt_line.vt_percnt == 1:
-                                        argt_rate = to_decimal(
-                                            reslin_queasy.deci2)
+                                        argt_rate = to_decimal(reslin_queasy.deci2)
 
                                     elif argt_line.vt_percnt == 2:
-                                        argt_rate = to_decimal(
-                                            reslin_queasy.deci3)
+                                        argt_rate = to_decimal(reslin_queasy.deci3)
 
                                     if argt_rate > 0:
-                                        argt_rate = to_decimal(
-                                            argt_rate) * to_decimal(qty)
+                                        argt_rate = to_decimal(argt_rate) * to_decimal(qty)
                                     else:
-                                        argt_rate = (to_decimal(
-                                            rm_rate) * to_decimal(- to_decimal(argt_rate) / to_decimal(100))) * to_decimal(qty)
+                                        argt_rate = ( to_decimal(rm_rate) * to_decimal(- to_decimal(argt_rate) / to_decimal(100))) * to_decimal(qty)
 
                                     if argt_rate != 0:
                                         output_list = Output_list()
@@ -422,18 +366,13 @@ def view_staycost_cldbl(pvilanguage: int, resnr: int, reslinnr: int, contcode: s
 
                                         output_list.flag = 1
                                         c = to_string(qty) + " " + artikel.bezeich
-                                        str = to_string(translateExtended("     Incl.", lvcarea, ""), "x(10)") + \
-                                            " " + to_string(c, "x(16)") + \
-                                            " = " + trim(to_string(argt_rate, "->>>,>>>,>>9.99"))
-                                        count_break = to_decimal(
-                                            count_break) + to_decimal(argt_rate)
+                                        output_list.str = to_string(translateExtended ("     Incl.", lvcarea, ""), "x(10)") + " " + to_string(c, "x(16)") + " = " + trim(to_string(argt_rate, "->>>,>>>,>>9.99"))
+                                        count_break = to_decimal(count_break) + to_decimal(argt_rate)
 
                         if argt_rate2 > 0:
-                            argt_rate2 = to_decimal(
-                                argt_rate2) * to_decimal(qty)
+                            argt_rate2 = to_decimal(argt_rate2) * to_decimal(qty)
                         else:
-                            argt_rate2 = (to_decimal(
-                                rm_rate) * to_decimal(- to_decimal(argt_rate2) / to_decimal(100))) * to_decimal(qty)
+                            argt_rate2 = ( to_decimal(rm_rate) * to_decimal(- to_decimal(argt_rate2) / to_decimal(100))) * to_decimal(qty)
 
                         if argt_rate == 0:
                             output_list = Output_list()
@@ -441,11 +380,8 @@ def view_staycost_cldbl(pvilanguage: int, resnr: int, reslinnr: int, contcode: s
 
                             output_list.flag = 1
                             c = to_string(qty) + " " + artikel.bezeich
-                            str = to_string(translateExtended("     Incl.", lvcarea, ""), "x(10)") + \
-                                " " + to_string(c, "x(16)") + \
-                                " = " + trim(to_string(argt_rate2, "->>>,>>>,>>9.99"))
-                            count_break = to_decimal(
-                                count_break) + to_decimal(argt_rate2)
+                            output_list.str = to_string(translateExtended ("     Incl.", lvcarea, ""), "x(10)") + " " + to_string(c, "x(16)") + " = " + trim(to_string(argt_rate2, "->>>,>>>,>>9.99"))
+                            count_break = to_decimal(count_break) + to_decimal(argt_rate2)
 
             for fixleist in db_session.query(Fixleist).filter(
                     (Fixleist.resnr == res_line.resnr) & (Fixleist.reslinnr == res_line.reslinnr)).order_by(Fixleist._recid).all():
@@ -485,36 +421,30 @@ def view_staycost_cldbl(pvilanguage: int, resnr: int, reslinnr: int, contcode: s
                         add_it = False
 
                 if add_it:
-                    artikel = get_cache(
-                        Artikel, {"artnr": [(eq, fixleist.artnr)], "departement": [(eq, fixleist.departement)]})
-                    argt_rate = to_decimal(
-                        fixleist.betrag) * to_decimal(fixleist.number)
+                    artikel = get_cache (Artikel, {"artnr": [(eq, fixleist.artnr)],"departement": [(eq, fixleist.departement)]})
+                    argt_rate = to_decimal(fixleist.betrag) * to_decimal(fixleist.number)
 
                 if argt_rate != 0:
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
-                    str = to_string("", "x(8)") + "   " + to_string(artikel.bezeich,"x(16)") + \
-                        " = " + trim(to_string(argt_rate, "->>>,>>>,>>9.99"))
+                    output_list.str = to_string("", "x(8)") + "   " + to_string(artikel.bezeich, "x(16)") + " = " + trim(to_string(argt_rate, "->>>,>>>,>>9.99"))
                     tot_rate = to_decimal(tot_rate) + to_decimal(argt_rate)
-                    fixcost_rate = to_decimal(
-                        fixcost_rate) + to_decimal(argt_rate)
+                    fixcost_rate = to_decimal(fixcost_rate) + to_decimal(argt_rate)
 
             if count_break != 0:
                 output_list = Output_list()
                 output_list_data.append(output_list)
 
                 output_list.flag = 2
-                str = to_string(translateExtended("    Lodging", lvcarea, ""), "x(11)") + \
-                    "                 = " + trim(to_string(daily_rate - count_break, "->>>,>>>,>>9.99"))
-                    
-            str = str + "  Total = " + trim(to_string(daily_rate + fixcost_rate, "->>>,>>>,>>9.99"))
+                output_list.str = to_string(translateExtended ("    Lodging", lvcarea, ""), "x(11)") + "                 = " + trim(to_string(daily_rate - count_break, "->>>,>>>,>>9.99"))
+            output_list.str = output_list.str + "  Total = " + trim(to_string(daily_rate + fixcost_rate, "->>>,>>>,>>9.99"))
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        str = "  " + translateExtended("Expected total revenue    =", lvcarea, "") +\
+        output_list.str = "  " + translateExtended ("Expected total revenue    =", lvcarea, "") +\
             " " + trim(to_string(tot_rate, "->,>>>,>>>,>>9.99"))
-        str1 = "expected"
+        output_list.str1 = "expected"
 
     def calc_periode():
         nonlocal output_list_data, ci_date, new_contrate, wd_array, bonus_array, curr_diff, month_str1, month_str2, lvcarea, reservation, htparam, res_line, arrangement, guest_pr, waehrung, genstat, reslin_queasy, queasy, katpreis, argt_line, artikel, fixleist
@@ -522,23 +452,22 @@ def view_staycost_cldbl(pvilanguage: int, resnr: int, reslinnr: int, contcode: s
         nonlocal output_list, periode_list, output_list1
         nonlocal output_list_data, periode_list_data, output_list1_data
 
-        periode_rsv1: date = None
-        periode_rsv2: date = None
-        counter: int = 0
-        periode: date = None
-        loopi: date = None
-        curr_amount: Decimal = to_decimal("0.0")
-        ccount: int = 0
-        loop_count: int = 0
-        prsv2: date = None
-        loopdate: date = None
+        periode_rsv1:date = None
+        periode_rsv2:date = None
+        counter:int = 0
+        periode:date = None
+        loopi:date = None
+        curr_amount:Decimal = to_decimal("0.0")
+        ccount:int = 0
+        loop_count:int = 0
+        prsv2:date = None
+        loopdate:date = None
         pqueasy = None
         mqueasy = None
         Pqueasy = create_buffer("Pqueasy", Queasy)
         Mqueasy = create_buffer("Mqueasy", Queasy)
 
-        mqueasy = get_cache(
-            Queasy, {"key": [(eq, 329)], "number1": [(eq, res_line.resnr)], "number2": [(eq, res_line.reslinnr)], "logi3": [(eq, False)]})
+        mqueasy = get_cache (Queasy, {"key": [(eq, 329)],"number1": [(eq, res_line.resnr)],"number2": [(eq, res_line.reslinnr)],"logi3": [(eq, False)]})
 
         if mqueasy:
             periode_rsv1 = mqueasy.date2
@@ -549,66 +478,56 @@ def view_staycost_cldbl(pvilanguage: int, resnr: int, reslinnr: int, contcode: s
             periode_rsv2 = res_line.abreise
 
         if get_month(periode_rsv1) + 1 > 12:
-            periode = date_mdy(1, get_day(periode_rsv1), get_year(
-                periode_rsv1) + timedelta(days=1) - 1)
+            periode = date_mdy(1, get_day(periode_rsv1), get_year(periode_rsv1) + timedelta(days=1) - 1)
 
         elif get_month(periode_rsv1) + 1 == 2:
             if get_day(periode_rsv1) >= 29:
                 if get_year(periode_rsv1) % 4 != 0:
-                    periode = date_mdy(get_month(periode_rsv1) + 1, month_str1[get_month(
-                        periode_rsv1) + 1 - timedelta(days=1), get_year(periode_rsv1)])
+                    periode = date_mdy(get_month(periode_rsv1) + 1, month_str1[get_month(periode_rsv1) + 1 - timedelta(days=1), get_year(periode_rsv1)])
 
                 elif get_year(periode_rsv1) % 4 == 0:
-                    periode = date_mdy(get_month(periode_rsv1) + 1, month_str2[get_month(
-                        periode_rsv1) + 1 - timedelta(days=1), get_year(periode_rsv1)])
+                    periode = date_mdy(get_month(periode_rsv1) + 1, month_str2[get_month(periode_rsv1) + 1 - timedelta(days=1), get_year(periode_rsv1)])
 
             else:
                 periode = date_mdy(get_month(periode_rsv1) + timedelta(days=1), get_day(periode_rsv1), get_year(periode_rsv1)) - 1
 
         else:
             if get_day(periode_rsv1) >= 31:
-                periode = date_mdy(get_month(
-                    periode_rsv1) + 1, month_str1[get_month(periode_rsv1) + 1 - 1], get_year(periode_rsv1)) - 1
+                periode = date_mdy(get_month(periode_rsv1) + 1, month_str1[get_month(periode_rsv1) + 1 - 1], get_year(periode_rsv1)) - 1
 
             else:
                 periode = date_mdy(get_month(periode_rsv1) + timedelta(days=1), get_day(periode_rsv1), get_year(periode_rsv1)) - 1
 
-        pqueasy = get_cache(
-            Queasy, {"key": [(eq, 329)], "number1": [(eq, res_line.resnr)], "number2": [(eq, res_line.reslinnr)], "logi3": [(eq, True)]})
+        pqueasy = get_cache (Queasy, {"key": [(eq, 329)],"number1": [(eq, res_line.resnr)],"number2": [(eq, res_line.reslinnr)],"logi3": [(eq, True)]})
 
         if pqueasy:
-            for loopi in date_range(periode_rsv1, periode_rsv2 - 1):
+            for loopi in date_range(periode_rsv1, periode_rsv2 - 1) :
                 if loopi > periode:
                     periode_rsv1 = loopi
 
                     if get_month(periode_rsv1) + 1 > 12:
-                        periode = date_mdy(1, get_day(periode_rsv1), get_year(
-                            periode_rsv1) + timedelta(days=1) - 1)
+                        periode = date_mdy(1, get_day(periode_rsv1), get_year(periode_rsv1) + timedelta(days=1) - 1)
 
                     elif get_month(periode_rsv1) + 1 == 2:
                         if get_day(periode_rsv1) >= 29:
                             if get_year(periode_rsv1) % 4 != 0:
-                                periode = date_mdy(get_month(periode_rsv1) + 1, month_str1[get_month(
-                                    periode_rsv1) + 1 - timedelta(days=1), get_year(periode_rsv1)])
+                                periode = date_mdy(get_month(periode_rsv1) + 1, month_str1[get_month(periode_rsv1) + 1 - timedelta(days=1), get_year(periode_rsv1)])
 
                             elif get_year(periode_rsv1) % 4 == 0:
-                                periode = date_mdy(get_month(periode_rsv1) + 1, month_str2[get_month(
-                                    periode_rsv1) + 1 - timedelta(days=1), get_year(periode_rsv1)])
+                                periode = date_mdy(get_month(periode_rsv1) + 1, month_str2[get_month(periode_rsv1) + 1 - timedelta(days=1), get_year(periode_rsv1)])
 
                         else:
                             periode = date_mdy(get_month(periode_rsv1) + timedelta(days=1), get_day(periode_rsv1), get_year(periode_rsv1)) - 1
 
                     else:
                         if get_day(periode_rsv1) >= 31:
-                            periode = date_mdy(get_month(
-                                periode_rsv1) + 1, month_str1[get_month(periode_rsv1) + 1 - 1], get_year(periode_rsv1)) - 1
+                            periode = date_mdy(get_month(periode_rsv1) + 1, month_str1[get_month(periode_rsv1) + 1 - 1], get_year(periode_rsv1)) - 1
 
                         else:
                             periode = date_mdy(get_month(periode_rsv1) + timedelta(days=1), get_day(periode_rsv1), get_year(periode_rsv1)) - 1
 
                 if loopi <= periode:
-                    periode_list = query(periode_list_data, filters=(
-                        lambda periode_list: periode_list.periode1 == periode_rsv1), first=True)
+                    periode_list = query(periode_list_data, filters=(lambda periode_list: periode_list.periode1 == periode_rsv1), first=True)
 
                     if not periode_list:
                         periode_list = Periode_list()
@@ -631,26 +550,22 @@ def view_staycost_cldbl(pvilanguage: int, resnr: int, reslinnr: int, contcode: s
                 loop_count = loop_count + 1
 
                 if get_month(periode_rsv1) + 1 > 12:
-                    periode = date_mdy(1, get_day(periode_rsv1), get_year(
-                        periode_rsv1) + timedelta(days=1) - 1)
+                    periode = date_mdy(1, get_day(periode_rsv1), get_year(periode_rsv1) + timedelta(days=1) - 1)
 
                 elif get_month(periode_rsv1) + 1 == 2:
                     if get_day(periode_rsv1) >= 29:
                         if get_year(periode_rsv1) % 4 != 0:
-                            periode = date_mdy(get_month(periode_rsv1) + 1, month_str1[get_month(
-                                periode_rsv1) + 1 - timedelta(days=1), get_year(periode_rsv1)])
+                            periode = date_mdy(get_month(periode_rsv1) + 1, month_str1[get_month(periode_rsv1) + 1 - timedelta(days=1), get_year(periode_rsv1)])
 
                         elif get_year(periode_rsv1) % 4 == 0:
-                            periode = date_mdy(get_month(periode_rsv1) + 1, month_str2[get_month(
-                                periode_rsv1) + 1 - timedelta(days=1), get_year(periode_rsv1)])
+                            periode = date_mdy(get_month(periode_rsv1) + 1, month_str2[get_month(periode_rsv1) + 1 - timedelta(days=1), get_year(periode_rsv1)])
 
                     else:
                         periode = date_mdy(get_month(periode_rsv1) + timedelta(days=1), get_day(periode_rsv1), get_year(periode_rsv1)) - 1
 
                 else:
                     if get_day(periode_rsv1) >= 31:
-                        periode = date_mdy(get_month(
-                            periode_rsv1) + 1, month_str1[get_month(periode_rsv1) + 1 - 1], get_year(periode_rsv1)) - 1
+                        periode = date_mdy(get_month(periode_rsv1) + 1, month_str1[get_month(periode_rsv1) + 1 - 1], get_year(periode_rsv1)) - 1
 
                     else:
                         periode = date_mdy(get_month(periode_rsv1) + timedelta(days=1), get_day(periode_rsv1), get_year(periode_rsv1)) - 1
@@ -661,38 +576,33 @@ def view_staycost_cldbl(pvilanguage: int, resnr: int, reslinnr: int, contcode: s
                 else:
                     prsv2 = periode_rsv2
 
-                for loopi in date_range(periode_rsv1, prsv2):
+                for loopi in date_range(periode_rsv1,prsv2) :
                     if loopi > periode:
                         periode_rsv1 = loopi
 
                         if get_month(periode_rsv1) + 1 > 12:
-                            periode = date_mdy(1, get_day(periode_rsv1), get_year(
-                                periode_rsv1) + timedelta(days=1) - 1)
+                            periode = date_mdy(1, get_day(periode_rsv1), get_year(periode_rsv1) + timedelta(days=1) - 1)
 
                         elif get_month(periode_rsv1) + 1 == 2:
                             if get_day(periode_rsv1) >= 29:
                                 if get_year(periode_rsv1) % 4 != 0:
-                                    periode = date_mdy(get_month(periode_rsv1) + 1, month_str1[get_month(
-                                        periode_rsv1) + 1 - timedelta(days=1), get_year(periode_rsv1)])
+                                    periode = date_mdy(get_month(periode_rsv1) + 1, month_str1[get_month(periode_rsv1) + 1 - timedelta(days=1), get_year(periode_rsv1)])
 
                                 elif get_year(periode_rsv1) % 4 == 0:
-                                    periode = date_mdy(get_month(periode_rsv1) + 1, month_str2[get_month(
-                                        periode_rsv1) + 1 - timedelta(days=1), get_year(periode_rsv1)])
+                                    periode = date_mdy(get_month(periode_rsv1) + 1, month_str2[get_month(periode_rsv1) + 1 - timedelta(days=1), get_year(periode_rsv1)])
 
                             else:
                                 periode = date_mdy(get_month(periode_rsv1) + timedelta(days=1), get_day(periode_rsv1), get_year(periode_rsv1)) - 1
 
                         else:
                             if get_day(periode_rsv1) >= 31:
-                                periode = date_mdy(get_month(
-                                    periode_rsv1) + 1, month_str1[get_month(periode_rsv1) + 1 - 1], get_year(periode_rsv1)) - 1
+                                periode = date_mdy(get_month(periode_rsv1) + 1, month_str1[get_month(periode_rsv1) + 1 - 1], get_year(periode_rsv1)) - 1
 
                             else:
-                                periode = date_mdy(get_month(periode_rsv1) + timedelta(days=1), get_day(periode_rsv1), get_year(periode_rsv1)) - 1
+                                periode = date_mdy(get_month(periode_rsv1) + timedelta(days=1), get_day(periode_rsv1) , get_year(periode_rsv1)) - 1
 
                     if loopi <= periode:
-                        periode_list = query(periode_list_data, filters=(
-                            lambda periode_list: periode_list.periode1 == periode_rsv1), first=True)
+                        periode_list = query(periode_list_data, filters=(lambda periode_list: periode_list.periode1 == periode_rsv1), first=True)
 
                         if not periode_list:
                             periode_list = Periode_list()
@@ -705,38 +615,33 @@ def view_staycost_cldbl(pvilanguage: int, resnr: int, reslinnr: int, contcode: s
                         periode_list.periode2 = loopi
 
         else:
-            for loopi in date_range(periode_rsv1, periode_rsv2 - 1):
+            for loopi in date_range(periode_rsv1,periode_rsv2 - 1) :
                 if loopi > periode:
                     periode_rsv1 = loopi
 
                     if get_month(periode_rsv1) + 1 > 12:
-                        periode = date_mdy(1, get_day(periode_rsv1), get_year(
-                            periode_rsv1) + timedelta(days=1) - 1)
+                        periode = date_mdy(1, get_day(periode_rsv1), get_year(periode_rsv1) + timedelta(days=1) - 1)
 
                     elif get_month(periode_rsv1) + 1 == 2:
                         if get_day(periode_rsv1) >= 29:
                             if get_year(periode_rsv1) % 4 != 0:
-                                periode = date_mdy(get_month(periode_rsv1) + 1, month_str1[get_month(
-                                    periode_rsv1) + 1 - timedelta(days=1), get_year(periode_rsv1)])
+                                periode = date_mdy(get_month(periode_rsv1) + 1, month_str1[get_month(periode_rsv1) + 1 - timedelta(days=1), get_year(periode_rsv1)])
 
                             elif get_year(periode_rsv1) % 4 == 0:
-                                periode = date_mdy(get_month(periode_rsv1) + 1, month_str2[get_month(
-                                    periode_rsv1) + 1 - timedelta(days=1), get_year(periode_rsv1)])
+                                periode = date_mdy(get_month(periode_rsv1) + 1, month_str2[get_month(periode_rsv1) + 1 - timedelta(days=1), get_year(periode_rsv1)])
 
                         else:
                             periode = date_mdy(get_month(periode_rsv1) + timedelta(days=1), get_day(periode_rsv1), get_year(periode_rsv1)) - 1
 
                     else:
                         if get_day(periode_rsv1) >= 31:
-                            periode = date_mdy(get_month(
-                                periode_rsv1) + 1, month_str1[get_month(periode_rsv1) + 1 - 1], get_year(periode_rsv1)) - 1
+                            periode = date_mdy(get_month(periode_rsv1) + 1, month_str1[get_month(periode_rsv1) + 1 - 1], get_year(periode_rsv1)) - 1
 
                         else:
                             periode = date_mdy(get_month(periode_rsv1) + timedelta(days=1), get_day(periode_rsv1), get_year(periode_rsv1)) - 1
 
                 if loopi <= periode:
-                    periode_list = query(periode_list_data, filters=(
-                        lambda periode_list: periode_list.periode1 == periode_rsv1), first=True)
+                    periode_list = query(periode_list_data, filters=(lambda periode_list: periode_list.periode1 == periode_rsv1), first=True)
 
                     if not periode_list:
                         periode_list = Periode_list()
@@ -751,20 +656,15 @@ def view_staycost_cldbl(pvilanguage: int, resnr: int, reslinnr: int, contcode: s
         for periode_list in query(periode_list_data):
             curr_amount = to_decimal("0")
 
-            for loopdate in date_range(periode_list.periode1, periode_list.periode2):
-                reslin_queasy = get_cache(
-                    Reslin_queasy, {"key": [(eq, "arrangement")], "resnr": [(eq, queasy.number1)], "reslinnr": [(eq, queasy.number2)], "date1": [(le, loopdate)], "date2": [(le, loopdate)]})
+            for loopdate in date_range(periode_list.periode1,periode_list.periode2) :
+                reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "arrangement")],"resnr": [(eq, queasy.number1)],"reslinnr": [(eq, queasy.number2)],"date1": [(le, loopdate)],"date2": [(le, loopdate)]})
 
                 if reslin_queasy:
-                    curr_amount = to_decimal(
-                        curr_amount) + to_decimal(reslin_queasy.deci1)
+                    curr_amount = to_decimal(curr_amount) + to_decimal(reslin_queasy.deci1)
 
-            periode_list.diff_day = (
-                periode_list.periode2 - periode_list.periode1) + 1
-            periode_list.amt_periode = to_decimal(
-                curr_amount) / to_decimal(periode_list.diff_day)
-            periode_list.tamount = to_decimal(
-                periode_list.amt_periode) * to_decimal(periode_list.diff_day)
+            periode_list.diff_day = (periode_list.periode2 - periode_list.periode1) + 1
+            periode_list.amt_periode = to_decimal(curr_amount) / to_decimal(periode_list.diff_day)
+            periode_list.tamount = to_decimal(periode_list.amt_periode) * to_decimal(periode_list.diff_day)
 
     def cal_revenue1():
         nonlocal output_list_data, ci_date, new_contrate, wd_array, bonus_array, periode, loopi, curr_diff, month_str1, month_str2, lvcarea, reservation, htparam, res_line, arrangement, guest_pr, waehrung, genstat, reslin_queasy, queasy, katpreis, argt_line, artikel, fixleist
@@ -772,44 +672,44 @@ def view_staycost_cldbl(pvilanguage: int, resnr: int, reslinnr: int, contcode: s
         nonlocal output_list, periode_list, output_list1
         nonlocal output_list_data, periode_list_data, output_list1_data
 
-        datum: date = None
-        co_date: date = None
-        argt_rate: Decimal = to_decimal("0.0")
-        argt_rate2: Decimal = to_decimal("0.0")
-        rm_rate: Decimal = to_decimal("0.0")
-        daily_rate: Decimal = to_decimal("0.0")
-        tot_rate: Decimal = to_decimal("0.0")
-        add_it: bool = False
-        c = ""
-        fixed_rate: bool = False
-        argt_defined: bool = False
-        delta: int = 0
-        start_date: date = None
-        qty: int = 0
-        it_exist: bool = False
-        exrate1: Decimal = 1
-        ex2: Decimal = 1
-        pax: int = 0
-        child1: int = 0
-        n: int = 0
-        created_date: date = None
-        bill_date: date = None
-        curr_zikatnr: int = 0
-        curr_i: int = 0
-        w_day: int = 0
-        rack_rate: bool = False
-        ebdisc_flag: bool = False
-        kbdisc_flag: bool = False
-        rate_found: bool = False
-        early_flag: bool = False
-        kback_flag: bool = False
-        ratecode_qsy = ""
-        count_break: Decimal = to_decimal("0.0")
-        fixcost_rate: Decimal = to_decimal("0.0")
-        counter: int = 0
-        tot_amount: Decimal = to_decimal("0.0")
+        datum:date = None
+        co_date:date = None
+        argt_rate:Decimal = to_decimal("0.0")
+        argt_rate2:Decimal = to_decimal("0.0")
+        rm_rate:Decimal = to_decimal("0.0")
+        daily_rate:Decimal = to_decimal("0.0")
+        tot_rate:Decimal = to_decimal("0.0")
+        add_it:bool = False
+        c:string = ""
+        fixed_rate:bool = False
+        argt_defined:bool = False
+        delta:int = 0
+        start_date:date = None
+        qty:int = 0
+        it_exist:bool = False
+        exrate1:Decimal = 1
+        ex2:Decimal = 1
+        pax:int = 0
+        child1:int = 0
+        n:int = 0
+        created_date:date = None
+        bill_date:date = None
+        curr_zikatnr:int = 0
+        curr_i:int = 0
+        w_day:int = 0
+        rack_rate:bool = False
+        ebdisc_flag:bool = False
+        kbdisc_flag:bool = False
+        rate_found:bool = False
+        early_flag:bool = False
+        kback_flag:bool = False
+        ratecode_qsy:string = ""
+        count_break:Decimal = to_decimal("0.0")
+        fixcost_rate:Decimal = to_decimal("0.0")
+        counter:int = 0
+        tot_amount:Decimal = to_decimal("0.0")
         w1 = None
-        W1 = create_buffer("W1", Waehrung)
+        W1 = create_buffer("W1",Waehrung)
         n = 0
 
         if matches(res_line.zimmer_wunsch, r"*DATE,*"):
@@ -817,8 +717,7 @@ def view_staycost_cldbl(pvilanguage: int, resnr: int, reslinnr: int, contcode: s
 
         if n > 0:
             c = substring(res_line.zimmer_wunsch, n + 5 - 1, 8)
-            created_date = date_mdy(to_int(substring(c, 4, 2)), to_int(
-                substring(c, 6, 2)), to_int(substring(c, 0, 4)))
+            created_date = date_mdy(to_int(substring(c, 4, 2)), to_int(substring(c, 6, 2)), to_int(substring(c, 0, 4)))
         else:
             created_date = reservation.resdat
         ebdisc_flag = matches(res_line.zimmer_wunsch, ("*ebdisc*"))
@@ -838,27 +737,23 @@ def view_staycost_cldbl(pvilanguage: int, resnr: int, reslinnr: int, contcode: s
             curr_i = curr_i + 1
 
             if datum < ci_date:
-                genstat = get_cache(
-                    Genstat, {"datum": [(eq, datum)], "resnr": [(eq, res_line.resnr)], "res_int[0]": [(eq, res_line.reslinnr)]})
+                genstat = get_cache (Genstat, {"datum": [(eq, datum)],"resnr": [(eq, res_line.resnr)],"res_int[0]": [(eq, res_line.reslinnr)]})
 
                 if genstat:
                     periode_list = query(periode_list_data, filters=(lambda periode_list: periode_list.genstat.datum >= periode_list.periode1 and genstat.datum <= periode_list.periode2), first=True)
 
                     if periode_list:
-                        output_list1 = query(output_list1_data, filters=(
-                            lambda output_list1: output_list1.datum == periode_list.periode1), first=True)
+                        output_list1 = query(output_list1_data, filters=(lambda output_list1: output_list1.datum == periode_list.periode1), first=True)
 
                         if not output_list1:
                             output_list1 = Output_list1()
                             output_list1_data.append(output_list1)
 
                             output_list1.datum = periode_list.periode1
-                        output_list1.rate = to_decimal(
-                            output_list1.rate) + to_decimal(genstat.zipreis)
+                        output_list1.rate = to_decimal(output_list1.rate) + to_decimal(genstat.zipreis)
 
             if datum >= ci_date:
-                reslin_queasy = get_cache(
-                    Reslin_queasy, {"key": [(eq, "arrangement")], "resnr": [(eq, res_line.resnr)], "reslinnr": [(eq, res_line.reslinnr)], "date1": [(le, datum)], "date2": [(ge, datum)]})
+                reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "arrangement")],"resnr": [(eq, res_line.resnr)],"reslinnr": [(eq, res_line.reslinnr)],"date1": [(le, datum)],"date2": [(ge, datum)]})
 
                 if reslin_queasy:
                     fixed_rate = True
@@ -873,88 +768,77 @@ def view_staycost_cldbl(pvilanguage: int, resnr: int, reslinnr: int, contcode: s
                         pax = reslin_queasy.number3
 
                     if reslin_queasy.char1 != "":
-                        arrangement = get_cache(
-                            Arrangement, {"arrangement": [(eq, reslin_queasy.char1)]})
+                        arrangement = get_cache (Arrangement, {"arrangement": [(eq, reslin_queasy.char1)]})
 
                 if not fixed_rate:
                     if not it_exist:
                         if guest_pr:
-                            queasy = get_cache(
-                                Queasy, {"key": [(eq, 18)], "number1": [(eq, res_line.reserve_int)]})
+                            queasy = get_cache (Queasy, {"key": [(eq, 18)],"number1": [(eq, res_line.reserve_int)]})
 
                             if queasy and queasy.logi3:
                                 bill_date = res_line.ankunft
 
                             if new_contrate:
-                                rate_found, rm_rate, early_flag, kback_flag = get_output(
-                                    ratecode_rate(ebdisc_flag, kbdisc_flag, res_line.resnr, res_line.reslinnr, contcode, None, bill_date, res_line.ankunft, res_line.abreise, res_line.reserve_int, arrangement.argtnr, curr_zikatnr, res_line.erwachs, res_line.kind1, res_line.kind2, res_line.reserve_dec, res_line.betriebsnr))
+                                rate_found, rm_rate, early_flag, kback_flag = get_output(ratecode_rate(ebdisc_flag, kbdisc_flag, res_line.resnr, res_line.reslinnr, contcode, None, bill_date, res_line.ankunft, res_line.abreise, res_line.reserve_int, arrangement.argtnr, curr_zikatnr, res_line.erwachs, res_line.kind1, res_line.kind2, res_line.reserve_dec, res_line.betriebsnr))
                             else:
-                                rm_rate, rate_found = get_output(
-                                    pricecod_rate(res_line.resnr, res_line.reslinnr, guest_pr.code, bill_date, res_line.ankunft, res_line.abreise, res_line.reserve_int, arrangement.argtnr, curr_zikatnr, res_line.erwachs, res_line.kind1, res_line.kind2, res_line.reserve_dec, res_line.betriebsnr))
+                                rm_rate, rate_found = get_output(pricecod_rate(res_line.resnr, res_line.reslinnr, guest_pr.code, bill_date, res_line.ankunft, res_line.abreise, res_line.reserve_int, arrangement.argtnr, curr_zikatnr, res_line.erwachs, res_line.kind1, res_line.kind2, res_line.reserve_dec, res_line.betriebsnr))
 
                                 if it_exist:
                                     rate_found = True
 
-                                if not it_exist and bonus_array[curr_i - 1]:
+                                if not it_exist and bonus_array[curr_i - 1] :
                                     rm_rate = to_decimal("0")
 
                         if not rate_found:
-                            if bill_date is not None:
+                            if bill_date != None:
                                 w_day = wd_array[get_weekday(bill_date) - 1]
 
                             if (bill_date == ci_date) or (bill_date == res_line.ankunft):
                                 rm_rate = to_decimal(res_line.zipreis)
 
-                                katpreis = get_cache(
-                                    Katpreis, {"zikatnr": [(eq, curr_zikatnr)], "argtnr": [(eq, arrangement.argtnr)], "startperiode": [(le, bill_date)], "endperiode": [(ge, bill_date)], "betriebsnr": [(eq, w_day)]})
+                                katpreis = get_cache (Katpreis, {"zikatnr": [(eq, curr_zikatnr)],"argtnr": [(eq, arrangement.argtnr)],"startperiode": [(le, bill_date)],"endperiode": [(ge, bill_date)],"betriebsnr": [(eq, w_day)]})
 
                                 if not katpreis:
-                                    katpreis = get_cache(
-                                        Katpreis, {"zikatnr": [(eq, curr_zikatnr)], "argtnr": [(eq, arrangement.argtnr)], "startperiode": [(le, bill_date)], "endperiode": [(ge, bill_date)], "betriebsnr": [(eq, 0)]})
 
-                                if katpreis and get_rackrate(res_line.erwachs, res_line.kind1, res_line.kind2) == rm_rate:
+                                    katpreis = get_cache (Katpreis, {"zikatnr": [(eq, curr_zikatnr)],"argtnr": [(eq, arrangement.argtnr)],"startperiode": [(le, bill_date)],"endperiode": [(ge, bill_date)],"betriebsnr": [(eq, 0)]})
+
+                                if katpreis and get_rackrate (res_line.erwachs, res_line.kind1, res_line.kind2) == rm_rate:
                                     rack_rate = True
 
                             elif rack_rate:
-                                katpreis = get_cache(
-                                    Katpreis, {"zikatnr": [(eq, curr_zikatnr)], "argtnr": [(eq, arrangement.argtnr)], "startperiode": [(le, bill_date)], "endperiode": [(ge, bill_date)], "betriebsnr": [(eq, w_day)]})
+                                katpreis = get_cache (Katpreis, {"zikatnr": [(eq, curr_zikatnr)],"argtnr": [(eq, arrangement.argtnr)],"startperiode": [(le, bill_date)],"endperiode": [(ge, bill_date)],"betriebsnr": [(eq, w_day)]})
 
                                 if not katpreis:
-                                    katpreis = get_cache(
-                                        Katpreis, {"zikatnr": [(eq, curr_zikatnr)], "argtnr": [(eq, arrangement.argtnr)], "startperiode": [(le, bill_date)], "endperiode": [(ge, bill_date)], "betriebsnr": [(eq, 0)]})
+                                    katpreis = get_cache (Katpreis, {"zikatnr": [(eq, curr_zikatnr)],"argtnr": [(eq, arrangement.argtnr)],"startperiode": [(le, bill_date)],"endperiode": [(ge, bill_date)],"betriebsnr": [(eq, 0)]})
 
-                                if katpreis and get_rackrate(res_line.erwachs, res_line.kind1, res_line.kind2) > 0:
-                                    rm_rate = to_decimal(get_rackrate(
-                                        res_line.erwachs, res_line.kind1, res_line.kind2))
+                                if katpreis and get_rackrate (res_line.erwachs, res_line.kind1, res_line.kind2) > 0:
+                                    rm_rate = to_decimal(get_rackrate (res_line.erwachs, res_line.kind1, res_line.kind2))
 
-                            if bonus_array[curr_i - 1]:
+                            if bonus_array[curr_i - 1] :
                                 rm_rate = to_decimal("0")
 
-                periode_list = query(periode_list_data, filters=(
-                    lambda periode_list: periode_list.datum >= periode_list.periode1 and datum <= periode_list.periode2), first=True)
+                periode_list = query(periode_list_data, filters=(lambda periode_list: periode_list.datum >= periode_list.periode1 and datum <= periode_list.periode2), first=True)
 
                 if periode_list:
-                    output_list1 = query(output_list1_data, filters=(
-                        lambda output_list1: output_list1.datum == periode_list.periode1), first=True)
+                    output_list1 = query(output_list1_data, filters=(lambda output_list1: output_list1.datum == periode_list.periode1), first=True)
 
                     if not output_list1:
                         output_list1 = Output_list1()
                         output_list1_data.append(output_list1)
 
                         output_list1.datum = periode_list.periode1
-                    output_list1.rate = to_decimal(
-                        output_list1.rate) + to_decimal(rm_rate)
+                    output_list1.rate = to_decimal(output_list1.rate) + to_decimal(rm_rate)
 
-        tot_rate = to_decimal("0")
 
-        for output_list1 in query(output_list1_data, sort_by=[("datum", False)]):
+        tot_rate =  to_decimal("0")
+        for output_list1 in query(output_list1_data, sort_by=[("datum",False)]):
             output_list = Output_list()
             output_list_data.append(output_list)
 
             counter = counter + 1
             output_list.flag = counter
             tot_amount = to_decimal(output_list1.rate)
-            output_list.str = to_string(output_list1.datum) + "   " + translateExtended("Roomrate", lvcarea, "") +\
+            output_list.str = to_string(output_list1.datum) + "   " + translateExtended ("Roomrate", lvcarea, "") +\
                 "   = " + trim(to_string(round(tot_amount, 0), "->>>,>>>,>>9"))
             tot_rate = to_decimal(tot_rate) + to_decimal(tot_amount)
 
@@ -964,29 +848,27 @@ def view_staycost_cldbl(pvilanguage: int, resnr: int, reslinnr: int, contcode: s
         counter = counter + 1
         output_list.flag = counter
         tot_rate = to_decimal(round(tot_rate, 0))
-        output_list.str = "  " + translateExtended("Expected total revenue    =", lvcarea, "") +\
+        output_list.str = "  " + translateExtended ("Expected total revenue =", lvcarea, "") +\
             " " + trim(to_string(tot_rate, "->,>>>,>>>,>>9"))
 
-    reservation = get_cache(Reservation, {"resnr": [(eq, resnr)]})
 
-    htparam = get_cache(Htparam, {"paramnr": [(eq, 87)]})
+    reservation = get_cache (Reservation, {"resnr": [(eq, resnr)]})
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 87)]})
     ci_date = htparam.fdate
 
-    htparam = get_cache(Htparam, {"paramnr": [(eq, 550)]})
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 550)]})
 
     if htparam.feldtyp == 4:
         new_contrate = htparam.flogical
 
-    res_line = get_cache(
-        Res_line, {"resnr": [(eq, resnr)], "reslinnr": [(eq, reslinnr)]})
+    res_line = get_cache (Res_line, {"resnr": [(eq, resnr)],"reslinnr": [(eq, reslinnr)]})
 
-    arrangement = get_cache(
-        Arrangement, {"arrangement": [(eq, res_line.arrangement)]})
+    arrangement = get_cache (Arrangement, {"arrangement": [(eq, res_line.arrangement)]})
 
-    guest_pr = get_cache(Guest_pr, {"gastnr": [(eq, res_line.gastnr)]})
+    guest_pr = get_cache (Guest_pr, {"gastnr": [(eq, res_line.gastnr)]})
     check_bonus()
 
-    if repeat_charge:
+    if repeat_charge :
         calc_periode()
         cal_revenue1()
     else:
