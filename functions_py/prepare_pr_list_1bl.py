@@ -11,9 +11,6 @@ from datetime import date
 from models import Parameters, L_artikel, Htparam, L_orderhdr
 from sqlalchemy.orm.attributes import flag_modified
 
-from functions import log_program
-
-
 def prepare_pr_list_1bl():
 
     prepare_cache([L_artikel, Htparam, L_orderhdr])
@@ -95,7 +92,7 @@ def prepare_pr_list_1bl():
 
         for l_orderhdr in db_session.query(L_orderhdr).order_by(L_orderhdr._recid).all():
 
-            if matches(l_orderhdr.lief_fax[1], r"*;*"):
+            if l_orderhdr.lief_fax[1] and matches(l_orderhdr.lief_fax[1], r"*;*"):
                 pass
             else:
 
@@ -104,11 +101,8 @@ def prepare_pr_list_1bl():
                     (L_orderhdr._recid == l_orderhdr._recid)
                 ).with_for_update().first()
 
-                # log_program.write_log(
-                #     'LOG', f'buffer copy L_orderhdr: {lbuff.__dict__}')
-
                 if lbuff:
-                    approve_str = lbuff.lief_fax[1]
+                    approve_str = lbuff.lief_fax[1] or ""
 
                     if lbuff.lief_fax[1] == "":
                         lbuff.lief_fax[1] = " ; ; ; "
