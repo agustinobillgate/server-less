@@ -13,7 +13,10 @@ def prepare_select_fastorebl():
 
     q1_list = None
 
-    q1_list_data, Q1_list = create_model("Q1_list", {"lager_nr":int, "bezeich":string})
+    q1_list_data, Q1_list = create_model(
+        "Q1_list", {
+            "lager_nr":int, 
+            "bezeich":string})
 
     db_session = local_storage.db_session
 
@@ -24,9 +27,10 @@ def prepare_select_fastorebl():
         nonlocal q1_list
         nonlocal q1_list_data
 
-        return {"q1-list": q1_list_data}
+        return {
+            "q1-list": q1_list_data}
 
-    for fa_lager in db_session.query(Fa_lager).order_by(Fa_lager.lager_nr).all():
+    for fa_lager in db_session.query(Fa_lager).order_by(Fa_lager.lager_nr).yield_per(100):
         q1_list = Q1_list()
         q1_list_data.append(q1_list)
 
