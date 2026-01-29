@@ -6,16 +6,22 @@
 
 # Rulita, 22/12/2025
 # Fixing error list data shot type cancel/delete
+
+# yusufwijasena, 29/01/2026
+# - optimize query sort by sort_app
+# - fix userinit assignment to all categories
+# - fix l_order query
 # ==============================================
 
+from sqlalchemy import select
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Bediener, L_lieferant, L_order, L_orderhdr, Parameters, L_artikel, L_pprice, Gl_acct
 
-# For debug
-# from functions import log_program
+from functions import log_program as log
 # import traceback
+
 
 def pr_list_disp_list_2bl(char1: string, billdate: date, from_date: date, to_date: date, outstand_flag: bool, expired_flag: bool, approve_flag: bool, reject_flag: bool, sorttype: int, sort_app: string):
 
@@ -23,6 +29,7 @@ def pr_list_disp_list_2bl(char1: string, billdate: date, from_date: date, to_dat
                   Parameters, L_artikel, L_pprice, Gl_acct])
 
     char1 = char1.strip()
+    sort_app = sort_app.strip()
 
     s_list_data = []
     estimated: int = 0
@@ -140,8 +147,12 @@ def pr_list_disp_list_2bl(char1: string, billdate: date, from_date: date, to_dat
         if pr_nr != "":
             estimated = get_current_time_in_seconds()
 
-            l_orderhdr = get_cache(L_orderhdr, {"betriebsnr": [(ge, 9)], "docu_nr": [
-                                   (eq, pr_nr)], "bestelldatum": [(eq, billdate)], "lief_nr": [(eq, 0)]})
+            l_orderhdr = db_session.query(L_orderhdr).filter(
+                L_orderhdr.betriebsnr >= 9,
+                L_orderhdr.docu_nr == pr_nr,
+                L_orderhdr.bestelldatum == billdate,
+                L_orderhdr.lief_nr == 0
+            ).first()
 
             if l_orderhdr:
                 app_flag = (l_orderhdr.lief_fax[1] != "" and get_index(l_orderhdr.lief_fax[1], "|") == 0) and entry(0, l_orderhdr.lief_fax[1], ";") != " " and entry(
@@ -150,7 +161,7 @@ def pr_list_disp_list_2bl(char1: string, billdate: date, from_date: date, to_dat
                     l_orderhdr.lief_fax[1], "|") > 0)
 
                 parameters = db_session.query(Parameters).filter(
-                    (Parameters.progname == ("CostCenter").lower()) & (Parameters.section == ("Name").lower()) & (to_int(Parameters.varname) == l_orderhdr.angebot_lief[0])).first()
+                    (Parameters.progname == "costcenter") & (Parameters.section == "name") & (to_int(Parameters.varname) == l_orderhdr.angebot_lief[0])).first()
 
                 l_order = get_cache(L_order, {"docu_nr": [(eq, l_orderhdr.docu_nr)], "pos": [
                                     (eq, 0)], "lief_nr": [(eq, 0)]})
@@ -198,23 +209,26 @@ def pr_list_disp_list_2bl(char1: string, billdate: date, from_date: date, to_dat
                 if l_order:
                     s_list.loeschflag = l_order.loeschflag
 
-                l_order = get_cache(L_order, {"docu_nr": [(eq, l_orderhdr.docu_nr)], "pos": [
-                                    (gt, 0)], "lief_nr": [(eq, 0)], "loeschflag": [(eq, sorttype)]})
-                while None != l_order:
-
+                l_order_data = (
+                    db_session.query(L_order)
+                    .filter(
+                        (L_order.docu_nr == l_orderhdr.docu_nr) &
+                        (L_order.pos > 0) &
+                        (L_order.lief_nr == 0) &
+                        (L_order.loeschflag == sorttype))
+                    .order_by(L_order._recid)
+                )
+                for l_order in l_order_data.yield_per(100):
                     l_artikel = get_cache(
                         L_artikel, {"artnr": [(eq, l_order.artnr)]})
 
                     if l_artikel:
 
-                        # Rulita, 17/12/2025
-                        # Fixing userinit assignment when usr is None
-                        # usr = get_cache(Bediener, {"username": [(eq, l_order.lief_fax[0])]})
                         usr = db_session.query(Bediener).filter(
                             Bediener.username == l_order.lief_fax[0]
                         ).first()
 
-                        if usr and usr.userinit:
+                        if usr:
                             tmp_userinit = usr.userinit
                         else:
                             tmp_userinit = ""
@@ -259,10 +273,15 @@ def pr_list_disp_list_2bl(char1: string, billdate: date, from_date: date, to_dat
                         s_list.last_pprice = to_decimal(l_artikel.ek_letzter)
 
                         l_pprice_obj_list = {}
-                        l_pprice = L_pprice()
-                        t_lieferant = L_lieferant()
-                        for l_pprice.bestelldatum, l_pprice.einzelpreis, l_pprice._recid, t_lieferant.firma, t_lieferant._recid in db_session.query(L_pprice.bestelldatum, L_pprice.einzelpreis, L_pprice._recid, T_lieferant.firma, T_lieferant._recid).join(T_lieferant, (T_lieferant.lief_nr == L_pprice.lief_nr)).filter(
-                                (L_pprice.artnr == l_artikel.artnr)).order_by(L_pprice.bestelldatum.desc()).yield_per(100):
+
+                        l_pprice_data = (
+                            db_session.query(L_pprice, T_lieferant)
+                            .join(T_lieferant, (T_lieferant.lief_nr == L_pprice.lief_nr))
+                            .filter(
+                                (L_pprice.artnr == l_artikel.artnr))
+                            .order_by(L_pprice.bestelldatum.desc())
+                        )
+                        for l_pprice, t_lieferant in l_pprice_data.yield_per(100):
                             if l_pprice_obj_list.get(l_pprice._recid):
                                 continue
                             else:
@@ -321,11 +340,12 @@ def pr_list_disp_list_2bl(char1: string, billdate: date, from_date: date, to_dat
 
                         if l_order.angebot_lief[2] != 0:
 
-                            usrbuff = get_cache(
-                                Bediener, {"nr": [(eq, l_order.angebot_lief[2])]})
+                            usrbuff = db_session.query(Bediener).filter(
+                                Bediener.nr == l_order.angebot_lief[2]
+                            ).first()
 
                             if usrbuff:
-                                s_list.cid = tmp_usr.userinit
+                                s_list.cid = usrbuff.userinit
 
                         if l_order.anzahl != 0:
                             s_list.str3 = to_string(
@@ -338,31 +358,37 @@ def pr_list_disp_list_2bl(char1: string, billdate: date, from_date: date, to_dat
                         if l_order.lieferdatum != None:
                             s_list.lieferdatum = to_string(l_order.lieferdatum)
 
-                    curr_recid = l_order._recid
-                    l_order = db_session.query(L_order).filter(
-                        (L_order.docu_nr == l_orderhdr.docu_nr) & (L_order.pos > 0) & (L_order.lief_nr == 0) & (L_order.loeschflag == sorttype) & (L_order._recid > curr_recid)).first()
-
             return
         s_list_data.clear()
         estimated = get_current_time_in_seconds()
 
-        if sort_app.lower() == ("ALL").lower() or sort_app.lower() == "":
-            # log_program.write_log('LOG',f'Sorting ALL records {sorttype}','log_rulita.txt')
+        # -- sort by ALL --
 
-            for l_orderhdr in db_session.query(L_orderhdr).filter(
-                    (L_orderhdr.bestelldatum >= from_date) &
-                    (L_orderhdr.bestelldatum <= to_date) &
-                    (L_orderhdr.betriebsnr >= 9)).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all():
+        if sort_app.lower() == "all" or sort_app.lower() == "":
+
+            l_orderhdr_data = (
+                db_session.query(L_orderhdr, L_order, L_artikel)
+                .join(L_order, L_order.docu_nr == L_orderhdr.docu_nr)
+                .join(L_artikel, L_artikel.artnr == L_order.artnr)
+                .filter(
+                    L_orderhdr.bestelldatum >= from_date,
+                    L_orderhdr.bestelldatum <= to_date,
+                    L_orderhdr.betriebsnr >= 9,
+                    L_order.pos > 0,
+                    L_order.lief_nr == 0,
+                    L_order.loeschflag == sorttype
+                )
+                .order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_order._recid)
+            )
+            for l_orderhdr, l_order, l_artikel in l_orderhdr_data.yield_per(100):
                 app_flag = (l_orderhdr.lief_fax[1] != "" and get_index(l_orderhdr.lief_fax[1], "|") == 0) and entry(0, l_orderhdr.lief_fax[1], ";") != " " and entry(
                     1, l_orderhdr.lief_fax[1], ";") != " " and entry(2, l_orderhdr.lief_fax[1], ";") != " " and entry(3, l_orderhdr.lief_fax[1], ";") != " "
                 rej_flag = (l_orderhdr.lief_fax[1] != "" and get_index(
                     l_orderhdr.lief_fax[1], "|") > 0)
 
                 parameters = db_session.query(Parameters).filter(
-                    (Parameters.progname == ("CostCenter").lower()) & (Parameters.section == ("Name").lower()) & (to_int(Parameters.varname) == l_orderhdr.angebot_lief[0])).first()
+                    (Parameters.progname == "costcenter") & (Parameters.section == "name") & (to_int(Parameters.varname) == l_orderhdr.angebot_lief[0])).first()
 
-                l_order = get_cache(L_order, {"docu_nr": [(eq, l_orderhdr.docu_nr)], "pos": [
-                                    (eq, 0)], "lief_nr": [(eq, 0)]})
                 do_it = True
 
                 if outstand_flag and not app_flag and not rej_flag and l_orderhdr.lieferdatum >= billdate:
@@ -427,193 +453,185 @@ def pr_list_disp_list_2bl(char1: string, billdate: date, from_date: date, to_dat
 
                     sbuff = query(sbuff_data, filters=(
                         lambda sbuff: sbuff.s_recid == s_list.s_recid), first=True)
-                    
-                    # l_order = get_cache(L_order, {"docu_nr": [(eq, l_orderhdr.docu_nr)], "pos": [(gt, 0)], "lief_nr": [(eq, 0)], "loeschflag": [(eq, sorttype)]})
-                    # l_order = db_session.query(L_order).filter(
-                        # (L_order.docu_nr == l_orderhdr.docu_nr) & (L_order.pos > 0) & (L_order.lief_nr == 0) & (L_order.loeschflag == sorttype)).order_by(L_order._recid).first()
-                    
-                    # while None != l_order:
-                    for l_order in db_session.query(L_order).filter(
-                            (L_order.docu_nr == l_orderhdr.docu_nr) &
-                            (L_order.pos > 0) &
-                            (L_order.lief_nr == 0) &
-                            (L_order.loeschflag == sorttype)).order_by(L_order._recid).all():
 
-                        l_artikel = get_cache(
-                            L_artikel, {"artnr": [(eq, l_order.artnr)]})
+                    if l_artikel:
 
-                        if l_artikel:
+                        usr = db_session.query(Bediener).filter(
+                            Bediener.username == l_order.lief_fax[0]
+                        ).first()
 
-                            # Rulita, 17/12/2025
-                            # Fixing userinit assignment when usr is None
-                            # usr = get_cache(
-                            #     Bediener, {"username": [(eq, l_order.lief_fax[0])]})
-                            usr = db_session.query(Bediener).filter(
-                                Bediener.username == l_order.lief_fax[0]
-                            ).first()
+                        if usr:
+                            tmp_userinit = usr.userinit
+                        else:
+                            tmp_userinit = ""
 
-                            if usr and usr.userinit:
-                                tmp_userinit = usr.userinit
+                        tbuff = query(tbuff_data, filters=(
+                            lambda tbuff: tbuff.docu_nr == l_order.docu_nr and tbuff.pos == 0 and tbuff.loeschflag == l_order.loeschflag), first=True)
+
+                        if not tbuff:
+                            tbuff = Tbuff()
+                            tbuff_data.append(tbuff)
+
+                            buffer_copy(sbuff, tbuff)
+                            tbuff.loeschflag = l_order.loeschflag
+
+                        s_list = S_list()
+                        s_list_data.append(s_list)
+
+                        s_list.s_recid = l_order._recid
+
+                        s_list.deptnr = l_orderhdr.angebot_lief[0]
+                        s_list.docu_nr = l_order.docu_nr
+                        s_list.po_nr = l_order.lief_fax[1]
+                        s_list.pos = l_order.pos
+                        s_list.artnr = l_artikel.artnr
+                        s_list.bezeich = l_artikel.bezeich
+                        s_list.qty = to_decimal(l_order.anzahl)
+                        s_list.dunit = l_artikel.traubensorte
+                        s_list.lief_einheit = to_decimal(
+                            l_artikel.lief_einheit)
+                        s_list.approved = app_flag
+                        s_list.rejected = rej_flag
+                        s_list.pchase_date = l_order.bestelldatum
+                        s_list.loeschflag = l_order.loeschflag
+                        s_list.konto = l_order.stornogrund
+                        s_list.userinit = tmp_userinit
+                        s_list.pchase_nr = l_order.lief_fax[1]
+                        s_list.cdate = l_order.lieferdatum_eff
+                        s_list.instruct = l_order.besteller
+                        s_list.supno = l_order.angebot_lief[1]
+                        s_list.currno = l_order.angebot_lief[2]
+                        s_list.duprice = to_decimal(l_order.einzelpreis)
+                        s_list.amount = to_decimal(l_order.warenwert)
+                        s_list.anzahl = l_order.anzahl
+                        s_list.txtnr = l_order.txtnr
+                        s_list.einzelpreis = to_decimal(
+                            l_order.einzelpreis)
+                        s_list.zeit = l_order.zeit
+                        s_list.min_bestand = to_decimal(
+                            l_artikel.min_bestand)
+                        s_list.max_bestand = to_decimal(
+                            l_artikel.anzverbrauch)
+                        s_list.masseinheit = l_artikel.masseinheit
+                        s_list.last_pprice = to_decimal(
+                            l_artikel.ek_letzter)
+
+                        l_pprice_obj_list = {}
+
+                        l_pprice_data = (
+                            db_session.query(L_pprice, T_lieferant)
+                            .join(T_lieferant, (T_lieferant.lief_nr == L_pprice.lief_nr))
+                            .filter(
+                                (L_pprice.artnr == l_artikel.artnr))
+                            .order_by(L_pprice.bestelldatum.desc()))
+                        for l_pprice, t_lieferant in l_pprice_data.yield_per(100):
+                            if l_pprice_obj_list.get(l_pprice._recid):
+                                continue
                             else:
-                                tmp_userinit = ""
+                                l_pprice_obj_list[l_pprice._recid] = True
 
-                            tbuff = query(tbuff_data, filters=(
-                                lambda tbuff: tbuff.docu_nr == l_order.docu_nr and tbuff.pos == 0 and tbuff.loeschflag == l_order.loeschflag), first=True)
+                            s_list.last_pdate = l_pprice.bestelldatum
+                            s_list.last_pbook = to_decimal(
+                                l_pprice.einzelpreis)
+                            s_list.a_firma = t_lieferant.firma
 
-                            if not tbuff:
-                                tbuff = Tbuff()
-                                tbuff_data.append(tbuff)
+                            break
 
-                                buffer_copy(sbuff, tbuff)
-                                tbuff.loeschflag = l_order.loeschflag
+                        gl_acct = get_cache(
+                            Gl_acct, {"fibukonto": [(eq, l_order.stornogrund)]})
 
-                            s_list = S_list()
-                            s_list_data.append(s_list)
+                        if gl_acct:
+                            s_list.desc_coa = gl_acct.bezeich
 
-                            s_list.s_recid = l_order._recid
+                        if l_order.bestellart != "":
+                            s_list.du_price1 = to_decimal(to_decimal(
+                                entry(1, entry(0, l_order.bestellart, "-"), ";"))) / to_decimal("100")
+                            s_list.du_price2 = to_decimal(to_decimal(
+                                entry(1, entry(1, l_order.bestellart, "-"), ";"))) / to_decimal("100")
+                            s_list.du_price3 = to_decimal(to_decimal(
+                                entry(1, entry(2, l_order.bestellart, "-"), ";"))) / to_decimal("100")
+                            s_list.supp1 = to_int(
+                                entry(0, entry(0, l_order.bestellart, "-"), ";"))
+                            s_list.supp2 = to_int(
+                                entry(0, entry(1, l_order.bestellart, "-"), ";"))
+                            s_list.supp3 = to_int(
+                                entry(0, entry(2, l_order.bestellart, "-"), ";"))
 
-                            s_list.deptnr = l_orderhdr.angebot_lief[0]
-                            s_list.docu_nr = l_order.docu_nr
-                            s_list.po_nr = l_order.lief_fax[1]
-                            s_list.pos = l_order.pos
-                            s_list.artnr = l_artikel.artnr
-                            s_list.bezeich = l_artikel.bezeich
-                            s_list.qty = to_decimal(l_order.anzahl)
-                            s_list.dunit = l_artikel.traubensorte
-                            s_list.lief_einheit = to_decimal(
-                                l_artikel.lief_einheit)
-                            s_list.approved = app_flag
-                            s_list.rejected = rej_flag
-                            s_list.pchase_date = l_order.bestelldatum
-                            s_list.loeschflag = l_order.loeschflag
-                            s_list.konto = l_order.stornogrund
-                            s_list.userinit = tmp_userinit
-                            s_list.pchase_nr = l_order.lief_fax[1]
-                            s_list.cdate = l_order.lieferdatum_eff
-                            s_list.instruct = l_order.besteller
-                            s_list.supno = l_order.angebot_lief[1]
-                            s_list.currno = l_order.angebot_lief[2]
-                            s_list.duprice = to_decimal(l_order.einzelpreis)
-                            s_list.amount = to_decimal(l_order.warenwert)
-                            s_list.anzahl = l_order.anzahl
-                            s_list.txtnr = l_order.txtnr
-                            s_list.einzelpreis = to_decimal(
-                                l_order.einzelpreis)
-                            s_list.zeit = l_order.zeit
-                            s_list.min_bestand = to_decimal(
-                                l_artikel.min_bestand)
-                            s_list.max_bestand = to_decimal(
-                                l_artikel.anzverbrauch)
-                            s_list.masseinheit = l_artikel.masseinheit
-                            s_list.last_pprice = to_decimal(
-                                l_artikel.ek_letzter)
+                        l_lieferant = get_cache(
+                            L_lieferant, {"lief_nr": [(eq, s_list.supp1)]})
 
-                            l_pprice_obj_list = {}
-                            l_pprice = L_pprice()
-                            t_lieferant = L_lieferant()
-                            for l_pprice.bestelldatum, l_pprice.einzelpreis, l_pprice._recid, t_lieferant.firma, t_lieferant._recid in db_session.query(L_pprice.bestelldatum, L_pprice.einzelpreis, L_pprice._recid, T_lieferant.firma, T_lieferant._recid).join(T_lieferant, (T_lieferant.lief_nr == L_pprice.lief_nr)).filter(
-                                    (L_pprice.artnr == l_artikel.artnr)).order_by(L_pprice.bestelldatum.desc()).yield_per(100):
-                                if l_pprice_obj_list.get(l_pprice._recid):
-                                    continue
-                                else:
-                                    l_pprice_obj_list[l_pprice._recid] = True
+                        if l_lieferant:
+                            s_list.suppn1 = l_lieferant.firma
 
-                                s_list.last_pdate = l_pprice.bestelldatum
-                                s_list.last_pbook = to_decimal(
-                                    l_pprice.einzelpreis)
-                                s_list.a_firma = t_lieferant.firma
+                        l_lieferant = get_cache(
+                            L_lieferant, {"lief_nr": [(eq, s_list.supp2)]})
 
-                                break
+                        if l_lieferant:
+                            s_list.suppn2 = l_lieferant.firma
 
-                            gl_acct = get_cache(
-                                Gl_acct, {"fibukonto": [(eq, l_order.stornogrund)]})
+                        l_lieferant = get_cache(
+                            L_lieferant, {"lief_nr": [(eq, s_list.supp3)]})
 
-                            if gl_acct:
-                                s_list.desc_coa = gl_acct.bezeich
+                        if l_lieferant:
+                            s_list.suppn3 = l_lieferant.firma
 
-                            if l_order.bestellart != "":
-                                s_list.du_price1 = to_decimal(to_decimal(
-                                    entry(1, entry(0, l_order.bestellart, "-"), ";"))) / to_decimal("100")
-                                s_list.du_price2 = to_decimal(to_decimal(
-                                    entry(1, entry(1, l_order.bestellart, "-"), ";"))) / to_decimal("100")
-                                s_list.du_price3 = to_decimal(to_decimal(
-                                    entry(1, entry(2, l_order.bestellart, "-"), ";"))) / to_decimal("100")
-                                s_list.supp1 = to_int(
-                                    entry(0, entry(0, l_order.bestellart, "-"), ";"))
-                                s_list.supp2 = to_int(
-                                    entry(0, entry(1, l_order.bestellart, "-"), ";"))
-                                s_list.supp3 = to_int(
-                                    entry(0, entry(2, l_order.bestellart, "-"), ";"))
+                        l_lieferant = get_cache(
+                            L_lieferant, {"lief_nr": [(eq, s_list.supno)]})
 
-                            l_lieferant = get_cache(
-                                L_lieferant, {"lief_nr": [(eq, s_list.supp1)]})
+                        if l_lieferant:
+                            s_list.supps = l_lieferant.firma
 
-                            if l_lieferant:
-                                s_list.suppn1 = l_lieferant.firma
+                        if not sbuff:
+                            s_list.str0 = l_order.docu_nr
+                            s_list.bestelldatum = to_string(
+                                l_orderhdr.bestelldatum)
+                            s_list.lieferdatum = to_string(
+                                l_orderhdr.lieferdatum)
 
-                            l_lieferant = get_cache(
-                                L_lieferant, {"lief_nr": [(eq, s_list.supp2)]})
+                        if l_order.angebot_lief[2] != 0:
 
-                            if l_lieferant:
-                                s_list.suppn2 = l_lieferant.firma
+                            usrbuff = db_session.query(Bediener).filter(
+                                Bediener.nr == l_order.angebot_lief[2]).first()
 
-                            l_lieferant = get_cache(
-                                L_lieferant, {"lief_nr": [(eq, s_list.supp3)]})
+                            if usrbuff:
+                                s_list.cid = usrbuff.userinit
 
-                            if l_lieferant:
-                                s_list.suppn3 = l_lieferant.firma
+                        if l_order.lieferdatum != None:
+                            s_list.lieferdatum = to_string(
+                                l_order.lieferdatum)
 
-                            l_lieferant = get_cache(
-                                L_lieferant, {"lief_nr": [(eq, s_list.supno)]})
+                        if l_order.anzahl != 0:
+                            s_list.str3 = to_string(
+                                l_order.anzahl, ">>>,>>9.99")
 
-                            if l_lieferant:
-                                s_list.supps = l_lieferant.firma
+                        if l_artikel.lief_einheit != 0:
+                            s_list.str4 = to_string(
+                                l_artikel.lief_einheit, ">>,>>9")
 
-                            if not sbuff:
-                                s_list.str0 = l_order.docu_nr
-                                s_list.bestelldatum = to_string(
-                                    l_orderhdr.bestelldatum)
-                                s_list.lieferdatum = to_string(
-                                    l_orderhdr.lieferdatum)
+        # -- sort by NO APPROVE --
+        elif sort_app.lower() == "no approve":
 
-                            # l_order.angebot_lief[2] = l_order.angebot_lief[2] if l_order.angebot_lief[2] is not None else 0
-                            # print(f'l_order.angebot_lief[2]: {l_order.angebot_lief[2]}')
-                            if l_order.angebot_lief[2] != 0:
-
-                                # usrbuff = get_cache( Bediener, {"nr": [(eq, l_order.angebot_lief[2])]})
-                                usrbuff = db_session.query(Bediener).filter(
-                                    Bediener.nr == l_order.angebot_lief[2]).first()
-
-                                if usrbuff:
-                                    s_list.cid = usrbuff.userinit
-
-                            if l_order.lieferdatum != None:
-                                s_list.lieferdatum = to_string(
-                                    l_order.lieferdatum)
-
-                            if l_order.anzahl != 0:
-                                s_list.str3 = to_string(
-                                    l_order.anzahl, ">>>,>>9.99")
-
-                            if l_artikel.lief_einheit != 0:
-                                s_list.str4 = to_string(
-                                    l_artikel.lief_einheit, ">>,>>9")
-
-                        # curr_recid = l_order._recid
-                        # l_order = db_session.query(L_order).filter(
-                        #     (L_order.docu_nr == l_orderhdr.docu_nr) & (L_order.pos > 0) & (L_order.lief_nr == 0) & (L_order.loeschflag == sorttype) & (L_order._recid > curr_recid)).order_by(L_order._recid).first()
-
-        elif sort_app.lower() == ("No Approve").lower():
-
-            for l_orderhdr in db_session.query(L_orderhdr).filter(
-                    (L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.betriebsnr >= 9) & (entry(0, L_orderhdr.lief_fax[inc_value(1)], ";") == " ") & (entry(1, L_orderhdr.lief_fax[inc_value(1)], ";") == " ") & (entry(2, L_orderhdr.lief_fax[inc_value(1)], ";") == " ") & (entry(3, L_orderhdr.lief_fax[inc_value(1)], ";") == " ")).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all():
+            l_orderhdr_data = (
+                db_session.query(L_orderhdr)
+                .filter(
+                    (L_orderhdr.bestelldatum >= from_date) &
+                    (L_orderhdr.bestelldatum <= to_date) &
+                    (L_orderhdr.betriebsnr >= 9) &
+                    (entry(0, L_orderhdr.lief_fax[inc_value(1)], ";") == " ") &
+                    (entry(1, L_orderhdr.lief_fax[inc_value(1)], ";") == " ") &
+                    (entry(2, L_orderhdr.lief_fax[inc_value(1)], ";") == " ") &
+                    (entry(3, L_orderhdr.lief_fax[inc_value(1)], ";") == " ")
+                )
+                .order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr)
+            )
+            for l_orderhdr in l_orderhdr_data.yield_per(100):
                 app_flag = (l_orderhdr.lief_fax[1] != "" and get_index(l_orderhdr.lief_fax[1], "|") == 0) and entry(0, l_orderhdr.lief_fax[1], ";") != " " and entry(
                     1, l_orderhdr.lief_fax[1], ";") != " " and entry(2, l_orderhdr.lief_fax[1], ";") != " " and entry(3, l_orderhdr.lief_fax[1], ";") != " "
                 rej_flag = (l_orderhdr.lief_fax[1] != "" and get_index(
                     l_orderhdr.lief_fax[1], "|") > 0)
 
                 parameters = db_session.query(Parameters).filter(
-                    (Parameters.progname == ("CostCenter").lower()) & (Parameters.section == ("Name").lower()) & (to_int(Parameters.varname) == l_orderhdr.angebot_lief[0])).first()
+                    (Parameters.progname == "costcenter") & (Parameters.section == "name") & (to_int(Parameters.varname) == l_orderhdr.angebot_lief[0])).first()
 
                 l_order = get_cache(L_order, {"docu_nr": [(eq, l_orderhdr.docu_nr)], "pos": [
                                     (eq, 0)], "lief_nr": [(eq, 0)]})
@@ -682,21 +700,28 @@ def pr_list_disp_list_2bl(char1: string, billdate: date, from_date: date, to_dat
 
                     if entry(0, l_orderhdr.lief_fax[1], ";") == " " and entry(1, l_orderhdr.lief_fax[1], ";") == " " and entry(2, l_orderhdr.lief_fax[1], ";") == " " and entry(3, l_orderhdr.lief_fax[1], ";") == " ":
 
-                        l_order = get_cache(L_order, {"docu_nr": [(eq, l_orderhdr.docu_nr)], "pos": [
-                                            (gt, 0)], "lief_nr": [(eq, 0)], "loeschflag": [(eq, sorttype)]})
-                        while None != l_order:
+                        l_order_data = (
+                            db_session.query(L_order, L_artikel)
+                            .join(L_artikel, L_artikel.artnr == L_order.artnr)
+                            .filter(
+                                (L_order.docu_nr == l_orderhdr.docu_nr) &
+                                (L_order.pos > 0) &
+                                (L_order.lief_nr == 0) &
+                                (L_order.loeschflag == sorttype))
+                            .order_by(L_order._recid))
 
-                            l_artikel = get_cache(
-                                L_artikel, {"artnr": [(eq, l_order.artnr)]})
+                        for l_order, l_artikel in l_order_data.yield_per(100):
 
                             if l_artikel:
-
-                                # usr = get_cache(
-                                #     Bediener, {"username": [(eq, l_order.lief_fax[0])]})
-
-                                tmp_usr = db_session.query(Bediener).filter(
+                                
+                                usr = db_session.query(Bediener).filter(
                                     Bediener.username == l_order.lief_fax[0]
                                 ).first()
+
+                                if usr:
+                                    tmp_userinit = usr.userinit
+                                else:
+                                    tmp_userinit = ""
 
                                 tbuff = query(tbuff_data, filters=(
                                     lambda tbuff: tbuff.docu_nr == l_order.docu_nr and tbuff.pos == 0 and tbuff.loeschflag == l_order.loeschflag), first=True)
@@ -727,7 +752,7 @@ def pr_list_disp_list_2bl(char1: string, billdate: date, from_date: date, to_dat
                                 s_list.pchase_date = l_order.bestelldatum
                                 s_list.loeschflag = l_order.loeschflag
                                 s_list.konto = l_order.stornogrund
-                                s_list.userinit = tmp_usr.userinit
+                                s_list.userinit = tmp_userinit
                                 s_list.pchase_nr = l_order.lief_fax[1]
                                 s_list.cdate = l_order.lieferdatum_eff
                                 s_list.instruct = l_order.besteller
@@ -750,10 +775,16 @@ def pr_list_disp_list_2bl(char1: string, billdate: date, from_date: date, to_dat
                                     l_artikel.ek_letzter)
 
                                 l_pprice_obj_list = {}
-                                l_pprice = L_pprice()
-                                t_lieferant = L_lieferant()
-                                for l_pprice.bestelldatum, l_pprice.einzelpreis, l_pprice._recid, t_lieferant.firma, t_lieferant._recid in db_session.query(L_pprice.bestelldatum, L_pprice.einzelpreis, L_pprice._recid, T_lieferant.firma, T_lieferant._recid).join(T_lieferant, (T_lieferant.lief_nr == L_pprice.lief_nr)).filter(
-                                        (L_pprice.artnr == l_artikel.artnr)).order_by(L_pprice.bestelldatum.desc()).yield_per(100):
+
+                                l_pprice_data = (
+                                    db_session.query(L_pprice, T_lieferant).
+                                    join(
+                                        T_lieferant, (T_lieferant.lief_nr == L_pprice.lief_nr))
+                                    .filter(
+                                        (L_pprice.artnr == l_artikel.artnr))
+                                    .order_by(L_pprice.bestelldatum.desc())
+                                )
+                                for l_pprice, t_lieferant in l_pprice_data.yield_per(100):
                                     if l_pprice_obj_list.get(l_pprice._recid):
                                         continue
                                     else:
@@ -819,8 +850,9 @@ def pr_list_disp_list_2bl(char1: string, billdate: date, from_date: date, to_dat
 
                                 if l_order.angebot_lief[2] != 0:
 
-                                    usrbuff = get_cache(
-                                        Bediener, {"nr": [(eq, l_order.angebot_lief[2])]})
+                                    usrbuff = db_session.query(Bediener).filter(
+                                        Bediener.nr == l_order.angebotlief[2]
+                                    ).first()
 
                                     if usrbuff:
                                         s_list.cid = usrbuff.userinit
@@ -837,21 +869,25 @@ def pr_list_disp_list_2bl(char1: string, billdate: date, from_date: date, to_dat
                                     s_list.str4 = to_string(
                                         l_artikel.lief_einheit, ">>,>>9")
 
-                            curr_recid = l_order._recid
-                            l_order = db_session.query(L_order).filter(
-                                (L_order.docu_nr == l_orderhdr.docu_nr) & (L_order.pos > 0) & (L_order.lief_nr == 0) & (L_order.loeschflag == sorttype) & (L_order._recid > curr_recid)).first()
+        # -- sort by APPROVE 1 --
+        elif sort_app.lower() == "approve 1":
 
-        elif sort_app.lower() == ("Approve 1").lower():
-
-            for l_orderhdr in db_session.query(L_orderhdr).filter(
-                    (L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.betriebsnr >= 9) & (entry(0, L_orderhdr.lief_fax[inc_value(1)], ";") != " ") & (entry(1, L_orderhdr.lief_fax[inc_value(1)], ";") == " ") & (entry(2, L_orderhdr.lief_fax[inc_value(1)], ";") == " ") & (entry(3, L_orderhdr.lief_fax[inc_value(1)], ";") == " ")).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all():
+            l_orderhdr_data = db_session.query(L_orderhdr).filter(
+                (L_orderhdr.bestelldatum >= from_date) &
+                (L_orderhdr.bestelldatum <= to_date) &
+                (L_orderhdr.betriebsnr >= 9) &
+                (entry(0, L_orderhdr.lief_fax[inc_value(1)], ";") != " ") &
+                (entry(1, L_orderhdr.lief_fax[inc_value(1)], ";") == " ") &
+                (entry(2, L_orderhdr.lief_fax[inc_value(1)], ";") == " ") &
+                (entry(3, L_orderhdr.lief_fax[inc_value(1)], ";") == " ")).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr)
+            for l_orderhdr in l_orderhdr_data.yield_per(100):
                 app_flag = (l_orderhdr.lief_fax[1] != "" and get_index(l_orderhdr.lief_fax[1], "|") == 0) and entry(0, l_orderhdr.lief_fax[1], ";") != " " and entry(
                     1, l_orderhdr.lief_fax[1], ";") != " " and entry(2, l_orderhdr.lief_fax[1], ";") != " " and entry(3, l_orderhdr.lief_fax[1], ";") != " "
                 rej_flag = (l_orderhdr.lief_fax[1] != "" and get_index(
                     l_orderhdr.lief_fax[1], "|") > 0)
 
                 parameters = db_session.query(Parameters).filter(
-                    (Parameters.progname == ("CostCenter").lower()) & (Parameters.section == ("Name").lower()) & (to_int(Parameters.varname) == l_orderhdr.angebot_lief[0])).first()
+                    (Parameters.progname == "costcenter") & (Parameters.section == "name") & (to_int(Parameters.varname) == l_orderhdr.angebot_lief[0])).first()
 
                 l_order = get_cache(L_order, {"docu_nr": [(eq, l_orderhdr.docu_nr)], "pos": [
                                     (eq, 0)], "lief_nr": [(eq, 0)]})
@@ -920,21 +956,27 @@ def pr_list_disp_list_2bl(char1: string, billdate: date, from_date: date, to_dat
 
                     if entry(0, l_orderhdr.lief_fax[1], ";") != " " and entry(1, l_orderhdr.lief_fax[1], ";") == " " and entry(2, l_orderhdr.lief_fax[1], ";") == " " and entry(3, l_orderhdr.lief_fax[1], ";") == " ":
 
-                        l_order = get_cache(L_order, {"docu_nr": [(eq, l_orderhdr.docu_nr)], "pos": [
-                                            (gt, 0)], "lief_nr": [(eq, 0)], "loeschflag": [(eq, sorttype)]})
-                        while None != l_order:
+                        l_order_data = (
+                            db_session.query(L_order, L_artikel)
+                            .join(L_artikel, L_artikel.artnr == L_order.artnr)
+                            .filter(
+                                (L_order.docu_nr == l_orderhdr.docu_nr) &
+                                (L_order.pos > 0) &
+                                (L_order.lief_nr == 0) &
+                                (L_order.loeschflag == sorttype))
+                            .order_by(L_order._recid))
 
-                            l_artikel = get_cache(
-                                L_artikel, {"artnr": [(eq, l_order.artnr)]})
-
+                        for l_order, l_artikel in l_order_data.yield_per(100):
                             if l_artikel:
 
-                                # usr = get_cache(
-                                #     Bediener, {"username": [(eq, l_order.lief_fax[0])]})
-
-                                tmp_usr = db_session.query(Bediener).filter(
+                                usr = db_session.query(Bediener).filter(
                                     Bediener.username == l_order.lief_fax[0]
                                 ).first()
+
+                                if usr :
+                                    tmp_userinit = usr.userinit
+                                else:
+                                    tmp_userinit = ""
 
                                 tbuff = query(tbuff_data, filters=(
                                     lambda tbuff: tbuff.docu_nr == l_order.docu_nr and tbuff.pos == 0 and tbuff.loeschflag == l_order.loeschflag), first=True)
@@ -965,7 +1007,7 @@ def pr_list_disp_list_2bl(char1: string, billdate: date, from_date: date, to_dat
                                 s_list.pchase_date = l_order.bestelldatum
                                 s_list.loeschflag = l_order.loeschflag
                                 s_list.konto = l_order.stornogrund
-                                s_list.userinit = tmp_usr.userinit
+                                s_list.userinit = tmp_userinit
                                 s_list.pchase_nr = l_order.lief_fax[1]
                                 s_list.cdate = l_order.lieferdatum_eff
                                 s_list.instruct = l_order.besteller
@@ -988,10 +1030,14 @@ def pr_list_disp_list_2bl(char1: string, billdate: date, from_date: date, to_dat
                                     l_artikel.ek_letzter)
 
                                 l_pprice_obj_list = {}
-                                l_pprice = L_pprice()
-                                t_lieferant = L_lieferant()
-                                for l_pprice.bestelldatum, l_pprice.einzelpreis, l_pprice._recid, t_lieferant.firma, t_lieferant._recid in db_session.query(L_pprice.bestelldatum, L_pprice.einzelpreis, L_pprice._recid, T_lieferant.firma, T_lieferant._recid).join(T_lieferant, (T_lieferant.lief_nr == L_pprice.lief_nr)).filter(
-                                        (L_pprice.artnr == l_artikel.artnr)).order_by(L_pprice.bestelldatum.desc()).yield_per(100):
+                                
+                                l_pprice_data = (
+                                    db_session.query(L_pprice, T_lieferant)
+                                    .join(T_lieferant, (T_lieferant.lief_nr == L_pprice.lief_nr))
+                                    .filter(
+                                        (L_pprice.artnr == l_artikel.artnr))
+                                    .order_by(L_pprice.bestelldatum.desc()))
+                                for l_pprice, t_lieferant in l_pprice_data.yield_per(100):
                                     if l_pprice_obj_list.get(l_pprice._recid):
                                         continue
                                     else:
@@ -1057,8 +1103,9 @@ def pr_list_disp_list_2bl(char1: string, billdate: date, from_date: date, to_dat
 
                                 if l_order.angebot_lief[2] != 0:
 
-                                    usrbuff = get_cache(
-                                        Bediener, {"nr": [(eq, l_order.angebot_lief[2])]})
+                                    usrbuff = db_session.query(Bediener).filter(
+                                        Bediener.nr == l_order.angebotlief[2]
+                                    ).first()
 
                                     if usrbuff:
                                         s_list.cid = usrbuff.userinit
@@ -1075,21 +1122,29 @@ def pr_list_disp_list_2bl(char1: string, billdate: date, from_date: date, to_dat
                                     s_list.str4 = to_string(
                                         l_artikel.lief_einheit, ">>,>>9")
 
-                            curr_recid = l_order._recid
-                            l_order = db_session.query(L_order).filter(
-                                (L_order.docu_nr == l_orderhdr.docu_nr) & (L_order.pos > 0) & (L_order.lief_nr == 0) & (L_order.loeschflag == sorttype) & (L_order._recid > curr_recid)).first()
+        # -- sort by APPROVE 2 --
+        elif sort_app.lower() == "approve 2":
 
-        elif sort_app.lower() == ("Approve 2").lower():
-
-            for l_orderhdr in db_session.query(L_orderhdr).filter(
-                    (L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.betriebsnr >= 9) & (entry(0, L_orderhdr.lief_fax[inc_value(1)], ";") != " ") & (entry(1, L_orderhdr.lief_fax[inc_value(1)], ";") != " ") & (entry(2, L_orderhdr.lief_fax[inc_value(1)], ";") == " ") & (entry(3, L_orderhdr.lief_fax[inc_value(1)], ";") == " ")).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all():
+            l_orderhdr_data = (
+                db_session.query(L_orderhdr)
+                .filter(
+                    (L_orderhdr.bestelldatum >= from_date) &
+                    (L_orderhdr.bestelldatum <= to_date) &
+                    (L_orderhdr.betriebsnr >= 9) &
+                    (entry(0, L_orderhdr.lief_fax[inc_value(1)], ";") != " ") &
+                    (entry(1, L_orderhdr.lief_fax[inc_value(1)], ";") != " ") &
+                    (entry(2, L_orderhdr.lief_fax[inc_value(1)], ";") == " ") &
+                    (entry(3, L_orderhdr.lief_fax[inc_value(1)], ";") == " "))
+                .order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr)
+            )
+            for l_orderhdr in l_orderhdr_data.yield_per(100):
                 app_flag = (l_orderhdr.lief_fax[1] != "" and get_index(l_orderhdr.lief_fax[1], "|") == 0) and entry(0, l_orderhdr.lief_fax[1], ";") != " " and entry(
                     1, l_orderhdr.lief_fax[1], ";") != " " and entry(2, l_orderhdr.lief_fax[1], ";") != " " and entry(3, l_orderhdr.lief_fax[1], ";") != " "
                 rej_flag = (l_orderhdr.lief_fax[1] != "" and get_index(
                     l_orderhdr.lief_fax[1], "|") > 0)
 
                 parameters = db_session.query(Parameters).filter(
-                    (Parameters.progname == ("CostCenter").lower()) & (Parameters.section == ("Name").lower()) & (to_int(Parameters.varname) == l_orderhdr.angebot_lief[0])).first()
+                    (Parameters.progname == "costcontrol") & (Parameters.section == "name") & (to_int(Parameters.varname) == l_orderhdr.angebot_lief[0])).first()
 
                 l_order = get_cache(L_order, {"docu_nr": [(eq, l_orderhdr.docu_nr)], "pos": [
                                     (eq, 0)], "lief_nr": [(eq, 0)]})
@@ -1158,21 +1213,28 @@ def pr_list_disp_list_2bl(char1: string, billdate: date, from_date: date, to_dat
 
                     if entry(0, l_orderhdr.lief_fax[1], ";") != " " and entry(1, l_orderhdr.lief_fax[1], ";") != " " and entry(2, l_orderhdr.lief_fax[1], ";") == " " and entry(3, l_orderhdr.lief_fax[1], ";") == " ":
 
-                        l_order = get_cache(L_order, {"docu_nr": [(eq, l_orderhdr.docu_nr)], "pos": [
-                                            (gt, 0)], "lief_nr": [(eq, 0)], "loeschflag": [(eq, sorttype)]})
-                        while None != l_order:
+                        l_order_data = (
+                            db_session.query(L_order, L_artikel)
+                            .join(L_artikel, L_artikel.artnr == L_order.artnr)
+                            .filter(
+                            (L_order.docu_nr == l_orderhdr.docu_nr) &
+                            (L_order.pos > 0) &
+                            (L_order.lief_nr == 0) &
+                            (L_order.loeschflag == sorttype))
+                            .order_by(L_order._recid))
 
-                            l_artikel = get_cache(
-                                L_artikel, {"artnr": [(eq, l_order.artnr)]})
+                        for l_order, l_artikel in l_order_data.yield_per(100):
 
                             if l_artikel:
 
-                                # usr = get_cache(
-                                #     Bediener, {"username": [(eq, l_order.lief_fax[0])]})
-
-                                tmp_usr = db_session.query(Bediener).filter(
+                                usr = db_session.query(Bediener).filter(
                                     Bediener.username == l_order.lief_fax[0]
                                 ).first()
+
+                                if usr :
+                                    tmp_userinit = usr.userinit
+                                else:
+                                    tmp_userinit = ""
 
                                 tbuff = query(tbuff_data, filters=(
                                     lambda tbuff: tbuff.docu_nr == l_order.docu_nr and tbuff.pos == 0 and tbuff.loeschflag == l_order.loeschflag), first=True)
@@ -1203,7 +1265,7 @@ def pr_list_disp_list_2bl(char1: string, billdate: date, from_date: date, to_dat
                                 s_list.pchase_date = l_order.bestelldatum
                                 s_list.loeschflag = l_order.loeschflag
                                 s_list.konto = l_order.stornogrund
-                                s_list.userinit = tmp_usr.userinit
+                                s_list.userinit = tmp_userinit
                                 s_list.pchase_nr = l_order.lief_fax[1]
                                 s_list.cdate = l_order.lieferdatum_eff
                                 s_list.instruct = l_order.besteller
@@ -1226,10 +1288,16 @@ def pr_list_disp_list_2bl(char1: string, billdate: date, from_date: date, to_dat
                                     l_artikel.ek_letzter)
 
                                 l_pprice_obj_list = {}
-                                l_pprice = L_pprice()
-                                t_lieferant = L_lieferant()
-                                for l_pprice.bestelldatum, l_pprice.einzelpreis, l_pprice._recid, t_lieferant.firma, t_lieferant._recid in db_session.query(L_pprice.bestelldatum, L_pprice.einzelpreis, L_pprice._recid, T_lieferant.firma, T_lieferant._recid).join(T_lieferant, (T_lieferant.lief_nr == L_pprice.lief_nr)).filter(
-                                        (L_pprice.artnr == l_artikel.artnr)).order_by(L_pprice.bestelldatum.desc()).yield_per(100):
+
+                                l_pprice_data = (
+                                    db_session.query(L_pprice, T_lieferant)
+                                    .join(
+                                        T_lieferant, (T_lieferant.lief_nr == L_pprice.lief_nr))
+                                    .filter(
+                                        (L_pprice.artnr == l_artikel.artnr))
+                                    .order_by(L_pprice.bestelldatum.desc())
+                                )
+                                for l_pprice, t_lieferant in l_pprice_data.yield_per(100):
                                     if l_pprice_obj_list.get(l_pprice._recid):
                                         continue
                                     else:
@@ -1295,8 +1363,9 @@ def pr_list_disp_list_2bl(char1: string, billdate: date, from_date: date, to_dat
 
                                 if l_order.angebot_lief[2] != 0:
 
-                                    usrbuff = get_cache(
-                                        Bediener, {"nr": [(eq, l_order.angebot_lief[2])]})
+                                    usrbuff = db_session.query(Bediener).filter(
+                                        Bediener.nr == l_order.angebotlief[2]
+                                    ).first()
 
                                     if usrbuff:
                                         s_list.cid = usrbuff.userinit
@@ -1313,21 +1382,28 @@ def pr_list_disp_list_2bl(char1: string, billdate: date, from_date: date, to_dat
                                     s_list.str4 = to_string(
                                         l_artikel.lief_einheit, ">>,>>9")
 
-                            curr_recid = l_order._recid
-                            l_order = db_session.query(L_order).filter(
-                                (L_order.docu_nr == l_orderhdr.docu_nr) & (L_order.pos > 0) & (L_order.lief_nr == 0) & (L_order.loeschflag == sorttype) & (L_order._recid > curr_recid)).first()
-
-        elif sort_app.lower() == ("Approve 3").lower():
-
-            for l_orderhdr in db_session.query(L_orderhdr).filter(
-                    (L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.betriebsnr >= 9) & (entry(0, L_orderhdr.lief_fax[inc_value(1)], ";") != " ") & (entry(1, L_orderhdr.lief_fax[inc_value(1)], ";") != " ") & (entry(2, L_orderhdr.lief_fax[inc_value(1)], ";") != " ") & (entry(3, L_orderhdr.lief_fax[inc_value(1)], ";") == " ")).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all():
+        # -- sort by APPROVE 3 --
+        elif sort_app.lower() == "approve 3":
+            l_orderhdr_data = (
+                db_session.query(L_orderhdr)
+                .filter(
+                    (L_orderhdr.bestelldatum >= from_date) &
+                    (L_orderhdr.bestelldatum <= to_date) &
+                    (L_orderhdr.betriebsnr >= 9) &
+                    (entry(0, L_orderhdr.lief_fax[inc_value(1)], ";") != " ") &
+                    (entry(1, L_orderhdr.lief_fax[inc_value(1)], ";") != " ") &
+                    (entry(2, L_orderhdr.lief_fax[inc_value(1)], ";") != " ") &
+                    (entry(3, L_orderhdr.lief_fax[inc_value(1)], ";") == " "))
+                .order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr)
+            )
+            for l_orderhdr in l_orderhdr_data.all():
                 app_flag = (l_orderhdr.lief_fax[1] != "" and get_index(l_orderhdr.lief_fax[1], "|") == 0) and entry(0, l_orderhdr.lief_fax[1], ";") != " " and entry(
                     1, l_orderhdr.lief_fax[1], ";") != " " and entry(2, l_orderhdr.lief_fax[1], ";") != " " and entry(3, l_orderhdr.lief_fax[1], ";") != " "
                 rej_flag = (l_orderhdr.lief_fax[1] != "" and get_index(
                     l_orderhdr.lief_fax[1], "|") > 0)
 
                 parameters = db_session.query(Parameters).filter(
-                    (Parameters.progname == ("CostCenter").lower()) & (Parameters.section == ("Name").lower()) & (to_int(Parameters.varname) == l_orderhdr.angebot_lief[0])).first()
+                    (Parameters.progname == "costcenter") & (Parameters.section == "name") & (to_int(Parameters.varname) == l_orderhdr.angebot_lief[0])).first()
 
                 l_order = get_cache(L_order, {"docu_nr": [(eq, l_orderhdr.docu_nr)], "pos": [
                                     (eq, 0)], "lief_nr": [(eq, 0)]})
@@ -1396,21 +1472,27 @@ def pr_list_disp_list_2bl(char1: string, billdate: date, from_date: date, to_dat
 
                     if entry(0, l_orderhdr.lief_fax[1], ";") != " " and entry(1, l_orderhdr.lief_fax[1], ";") != " " and entry(2, l_orderhdr.lief_fax[1], ";") != " " and entry(3, l_orderhdr.lief_fax[1], ";") == " ":
 
-                        l_order = get_cache(L_order, {"docu_nr": [(eq, l_orderhdr.docu_nr)], "pos": [
-                                            (gt, 0)], "lief_nr": [(eq, 0)], "loeschflag": [(eq, sorttype)]})
-                        while None != l_order:
+                        l_order_data = (
+                            db_session.query(L_order, L_artikel)
+                            .join(L_artikel, L_artikel.artnr == L_order.artnr)
+                            .filter(
+                            (L_order.docu_nr == l_orderhdr.docu_nr) &
+                            (L_order.pos > 0) &
+                            (L_order.lief_nr == 0) &
+                            (L_order.loeschflag == sorttype)).order_by(L_order._recid))
 
-                            l_artikel = get_cache(
-                                L_artikel, {"artnr": [(eq, l_order.artnr)]})
+                        for l_order, l_artikel in l_order_data.yield_per(100):
 
                             if l_artikel:
 
-                                # usr = get_cache(
-                                #     Bediener, {"username": [(eq, l_order.lief_fax[0])]})
-
-                                tmp_usr = db_session.query(Bediener).filter(
+                                usr = db_session.query(Bediener).filter(
                                     Bediener.username == l_order.lief_fax[0]
                                 ).first()
+
+                                if usr :
+                                    tmp_userinit = usr.userinit
+                                else:
+                                    tmp_userinit = ""
 
                                 tbuff = query(tbuff_data, filters=(
                                     lambda tbuff: tbuff.docu_nr == l_order.docu_nr and tbuff.pos == 0 and tbuff.loeschflag == l_order.loeschflag), first=True)
@@ -1441,7 +1523,7 @@ def pr_list_disp_list_2bl(char1: string, billdate: date, from_date: date, to_dat
                                 s_list.pchase_date = l_order.bestelldatum
                                 s_list.loeschflag = l_order.loeschflag
                                 s_list.konto = l_order.stornogrund
-                                s_list.userinit = tmp_usr.userinit
+                                s_list.userinit = tmp_userinit
                                 s_list.pchase_nr = l_order.lief_fax[1]
                                 s_list.cdate = l_order.lieferdatum_eff
                                 s_list.instruct = l_order.besteller
@@ -1464,10 +1546,16 @@ def pr_list_disp_list_2bl(char1: string, billdate: date, from_date: date, to_dat
                                     l_artikel.ek_letzter)
 
                                 l_pprice_obj_list = {}
-                                l_pprice = L_pprice()
-                                t_lieferant = L_lieferant()
-                                for l_pprice.bestelldatum, l_pprice.einzelpreis, l_pprice._recid, t_lieferant.firma, t_lieferant._recid in db_session.query(L_pprice.bestelldatum, L_pprice.einzelpreis, L_pprice._recid, T_lieferant.firma, T_lieferant._recid).join(T_lieferant, (T_lieferant.lief_nr == L_pprice.lief_nr)).filter(
-                                        (L_pprice.artnr == l_artikel.artnr)).order_by(L_pprice.bestelldatum.desc()).yield_per(100):
+
+                                l_pprice_data = (
+                                    db_session.query(L_pprice, T_lieferant)
+                                    .join(
+                                        T_lieferant, (T_lieferant.lief_nr == L_pprice.lief_nr))
+                                    .filter(
+                                        (L_pprice.artnr == l_artikel.artnr))
+                                    .order_by(L_pprice.bestelldatum.desc())
+                                )
+                                for l_pprice, t_lieferant in l_pprice_data.yield_per(100):
                                     if l_pprice_obj_list.get(l_pprice._recid):
                                         continue
                                     else:
@@ -1533,8 +1621,9 @@ def pr_list_disp_list_2bl(char1: string, billdate: date, from_date: date, to_dat
 
                                 if l_order.angebot_lief[2] != 0:
 
-                                    usrbuff = get_cache(
-                                        Bediener, {"nr": [(eq, l_order.angebot_lief[2])]})
+                                    usrbuff = db_session.query(Bediener).filter(
+                                        Bediener.nr == l_order.angebotlief[2]
+                                    ).first()
 
                                     if usrbuff:
                                         s_list.cid = usrbuff.userinit
@@ -1551,21 +1640,28 @@ def pr_list_disp_list_2bl(char1: string, billdate: date, from_date: date, to_dat
                                     s_list.str4 = to_string(
                                         l_artikel.lief_einheit, ">>,>>9")
 
-                            curr_recid = l_order._recid
-                            l_order = db_session.query(L_order).filter(
-                                (L_order.docu_nr == l_orderhdr.docu_nr) & (L_order.pos > 0) & (L_order.lief_nr == 0) & (L_order.loeschflag == sorttype) & (L_order._recid > curr_recid)).first()
-
-        elif sort_app.lower() == ("Approve 4").lower():
-
-            for l_orderhdr in db_session.query(L_orderhdr).filter(
-                    (L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.betriebsnr >= 9) & (entry(0, L_orderhdr.lief_fax[inc_value(1)], ";") != " ") & (entry(1, L_orderhdr.lief_fax[inc_value(1)], ";") != " ") & (entry(2, L_orderhdr.lief_fax[inc_value(1)], ";") != " ") & (entry(3, L_orderhdr.lief_fax[inc_value(1)], ";") != " ")).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all():
+        # -- sort by APPROVE 4 --
+        elif sort_app.lower() == "approve 4":
+            l_orderhdr_data = (
+                db_session.query(L_orderhdr)
+                .filter(
+                    (L_orderhdr.bestelldatum >= from_date) &
+                    (L_orderhdr.bestelldatum <= to_date) &
+                    (L_orderhdr.betriebsnr >= 9) &
+                    (entry(0, L_orderhdr.lief_fax[inc_value(1)], ";") != " ") &
+                    (entry(1, L_orderhdr.lief_fax[inc_value(1)], ";") != " ") &
+                    (entry(2, L_orderhdr.lief_fax[inc_value(1)], ";") != " ") &
+                    (entry(3, L_orderhdr.lief_fax[inc_value(1)], ";") != " "))
+                .order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr)
+            )
+            for l_orderhdr in l_orderhdr_data.yield_per(100):
                 app_flag = (l_orderhdr.lief_fax[1] != "" and get_index(l_orderhdr.lief_fax[1], "|") == 0) and entry(0, l_orderhdr.lief_fax[1], ";") != " " and entry(
                     1, l_orderhdr.lief_fax[1], ";") != " " and entry(2, l_orderhdr.lief_fax[1], ";") != " " and entry(3, l_orderhdr.lief_fax[1], ";") != " "
                 rej_flag = (l_orderhdr.lief_fax[1] != "" and get_index(
                     l_orderhdr.lief_fax[1], "|") > 0)
 
                 parameters = db_session.query(Parameters).filter(
-                    (Parameters.progname == ("CostCenter").lower()) & (Parameters.section == ("Name").lower()) & (to_int(Parameters.varname) == l_orderhdr.angebot_lief[0])).first()
+                    (Parameters.progname == "costcenter") & (Parameters.section == "name") & (to_int(Parameters.varname) == l_orderhdr.angebot_lief[0])).first()
 
                 l_order = get_cache(L_order, {"docu_nr": [(eq, l_orderhdr.docu_nr)], "pos": [
                                     (eq, 0)], "lief_nr": [(eq, 0)]})
@@ -1634,21 +1730,29 @@ def pr_list_disp_list_2bl(char1: string, billdate: date, from_date: date, to_dat
 
                     if entry(0, l_orderhdr.lief_fax[1], ";") != " " and entry(1, l_orderhdr.lief_fax[1], ";") != " " and entry(2, l_orderhdr.lief_fax[1], ";") != " " and entry(3, l_orderhdr.lief_fax[1], ";") != " ":
 
-                        l_order = get_cache(L_order, {"docu_nr": [(eq, l_orderhdr.docu_nr)], "pos": [
-                                            (gt, 0)], "lief_nr": [(eq, 0)], "loeschflag": [(eq, sorttype)]})
-                        while None != l_order:
+                        l_order_data = (
+                            db_session.query(L_order, L_artikel)
+                            .join(L_artikel, L_artikel.artnr == L_order.artnr)
+                            .filter(
+                            (L_order.docu_nr == l_orderhdr.docu_nr) &
+                            (L_order.pos > 0) &
+                            (L_order.lief_nr == 0) &
+                            (L_order.loeschflag == sorttype)).order_by(L_order._recid))
 
+                        for l_order, l_artikel in l_order_data.yield_per(100):
                             l_artikel = get_cache(
                                 L_artikel, {"artnr": [(eq, l_order.artnr)]})
 
                             if l_artikel:
 
-                                # usr = get_cache(
-                                #     Bediener, {"username": [(eq, l_order.lief_fax[0])]})
-
-                                tmp_usr = db_session.query(Bediener).filter(
+                                usr = db_session.query(Bediener).filter(
                                     Bediener.username == l_order.lief_fax[0]
                                 ).first()
+
+                                if usr :
+                                    tmp_userinit = usr.userinit
+                                else:
+                                    tmp_userinit = ""
 
                                 tbuff = query(tbuff_data, filters=(
                                     lambda tbuff: tbuff.docu_nr == l_order.docu_nr and tbuff.pos == 0 and tbuff.loeschflag == l_order.loeschflag), first=True)
@@ -1679,7 +1783,7 @@ def pr_list_disp_list_2bl(char1: string, billdate: date, from_date: date, to_dat
                                 s_list.pchase_date = l_order.bestelldatum
                                 s_list.loeschflag = l_order.loeschflag
                                 s_list.konto = l_order.stornogrund
-                                s_list.userinit = tmp_usr.userinit
+                                s_list.userinit = tmp_userinit
                                 s_list.pchase_nr = l_order.lief_fax[1]
                                 s_list.cdate = l_order.lieferdatum_eff
                                 s_list.instruct = l_order.besteller
@@ -1702,10 +1806,16 @@ def pr_list_disp_list_2bl(char1: string, billdate: date, from_date: date, to_dat
                                     l_artikel.ek_letzter)
 
                                 l_pprice_obj_list = {}
-                                l_pprice = L_pprice()
-                                t_lieferant = L_lieferant()
-                                for l_pprice.bestelldatum, l_pprice.einzelpreis, l_pprice._recid, t_lieferant.firma, t_lieferant._recid in db_session.query(L_pprice.bestelldatum, L_pprice.einzelpreis, L_pprice._recid, T_lieferant.firma, T_lieferant._recid).join(T_lieferant, (T_lieferant.lief_nr == L_pprice.lief_nr)).filter(
-                                        (L_pprice.artnr == l_artikel.artnr)).order_by(L_pprice.bestelldatum.desc()).yield_per(100):
+
+                                l_pprice_data = (
+                                    db_session.query(L_pprice, T_lieferant)
+                                    .join(
+                                        T_lieferant, (T_lieferant.lief_nr == L_pprice.lief_nr))
+                                    .filter(
+                                        (L_pprice.artnr == l_artikel.artnr))
+                                    .order_by(L_pprice.bestelldatum.desc())
+                                )
+                                for l_pprice, t_lieferant in l_pprice_data.yield_per(100):
                                     if l_pprice_obj_list.get(l_pprice._recid):
                                         continue
                                     else:
@@ -1771,8 +1881,9 @@ def pr_list_disp_list_2bl(char1: string, billdate: date, from_date: date, to_dat
 
                                 if l_order.angebot_lief[2] != 0:
 
-                                    usrbuff = get_cache(
-                                        Bediener, {"nr": [(eq, l_order.angebot_lief[2])]})
+                                    usrbuff = db_session.query(Bediener).filter(
+                                        Bediener.nr == l_order.angebotlief[2]
+                                    ).first()
 
                                     if usrbuff:
                                         s_list.cid = usrbuff.userinit
@@ -1789,9 +1900,6 @@ def pr_list_disp_list_2bl(char1: string, billdate: date, from_date: date, to_dat
                                     s_list.str4 = to_string(
                                         l_artikel.lief_einheit, ">>,>>9")
 
-                            curr_recid = l_order._recid
-                            l_order = db_session.query(L_order).filter(
-                                (L_order.docu_nr == l_orderhdr.docu_nr) & (L_order.pos > 0) & (L_order.lief_nr == 0) & (L_order.loeschflag == sorttype) & (L_order._recid > curr_recid)).first()
 
     disp_list(char1)
     estimated = get_current_time_in_seconds()
@@ -1804,3 +1912,4 @@ def pr_list_disp_list_2bl(char1: string, billdate: date, from_date: date, to_dat
             s_list.lief_fax2 = l_orderhdr.lief_fax[1]
 
     return generate_output()
+
