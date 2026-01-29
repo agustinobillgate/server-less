@@ -186,9 +186,20 @@ def log_activity_end(log_id: int, error_message: str) -> int:
 #------------------ end of log session ------------------#
 
 #updated 1.0.0.14
+update_field_mapping = {}
 update_table_name_list = {}
 update_field_table_name_mapping = {}
 update_field_by_function_mapping = {}
+
+mtime_update_field_mapping = 0
+mtime_update_table_name_list = 0
+mtime_update_field_table_name_mapping = 0
+mtime_update_field_by_function_mapping = 0
+
+path_update_field_mapping = "/usr1/serverless/src/additional_files/global_mapping.json"
+path_update_table_name_list = "/usr1/serverless/src/additional_files/update_table_name_mapping.json"
+path_update_field_table_name_mapping = "/usr1/serverless/src/additional_files/update_field_table_name_mapping.json"
+path_update_field_by_function_mapping = "/usr1/serverless/src/additional_files/update_field_by_function_mapping.json"
 
 curr_module = ""
 curr_service = ""
@@ -223,920 +234,6 @@ def update_field_by_function(module, function_name, old_field, updated_field_nam
     
 
 #updated 1.0.0.6
-# global mapping
-update_field_mapping = {
-    "char":"CHAR",
-    # "str":"STR",
-    "code":"CODE",
-    # "id":"ID",
-    # "name":"NAME",
-    # "selected":"SELECTED",
-
-    "flag":"Flag",
-    "flag":"flag",
-    "integerflag":"integerFlag",
-    "doneflag":"doneFlag",
-    "grpflag":"grpFlag",
-    "successflag":"successFlag",
-    "selectflag":"selectFlag",
-    "finishflag":"finishFlag",
-
-    # "gastid":"gastID",
-    # "resno":"resNo",
-    # "resnr":"resNr",
-    # "reslinno":"reslinNo",
-
-    "lnlFilepath":"LnLFilepath",
-    "lnlFilepath1":"LnLFilepath1",
-    "lnlProg":"LnLProg",
-
-    "bankettp1":"Bankettp1",
-    "bankettp2":"Bankettp2",
-    "bankettp3":"Bankettp3",
-    "bankettp4":"Bankettp4",
-    "lvanzvat":"lvAnzVat",
-    "vat_artlist":"vatArtlist",
-    "cashdrwProg":"CashDrwProg",
-    "msgint":"msgInt",
-    "msgstr":"msgStr",
-    "htpint":"htpInt",
-    "hkdiscrepancyList":"hkDiscrepancyList",
-    "successflag":"successFlag",
-    "comproom1":"compRoom1",
-    "comproom2":"compRoom2",
-    "houseroom1":"HouseRoom1",
-    "houseroom2":"HouseRoom2",
-    "segm1list":"segm1List",
-    "room-exccomp":"room-excComp",
-    "varkey":"varKey",
-    "varvalue":"varValue",
-    "createid":"createID",
-    "totCh1reactive":"totCh1Reactive",
-    "rsvname":"rsvName",
-    "rmtype":"rmType",
-    "kategorie":"Kategorie",
-    "layer3list":"layer3List",
-    "adult1":"Adult1",
-    "base64imagefile":"base64ImageFile",
-
-    "bankettfsnr":"Bankettfsnr",
-    "tagungfsnr":"Tagungfsnr",
-    "tagungp2":"Tagungp2",
-    "departtyp":"Departtyp",
-
-    #updated 1.0.0.8
-    "b1title": "b1Title",
-    "b2title": "b2Title",
-    "rmplan": "rmPlan",
-    "tdate": "tDate",
-    "roomnr": "roomNr",
-    "guestnr": "guestNr",
-    # "guestname": "guestName",
-    "totaladult": "totalAdult",
-    "totalcompli": "totalCompli",
-    "totalchild": "totalChild",
-    "totaluse": "totalUse",
-    "dummychr": "dummyChr",
-    "flEknr": "fLEknr",
-    "blEknr": "bLEknr",
-    "tischno": "tischNo",
-
-    #updated 1.0.0.9
-    "rmcat":"rmCat",
-    "rcode":"rCode",
-    "markno":"markNo",
-
-    #updated 1.0.0.13
-    "tagungp3":"Tagungp3",
-    "tagungp4":"Tagungp4",
-    "propid":"propID",
-
-    #updated 1.0.0.14
-    "base64Imagefile": "base64ImageFile",
-    "rmno": "rmNo",
-    "errcode": "errCode",
-   
-    #updated 1.0.0.15
-    "refno": "refNo",
-    "reportby": "reportBy",
-    "voucherno": "voucherNo",
-    "voucherno1": "voucherNo1",
-    "voucherno2": "voucherNo2",
-    "arrecid": "arRecid",
-    "newpayment": "newPayment",
-    "newfpayment": "newfPayment",
-    "room-exccomp": "room-excComp",
-    "houseroom1": "houseRoom1",
-    "houseroom2": "houseRoom2",
-    "houseroom2": "houseRoom2",
-    "cashbasis": "cashBasis",
-    "rmtypevhp": "rmtypeVHP",
-    "rmytpebe": "rmtypebe",
-    "rmtypebe": "rmtypeBE",
-
-    "mesvalue": "mesValue",
-    "currencyvhp": "currencyVHP",
-    "currencybe": "currencyBE",
-    "nationvhp": "nationVHP",
-    "nationbe": "nationBE",
-    "preis": "Preis",
-    "reihenfolge": "Reihenfolge",
-    "next_2nd_price": "Next_2nd_price",
-    "yield_": "yield",
-
-    #updated 1.0.0.16
-    "day-setting": "Day-setting",
-    "gloanz": "gloAnz",
-    "gresanz": "gresAnz",
-    "resanz": "resAnz",
-    "resnrstr": "resnrStr",
-    
-    # "deptname": "deptName",
-    "appstr": "appStr",
-    "appflag": "appFlag",
-
-    # "gname": "Gname",
-    "outstr": "outStr",
-    "usefor": "Usefor",
-    "groupid": "GroupID",
-    "duration-nr": "Duration-nr",
-    
-    "skill": "Skill",
-    # "plz": "PLZ",
-    "rcvid": "rcvID",
-    "rcvname": "rcvName",
-    # "pi-type":"PI-type",
-    
-    "chequeno":"chequeNo",
-    "bankname":"bankName",
-    "duedate": "dueDate",
-    
-    "cid": "CID",
-    "mid": "MID",
-    "printed1a": "printed1A",
-    "printed2a": "printed2A",
-    "canceldate": "cancelDate",
-    "cancelid": "cancelID",
-    "pidocuno": "piDocuNo",
-    "gcPiacctBezeich": "gcPIacctBezeich",
-    "returnamt": "returnAmt",
-    "billdate": "billDate",
-    "fromdate": "fromDate",
-    "todate": "toDate",
-
-    #updated 1.0.0.17
-    
-    #updated 1.0.0.18
-    "description": "DESCRIPTION",
-
-    #updated 1.0.0.19
-    "tableno": "tableNo",
-    # "billno": "billNo",
-    # "artno": "artNo",
-    "art": "Art",
-    "kontnr-res":"Kontnr-res",
-    
-    #updated 1.0.0.20
-    # "roomnumber": "roomNumber",
-    "checkoutdate": "checkoutDate",
-    "checkouttime": "checkoutTime",
-    "checkintime": "checkinDate",
-    "checkinTime": "checkinTime",
-
-    #updated 1.0.0.21
-    "thartikel1": "tHArtikel1",
-    "multivat": "multiVat",
-    "zeroflag": "zeroFlag",
-    "multicash": "multiCash",
-    "pricedecimal": "priceDecimal",
-    "foreignrate": "foreignRate",
-    "doublecurrency": "doubleCurrency",
-    "exchgRate": "exchgRate",
-    
-    "flwarn": "flWarn",
-    "maxlapos": "maxLapos",
-    "cashlessflag": "cashlessFlag",
-    "cashless_flag":"cashlessFlag",
-    "thbillline": "tHBillLine",
-    # "lhbline": "Lhbline",
-    "tkellner": "tKellner",
-    "indgastnr":"indGastnr",
-    "piDocuno":"piDocuNo",
-
-    "tLorderhdr": "tLOrderhdr",
-    "addvat": "addVAT",
-    # "vat":"VAT",
-
-    "tpushlist":"tPushList",
-    "rcodevhp": "rcodeVHP",
-    "rcodebe": "rcodeBE",
-    "argtvhp": "argtVHP",
-    "rmatproduct": "rmAtproduct",
-    "lavail": "lAvail",
-    "b1list":"b1List",
-    "infotafel":"Infotafel",
-    #updated 1.0.0.22
-   
-    "dept": "Dept",
-    "tb3buff": "tb3Buff",
-
-    # Rd vhpENG/egRepmaintainPrepare
-    "categ-sel":"Categ-sel",
-
-    "pic-dept":"pic-Dept",
-    "guestflag": "GuestFlag",
-    "hourmax":"HourMax",
-    "metermax": "MeterMax",
-    "meterrec": "MeterRec",
-    "smove":"sMove",
-    "estworkdate":"estWorkDate",
-    "location":"Location",
-    "pic":"PIC",
-    "reqstatus":"reqStatus",
-    "done-by":"Done-by",
-    "done-date":"Done-date",
-    "done-time":"Done-time",
-    "ex-finishtime":"ex-finishTime",
-    "ex-finishtime1":"ex-finishTime1",
-    "outsourceflag":"outsourceFlag",
-    "reasonstatus":"ReasonStatus",
-    "reasondonetime":"ReasonDoneTime",
-    "delete-flag":"Delete-Flag",
-    "Delete-Flag":"delete-flag",
-    "source-name":"Source-name", 
-
-    "blcpy":"blCpy",
-    "lsno":"lsNo",
-    "stno":"stNo",
-    "year": "YEAR",
-    "month": "MONTH",
-    "strmonth": "strMONTH",
-    "dailyrec":"dailyRec",
-    "room-selected":"room-Selected",
-    # "tmaintask": "tMaintask",
-    "tstatus": "tStatus",
-    "tfrequency": "tFrequency",
-    # "tlocation": "tLocation",
-    "tfstat":"tFStat",
-    "svendor": "sVendor",
-    
-    "maintask": "Maintask",
-    # "copyrequest": "CopyRequest",
-    # "copyrequest": "copyRequest",
-    "lrate": "lRate",
-
-    #updated 1.0.0.24
-    "defaultflag": "defaultFlag",
-
-    #updated 1.0.0.25
-    "piAcctno": "piAcctNo",
-    "giroTempacct" : "giroTempAcct",
-    "payAcctno" : "payAcctNo",
-    "tGcPibline" : "tGcPIbline",
-
-    #updated 1.0.0.26r
-    "cl": "CL",
-    "strpanjang": "strPanjang",
-
-    #updated 1.0.0.27r
-    "yr": "Yr",
-
-    #updated 1.0.0.28r
-    "type":"TYPE",
-    "spec": "Spec",
-
-    "categ-nr": "Categ-nr",
-    "categ-nm": "Categ-nm",
-
-    #updated 1.0.0.29r
-    "msgStrq":"msgStrQ",
-    
-    #updated 1.0.0.30r
-    "date":"DATE",
-    "anfdate": "anfDate",
-    "enddate":"endDate",
-
-    #updated 1.0.0.31r
-    "tGcPibline": "tGcPIbline",
-
-    "uppercasename": "upperCaseName",
-    "delayrate": "delayRate",
-    "delaypull": "delayPull",
-    "delayavail": "delayAvail",
-    "pushall": "pushAll",
-    "vcwsagent": "vcWSAgent",
-    "vcwsagent1": "vcWSAgent1",
-    "vcwsagent2": "vcWSAgent2",
-    "vcwsagent3": "vcWSAgent3",
-    "vcwsagent4": "vcWSAgent4",
-    "vcwsagent5": "vcWSAgent5",
-    "vcwebhost": "vcWebHost",
-    "vcwebport": "vcWebPort",
-    "incltentative": "inclTentative",
-
-    #updated 1.0.0.33r
-    "overclFlag": "overCLFlag",
-
-    #updated 1.0.0.34r
-    "typebill": "typeBill",
-    "roomno": "roomNo",
-    "prevbala": "prevBala",
-    
-    #updated 1.0.0.35r (16-Mei-2025)
-    "reqCreated": "reqCREATEd",  # s_stockout_btn_gobl
-
-    #updated 1.0.0.36r (19-Mei-2025) egSubTaskPrepare
-    "sourceform": "sourceForm",
-    "othersflag": "OthersFlag",
-
-    "menu":"MENU",
-
-    #updated 1.0.0.37r (23-Mei-2025) vhpFOR/monthlyFcastDDown1List1",
-    # "adult": "Adult",
-    "arrtime": ["ArrTime", "arrTime"],
-    # "arrtime": "arrTime",
-    "statstr":"statStr",
-    
-    "deptime": "DepTime",
-    "phoneno": "PhoneNo",
-    "claimby": "ClaimBy",
-
-    #updated 1.0.0.40r (3-Juli-2025) egRepdurationDisp
-    "urlws": "urlWS",
-    "licensenr": "licenseNr",
-    
-    "location": "Location",
-    "maintask": "Maintask",
-    # "tstatus": "tStatus",
-    
-    "main-nm": "Main-nm",
-
-    #updated 1.0.0.42r (4-Juli-2025) egRepdurationDisp
-    "email": "Email",
-    
-    #updated 11-Juli-2025
-    "outchar": "outChar",
-    "outint" : "outInt",
-    "succesflag": "succesFlag",
-    "ddate":"dDate",
-    "ist":"iSt",
-    "sdocument": "sDocument",
-    "iarticle":"iArticle",
-    "sdesc":"sDesc",
-    "dquantity":"dQuantity",
-    "samount":"sAmount",
-    "ssupplier":"sSupplier",
-    "snote":"sNote",
-    "imark":"iMark",
-
-    "maxnr":"maxNr",
-    "lagerbuff":"lagerBuff",
-    "retmessage":"retMessage",
-    "orderNr":"OrderNr",
-
-    "totpuri":"totpURI",
-    "recoverycode":"recoveryCode",
-
-    # "Created-By":"created-by",
-    # "created-by":"Created-By",
-    # "deptname":"deptName",
-
-    "posteddate":"postedDate",  #vhpGC/gcGiroRead (FA)
-    "move-from":"Move-from",
-    "move-to":"Move-to",
-    "Order_Date":"Order-Date",
-    "Order_Nr":"Order-Nr",
-    "Order_Type":"Order-Type",
-    # "Released_Date":"Released-Date",
-    "Expected_Delivery":"Expected-Delivery",
-    "expected_delivery":"Expected-Delivery",
-    "expected-delivery":"Expected-Delivery",
-    "Released_Flag":"Released-Flag",
-    "released_flag":"Released-Flag",
-    "Released-Flag":"Released-Flag",
-    "released-flag":"Released-Flag",
-    "Released_By":"Released-By",
-    "released-by":"Released-By",
-    "Released_Date":"Released-Date",
-    "released-date":"Released-Date",
-
-    "Released_Time":"Released-Time",
-    "released-time":"Released-Time",
-
-    "Created_By":"Created-By",
-    "created-by":"Created-By",
-    "Created_Date":"Created-Date",
-    "created-date":"Created-Date",
-    "Created_Time":"Created-Time",
-    "created-time":"Created-Time",
-
-    "Cancel_By":"Cancel-By",
-    "cancel-by":"Cancel-By",
-    "Cancel_Date":"Cancel-Date",
-    "cancel-date":"Cancel-Date",
-    "Cancel_Time":"Cancel-Time",
-    "cancel-time":"Cancel-Time",
-
-    "Delete_By":"Delete-By",
-    "delete-by":"Delete-By",
-    "Delete_Date":"Delete-Date",
-    "delete-date":"Delete-Date",
-    "Delete_Time":"Delete-Time",
-    "delete-time":"Delete-Time",
-
-    "Modified_By":"Modified-By",
-    "modified-by":"Modified-By",
-    "Modified_Date":"Modified-Date",
-    "modified-date":"Modified-Date",
-    "Modified_Time":"Modified-Time",
-    "modified-time":"Modified-Time",
-
-    "Supplier_Nr":"Supplier-Nr",
-    "Order_Desc":"Order-Desc",
-    "Order_Name":"Order-Name",
-    "Created_Date":"Created-Date",
-    "coa":"COA",
-    "arrflag":"arrFlag",
-    "dptno":"dptNo",
-    "event":"EVENT",
-    "engId": "EngID",
-    # "activeflag":"ActiveFlag", #egMainschedulePrepare
-    # "activeflag":"activeFlag", #egMainschedulePrepare
-    # _3monthly_forecast_webbl
-    "rmsold":"rmSold",
-    "houseuse":"houseUse",
-    "rmrevenue":"rmRevenue",
-    "avrgrevenue":"avrgRevenue",
-    "activate_deposit":"activateDeposit",
-
-    # pr_list_btn_go_1bl
-    "supno":"supNo",
-    "currno":"currNo",
-    
-    #updated 1.0.0.22
-    # "create_by": ["Create_by", "Create_By", "create-by"],
-    # "created_by": ["Created_by", "Created_By", "created-by"],
-    "engid": ["engId","EngId","EngID","ENGID"],
-    "deptname": ["deptName","DeptName"],
-    "main_nr": ["Main-nr", "main-nr"],
-
-    # "PI-status":["pi-status", "pi-Status"],
-    "pi_status":["pi-status", "PI-status"],
-    "pi_type":["pi-type", "PI-type"],
-    # "deptno": ["DeptNo","deptNo"],
-    # "deptno": "deptNo",
-    # "deptno": "DeptNo",
-    
-    "postdate": ["postDate", "PostDate"],
-    "avail-addvat":"avail-addVAT",
-    "availAddvat": ["availAddVat","availAddVAT","availAddVat"],
-   
-    "readequipment":"readEquipment",
-    # "datum":"Datum",
-    "gruppenname":"Gruppenname",
-    "bemerkung":"Bemerkung",
-    "dekoration":"Dekoration",
-    "vorbereitungszeit":"Vorbereitungszeit",
-    "nachlaufzeit":"Nachlaufzeit",
-   
-    "docu_nr":"docu-nr",
-    "docu_nr2":"docu-nr2",
-    "return_fibu":"return-fibu",
-    "add_amt_flag":"add-amt-flag",
-    "debit_fibu":"debit-fibu",
-    "credit_fibu":"credit-fibu",
-    "pay_type":"pay-type",
-    "pay_datum":"pay-datum",
-    "res_int":"res-int",
-    "res_deci":"res-deci",
-    "res_char":"res-char",
-    "res_logi":"res-logi",
-    "bez_array":"bez-array",
-    "amount_array":"amount-array",
-    "htp_help":"htp-help",
-    "user_number": "user-number",
-    "user_init": "user-init",
-    "user_name": "user-name",
-    "dept_number": "dept-number",
-    "dept_name":"dept-name",
-    "totp_flag":"totp-flag",
-    "totp_status":"totp-status",
-    "var_name":"var-name",
-
-    "item_prof":"item-prof",
-    "t_sales":"t-sales",
-    "t_cost":"t-cost",
-    "t_margin":"t-margin",
-    "profit_cat":"profit-cat",
-    "popularity_cat":"popularity-cat",
-    "menu_item_class":"menu-item-class",
-    "konto_nr":"konto-nr",
-    "p_artnr":"p-artnr",
-    "f_betrag":"f-betrag",
-    "f_cost":"f-cost",
-    "b_betrag":"b-betrag",
-    "b_cost":"b-cost",
-    "o_cost":"o-cost",
-    "kumsatz_nr":"kumsatz-nr",
-    "kcredit_nr":"kcredit-nr",
-    "kzahl_nr":"kzahl-nr",
-    "kellner_nr":"kellner-nr",
-    "ignore-pers":"ignore-pers",
-    "kel_unique":"kel-unique",
-    "storno_begruendung":"storno-begruendung",
-    "rec_id":"rec-id",
-    "d_qty":"d-qty",
-    "d_val":"d-val",
-    "s_qty1":"s-qty1",
-    "s_qty2":"s-qty2",
-    "s_qty3":"s-qty3",
-
-    "m_anz":"m-anz",
-    "t_ncost":"t-ncost",
-    "m_comanz":"m-comanz",
-    "t_compli":"t-compli",
-    "t_proz":"t-proz",
-    "anz_cost":"anz-cost",
-    "manz_cost":"manz-cost",
-
-    "mwst_code":"mwst-code",
-    "service":"service-code",
-    "s_gueltig":"s-gueltig",
-    "e_gueltig":"e-gueltig",
-
-    "guest_name":"guest-name",
-    "art_desc":"art-desc",
-    "card_no":"card-no",
-    "credit_limit":"credit-limit",
-
-    "st_optable":"st-optable",
-    "ct_optable":"ct-optable",
-    "art_type":"art-type",
-
-    "h_recid":"h-recid",
-    "order_taker":"order-taker",
-    "fart_bez":"fart-bez",
-
-    "bl_recid":"bl-recid",
-    "l_amount":"l-amount",
-    "f_amount":"f-amount",
-    "i_counter":"i-counter",
-    "fl_code":"flCode",
-    "cashless_flag":"cashlessFlag",
-    
-    "c_param870":"cParam870",
-    "p_223":"p223",
-
-    "vhpwebbased1":"VHPWebBased1",
-    "vhpwebbased2":"VHPWebBased2",
-    "vhpwebbased3":"VHPWebBased3",
-    "vhpwebbased4":"VHPWebBased4",
-    "vhpwebbased5":"VHPWebBased5",
-    "vhpwebbased1-appservicename":"VHPWebBased1-AppServiceName",
-    "vhpwebbased2-appservicename":"VHPWebBased2-AppServiceName",
-    "vhpwebbased3-appservicename":"VHPWebBased3-AppServiceName",
-    "vhpwebbased4-appservicename":"VHPWebBased4-AppServiceName",
-    "vhpwebbased5-appservicename":"VHPWebBased5-AppServiceName",
-
-    "activeflag": ["activeflag", "ActiveFlag", "activeFlag", "Activeflag"], 
-   
-    "mtd-room": "mtd-Room",         # vhpSM/rmAtproductCreateUmsatz1
-    "ytd-room": "ytd-Room",         # vhpSM/rmAtproductCreateUmsatz1
-       
-    "max_lapos": "maxLapos",
-    "must_print":"mustPrint",
-    "mustprint":"mustPrint",
-
-    # "fl_warn":["flWarn"],
-    # "cashless_flag":["cashlessFlag"],
-    #vhpIA/correctCoverDept
-    "orig_fpax": "origFpax",
-    "orig_bpax": "origBpax",
-    "orig_pax": "origPax",
-    "avail_h_umsatz":"availHUmsatz",
-
-    "rej_id":"rejId",
-    "path_lst":"pathLst",
-    "did":"DID",
-    "articlevhp":"articleVHP",
-    "articlebe":"articleBE",
-  
-    # vhpENG/egReqlistLoad
-    "source-str":"Source-str",
-    # "ex_finishtime":"ex-finishtime",
-    "ex_finishstr":"ex-finishstr",
-    "source":"SOURCE",
-    "avail-image":"avail-image",
-
-    "lager_bezeich": ["lagerBezeich","lager-bezeich"],
-    "lager_bez1":["lagerBez1","lager-bez1"],
-    "lager-bezeich": ["lagerBezeich","lager-bezeich"],
-    "lager-bez1":["lagerBez1","lager-bez1"],
-    "curr_lager":["currLager","curr-lager","curr_lager"],
-    "curr-lager":["curr-lager","curr_lager"],
-    "out_type":["out-type", "out_type"],
-    "out_type":["out-type", "out_type"],
-    # "out-type":["out-type", "out_type"],
-    "curr_pos":["currPos", "curr-pos"],
-
-    #   "deptNo",
-    "show_price":["showPrice", "show-price"],
-    "req_flag":["reqFlag", "req-flag"],
-    #   "p220",
-    # "out_type":"outType",
-    # "to_stock":"toStock",
-    #   "currPos",
-    "t_amount":"t-amount",
-    "chgid":"chgID",        # vhpFOR/globalReservationReview
-
-    "t-kellner":"t-kellner1",
-    "curr_waiter":"currWaiter",
-    "isupgrade":"isUpgrade",
-
-    # "tmaintain":"tMaintain",
-
-    # vhpFA/faRecPOPrepare
-    "order_nr":"Order-Nr",
-    "pr_nr":"PR-Nr",
-    "pr_flag":"PR-Flag",
-    "order_date":"Order-Date",
-    "order_type":"Order-Type",
-    "order_name":"Order-Name",
-    "order_desc":"Order-Desc",
-    "supplier_nr":"Supplier-Nr",
-    "dept_nr":"Dept-Nr",
-    "currency":"Currency",
-    "credit_term":"Credit-Term",
-    "paymentdate":"PaymentDate",
-    "expected_delivery":"Expected-Delivery",
-    "approved_1":"Approved-1",
-    "approved_2":"Approved-2",
-    "approved_3":"Approved-3",
-    "approved_1_by":"Approved-1-By",
-    "approved_2_by":"Approved-2-By",
-    "approved_3_by":"Approved-3-By",
-    "approved_1_date":"Approved-1-Date",
-    "approved_2_date":"Approved-2-Date",
-    "approved_3_date":"Approved-3-Date",
-    "approved_1_time":"Approved-1-time",
-    "approved_2_time":"Approved-2-time",
-    "approved_3_time":"Approved-3-Time",
-    "released_flag":"Released-Flag",
-    "released_by":"Released-By",
-    "released_date":"Released-Date",
-    "released_time":"Released-Time",
-    "created_by":"Created-By",
-    "created_date":"Created-Date",
-    "created_time":"Created-Time",
-    "cancel_by":"Cancel-By",
-    "cancel_date":"Cancel-Date",
-    "cancel_time":"Cancel-Time",
-    "delete_by":"Delete-By",
-    "delete_date":"Delete-Date",
-    "delete_time":"Delete-Time",
-    "statflag":"statFlag",
-    "modified_by":"Modified-By",
-    "modified_date":"Modified-Date",
-    "modified_time":"Modified-Time",
-    "total_amount": "Total-Amount",
-    "printedtime":"PrintedTime",
-
-    "fa_pos":"Fa-Pos",
-    "fa_nr":"Fa-Nr",
-    "order_qty":"Order-Qty",
-    "order_price":"Order-Price",
-    "order_amount":"Order-Amount",
-    "discount1":"Discount1",
-    "discount2":"Discount2",
-    "exchangerate":"ExchangeRate",
-    "fa_remarks":"Fa-remarks",
-    "activereason":"ActiveReason",
-    "change_by":"Change-By",
-    "change_date":"Change-Date",
-    "change_time":"Change-Time",
-    "closeflag":"CloseFlag",
-    "close_date":"Close-Date",
-    "close_time":"Close-Time",
-
-    "persons":"Persons",
-    "chgdate":"chgDate",
-    "totpok":"totpOK",
-    "ratecode":"rateCode",
-    "present-guest":"Present-guest",
-    "Rhbline":"Rhbline",
-    "Lhbline":"Lhbline",
-    }
-
-docker_version += ".r"
-
-# mapping table name
-(
-    # vhpOU/splitbillSelectLmenu
-    #updated 1.0.0.14
-    update_table_name("vhpOU","splitbillPrepare","lhbline","Lhbline"),
-    update_table_name("vhpOU","splitbillPrepareCustom","lhbline","Lhbline"),
-    update_table_name("vhpOU","splitbillSelectLmenu","rhbline","Rhbline"),
-
-    #updated 1.0.0.15
-    update_table_name("HouseKeeping","getStoreRoomDiscrepancyList","hkdiscrepancyList","hkDiscrepancyList"),
-
-    update_table_name("vhpFOR","bonusNightCheck","resDynarate","ResDynarate"),
-    update_table_name("vhpFOR","searchByVoucher","tResVoucherno","tResVoucherNo"),
-
-    update_table_name("vhpSS","addRoomAdmin","dynarateList","dynaRateList"),
-    update_table_name("vhpSS","ratecodeAdmDynaratePrepare","dynarateList","dynaRateList"),
-
-    update_table_name("vhpSS","ratecodeAdmWrite","tb3buff","tb3Buff"),
-
-    #updated 1.0.0.16
-    update_table_name("vhpSS","egStaffPrepare","dept","Dept"),
-    update_table_name("vhpSS","egStaffPrepare","userskill","UserSkill"),
-
-    #updated 1.0.0.17
-    update_table_name("vhpSS","egStaffPrepare","userskill","UserSkill"),
-    update_table_name("vhpSS","egStaffPrepare","userSkill","UserSkill"),
-
-    #updated 1.0.0.21
-    update_table_name("vhpSC","rmAtproductCreateUmsatz1","b1list","b1List"),
-    update_table_name("vhpSC","rmAtproductCreateUmsatz1","rmatproduct","rmAtproduct"),
-
-    #updated 1.0.0.22
-    update_table_name("HouseKeeping","getStoreRoomDiscrepancyList","hkdiscrepancy-list","hk-discrepancy-list"),
-
-    update_table_name("vhpENG","egMainschedulePrepare","Delete-Flag","delete-flag"),
-
-    update_table_name("vhpENG","egRephistorymoveCreateBrowse","smove","sMove"),
-    update_table_name("vhpENG","egRephistorymoveBtnGo","smove","sMove"),
-
-    #updated 1.0.0.23
-    update_table_name("vhpSS","egStaffPrepare","dept","Dept"),
-    update_table_name("vhpAR","soaRelease","deptno","deptNo"),
-    # update_table_name("vhpAR","soaRelease","DeptNo","deptNo")
-
-    #updated 1.0.0.24
-    update_table_name("vhpINV","storeReqInsPrepare","deptno","deptNo"),
-
-    #updated 1.0.0.25
-    update_table_name("vhpINV","chgStoreRequestLoadData","deptno","deptNo"),
-
-    #updated 1.0.0.28
-    update_table_name("vhpENG","egPropertyListBtnGo","type","TYPE"),
-    update_table_name("vhpENG","egPropertyListBtnGo","spec","Spec"),
-
-    #updated 1.0.0.32, 16-4-2025
-    update_table_name("vhpENG","egChgReqPrepare","tFstat","tFStat"),
-    update_table_name("vhpENG","egChgReqPrepare","svendor","sVendor"),
-    update_table_name("vhpENG","egPropertyLoad","svendor","tEgProperty"),
-
-    update_table_name("vhpENG","egReprequestcancelPrepare","mainaction","MainAction"),
-    update_table_name("vhpENG","egReprequestcancelPrepare","tmaintain","tMaintain"),
-    update_table_name("vhpENG","egReprequestcancelPrepare","tmaintask","tMaintask"),
-    update_table_name("vhpENG","egReprequestcancelPrepare","tlocation","tLocation"),
-    update_table_name("vhpENG","egReprequestcancelPrepare","tstatus","tStatus"),
-
-    update_table_name("vhpSS","egMaintaskBtnDelart","flcode","flCode"),
-    update_table_name("vhpSS","egCategoryBtnExit","flcode","flCode"),
-
-    update_table_name("HouseKeeping","updateAddLostAndFound","phoneno","PhoneNo"),
-    update_table_name("vhpGC","prepareAddGCPi","tGcPibline","tGcPIbline"),
-
-    update_table_name("vhpEG","egSelLookmaintainPrepare","tmaintain","tMaintain"),
-    update_table_name("vhpEG","egSelLookmaintainPrepare","mainaction","MainAction"),
-
-    update_table_name("vhpENG","egSelLookmaintainPrepare","tmaintain","tMaintain"),
-    update_table_name("vhpENG","egSelLookmaintainPrepare","mainaction","MainAction"),
-
-    #updated 1.0.0.33 2025-05-14
-    # update_table_name("vhpINV","storeReqInsPrepare","deptno","deptNo")
-    # update_table_name("vhpINV","storeReqInsPrepare","deptname","deptName")
-    # update_table_name("vhpINV","storeReqInsPrepare","appstr","appStr")
-    # update_table_name("vhpINV","storeReqInsPrepare","appflag","appFlag")
-
-    #updated 1.0.0.36r (19-Mei-2025) egSubTaskPrepare
-    #updated 1.0.0.37r (23-Mei-2025) vhpFOR/monthlyFcastDDown1List1",
-
-    update_table_name("vhpFOR","monthlyFcastDDown1List1","adult","Adult"),
-    # update_table_name("vhpFOR","monthlyFcastDDown1List1","arrtime","ArrTime")
-    update_table_name("vhpFOR","monthlyFcastDDown1List1","deptime","DepTime"),
-
-    #updated 1.0.0.38r (26-Mei-2025) vhpFOR/monthlyFcastDDown1List1",
-    update_table_name("vhpENG","egReqlistLoad","copyrequest","copyRequest"),
-    update_table_name("vhpENG","egReqlistLoad","Action","action"),
-    update_table_name("vhpENG","egReqlistLoad","sMaintain","smaintain"),
-
-    #updated 1.0.0.39r (27-Mei-2025) fb_flashbl
-    #updated 1.0.0.40r (3-Juli-2025) 
-    update_table_name("vhpENG","egRepmaintainDisp","tlocation","tLocation"),
-    update_table_name("vhpENG","egRepmaintainDisp","tstatus","tStatus"),
-
-    update_table_name("vhpENG","egMaincalendardelPrepare","tlocation","tLocation"),
-    update_table_name("vhpENG","egMaincalendardelPrepare","tstatus","tStatus"),
-    update_table_name("vhpENG","egMaincalendardelPrepare","tmaintask","tMaintask"),
-
-    update_table_name("vhpENG","egRepdurationDisp","tstatus","tStatus"),
-    update_table_name("vhpENG","egRepdurationDisp","tmaintask","tMaintask"),
-    update_table_name("vhpENG","egRepdurationDisp","tlocation","tLocation"),
-    update_table_name("vhpENG","egRepdurationDisp","copyrequest","copyRequest"),
-
-    update_table_name("vhpENG","egMaincalendarPrepare","tlocation","tLocation"),
-    update_table_name("vhpENG","egMaincalendarPrepare","tstatus","tStatus"),
-    update_table_name("vhpENG","egMaincalendarPrepare","tmaintask","tMaintask"),
-
-    update_table_name("vhpENG","egRepmaintainPrepare","tlocation","tLocation"),
-    update_table_name("vhpENG","egRepmaintainPrepare","tmaintask","tMaintask"),
-    update_table_name("vhpENG","egRepmaintainPrepare","tfrequency","tFrequency"),
-    update_table_name("vhpENG","egRepmaintainPrepare","tstatus","tStatus"),
-
-    update_table_name("vhpENG","egRepdurationPrepare","tlocation","tLocation"),
-    update_table_name("vhpENG","egRepdurationPrepare","tmaintask","tMaintask"),
-
-    #updated 1.0.0.41r (4-Juli-2025) egPropertyPrepare
-    update_table_name("vhpENG","egPropertyPrepare","location","Location"),
-    update_table_name("vhpENG","egPropertyPrepare","maintask","Maintask"),
-
-    update_table_name("vhpSS","dynaratecodeUpdateCreateDynarateList","dynarateList","dynaRateList"),
-    update_table_name("vhpAP","getAPListAddItemList","ttstock","ttStock"),
-
-    #update 1.0.0.42 (11-Juli-2025)
-    update_table_name("vhpINV","chgInvArticlePrepare","ttguestbook","ttGuestBook"),
-    update_table_name("vhpINV","chgInvArticlePrepareCustom","ttguestbook","ttGuestBook"),
-    update_table_name("vhpFA","faValuatePrepare","lagerbuff","lagerBuff"),
-
-    update_table_name("vhpFA","faArtlist2Prepare","tPrepareCreatpo","tPrepareCreatPO"),
-
-    #update 1.0.0.43 (17-Juli-2025)
-    update_table_name("vhpENG","egReprequestcancelOpenQuery1","copyrequest","copyRequest"),
-
-    #update 1.0.0.44 (23-Juli-2025)
-    update_table_name("vhpPC","prInsPrepare","ins-list","insList"),
-
-    #update 1.0.0.45 (28-Juli-2025)
-    update_table_name("vhpFA","prChgPrepare1","t-waehrung","tWaehrung"),
-    update_table_name("vhpFA","prChgPrepare1","t-parameters","tParameters"),
-    update_table_name("vhpFA","prChgPrepare1","t-l-orderhdr","tLOrderhdr"),
-    update_table_name("vhpFA","prChgPrepare1","t-l-artikel","tLArtikel"),
-    update_table_name("vhpFA","faIncomingPO","t-l-artikel","tLArtikel"),
-
-    update_table_name("vhpOU","splitbillPrepare","menu","MENU"),
-    # update_table_name("vhpINV","storeReqInsPrepare","op-list","opList"
-    # update_table_name("vhpOU","restInvWaiterTransfer1", "t-kellner", "t-kellner1")
-)
-
-# mapping based on API
-(
-    update_field_table_name("vhpFA", "faIncomingPO", "temp", "create_by", "Created-By"),
-
-    update_field_table_name("vhpFA", "faPOListBtnGoCustom", "temp", "order_date", "Order-Date"),
-    update_field_table_name("vhpFA", "faPOListBtnGoCustom", "temp", "order_nr", "Order-Nr"),
-    update_field_table_name("vhpFA", "faPOListBtnGoCustom", "temp", "order_type", "Order-Type"),
-    update_field_table_name("vhpFA", "faPOListBtnGoCustom", "temp", "release_date", "Release-Date"),
-    update_field_table_name("vhpFA", "faPOListBtnGoCustom", "temp", "created_date", "Created-Date"),
-    update_field_table_name("vhpFA", "faPOListBtnGoCustom", "temp", "_expected_delivery", "Expected-Delivery"),
-    update_field_table_name("vhpFA", "faPOListBtnGoCustom", "temp", "released_flag", "Released-Flag"),
-    update_field_table_name("vhpFA", "faPOListBtnGoCustom", "temp", "supplier_nr", "Supplier-Nr"),
-    update_field_table_name("vhpFA", "faPOListBtnGoCustom", "temp", "activeflag", "ActiveFlag"),
-    update_field_table_name("vhpFA", "faPOListBtnGoCustom", "temp", "order_desc", "Order-Desc"),
-    update_field_table_name("vhpFA", "faPOListBtnGoCustom", "temp", "order_name", "Order-Name"),
-    update_field_table_name("vhpFA", "faPOListBtnGoCustom", "temp", "total_amount", "total-amount"),
-    update_field_table_name("vhpFA", "faPOListBtnGoCustom", "temp", "order_amount", "order-amount"),
-    update_field_table_name("vhpFA", "faPOListBtnGoCustom", "temp", "modified_date", "modified-date"),
-    update_field_table_name("vhpFA", "faPOListBtnGoCustom", "temp", "close_date", "close-date"),
-    update_field_table_name("vhpFA", "faPOListBtnGoCustom", "temp", "close_time", "close-time"),
-    update_field_table_name("vhpFA", "faPOListBtnGoCustom", "temp-detail", "coa", "COA"),
-
-    update_field_table_name("vhpFA", "faModifyPOPrepareCustom", "disclist", "vat", "vat"),
-
-    update_field_table_name("vhpFA", "faModifyPOPrepareCustom", "t-fa-ordheader", "activeflag", "ActiveFlag"),
-
-    update_field_table_name("vhpFA", "faModifyPOPrepareCustom", "tfa-order", "vat", "VAT"),
-
-    update_field_table_name("vhpFA", "faModifyPOPrepareCustom", "t-dept-list", "name", "NAME"),
-
-    update_field_table_name("vhpFOR", "arlDisp6", "arl-list", "resnr", "resnr"),
-    update_field_table_name("vhpFOR", "arlDisp6", "arl-list", "grpflag", "grpflag"),
-    update_field_table_name("vhpFOR", "arlDisp6", "arl-list", "cash_basis", "cashbasis"),
-    update_field_table_name("vhpFOR", "arlDisp6", "arl-list", "ratecode", "ratecode"),
-
-    update_field_table_name("Common", "availabilityNotif", "room-summary", "date", "DATE"),
-
-    update_field_table_name("vhpFOR", "gcfList", "t-guest", "pr_flag", "pr-flag"),
-
-    update_field_table_name("vhpSM", "prCodeChg", "q1-list", "selected", "SELECTED"),
-    update_field_table_name("vhpSM", "prCodeChg", "q2-list", "selected", "SELECTED"),
-
-    ###############################################################################
-
-    update_field_by_function("vhpFA", "faPOListPrepare", "billdate", "billdate"),
-
-    update_field_by_function("vhpFA", "faModifyPOPrepareCustom", "t_amount", "tAmount"),
-    update_field_by_function("vhpFA", "faModifyPOPrepareCustom", "deptname", "deptname"),
-    update_field_by_function("vhpFA", "faModifyPOPrepareCustom", "billdate", "billdate"),
-
-    update_field_by_function("vhpFA", "faPOListBtnGoCustom", "billdate", "billdate"),
-    
-
-)
-
 
 def get_function_version(module_name, function_name, file_path):
     # file_path  = "/var/task/functions/" + function_name + ".py"
@@ -1973,6 +1070,8 @@ async def handle_post(request: Request, input_data: Dict[str, Any] = {}):
     body_byte = await request.body()
     body_str = body_byte.decode("utf-8")
 
+    reload_mapping()
+    
     return handle_get_post(request, input_data, body_str)
 
 def handle_get_post(request: Request, input_data: Dict[str, Any] = {}, body_str:str = ""):
@@ -1986,6 +1085,47 @@ def handle_get_post(request: Request, input_data: Dict[str, Any] = {}, body_str:
         local_storage.app = app
 
     return handle_dynamic_data(url, headers, input_data, body_str)
+
+
+# Oscar - hot reload mapping without restarting main.py
+def reload_mapping():
+    global update_field_mapping, update_table_name_list, update_field_table_name_mapping, update_field_by_function_mapping
+    global mtime_update_field_mapping, mtime_update_table_name_list, mtime_update_field_table_name_mapping, mtime_update_field_by_function_mapping
+    global path_update_field_mapping, path_update_table_name_list, path_update_field_table_name_mapping, path_update_field_by_function_mapping
+
+    exist_update_field_mapping = Path(path_update_field_mapping)
+    exist_update_table_name_list = Path(path_update_table_name_list)
+    exist_update_field_table_name_mapping = Path(path_update_field_table_name_mapping)
+    exist_update_field_by_function_mapping = Path(path_update_field_by_function_mapping)
+
+
+    if exist_update_field_mapping.exists():
+        mtime = os.path.getmtime(path_update_field_mapping)
+        if mtime != mtime_update_field_mapping:
+            with open(path_update_field_mapping, "r", encoding="utf-8") as f:
+                update_field_mapping = json.load(f)
+                mtime_update_field_mapping = mtime
+
+    if exist_update_table_name_list.exists():
+        mtime = os.path.getmtime(path_update_table_name_list)
+        if mtime != mtime_update_table_name_list:
+            with open(path_update_table_name_list, "r", encoding="utf-8") as f:
+                update_table_name_list = json.load(f)
+                mtime_update_table_name_list = mtime
+
+    if exist_update_field_table_name_mapping.exists():
+        mtime = os.path.getmtime(path_update_field_table_name_mapping)
+        if mtime != mtime_update_field_table_name_mapping:
+            with open(path_update_field_table_name_mapping, "r", encoding="utf-8") as f:
+                update_field_table_name_mapping = json.load(f)
+                mtime_update_field_table_name_mapping = mtime
+
+    if exist_update_field_by_function_mapping.exists():
+        mtime = os.path.getmtime(path_update_field_by_function_mapping)
+        if mtime != mtime_update_field_by_function_mapping:
+            with open(path_update_field_by_function_mapping, "r", encoding="utf-8") as f:
+                update_field_by_function_mapping = json.load(f)
+                mtime_update_field_by_function_mapping = mtime
 
 
 def handle_dynamic_data_v1(url:str, headers: Dict[str, Any], input_data: Dict[str, Any] = {}, body_str:str = ""):
@@ -2456,7 +1596,7 @@ def handle_dynamic_data(url: str, headers: dict, input_data: dict = {}, body_str
         update_input_format(func, input_data)
         return func(**input_data)
 
-    try:
+    try:        
         validate_request(headers, body_str)
 
         if "request" in input_data:
@@ -2472,6 +1612,8 @@ def handle_dynamic_data(url: str, headers: dict, input_data: dict = {}, body_str
 
         curr_module = vhp_module
         curr_service = service_name
+
+        print("Schema/Module/Service:", hotel_schema, vhp_module, service_name)
 
         set_db_and_schema(hotel_schema)
         db_session = local_storage.db_session
@@ -2493,6 +1635,7 @@ def handle_dynamic_data(url: str, headers: dict, input_data: dict = {}, body_str
     except Exception as e:
         error_message = traceback.format_exc()
         output_data = {"error": "Internal server error"}
+        print(f"Error: {str(e)}")
 
         if db_session:
             db_session.rollback()
@@ -2501,27 +1644,26 @@ def handle_dynamic_data(url: str, headers: dict, input_data: dict = {}, body_str
         if db_session:
             close_session()
 
-    if IS_DEV:
-        ServerInfo["mode"] = "DEV" if IS_DEV else "PROD"
-        ServerInfo["error"] = error_message
-        ServerInfo["modfunc"] = module_name
-        ServerInfo["ok"] = ok_flag
-        ServerInfo["path"] = vhp_module  + "/" + service_name
+        if IS_DEV:
+            ServerInfo["mode"] = "DEV" if IS_DEV else "PROD"
+            ServerInfo["error"] = error_message
+            ServerInfo["modfunc"] = module_name
+            ServerInfo["ok"] = ok_flag
+            ServerInfo["path"] = vhp_module  + "/" + service_name
 
-        return {
-            "response": output_data,
-            "serverinfo": ServerInfo
-        }
-    
-    else:
-        return {
-            "response": output_data
-        }
+            return {
+                "response": output_data,
+                "serverinfo": ServerInfo
+            }
+        
+        else:
+            return {
+                "response": output_data
+            }
 
 
 # infostr -> request Id
 # imagefile -> content
-
 
 
 # clear_8 = text("""
