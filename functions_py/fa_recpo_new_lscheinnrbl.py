@@ -26,7 +26,6 @@ def fa_recpo_new_lscheinnrbl(pr_973:bool, yy:int, mm:int, dd:int):
 
 
     if pr_973:
-
         # fa_counter = get_cache (Fa_counter, {"count_type": [(eq, 0)],"yy": [(eq, yy)],"mm": [(eq, mm)],"dd": [(eq, dd)],"docu_type": [(eq, 1)]})
         fa_counter = db_session.query(Fa_counter).filter(
                  (Fa_counter.count_type == 0) &
@@ -51,7 +50,6 @@ def fa_recpo_new_lscheinnrbl(pr_973:bool, yy:int, mm:int, dd:int):
         else:
             i = fa_counter.counters + 1
     else:
-
         # fa_counter = get_cache (Fa_counter, {"count_type": [(eq, 1)],"yy": [(eq, yy)],"mm": [(eq, mm)],"docu_type": [(eq, 1)]})
         fa_counter = db_session.query(Fa_counter).filter(
                  (Fa_counter.count_type == 1) &
