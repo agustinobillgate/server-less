@@ -219,7 +219,7 @@ def prepare_fa_polistbl():
             if fa_order.activeflag == 0:
                 total_amount = to_decimal(
                     total_amount) + to_decimal(fa_order.order_amount)
-                print(f"total_amount: {total_amount}")
+                # print(f"total_amount: {total_amount}")
                 
             username = Username()
             username_data.append(username)
@@ -232,7 +232,6 @@ def prepare_fa_polistbl():
             username.close_time = temp_time
             username.last_arrival = last_arrive
             username.total_amount = to_decimal(total_amount)
-            print(f"username.total_amount: {username.total_amount}")
             total_amount = to_decimal("0")
             temp_create = ""
             temp_modify = ""
