@@ -1,0 +1,172 @@
+{
+    "vhpOU_splitbillPrepare": {
+        "lhbline": "Lhbline",
+        "menu": "MENU"
+    },
+    "vhpOU_splitbillPrepareCustom": {
+        "lhbline": "Lhbline"
+    },
+    "vhpOU_splitbillSelectLmenu": {
+        "rhbline": "Rhbline"
+    },
+    "HouseKeeping_getStoreRoomDiscrepancyList": {
+        "hkdiscrepancyList": "hkDiscrepancyList",
+        "hkdiscrepancy-list": "hk-discrepancy-list"
+    },
+    "vhpFOR_bonusNightCheck": {
+        "resDynarate": "ResDynarate"
+    },
+    "vhpFOR_searchByVoucher": {
+        "tResVoucherno": "tResVoucherNo"
+    },
+    "vhpSS_addRoomAdmin": {
+        "dynarateList": "dynaRateList"
+    },
+    "vhpSS_ratecodeAdmDynaratePrepare": {
+        "dynarateList": "dynaRateList"
+    },
+    "vhpSS_ratecodeAdmWrite": {
+        "tb3buff": "tb3Buff"
+    },
+    "vhpSS_egStaffPrepare": {
+        "dept": "Dept",
+        "userskill": "UserSkill",
+        "userSkill": "UserSkill"
+    },
+    "vhpSC_rmAtproductCreateUmsatz1": {
+        "b1list": "b1List",
+        "rmatproduct": "rmAtproduct"
+    },
+    "vhpENG_egMainschedulePrepare": {
+        "Delete-Flag": "delete-flag"
+    },
+    "vhpENG_egRephistorymoveCreateBrowse": {
+        "smove": "sMove"
+    },
+    "vhpENG_egRephistorymoveBtnGo": {
+        "smove": "sMove"
+    },
+    "vhpAR_soaRelease": {
+        "deptno": "deptNo"
+    },
+    "vhpINV_storeReqInsPrepare": {
+        "deptno": "deptNo"
+    },
+    "vhpINV_chgStoreRequestLoadData": {
+        "deptno": "deptNo"
+    },
+    "vhpENG_egPropertyListBtnGo": {
+        "type": "TYPE",
+        "spec": "Spec"
+    },
+    "vhpENG_egChgReqPrepare": {
+        "tFstat": "tFStat",
+        "svendor": "sVendor"
+    },
+    "vhpENG_egPropertyLoad": {
+        "svendor": "tEgProperty"
+    },
+    "vhpENG_egReprequestcancelPrepare": {
+        "mainaction": "MainAction",
+        "tmaintain": "tMaintain",
+        "tmaintask": "tMaintask",
+        "tlocation": "tLocation",
+        "tstatus": "tStatus"
+    },
+    "vhpSS_egMaintaskBtnDelart": {
+        "flcode": "flCode"
+    },
+    "vhpSS_egCategoryBtnExit": {
+        "flcode": "flCode"
+    },
+    "HouseKeeping_updateAddLostAndFound": {
+        "phoneno": "PhoneNo"
+    },
+    "vhpGC_prepareAddGCPi": {
+        "tGcPibline": "tGcPIbline"
+    },
+    "vhpEG_egSelLookmaintainPrepare": {
+        "tmaintain": "tMaintain",
+        "mainaction": "MainAction"
+    },
+    "vhpENG_egSelLookmaintainPrepare": {
+        "tmaintain": "tMaintain",
+        "mainaction": "MainAction"
+    },
+    "vhpFOR_monthlyFcastDDown1List1": {
+        "adult": "Adult",
+        "deptime": "DepTime"
+    },
+    "vhpENG_egReqlistLoad": {
+        "copyrequest": "copyRequest",
+        "Action": "action",
+        "sMaintain": "smaintain"
+    },
+    "vhpENG_egRepmaintainDisp": {
+        "tlocation": "tLocation",
+        "tstatus": "tStatus"
+    },
+    "vhpENG_egMaincalendardelPrepare": {
+        "tlocation": "tLocation",
+        "tstatus": "tStatus",
+        "tmaintask": "tMaintask"
+    },
+    "vhpENG_egRepdurationDisp": {
+        "tstatus": "tStatus",
+        "tmaintask": "tMaintask",
+        "tlocation": "tLocation",
+        "copyrequest": "copyRequest"
+    },
+    "vhpENG_egMaincalendarPrepare": {
+        "tlocation": "tLocation",
+        "tstatus": "tStatus",
+        "tmaintask": "tMaintask"
+    },
+    "vhpENG_egRepmaintainPrepare": {
+        "tlocation": "tLocation",
+        "tmaintask": "tMaintask",
+        "tfrequency": "tFrequency",
+        "tstatus": "tStatus"
+    },
+    "vhpENG_egRepdurationPrepare": {
+        "tlocation": "tLocation",
+        "tmaintask": "tMaintask"
+    },
+    "vhpENG_egPropertyPrepare": {
+        "location": "Location",
+        "maintask": "Maintask"
+    },
+    "vhpSS_dynaratecodeUpdateCreateDynarateList": {
+        "dynarateList": "dynaRateList"
+    },
+    "vhpAP_getAPListAddItemList": {
+        "ttstock": "ttStock"
+    },
+    "vhpINV_chgInvArticlePrepare": {
+        "ttguestbook": "ttGuestBook"
+    },
+    "vhpINV_chgInvArticlePrepareCustom": {
+        "ttguestbook": "ttGuestBook"
+    },
+    "vhpFA_faValuatePrepare": {
+        "lagerbuff": "lagerBuff"
+    },
+    "vhpFA_faArtlist2Prepare": {
+        "tPrepareCreatpo": "tPrepareCreatPO"
+    },
+    "vhpENG_egReprequestcancelOpenQuery1": {
+        "copyrequest": "copyRequest"
+    },
+    "vhpPC_prInsPrepare": {
+        "ins-list": "insList"
+    },
+    "vhpFA_prChgPrepare1": {
+        "t-waehrung": "tWaehrung",
+        "t-parameters": "tParameters",
+        "t-l-orderhdr": "tLOrderhdr",
+        "t-l-artikel": "tLArtikel"
+    },
+    "vhpFA_faIncomingPO": {
+        "t-l-artikel": "tLArtikel"
+    }
+}
