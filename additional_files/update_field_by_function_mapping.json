@@ -1,0 +1,43 @@
+{
+    "vhpFA_faPOListPrepare": {
+        "billdate": "billdate"
+    },
+    "vhpFA_faModifyPOPrepareCustom": {
+        "t_amount": "tAmount",
+        "deptname": "deptname",
+        "billdate": "billdate"
+    },
+    "vhpFA_faPOListBtnGoCustom": {
+        "billdate": "billdate"
+    },
+    "vhpAP_getPreparePurchaseOrderList": {
+        "billdate": "billdate"
+    },
+    "vhpPC_poMkPO1Prepare1": {
+        "t_amount": "tAmount",
+        "billdate": "billdate",
+        "avail_addvat": "availAddVat"
+    },
+    "vhpPC_prPrepare": {
+        "billdate": "billdate"
+    },
+    "vhpPC_prAddPrepare": {
+        "billdate": "billdate",
+        "docu_nr": "docuNr"
+    },
+    "vhpPC_insMkPOPrepare": {
+        "billdate": "billdate",
+        "docu_nr": "docuNr"
+    },
+     "vhpINV_pchaseStockInReturnPrepare": {
+        "billdate": "billdate",
+        "show_price": "showPrice",
+        "t_amount": "tAmount"
+    },
+    "vhpFA_faRecPOPrepare": {
+        "billdate": "billdate"
+    },
+    "vhpPC_dmlPrepare": {
+        "billdate": "billdate"
+    }
+}

@@ -80,6 +80,7 @@ from sqlalchemy.orm import sessionmaker
 from mangum import Mangum
 
 from models.guestbook import Guestbook
+from functions import log_program as lp
 
 load_dotenv()
 
@@ -89,6 +90,10 @@ IS_DEV = os.getenv("APP_ENV", "prod").lower() != "prod"
 MODULE_CACHE = {}
 FUNCTION_CACHE = {}
 SERVICE_MAP_CACHE = {}
+
+ANDROID_MODULE_CACHE = {}
+ANDROID_FUNCTION_CACHE = {}
+ANDROID_SERVICE_MAP_CACHE = {}
 
 log_agent = vhp_module = service_name = hotel_code = inputUsername = orig_infostr = existing_json_data = ""
 is_existing_json = False
@@ -1252,7 +1257,7 @@ def handle_dynamic_data_v1(url:str, headers: Dict[str, Any], input_data: Dict[st
 
             if num_entries(path,"/") == 5:
                 service_name += entry(4,path,"/")
-
+            
             print("Schema/Module/Service:", hotel_schema, vhp_module, service_name)
             endpoint = vhp_module + "/" + service_name
             log_id = log_activity(endpoint, inputUsername, hotel_schema)
@@ -1519,46 +1524,82 @@ def handle_dynamic_data(url: str, headers: dict, input_data: dict = {}, body_str
 
     module_name = ""
 
+    mobile_version = False
+
 
     def get_service_function(vhp_module: str, service_name: str) -> str:
-        if vhp_module not in SERVICE_MAP_CACHE:
-            mapping_path = Path(f"modules/{vhp_module}/_mapping.txt")
-            if not mapping_path.exists():
-                raise FileNotFoundError(f"Mapping file not found for module {vhp_module}")
+        nonlocal mobile_version
 
-            with open(mapping_path, "r") as f:
-                SERVICE_MAP_CACHE[vhp_module] = {
-                    row["service"]: row["function"]
-                    for row in csv.DictReader(f)
-                }
+        if mobile_version:
+            if vhp_module not in ANDROID_SERVICE_MAP_CACHE:
+                mapping_path = Path(f"modules/VHPMobile/{vhp_module}/_mapping.txt")
+                if not mapping_path.exists():
+                    raise FileNotFoundError(f"Mapping file not found for module {vhp_module}")
 
-        service_map = SERVICE_MAP_CACHE[vhp_module]
-        if service_name not in service_map:
-            raise KeyError(f"Service not found: {vhp_module}/{service_name}")
+                with open(mapping_path, "r") as f:
+                    ANDROID_SERVICE_MAP_CACHE[vhp_module] = {
+                        row["service"]: row["function"]
+                        for row in csv.DictReader(f)
+                    }
+
+            service_map = ANDROID_SERVICE_MAP_CACHE[vhp_module]
+            if service_name not in service_map:
+                raise KeyError(f"Service not found: {vhp_module}/{service_name}")
+        else:
+            if vhp_module not in SERVICE_MAP_CACHE:
+                mapping_path = Path(f"modules/VHPWebBased/{vhp_module}/_mapping.txt")
+                if not mapping_path.exists():
+                    raise FileNotFoundError(f"Mapping file not found for module {vhp_module}")
+
+                with open(mapping_path, "r") as f:
+                    SERVICE_MAP_CACHE[vhp_module] = {
+                        row["service"]: row["function"]
+                        for row in csv.DictReader(f)
+                    }
+
+            service_map = SERVICE_MAP_CACHE[vhp_module]
+            if service_name not in service_map:
+                raise KeyError(f"Service not found: {vhp_module}/{service_name}")
 
         return service_map[service_name]
 
 
     def load_function(function_name: str):
-        nonlocal module_name
+        nonlocal module_name, mobile_version
         
         cache_key = f"{module_name}.{function_name}"
 
         if not IS_DEV and cache_key in FUNCTION_CACHE:
-            return FUNCTION_CACHE[cache_key]
+            if mobile_version:
+                return ANDROID_FUNCTION_CACHE[cache_key]
+            else:
+                return FUNCTION_CACHE[cache_key]
 
-        module = MODULE_CACHE.get(module_name)
+        if mobile_version:
+            module = ANDROID_MODULE_CACHE.get(module_name)
+        else:
+            module = MODULE_CACHE.get(module_name)
+
         if not module or IS_DEV:
             module = importlib.import_module(module_name)
             if IS_DEV:
                 module = importlib.reload(module)
-            MODULE_CACHE[module_name] = module
+
+            if mobile_version:
+                ANDROID_MODULE_CACHE[module_name] = module
+            else:
+                MODULE_CACHE[module_name] = module
 
         if not hasattr(module, function_name):
             raise AttributeError(f"Function {function_name} not found in {module_name}")
 
         func = getattr(module, function_name)
-        FUNCTION_CACHE[cache_key] = func
+
+        if mobile_version:
+            ANDROID_FUNCTION_CACHE[cache_key] = func
+        else:
+            FUNCTION_CACHE[cache_key] = func
+            
         return func
 
 
@@ -1586,10 +1627,14 @@ def handle_dynamic_data(url: str, headers: dict, input_data: dict = {}, body_str
         service_name: str,
         input_data: dict
     ):
-        nonlocal module_name
+        nonlocal module_name, mobile_version
 
         function_name = get_service_function(vhp_module, service_name)
-        module_name = f"functions.{function_name}"
+
+        if mobile_version:
+            module_name = f"functions.vhp_mobile.{function_name}"
+        else:
+            module_name = f"functions.{function_name}"
 
         func = load_function(function_name)
 
@@ -1606,9 +1651,33 @@ def handle_dynamic_data(url: str, headers: dict, input_data: dict = {}, body_str
         if not hotel_schema:
             raise HTTPException(400, "Missing hotel_schema")
 
+        # python.staging.e1-vhp.com:10443/dev/vhpINV/getInvSubGroup
+        # -------------------0-------------1-----2---------3-------
+
+        # ws1.e1-vhp.com:8443/VHPWebBased1/rest/Common/checkPermission2
+        # -----------0-------------1--------2------3--------4----------
+
+        # ws1.e1-vhp.com:8443/VHPMobile1/rest/FrontOffice/storeSignatureBill
+        # ---------0--------------1-------2--------3-------------4----------
+
         path = url.replace("http://", "").replace("https://", "")
-        vhp_module = entry(2, path, "/")
-        service_name = entry(3, path, "/")
+        path_split = path.split("/")
+
+        if re.match(r'^VHPMobile\d$', path_split[1]):
+            mobile_version = True
+
+
+        if mobile_version:
+            vhp_module = entry(3, path, "/")
+
+            path_list_service = path_split[4:]
+            service_name = "".join(path_list_service)
+        else:
+            vhp_module = entry(2, path, "/")
+
+            path_list_service = path_split[3:]
+            service_name = "".join(path_list_service)
+
 
         curr_module = vhp_module
         curr_service = service_name
@@ -1636,6 +1705,8 @@ def handle_dynamic_data(url: str, headers: dict, input_data: dict = {}, body_str
         error_message = traceback.format_exc()
         output_data = {"error": "Internal server error"}
         print(f"Error: {str(e)}")
+
+        lp.write_log("error", f"{error_message}", "error.txt", "f")
 
         if db_session:
             db_session.rollback()

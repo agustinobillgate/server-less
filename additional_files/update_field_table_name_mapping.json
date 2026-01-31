@@ -1,0 +1,118 @@
+{
+    "vhpFA_faIncomingPO": {
+        "temp": {
+            "create_by": "Created-By"
+        }
+    },
+    "vhpFA_faPOListBtnGoCustom": {
+        "temp": {
+            "order_date": "Order-Date",
+            "order_nr": "Order-Nr",
+            "order_type": "Order-Type",
+            "release_date": "Release-Date",
+            "created_date": "Created-Date",
+            "_expected_delivery": "Expected-Delivery",
+            "released_flag": "Released-Flag",
+            "supplier_nr": "Supplier-Nr",
+            "activeflag": "ActiveFlag",
+            "order_desc": "Order-Desc",
+            "order_name": "Order-Name",
+            "total_amount": "total-amount",
+            "order_amount": "order-amount",
+            "modified_date": "modified-date",
+            "close_date": "close-date",
+            "close_time": "close-time"
+        },
+        "temp-detail": {
+            "coa": "COA"
+        }
+    },
+    "vhpFA_faModifyPOPrepareCustom": {
+        "disclist": {
+            "vat": "vat"
+        },
+        "t-fa-ordheader": {
+            "activeflag": "ActiveFlag"
+        },
+        "tfa-order": {
+            "vat": "VAT"
+        },
+        "t-dept-list": {
+            "name": "NAME"
+        }
+    },
+    "vhpFOR_arlDisp6": {
+        "arl-list": {
+            "resnr": "resnr",
+            "grpflag": "grpflag",
+            "cash_basis": "cashbasis",
+            "ratecode": "ratecode"
+        }
+    },
+    "Common_availabilityNotif": {
+        "room-summary": {
+            "date": "DATE"
+        }
+    },
+    "vhpFOR_gcfList": {
+        "t-guest": {
+            "pr_flag": "pr-flag"
+        }
+    },
+    "vhpFOR_mainresPrepare": {
+        "t-reservation": {
+            "activeflag": "activeflag"
+        }
+    },
+    "vhpSM_prCodeChg": {
+        "q1-list": {
+            "selected": "SELECTED"
+        },
+        "q2-list": {
+            "selected": "SELECTED"
+        }
+    },
+    "vhpFOR_reslinePrepare4": {
+        "f-resline": {
+            "currency": "currency"
+        }
+    },
+    "vhpFA_faPOListBtnGo2": {
+        "temp": {
+            "modified_date": "modified-date",
+            "close_date": "close-date",
+            "close_time": "close-time",
+            "order_amount": "order-amount",
+            "total_amount": "total-amount"
+        }
+    },
+    "vhpFA_faPODetail": {
+        "tmp-tbl-data": {
+            "fa_nr": "fa-nr",
+            "name": "NAME",
+            "order_qty": "order-qty",
+            "order_price": "order-price",
+            "order_amount": "order-amount"
+        }
+    },
+    "vhpFA_faPOList": {
+        "t-order": {
+            "name": "NAME",
+            "fa_nr": "fa-nr",
+            "order_qty": "order-qty",
+            "order_price": "order-price",
+            "order_amount": "order-amount",
+            "order_nr": "order-nr"
+        }
+    },
+    "vhpAP_getPurchaseOrderListCustom": {
+        "q2-list": {
+            "order_qty": "order-qty"
+        }
+    },
+    "vhpFA_faRecPOPrepare": {
+        "tfa-order": {
+            "name": "NAME"
+        }
+    }
+}
