@@ -7,6 +7,8 @@ from functions.htpdate import htpdate
 from sqlalchemy import func
 from models import Mathis, Fa_grup, Fa_artikel, Fa_lager, Fa_kateg, Gl_acct
 
+from functions import log_program as log
+
 payload_list_data, Payload_list = create_model(
     "Payload_list",
     {
@@ -784,8 +786,12 @@ def prepare_fa_artlist2_webbl(payload_list_data: [Payload_list]):
                 fibu_list.flag = 1
 
         if q1_list.avail_glacct1 == False:
-            fibu_list.debit = to_decimal(
-                fibu_list.debit) + to_decimal(fa_artikel.warenwert)
+            log.write_log("prepare_fa_artlist2_webbl", f"[DEBUG] {fibu_list.__dict__}")
+            if fibu_list.debit is None:
+                fibu_list.debit = to_decimal(fa_artikel.warenwert)
+            else:
+                fibu_list.debit = to_decimal(
+                    fibu_list.debit) + to_decimal(fa_artikel.warenwert)
 
         fibu_list = query(fibu_list_data, filters=(
             lambda fibu_list: fibu_list.fibukonto == fa_grup.credit_fibu), first=True)
@@ -807,8 +813,11 @@ def prepare_fa_artlist2_webbl(payload_list_data: [Payload_list]):
                 fibu_list.flag = 2
 
         if q1_list.avail_glacct2 == False:
-            fibu_list.credit = to_decimal(
-                fibu_list.credit) + to_decimal(fa_artikel.depn_wert)
+            if fibu_list.credit is None:
+                fibu_list.credit = fa_artikel.depn_wert 
+            else: 
+                fibu_list.credit = to_decimal(
+                    fibu_list.credit) + to_decimal(fa_artikel.depn_wert)
 
         fibu_list = query(fibu_list_data, filters=(
             lambda fibu_list: fibu_list.fibukonto == fa_grup.debit_fibu), first=True)
@@ -830,8 +839,12 @@ def prepare_fa_artlist2_webbl(payload_list_data: [Payload_list]):
                 fibu_list.flag = 3
 
         if q1_list.avail_glacct3 == False:
-            fibu_list.debit = to_decimal(
-                fibu_list.debit) + to_decimal(fa_artikel.depn_wert)
+            if fibu_list.debit is None:
+                fibu_list.debit = to_decimal(fa_artikel.depn_wert)
+            
+            else:
+                fibu_list.debit = to_decimal(
+                    fibu_list.debit) + to_decimal(fa_artikel.depn_wert)
 
     p_881 = get_output(htpdate(881))
 
