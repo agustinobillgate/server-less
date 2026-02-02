@@ -3,6 +3,13 @@
 # =============================================
 # Rulita, 27-11-2025
 # - Added with_for_update all query 
+# 
+# yusufwijasena, 
+# - fixed cannot receive item without PO
+# - fixed input data not found
+# - added with_for_update
+# - check process creating ap trade
+# - added db_session.add(fa_op) to save data fa_op
 # =============================================
 
 from functions.additional_functions import *
@@ -10,9 +17,15 @@ from decimal import Decimal
 from datetime import date
 from models import Fa_op, Bediener, L_lieferant, Mathis, Fa_artikel, Queasy, Htparam, L_op, L_kredit, Ap_journal
 
-op_list_data, Op_list = create_model_like(Fa_op, {"name":string, "location":string})
+from functions import log_program as log
 
-def fa_stin_btn_gobl(op_list_data, billdate:date, user_init:string, lscheinnr:string, lief_nr:int):
+op_list_data, Op_list = create_model_like(
+    Fa_op, {
+        "name":string, 
+        "location":string
+        })
+
+def fa_stin_btn_gobl(op_list_data: [Op_list], billdate:date, user_init:string, lscheinnr:string, lief_nr:int):
 
     prepare_cache ([Fa_op, Bediener, L_lieferant, Mathis, Fa_artikel, Queasy, Htparam, L_kredit, Ap_journal])
 
@@ -31,18 +44,14 @@ def fa_stin_btn_gobl(op_list_data, billdate:date, user_init:string, lscheinnr:st
     def generate_output():
         nonlocal created, s_artnr, qty, price, amount, t_amount, fa_op, bediener, l_lieferant, mathis, fa_artikel, queasy, htparam, l_op, l_kredit, ap_journal
         nonlocal billdate, user_init, lscheinnr, lief_nr
-
-
         nonlocal op_list
 
-        return {"created": created}
+        return {
+            "created": created}
 
     def create_fa_op():
-
         nonlocal created, s_artnr, qty, price, amount, t_amount, fa_op, bediener, l_lieferant, mathis, fa_artikel, queasy, htparam, l_op, l_kredit, ap_journal
         nonlocal billdate, user_init, lscheinnr, lief_nr
-
-
         nonlocal op_list
 
         next_date:date = None
@@ -54,12 +63,9 @@ def fa_stin_btn_gobl(op_list_data, billdate:date, user_init:string, lscheinnr:st
                  (Mathis.nr == s_artnr)).with_for_update().first()
 
         if mathis:
-            # pass
             mathis.price =  to_decimal(price)
             mathis.supplier = l_lieferant.firma
             mathis.datum = billdate
-            # pass
-            db_session.refresh(mathis,with_for_update=True)
 
             # fa_artikel = get_cache (Fa_artikel, {"nr": [(eq, s_artnr)]})
             fa_artikel = db_session.query(Fa_artikel).filter(
@@ -122,12 +128,8 @@ def fa_stin_btn_gobl(op_list_data, billdate:date, user_init:string, lscheinnr:st
                             next_yr = next_yr + 1
                         next_date = date_mdy(next_mon, 1, next_yr) - timedelta(days=1)
                         fa_artikel.next_depn = next_date
-                # pass
-                # pass
-                db_session.refresh(fa_artikel,with_for_update=True)
                 
             fa_op = Fa_op()
-            db_session.add(fa_op)
 
             fa_op.nr = mathis.nr
             fa_op.opart = 1
@@ -140,22 +142,17 @@ def fa_stin_btn_gobl(op_list_data, billdate:date, user_init:string, lscheinnr:st
             fa_op.lscheinnr = lscheinnr
             fa_op.docu_nr = lscheinnr
             fa_op.lief_nr = l_lieferant.lief_nr
-            pass
-            pass
-
+            
+            db_session.add(fa_op)
 
     def create_ap():
-
         nonlocal created, s_artnr, qty, price, amount, t_amount, fa_op, bediener, l_lieferant, mathis, fa_artikel, queasy, htparam, l_op, l_kredit, ap_journal
         nonlocal billdate, user_init, lscheinnr, lief_nr
-
-
         nonlocal op_list
 
         l_op1 = None
         L_op1 =  create_buffer("L_op1",L_op)
         l_kredit = L_kredit()
-        db_session.add(l_kredit)
 
         l_kredit.name = lscheinnr
         l_kredit.lief_nr = lief_nr
@@ -168,7 +165,8 @@ def fa_stin_btn_gobl(op_list_data, billdate:date, user_init:string, lscheinnr:st
         l_kredit.bediener_nr = bediener.nr
         l_kredit.betriebsnr = 2
         ap_journal = Ap_journal()
-        db_session.add(ap_journal)
+        
+        db_session.add(l_kredit)
 
         ap_journal.lief_nr = lief_nr
         ap_journal.docu_nr = lscheinnr
@@ -178,14 +176,17 @@ def fa_stin_btn_gobl(op_list_data, billdate:date, user_init:string, lscheinnr:st
         ap_journal.netto =  to_decimal(t_amount)
         ap_journal.userinit = bediener.userinit
         ap_journal.zeit = get_current_time_in_seconds()
+        
+        db_session.add(ap_journal)
 
 
-    bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})
+    # bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})
+    bediener = db_session.query(Bediener).filter(Bediener.userinit == user_init).first()
 
-    l_lieferant = get_cache (L_lieferant, {"lief_nr": [(eq, lief_nr)]})
+    # l_lieferant = get_cache (L_lieferant, {"lief_nr": [(eq, lief_nr)]})
+    l_lieferant = db_session.query(L_lieferant).filter(L_lieferant.lief_nr == lief_nr).first()
 
     if bediener and l_lieferant:
-
         for op_list in query(op_list_data):
             s_artnr = op_list.nr
             qty =  to_decimal(op_list.anzahl)
@@ -197,5 +198,8 @@ def fa_stin_btn_gobl(op_list_data, billdate:date, user_init:string, lscheinnr:st
 
         if lief_nr != 0 and t_amount != 0:
             create_ap()
+            
+    else:
+        pass
 
     return generate_output()
