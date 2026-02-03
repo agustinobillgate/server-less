@@ -462,21 +462,21 @@ def print_hbill1_phbl(pvilanguage:int, session_parameter:string, user_init:strin
             if h_bill.bilname != "":
 
                 if gst_logic:
-                    output_list.str = output_list.str + to_string(" " + to_string(bill_date) + " " + to_string(get_current_time_in_seconds(), "HH:MM") + " " + translateExtended ("Tax Invoice No", lvcarea, "") + " " + to_string(rechnr_str, "x(43)"))
+                    output_list.str = output_list.str + to_string("     " + to_string(bill_date) + " " + to_string(get_current_time_in_seconds(), "HH:MM") + " " + translateExtended ("Tax Invoice No", lvcarea, "") + " " + to_string(rechnr_str, "x(43)"))
                 else:
-                    output_list.str = output_list.str + to_string(" " + to_string(bill_date) + " " + to_string(get_current_time_in_seconds(), "HH:MM") + " " + translateExtended ("Bill No", lvcarea, "") + " " + to_string(rechnr_str, "x(33)"))
+                    output_list.str = output_list.str + to_string("     " + to_string(bill_date) + " " + to_string(get_current_time_in_seconds(), "HH:MM") + " " + translateExtended ("Bill No", lvcarea, "") + " " + to_string(rechnr_str, "x(33)"))
                 output_list = Output_list()
                 output_list_data.append(output_list)
 
                 output_list.sort_i = sort_i
                 sort_i = sort_i + 1
-                output_list.str = output_list.str + to_string(" " + hoteldpt.depart, "x(32)")
+                output_list.str = output_list.str + to_string("     " + hoteldpt.depart, "x(32)")
                 output_list = Output_list()
                 output_list_data.append(output_list)
 
                 output_list.sort_i = sort_i
                 sort_i = sort_i + 1
-                output_list.str = output_list.str + to_string(" " + translateExtended ("Table", lvcarea, "") + " " + to_string(h_bill.tischnr, ">>>9") + "/" + to_string(h_bill.belegung, "->>>9 ") + kname, "x(32)")
+                output_list.str = output_list.str + to_string("     " + translateExtended ("Table", lvcarea, "") + " " + to_string(h_bill.tischnr, ">>>9") + "/" + to_string(h_bill.belegung, "->>>9 ") + kname, "x(32)")
                 output_list = Output_list()
                 output_list_data.append(output_list)
 
@@ -488,14 +488,14 @@ def print_hbill1_phbl(pvilanguage:int, session_parameter:string, user_init:strin
                     tisch = get_cache (Tisch, {"tischnr": [(eq, h_bill.tischnr)],"departement": [(eq, h_bill.departement)]})
 
                     if tisch and tisch.bezeich != "":
-                        output_list.str = output_list.str + to_string(" " + tisch.bezeich, "x(32)")
+                        output_list.str = output_list.str + to_string("     " + tisch.bezeich, "x(32)")
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
                         output_list.sort_i = sort_i
                         sort_i = sort_i + 1
                         curr_j = curr_j + 1
-                output_list.str = output_list.str + to_string(" " + translateExtended ("Guest", lvcarea, "") + " " + h_bill.bilname, "x(32)")
+                output_list.str = output_list.str + to_string("     " + translateExtended ("Guest", lvcarea, "") + " " + h_bill.bilname, "x(32)")
                 output_list = Output_list()
                 output_list_data.append(output_list)
 
@@ -509,7 +509,7 @@ def print_hbill1_phbl(pvilanguage:int, session_parameter:string, user_init:strin
                     output_list.sort_i = sort_i
                     sort_i = sort_i + 1
                     output_list.str = output_list.str +\
-                            to_string(" " + translateExtended ("Tax Invoice", lvcarea, ""))
+                            to_string("            " + translateExtended ("Tax Invoice", lvcarea, ""))
 
 
                     output_list = Output_list()
@@ -518,7 +518,7 @@ def print_hbill1_phbl(pvilanguage:int, session_parameter:string, user_init:strin
                     output_list.sort_i = sort_i
                     sort_i = sort_i + 1
                     output_list.str = output_list.str +\
-                            to_string(" " + translateExtended ("GST ID : 001865060352", lvcarea, ""))
+                            to_string("       " + translateExtended ("GST ID : 001865060352", lvcarea, ""))
 
 
                     output_list = Output_list()
@@ -544,7 +544,7 @@ def print_hbill1_phbl(pvilanguage:int, session_parameter:string, user_init:strin
                              (Mc_guest.gastnr == h_bill.resnr) & (Mc_guest.activeflag)).first()
 
                 if mc_guest:
-                    output_list.str = output_list.str + to_string(" " + translateExtended ("MemberCard", lvcarea, "") + " " + mc_guest.cardnum, "x(32)")
+                    output_list.str = output_list.str + to_string("     " + translateExtended ("MemberCard", lvcarea, "") + " " + mc_guest.cardnum, "x(32)")
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
@@ -555,9 +555,9 @@ def print_hbill1_phbl(pvilanguage:int, session_parameter:string, user_init:strin
             else:
 
                 if gst_logic:
-                    output_list.str = output_list.str + to_string(" " + to_string(bill_date) + " " + to_string(get_current_time_in_seconds(), "HH:MM") + " " + translateExtended ("Tax Invoice No", lvcarea, "") + " " + to_string(rechnr_str, "x(43)"))
+                    output_list.str = output_list.str + to_string("     " + to_string(bill_date) + " " + to_string(get_current_time_in_seconds(), "HH:MM") + " " + translateExtended ("Tax Invoice No", lvcarea, "") + " " + to_string(rechnr_str, "x(43)"))
                 else:
-                    output_list.str = output_list.str + to_string(" " + to_string(bill_date) + " " + to_string(get_current_time_in_seconds(), "HH:MM") + " " + translateExtended ("Bill No", lvcarea, "") + " " + to_string(rechnr_str, "x(33)"))
+                    output_list.str = output_list.str + to_string("     " + to_string(bill_date) + " " + to_string(get_current_time_in_seconds(), "HH:MM") + " " + translateExtended ("Bill No", lvcarea, "") + " " + to_string(rechnr_str, "x(33)"))
                 output_list = Output_list()
                 output_list_data.append(output_list)
 
@@ -583,7 +583,7 @@ def print_hbill1_phbl(pvilanguage:int, session_parameter:string, user_init:strin
                     output_list.sort_i = sort_i
                     sort_i = sort_i + 1
                     output_list.str = output_list.str +\
-                            to_string(" " + translateExtended ("Tax Invoice", lvcarea, ""))
+                            to_string("            " + translateExtended ("Tax Invoice", lvcarea, ""))
 
 
                     output_list = Output_list()
@@ -592,7 +592,7 @@ def print_hbill1_phbl(pvilanguage:int, session_parameter:string, user_init:strin
                     output_list.sort_i = sort_i
                     sort_i = sort_i + 1
                     output_list.str = output_list.str +\
-                            to_string(" " + translateExtended ("GST ID : 001865060352", lvcarea, ""))
+                            to_string("       " + translateExtended ("GST ID : 001865060352", lvcarea, ""))
 
 
                     output_list = Output_list()
@@ -606,7 +606,7 @@ def print_hbill1_phbl(pvilanguage:int, session_parameter:string, user_init:strin
                     tisch = get_cache (Tisch, {"tischnr": [(eq, h_bill.tischnr)],"departement": [(eq, h_bill.departement)]})
 
                     if tisch and tisch.bezeich != "":
-                        output_list.str = output_list.str + to_string(" " + tisch.bezeich, "x(32)")
+                        output_list.str = output_list.str + to_string("     " + tisch.bezeich, "x(32)")
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
@@ -661,9 +661,9 @@ def print_hbill1_phbl(pvilanguage:int, session_parameter:string, user_init:strin
                 output_list.str = output_list.str + to_string(" ") + to_string(art_list.qty) + to_string(" ")
 
             elif art_list.qty > 9 or art_list.qty < -9:
-                output_list.str = output_list.str + to_string(" ") + to_string(art_list.qty) + to_string(" ")
+                output_list.str = output_list.str + to_string("  ") + to_string(art_list.qty) + to_string(" ")
             else:
-                output_list.str = output_list.str + to_string(" ") + to_string(art_list.qty) + to_string(" ")
+                output_list.str = output_list.str + to_string("   ") + to_string(art_list.qty) + to_string(" ")
         for i in range(1,nbezeich + 1) :
 
             if i > length(bezeich):
@@ -721,9 +721,9 @@ def print_hbill1_phbl(pvilanguage:int, session_parameter:string, user_init:strin
         if prtwoline:
 
             if qty1000:
-                output_list.str = output_list.str + to_string(" ")
+                output_list.str = output_list.str + to_string("      ")
             else:
-                output_list.str = output_list.str + to_string(" ")
+                output_list.str = output_list.str + to_string("     ")
             anz = nbezeich - 22
 
             if anz > 0:
@@ -889,7 +889,7 @@ def print_hbill1_phbl(pvilanguage:int, session_parameter:string, user_init:strin
         if service != 0 or mwst != 0:
 
             if comp_taxserv and comp_flag:
-                s = translateExtended ("Total", lvcarea, "") + " "
+                s = translateExtended ("Total", lvcarea, "") + "   "
 
                 if qty1000:
                     output_list.str = output_list.str + to_string("", "x(6)")
@@ -970,9 +970,9 @@ def print_hbill1_phbl(pvilanguage:int, session_parameter:string, user_init:strin
                     fill(" ", nbez1 - length(s))
 
             if price_decimal == 0:
-                output_list.str = output_list.str + " " + to_string(mwst, "->>9")
+                output_list.str = output_list.str + "        " + to_string(mwst, "->>9")
             else:
-                output_list.str = output_list.str + " " + to_string(mwst, "->>9.99")
+                output_list.str = output_list.str + "        " + to_string(mwst, "->>9.99")
             output_list = Output_list()
             output_list_data.append(output_list)
 
@@ -1481,7 +1481,7 @@ def print_hbill1_phbl(pvilanguage:int, session_parameter:string, user_init:strin
 
             output_list.sort_i = sort_i
             sort_i = sort_i + 1
-            output_list.str = output_list.str + to_string(translateExtended (" Tax Code amount GST", lvcarea, ""))
+            output_list.str = output_list.str + to_string(translateExtended ("     Tax Code      Amount     GST", lvcarea, ""))
 
             if comp_taxserv:
                 output_list = Output_list()
@@ -1489,7 +1489,7 @@ def print_hbill1_phbl(pvilanguage:int, session_parameter:string, user_init:strin
 
                 output_list.sort_i = sort_i
                 sort_i = sort_i + 1
-                output_list.str = output_list.str + to_string(translateExtended (" " + to_string(mwst_str, "x(13)") +\
+                output_list.str = output_list.str + to_string(translateExtended ("     " + to_string(mwst_str, "x(13)") +\
                         to_string(subtotal, "->>9.99 ") +\
                         to_string(0, "->>9.99") , lvcarea, ""))
 
@@ -1500,7 +1500,7 @@ def print_hbill1_phbl(pvilanguage:int, session_parameter:string, user_init:strin
 
                 output_list.sort_i = sort_i
                 sort_i = sort_i + 1
-                output_list.str = output_list.str + to_string(translateExtended (" " + to_string(mwst_str, "x(13)") +\
+                output_list.str = output_list.str + to_string(translateExtended ("     " + to_string(mwst_str, "x(13)") +\
                         to_string(subtotal, "->>9.99 ") +\
                         to_string(mwst, "->>9.99") , lvcarea, ""))
 
