@@ -15,6 +15,8 @@ from functions.print_hbill1_phbl import print_hbill1_phbl
 from functions.prepare_pr_sphbill1bl import prepare_pr_sphbill1bl
 from models import H_mjourn, Printer, Artikel, H_bill, H_bill_line, Htparam, Hoteldpt, Queasy, H_queasy, Kellner, H_artikel, Kontplan, Paramtext, Bediener, Tisch, Res_line, Mc_guest, Printcod, H_journal, Waehrung
 
+from functions import log_program
+
 def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bool, session_parameter:string, user_init:string, billnr:int, print_all:bool):
 
     prepare_cache ([Artikel, H_bill, H_bill_line, Htparam, Hoteldpt, Queasy, H_queasy, Kellner, Kontplan, Paramtext, Bediener, Tisch, Res_line, Mc_guest, Printcod, H_journal, Waehrung])
@@ -732,6 +734,8 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
         H_art =  create_buffer("H_art",H_artikel)
         bezeich = art_list.happyhr + art_list.bezeich
 
+        log_program.write_log("DEBUG bezeich", f"bezeich = {bezeich}", "Log_Rulita.txt" )
+
         if qty1000:
             output_list.str_pos = 10
             output_list.str = output_list.str + to_string("   ") + to_string(art_list.qty, "->>>> ") + "|"
@@ -801,6 +805,8 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
 
             h_art = db_session.query(H_art).filter(
                     (H_art.artnr == h_mjourn.artnr) & (H_art.departement == h_mjourn.departement)).first()
+            
+            log_program.write_log("DEBUG h_art", f"h_art.bezeich = {h_art.bezeich}", "Log_Rulita.txt" )
 
             if h_art:
                 # bezeich = h_art.bezeich
@@ -1012,6 +1018,7 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
                     output_list.sort_i = sort_i
                     sort_i = sort_i + 1
                 printed_line = printed_line + 1
+
 
             if mwst != 0:
                 for i in range(1,pos + 1) :
@@ -2353,12 +2360,16 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
             h_service =  to_decimal("0")
             h_mwst =  to_decimal("0")
 
+            # log_program.write_log("DEBUG1", f"art_list = {art_list_data}", "Log_Rulita.txt")
+
             amount =  to_decimal(h_bill_line.betrag)
 
             if art_list.artart == 0:
                 serv_perc, mwst_perc, fact = cal_servat(h_artikel.departement, h_artikel.artnr, h_artikel.service_code, h_artikel.mwst_code, h_bill_line.bill_datum)
-                mwst_perc =  to_decimal(mwst_perc) * to_decimal("100")
-                serv_perc =  to_decimal(serv_perc) * to_decimal("100")
+                # Rulita 03/02/2026
+                # Fixing issue service tax pecent
+                # mwst_perc =  to_decimal(mwst_perc) * to_decimal("100")
+                # serv_perc =  to_decimal(serv_perc) * to_decimal("100")
 
                 if h_bill_line.artnr == f_discart:
                     if h_bill_line.epreis != h_bill_line.betrag:
@@ -2405,8 +2416,9 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
                         mwst =  to_decimal(mwst) + to_decimal(h_mwst)
                         mwst1 =  to_decimal(mwst1) + to_decimal(h_mwst)
 
-                if not art_list.disc_Flag:
+                if not art_list.disc_flag:
                     subtotal =  to_decimal(subtotal) + to_decimal(amount)
+
             art_list.amount =  to_decimal(art_list.amount) + to_decimal(amount)
 
             if h_bill_line.artnr != 0:
@@ -2505,22 +2517,31 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
         sort_i = sort_i + 1
 
         if prdisc_flag and tot_ndisc_line >= 1 and tot_disc_line >= 1:
-            art_list = query(art_list_data, filters=(lambda art_list: art_list.artart == 0 and not art_list.disc_flag and not art_list.printed), first=True)
+            # art_list = query(art_list_data, filters=(lambda art_list: art_list.artart == 0 and not art_list.disc_flag and not art_list.printed), first=True)
             n = 0
             curr_j = printed_line
+
+            # while i < npage :
             for i in range(1,npage + 1) :
                 if not art_list:
                     i = npage
 
                 print_overhead1()
 
-                while None != art_list and (curr_j <= lpage) :
-                    print_billine()
+                for art_list in query(art_list_data, filters=(lambda art_list: art_list.artart == 0 and art_list.disc_flag and not art_list.printed)):
+                    if curr_j <= lpage :
+                        print_billine()
 
-                    art_list = query(art_list_data, filters=(lambda art_list: art_list.artart == 0 and not art_list.disc_flag and not art_list.printed), next=True)
+                        if not art_list:
+                            i = npage 
 
-                    if not art_list:
-                        i = npage
+                # while None != art_list and (curr_j <= lpage) :
+                #     print_billine()
+
+                #     art_list = query(art_list_data, filters=(lambda art_list: art_list.artart == 0 and not art_list.disc_flag and not art_list.printed), next=True)
+
+                #     if not art_list:
+                #         i = npage
 
                 if i == npage:
                     print_overhead2(0)
@@ -2551,23 +2572,27 @@ def pr_sphbill1_lnlbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
                     curr_j = 0
                     printed_line = 0
         else:
-            art_list = query(art_list_data, filters=(lambda art_list: art_list.artart == 0 and not art_list.printed), first=True)
+            # art_list = query(art_list_data, filters=(lambda art_list: art_list.artart == 0 and not art_list.printed), first=True)
             n = 0
             curr_j = printed_line
 
+            # while i < npage :
             for i in range(1,npage + 1) :
                 if not art_list:
-                    i = npage
+                    i = npage 
 
                 print_overhead1()
 
-                while None != art_list and (curr_j <= lpage) :
-                    print_billine()
+                for art_list in query(art_list_data, filters=(lambda art_list: art_list.artart == 0 and art_list.disc_flag and not art_list.printed)):
+                    if curr_j <= lpage :
 
-                    art_list = query(art_list_data, filters=(lambda art_list: art_list.artart == 0 and not art_list.printed), next=True)
+                    # while None != art_list and (curr_j <= lpage) :
+                        print_billine()
 
-                    if not art_list:
-                        i = npage
+                        # art_list = query(art_list_data, filters=(lambda art_list: art_list.artart == 0 and not art_list.printed), next=True)
+
+                        if not art_list:
+                            i = npage + 1
 
                 if i == npage:
                     if new_fbart:
