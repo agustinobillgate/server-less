@@ -3,6 +3,9 @@
 # =============================================
 # Rulita, 27-11-2025
 # - Added with_for_update all query 
+# 
+# yusufwijasena, 02/02/2026
+# - removed db_session.refresh() after delete object l_kredit
 # =============================================
 
 from functions.additional_functions import *
@@ -30,19 +33,14 @@ def cancel_fapchasebl(lief_nr:int, docu_nr:string, user_init:string):
         nonlocal lscheinnr, billdate, t_amount, fa_artikel, bediener, htparam, fa_op, l_kredit, ap_journal
         nonlocal lief_nr, docu_nr, user_init
         nonlocal fa_art
-
-
         nonlocal fa_art
 
         return {}
 
     def update_ap():
-
         nonlocal lscheinnr, billdate, t_amount, fa_artikel, bediener, htparam, fa_op, l_kredit, ap_journal
         nonlocal lief_nr, docu_nr, user_init
         nonlocal fa_art
-
-
         nonlocal fa_art
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 1016)]})
@@ -53,12 +51,15 @@ def cancel_fapchasebl(lief_nr:int, docu_nr:string, user_init:string):
 
         # l_kredit = get_cache (L_kredit, {"name": [(eq, docu_nr)],"saldo": [(eq, - t_amount)],"lief_nr": [(eq, lief_nr)],"rgdatum": [(eq, billdate)]})
         l_kredit = db_session.query(L_kredit).filter(
-                 (L_kredit.name == docu_nr) & (L_kredit.saldo == - t_amount) & (L_kredit.lief_nr == lief_nr) & (L_kredit.rgdatum == billdate)).with_for_update().first()
+                 (L_kredit.name == docu_nr) &
+                 (L_kredit.saldo == - t_amount) & 
+                 (L_kredit.lief_nr == lief_nr) & 
+                 (L_kredit.rgdatum == billdate)).with_for_update().first()
 
         if l_kredit:
             # pass
             db_session.delete(l_kredit)
-            db_session.refresh(l_kredit,with_for_update=True)
+            # db_session.refresh(l_kredit,with_for_update=True)
         else:
             l_kredit = L_kredit()
             db_session.add(l_kredit)
@@ -96,7 +97,9 @@ def cancel_fapchasebl(lief_nr:int, docu_nr:string, user_init:string):
     billdate = htparam.fdate
 
     for fa_op in db_session.query(Fa_op).filter(
-             (Fa_op.lief_nr == lief_nr) & (Fa_op.lscheinnr == (lscheinnr).lower()) & (Fa_op.loeschflag <= 1)).order_by(Fa_op._recid).all():
+             (Fa_op.lief_nr == lief_nr) & 
+             (Fa_op.lscheinnr == (lscheinnr).lower()) &
+             (Fa_op.loeschflag <= 1)).order_by(Fa_op._recid).all():
 
         # fa_artikel = get_cache (Fa_artikel, {"nr": [(eq, fa_op.nr)]})
         fa_artikel = db_session.query(Fa_artikel).filter(
@@ -111,13 +114,13 @@ def cancel_fapchasebl(lief_nr:int, docu_nr:string, user_init:string):
             if fa_art:
                 fa_art.warenwert =  to_decimal(fa_art.warenwert) - to_decimal(fa_artikel.warenwert)
                 fa_art.book_wert =  to_decimal(fa_art.book_wert) - to_decimal(fa_artikel.warenwert)
-                pass
+
         fa_artikel.posted = False
         fa_artikel.next_depn = None
         fa_artikel.anzahl = 0
         fa_artikel.warenwert =  to_decimal("0")
         fa_artikel.book_wert =  to_decimal("0")
-        pass
+        
         fa_op.loeschflag = 2
         t_amount =  to_decimal(t_amount) - to_decimal(fa_op.warenwert)
     update_ap()
