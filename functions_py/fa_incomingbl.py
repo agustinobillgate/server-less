@@ -191,7 +191,7 @@ def fa_incomingbl(fromdate: date, todate: date, searchby: int, devnote_no: strin
             .order_by(Fa_op.datum, Fa_op.docu_nr).all()
         )
 
-        for fa_op, l_lieferant, mathis in fa_op_data.yield_per(100):
+        for fa_op, l_lieferant, mathis in fa_op_data:
             if fa_op_obj_list.get(fa_op._recid):
                 continue
             else:
