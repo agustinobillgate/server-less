@@ -1,0 +1,9 @@
+service,function
+apipmsv2check,lg_v2_checkbl
+apipmsv2statuses,lg_v2_get_statusbl
+apipmsv2postSubscriptions,lg_v2_post_subbl
+apipmsv2putSubscriptions,lg_v2_put_subbl
+apipmsv2deleteSubscriptions,lg_v2_del_subbl
+apipmsv2getHotelDetails,lg_v2_detailbl
+apipmsv2getGuestDetails,lg_v2_get_roombl
+apipmsv2getSubscriptions,lg_v2_get_subbl

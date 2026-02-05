@@ -1,0 +1,810 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<prgs:model xmlns:prgs="http://www.progress.com/caf/camel/component/prgrs" id="resourceModel">
+  <prgs:resource consumes="application/json" name="_FrontOffice_Availability" path="/FrontOffice/Availability" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-cr-availabilitybl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-cr-availabilitybl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="pvILanguage" type="HEADER"/>
+      <prgs:param name="opType" type="HEADER"/>
+      <prgs:param name="printerNr" type="HEADER"/>
+      <prgs:param name="callFrom" type="HEADER"/>
+      <prgs:param name="txtFile" type="HEADER"/>
+      <prgs:param name="statsort" type="HEADER"/>
+      <prgs:param name="dispsort" type="HEADER"/>
+      <prgs:param name="currDate" type="HEADER"/>
+      <prgs:param name="inclTentative" type="HEADER"/>
+      <prgs:param name="miInactive" type="HEADER"/>
+      <prgs:param name="showRate" type="HEADER"/>
+      <prgs:param name="indGastnr" type="HEADER"/>
+      <prgs:param name="qciZinr" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_FrontOffice_DailyFrorecastOfRoomOccupancy" path="/FrontOffice/DailyForecastOfRoomOccupancy" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-dayfcastbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-dayfcastbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="pvILanguage" type="HEADER"/>
+      <prgs:param name="inhouseFlag" type="HEADER"/>
+      <prgs:param name="dispFlag" type="HEADER"/>
+      <prgs:param name="lessOO" type="HEADER"/>
+      <prgs:param name="inclTent" type="HEADER"/>
+      <prgs:param name="currDate" type="HEADER"/>
+      <prgs:param name="printerNr" type="HEADER"/>
+      <prgs:param name="callFrom" type="HEADER"/>
+      <prgs:param name="txtFile" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_FrontOffice_GuestSegmentTurnoverList" path="/FrontOffice/GuestSegmentTurnoverList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-segmstatbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-segmstatbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="fromDate" type="HEADER"/>
+      <prgs:param name="toDate" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_FrontOffice_NationalityStatistic" path="/FrontOffice/NationalityStatistic" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-nationstatbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-nationstatbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="printerNr" type="HEADER"/>
+      <prgs:param name="callFrom" type="HEADER"/>
+      <prgs:param name="txtFile" type="HEADER"/>
+      <prgs:param name="fromMonth" type="HEADER"/>
+      <prgs:param name="hideZero" type="HEADER"/>
+      <prgs:param name="miArrival" type="HEADER"/>
+      <prgs:param name="miComp" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_FrontOffice_DailyOperationReport" path="/FrontOffice/DailyOperationReport" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-revenue-reportbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-revenue-reportbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="sorttype" type="HEADER"/>
+      <prgs:param name="longDigit" type="HEADER"/>
+      <prgs:param name="shortFlag" type="HEADER"/>
+      <prgs:param name="fromDate" type="HEADER"/>
+      <prgs:param name="toDate" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_FrontOffice_AnnualForecastOfRoomOccupancy" path="/FrontOffice/AnnualForecastOfRoomOccupancy" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-annual-forecastbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-annual-forecastbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="dispRoomPerson" type="HEADER"/>
+      <prgs:param name="nationselect" type="HEADER"/>
+      <prgs:param name="allSegm" type="HEADER"/>
+      <prgs:param name="allArgt" type="HEADER"/>
+      <prgs:param name="allZikat" type="HEADER"/>
+      <prgs:param name="fromMonth" type="HEADER"/>
+      <prgs:param name="showRmrev" type="HEADER"/>
+      <prgs:param name="inclTent" type="HEADER"/>
+      <prgs:param name="inclWait" type="HEADER"/>
+      <prgs:param name="miGlobChecked" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_FrontOffice_ARAgingReport" path="/AccountsReceivable/ARAgingReport" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-ar-age1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-ar-age1bl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="pvILanguage" type="HEADER"/>
+      <prgs:param name="caseType" type="HEADER"/>
+      <prgs:param name="toDate" type="HEADER"/>
+      <prgs:param name="fromArt" type="HEADER"/>
+      <prgs:param name="toArt" type="HEADER"/>
+      <prgs:param name="fromName" type="HEADER"/>
+      <prgs:param name="toName" type="HEADER"/>
+      <prgs:param name="disptype" type="HEADER"/>
+      <prgs:param name="miBill" type="HEADER"/>
+      <prgs:param name="day1" type="HEADER"/>
+      <prgs:param name="day2" type="HEADER"/>
+      <prgs:param name="day3" type="HEADER"/>
+      <prgs:param name="detailed" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_FrontOffice_APAgingReport" path="/AccountsPayable/APAgingReport" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-ap-age1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-ap-age1bl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="pvILanguage" type="HEADER"/>
+      <prgs:param name="toDate" type="HEADER"/>
+      <prgs:param name="fromName" type="HEADER"/>
+      <prgs:param name="toName" type="HEADER"/>
+      <prgs:param name="detailed" type="HEADER"/>
+      <prgs:param name="miBill" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_FrontOffice_AvailabilityWithBedSetup" path="/FrontOffice/AvailabilityWithBedSetup" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-availability-with-bsetupbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-availability-with-bsetupbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="pvILanguage" type="HEADER"/>
+      <prgs:param name="printerNr" type="HEADER"/>
+      <prgs:param name="callFrom" type="HEADER"/>
+      <prgs:param name="txtFile" type="HEADER"/>
+      <prgs:param name="currDate" type="HEADER"/>
+      <prgs:param name="inclTentative" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_FrontOffice_InhouseGuestList" path="/FrontOffice/InhouseGuestList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-inhouse-guestlistbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-inhouse-guestlistbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="sorttype" type="HEADER"/>
+      <prgs:param name="datum" type="HEADER"/>
+      <prgs:param name="currDate" type="HEADER"/>
+      <prgs:param name="currGastnr" type="HEADER"/>
+      <prgs:param name="froom" type="HEADER"/>
+      <prgs:param name="troom" type="HEADER"/>
+      <prgs:param name="excDepart" type="HEADER"/>
+      <prgs:param name="inclGcomment" type="HEADER"/>
+      <prgs:param name="inclRsvcomment" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_FrontOffice_RoomProductionReport" path="/FrontOffice/RoomProductionReport" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-cr-rmproductbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-cr-rmproductbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="opType" type="HEADER"/>
+      <prgs:param name="printerNr" type="HEADER"/>
+      <prgs:param name="callFrom" type="HEADER"/>
+      <prgs:param name="txtFile" type="HEADER"/>
+      <prgs:param name="disptype" type="HEADER"/>
+      <prgs:param name="cardtype1" type="HEADER"/>
+      <prgs:param name="currencyType" type="HEADER"/>
+      <prgs:param name="YTDFlag" type="HEADER"/>
+      <prgs:param name="exclComp" type="HEADER"/>
+      <prgs:param name="lastSort" type="HEADER"/>
+      <prgs:param name="fDate" type="HEADER"/>
+      <prgs:param name="tDate" type="HEADER"/>
+      <prgs:param name="toDate" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_FrontOffice_RoomStatisticByGuestSegment" path="/FrontOffice/RoomStatisticByGuestSegment" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-rm-statisticbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-rm-statisticbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="pvILanguage" type="HEADER"/>
+      <prgs:param name="callFrom" type="HEADER"/>
+      <prgs:param name="txtFile" type="HEADER"/>
+      <prgs:param name="toDate" type="HEADER"/>
+      <prgs:param name="grpFlag" type="HEADER"/>
+      <prgs:param name="showYtd" type="HEADER"/>
+      <prgs:param name="showOther" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_FrontOffice_VIPList" path="/FrontOffice/VIPList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vip-list-disp-arlistbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vip-list-disp-arlistbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="showRate" type="HEADER"/>
+      <prgs:param name="sorttype" type="HEADER"/>
+      <prgs:param name="fdate" type="HEADER"/>
+      <prgs:param name="lname" type="HEADER"/>
+      <prgs:param name="room" type="HEADER"/>
+      <prgs:param name="ciDate" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_FrontOffice_FOTurnoverByDepartment" path="/FrontOffice/FOTurnoverByDepartment" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-foumsz-list_2bl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-foumsz-list_2bl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="fromDept" type="HEADER"/>
+      <prgs:param name="toDept" type="HEADER"/>
+      <prgs:param name="firstDate" type="HEADER"/>
+      <prgs:param name="fromDate" type="HEADER"/>
+      <prgs:param name="toDate" type="HEADER"/>
+      <prgs:param name="totVatFlag" type="HEADER"/>
+      <prgs:param name="ytdFromDateFlag" type="HEADER"/>
+      <prgs:param name="ytdFlag" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_FrontOffice_RoomRevenueBreakdown" path="/FrontOffice/RoomRevenueBreakdown" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-rmrev-bdown-create-billbalancebl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-rmrev-bdown-create-billbalancebl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="pvILanguage" type="HEADER"/>
+      <prgs:param name="newContrate" type="HEADER"/>
+      <prgs:param name="foreignRate" type="HEADER"/>
+      <prgs:param name="priceDecimal" type="HEADER"/>
+      <prgs:param name="currDate" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_FrontOffice_AccumulatedDiscountList" path="/FrontOffice/AccumulatedDiscountList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-disc-listbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-disc-listbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="toDate" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_FrontOffice_AccumulatedRoomTurnoverReport" path="/FrontOffice/AccumulatedRoomTurnoverReport" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-rm-revenuebl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-rm-revenuebl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="mFtd" type="HEADER"/>
+      <prgs:param name="mYtd" type="HEADER"/>
+      <prgs:param name="fDate" type="HEADER"/>
+      <prgs:param name="tDate" type="HEADER"/>
+      <prgs:param name="rmNo" type="HEADER"/>
+      <prgs:param name="sorttype" type="HEADER"/>
+      <prgs:param name="lod_rev" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_FrontOffice_MonthlyForecastOfRoomOccupancy" path="/FrontOffice/MonthlyForecastOfRoomOccupancy" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-monthly-fcast-room-occbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-monthly-fcast-room-occbl" produces="application/json" verb="POST">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="pvILanguage" type="HEADER"/>
+      <prgs:param name="opType" type="HEADER"/>
+      <prgs:param name="flagI" type="HEADER"/>
+      <prgs:param name="currDate" type="HEADER"/>
+      <prgs:param name="toDate" type="HEADER"/>
+      <prgs:param name="allSegm" type="HEADER"/>
+      <prgs:param name="allArgt" type="HEADER"/>
+      <prgs:param name="allZikat" type="HEADER"/>
+      <prgs:param name="exclOOO" type="HEADER"/>
+      <prgs:param name="inclTent" type="HEADER"/>
+      <prgs:param name="showRev" type="HEADER"/>
+      <prgs:param name="vhpLimited" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_FrontOffice_ForecastOfRoomProductionReport" path="/FrontOffice/ForecastOfRoomProductionReport" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-cr-fproductbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-cr-fproductbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="opType" type="HEADER"/>
+      <prgs:param name="printerNr" type="HEADER"/>
+      <prgs:param name="callFrom" type="HEADER"/>
+      <prgs:param name="txtFile" type="HEADER"/>
+      <prgs:param name="frDate" type="HEADER"/>
+      <prgs:param name="toDate" type="HEADER"/>
+      <prgs:param name="disptype" type="HEADER"/>
+      <prgs:param name="cardtype" type="HEADER"/>
+      <prgs:param name="stattype" type="HEADER"/>
+      <prgs:param name="revCalc" type="HEADER"/>
+      <prgs:param name="excOral6PM" type="HEADER"/>
+      <prgs:param name="exclComp" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_SalesMarketing_Top50AgentProductionReport" path="/SalesMarketing/Top50AgentProductionReport" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-top50-tareportbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-top50-tareportbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="pvILanguage" type="HEADER"/>
+      <prgs:param name="currDate" type="HEADER"/>
+      <prgs:param name="currMonth" type="HEADER"/>
+      <prgs:param name="sorttype" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_SalesMarketing_CompanyProductionReport" path="/SalesMarketing/CompanyProductionReport" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-comp-productbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-comp-productbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="pvILanguage" type="HEADER"/>
+      <prgs:param name="currDate" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_SalesMarketing_CompanyTurnoverHitList" path="/SalesMarketing/CompanyTurnoverHitList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-cust-turnoverbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-cust-turnoverbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="cardtype" type="HEADER"/>
+      <prgs:param name="sortType" type="HEADER"/>
+      <prgs:param name="currSort1" type="HEADER"/>
+      <prgs:param name="fdate" type="HEADER"/>
+      <prgs:param name="tdate" type="HEADER"/>
+      <prgs:param name="checkFtd" type="HEADER"/>
+      <prgs:param name="currSort2" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_FoodAndBeverages_FBSalesCostAnalysis" path="/FoodAndBeverages/FBSalesCostAnalysis" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-fb-cost-sales-analysbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-fb-cost-sales-analysbl" produces="application/json" verb="POST">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="sorttype" type="HEADER"/>
+      <prgs:param name="fromDept" type="HEADER"/>
+      <prgs:param name="toDept" type="HEADER"/>
+      <prgs:param name="dstore" type="HEADER"/>
+      <prgs:param name="ldryDept" type="HEADER"/>
+      <prgs:param name="allSub" type="HEADER"/>
+      <prgs:param name="fromDate" type="HEADER"/>
+      <prgs:param name="toDate" type="HEADER"/>
+      <prgs:param name="fact1" type="HEADER"/>
+      <prgs:param name="exchgRate" type="HEADER"/>
+      <prgs:param name="vatIncluded" type="HEADER"/>
+      <prgs:param name="subgrpChecked" type="HEADER"/>
+      <prgs:param name="detailed" type="HEADER"/>
+      <prgs:param name="currSort" type="HEADER"/>
+      <prgs:param name="shortFlag" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_FoodAndBeverages_FBComplimentaryControlReport" path="/FoodAndBeverages/FBComplimentaryControlReport" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-hcompli-listbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-hcompli-listbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="pvILanguage" type="HEADER"/>
+      <prgs:param name="gname" type="HEADER"/>
+      <prgs:param name="sorttype" type="HEADER"/>
+      <prgs:param name="fromDept" type="HEADER"/>
+      <prgs:param name="toDept" type="HEADER"/>
+      <prgs:param name="fromDate" type="HEADER"/>
+      <prgs:param name="toDate" type="HEADER"/>
+      <prgs:param name="doubleCurrency" type="HEADER"/>
+      <prgs:param name="exchgRate" type="HEADER"/>
+      <prgs:param name="billdate" type="HEADER"/>
+      <prgs:param name="miDetail1" type="HEADER"/>
+      <prgs:param name="smDisp1" type="HEADER"/>
+      <prgs:param name="foreignNr" type="HEADER"/>
+      <prgs:param name="artnr" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_Inventory_FBFlashReport" path="/Inventory/FBFlashReport" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-fb-flashbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-fb-flashbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="pvILanguage" type="HEADER"/>
+      <prgs:param name="fromGrp" type="HEADER"/>
+      <prgs:param name="food" type="HEADER"/>
+      <prgs:param name="bev" type="HEADER"/>
+      <prgs:param name="date1" type="HEADER"/>
+      <prgs:param name="date2" type="HEADER"/>
+      <prgs:param name="inclInitoh" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_Inventory_FBReconciliationReport" path="/Inventory/FBReconciliationReport" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-fb-reconsilebl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-fb-reconsilebl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="pvILanguage" type="HEADER"/>
+      <prgs:param name="caseType" type="HEADER"/>
+      <prgs:param name="fromDate" type="HEADER"/>
+      <prgs:param name="toDate" type="HEADER"/>
+      <prgs:param name="fromGrp" type="HEADER"/>
+      <prgs:param name="miOpt" type="HEADER"/>
+      <prgs:param name="date1" type="HEADER"/>
+      <prgs:param name="date2" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_Inventory_MaterialReconciliationReport" path="/Inventory/MaterialReconciliationReport" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-cr-matreconbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-cr-matreconbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="toDate" type="HEADER"/>
+      <prgs:param name="lagerNo" type="HEADER"/>
+      <prgs:param name="fromMain" type="HEADER"/>
+      <prgs:param name="toMain" type="HEADER"/>
+      <prgs:param name="sortType" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_Inventory_StockArticlesMovingReport" path="/Inventory/StockArticlesMovingReport" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-stock-ohlist1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-stock-ohlist1bl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="fromLager" type="HEADER"/>
+      <prgs:param name="toLager" type="HEADER"/>
+      <prgs:param name="fromArt" type="HEADER"/>
+      <prgs:param name="toArt" type="HEADER"/>
+      <prgs:param name="fromDate" type="HEADER"/>
+      <prgs:param name="toDate" type="HEADER"/>
+      <prgs:param name="moveArt" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_Inventory_ReceivingReportBySupplier" path="/Inventory/ReceivingReportBySupplier" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-supply-inlist-btn-gobl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-supply-inlist-btn-gobl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="pvILanguage" type="HEADER"/>
+      <prgs:param name="lastArtnr" type="HEADER"/>
+      <prgs:param name="lieferantRecid" type="HEADER"/>
+      <prgs:param name="lKreditRecid" type="HEADER"/>
+      <prgs:param name="apRecid" type="HEADER"/>
+      <prgs:param name="longDigit" type="HEADER"/>
+      <prgs:param name="showPrice" type="HEADER"/>
+      <prgs:param name="store" type="HEADER"/>
+      <prgs:param name="allSupp" type="HEADER"/>
+      <prgs:param name="sorttype" type="HEADER"/>
+      <prgs:param name="fromGrp" type="HEADER"/>
+      <prgs:param name="fromDate" type="HEADER"/>
+      <prgs:param name="toDate" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_GeneralLedger_GLTrialBalance" path="/GeneralLedger/GLTrialBalance" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-trialbalance-btn-gobl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-trialbalance-btn-gobl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="fromFibu" type="HEADER"/>
+      <prgs:param name="toFibu" type="HEADER"/>
+      <prgs:param name="sorttype" type="HEADER"/>
+      <prgs:param name="fromDept" type="HEADER"/>
+      <prgs:param name="fromDate" type="HEADER"/>
+      <prgs:param name="toDate" type="HEADER"/>
+      <prgs:param name="closeMonth" type="HEADER"/>
+      <prgs:param name="closeDate" type="HEADER"/>
+      <prgs:param name="pnlAcct" type="HEADER"/>
+      <prgs:param name="closeYear" type="HEADER"/>
+      <prgs:param name="prevMonth" type="HEADER"/>
+      <prgs:param name="showLongbal" type="HEADER"/>
+      <prgs:param name="pbalFlag" type="HEADER"/>
+      <prgs:param name="ASremoteFlag" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_FrontOffice_PrepareRoomRevenueBreakdown" path="/FrontOffice/PrepareRoomRevenueBreakdown" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-prepare-rmrev-bdownbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-prepare-rmrev-bdownbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_FrontOffice_PrepareVIPList" path="/FrontOffice/PrepareVIPList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-prepare-vip-listbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-prepare-vip-listbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="userInit" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_FrontOffice_PrepareMonthlyForecastOfRoomOccupancy" path="/FrontOffice/PrepareMonthlyForecastOfRoomOccupancy" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-prepare-cr-occfcast1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-prepare-cr-occfcast1bl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="pvILanguage" type="HEADER"/>
+      <prgs:param name="vhpLimited" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_FoodAndBeverages_FBDailyRevenuePerDepartment" path="/FoodAndBeverages/FBDailyRevenuePerDepartment" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-daily-fb-revenue-per-deptbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-daily-fb-revenue-per-deptbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="pvILanguage" type="HEADER"/>
+      <prgs:param name="fromDate" type="HEADER"/>
+      <prgs:param name="toDate" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_FrontOffice_DailyTurnover" path="/FrontOffice/DailyTurnover" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-daily-turnoverbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-daily-turnoverbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="fromDate" type="HEADER"/>
+      <prgs:param name="toDate" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_AccountsReceivable_ARAgingReportSimple" path="/AccountsReceivable/ARAgingReportSimple" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-ar-age-simplebl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-ar-age-simplebl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="toDate" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_RMS_Availability" path="/RMS/Availability" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/web-rms-availabillitybl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-rms-availabillitybl" produces="application/json" verb="GET">
+      <prgs:param name="username" type="HEADER"/>
+      <prgs:param name="userkey" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_RMS_RevenueReport" path="/RMS/RevenueReport" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/web-rms-revenue-reportbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-rms-revenue-reportbl" produces="application/json" verb="GET">
+      <prgs:param name="username" type="HEADER"/>
+      <prgs:param name="userkey" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_RMS_DailyReservation" path="/RMS/DailyReservation" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/web-rms-daily-reservationbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-rms-daily-reservationbl" produces="application/json" verb="GET">
+      <prgs:param name="username" type="HEADER"/>
+      <prgs:param name="userkey" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_dashboard_MonthlyForecast" path="/dashboard/MonthlyForecast" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-monthly-forecast_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-monthly-forecast_1bl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="fromDate" type="HEADER"/>
+      <prgs:param name="toDate" type="HEADER"/>
+      <prgs:param name="showLessOOO" type="HEADER"/>
+      <prgs:param name="showIncludeTent" type="HEADER"/>
+      <prgs:param name="showExcludeCompl" type="HEADER"/>
+      <prgs:param name="viewDate" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_dashboard_GuarantedReservation" path="/dashboard/GuarantedReservation" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-guaranted-reservationbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-guaranted-reservationbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="rsvType" type="HEADER"/>
+      <prgs:param name="fromDate" type="HEADER"/>
+      <prgs:param name="toDate" type="HEADER"/>
+      <prgs:param name="fromRoom" type="HEADER"/>
+      <prgs:param name="toRoom" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_FoodAndBeverages_BookingJournalByArticle" path="/FoodAndBeverages/BookingJournalByArticle" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-fb-bookingjournalbyarticlebl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-fb-bookingjournalbyarticlebl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="odTaker" type="HEADER"/>
+      <prgs:param name="fromArt" type="HEADER"/>
+      <prgs:param name="toArt" type="HEADER"/>
+      <prgs:param name="fromDept" type="HEADER"/>
+      <prgs:param name="toDept" type="HEADER"/>
+      <prgs:param name="fromDate" type="HEADER"/>
+      <prgs:param name="toDate" type="HEADER"/>
+      <prgs:param name="sorttype" type="HEADER"/>
+      <prgs:param name="longDigit" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_FoodAndBeverages_BookingJournalByBillNumber" path="/FoodAndBeverages/BookingJournalByBillNumber" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-fb-bookingjournalbybillnumberbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-fb-bookingjournalbybillnumberbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="fromArt" type="HEADER"/>
+      <prgs:param name="fromDept" type="HEADER"/>
+      <prgs:param name="toDept" type="HEADER"/>
+      <prgs:param name="fromDate" type="HEADER"/>
+      <prgs:param name="toDate" type="HEADER"/>
+      <prgs:param name="priceDecimal" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_FoodAndBeverages_OrderCancellation" path="/FoodAndBeverages/OrderCancellation" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-fb-ordercancellationbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-fb-ordercancellationbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="fromDept" type="HEADER"/>
+      <prgs:param name="toDept" type="HEADER"/>
+      <prgs:param name="fromDate" type="HEADER"/>
+      <prgs:param name="toDate" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_FoodAndBeverages_RestDaySalesByUser" path="/FoodAndBeverages/RestDaySalesByUser" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-fb-rest-day-salesbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-fb-rest-day-salesbl" produces="application/json" verb="POST">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="currDept" type="HEADER"/>
+      <prgs:param name="allUser" type="HEADER"/>
+      <prgs:param name="shift" type="HEADER"/>
+      <prgs:param name="fromDate" type="HEADER"/>
+      <prgs:param name="toDate" type="HEADER"/>
+      <prgs:param name="zeroVatCompli" type="HEADER"/>
+      <prgs:param name="showFbodisc" type="HEADER"/>
+      <prgs:param name="excludeCompli" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_FoodAndBeverages_TurnoverByDept" path="/FoodAndBeverages/TurnoverByDept" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-fb-turn-report-bydeptbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-fb-turn-report-bydeptbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="ldryFlag" type="HEADER"/>
+      <prgs:param name="fromDept" type="HEADER"/>
+      <prgs:param name="toDept" type="HEADER"/>
+      <prgs:param name="fromDate" type="HEADER"/>
+      <prgs:param name="toDate" type="HEADER"/>
+      <prgs:param name="detailed" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_FoodAndBeverages_CostAnalysis" path="/FoodAndBeverages/CostAnalysis" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-fb-cost-analysisbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-fb-cost-analysisbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="sorttype" type="HEADER"/>
+      <prgs:param name="dept" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_FoodAndBeverages_OfficerCheckReport" path="/FoodAndBeverages/OfficerCheckReport" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-fb-officer-check-listbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-fb-officer-check-listbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="fromDept" type="HEADER"/>
+      <prgs:param name="toDept" type="HEADER"/>
+      <prgs:param name="fromDate" type="HEADER"/>
+      <prgs:param name="toDate" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_FoodAndBeverages_FBStatistic" path="/FoodAndBeverages/FBStatistic" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-fb-statisticbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-fb-statisticbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="fromDept" type="HEADER"/>
+      <prgs:param name="toDept" type="HEADER"/>
+      <prgs:param name="fromDate" type="HEADER"/>
+      <prgs:param name="toDate" type="HEADER"/>
+      <prgs:param name="inclArt" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_FoodAndBeverages_SummarySalesCost" path="/FoodAndBeverages/SummarySalesCost" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-fb-summary-sales-costbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-fb-summary-sales-costbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="sorttype" type="HEADER"/>
+      <prgs:param name="outletSalesOnly" type="HEADER"/>
+      <prgs:param name="fromDept" type="HEADER"/>
+      <prgs:param name="toDept" type="HEADER"/>
+      <prgs:param name="fromDate" type="HEADER"/>
+      <prgs:param name="toDate" type="HEADER"/>
+      <prgs:param name="miCompliChecked" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_FoodAndBeverages_ComplimentaryReport" path="/FoodAndBeverages/ComplimentaryReport" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-fb-complimentary-listbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-fb-complimentary-listbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="sorttype" type="HEADER"/>
+      <prgs:param name="fromDept" type="HEADER"/>
+      <prgs:param name="toDept" type="HEADER"/>
+      <prgs:param name="fromDate" type="HEADER"/>
+      <prgs:param name="toDate" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_FoodAndBeverages_CoversReport" path="/FoodAndBeverages/CoversReport" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-fb-covers-listbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-fb-covers-listbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="fromDate" type="HEADER"/>
+      <prgs:param name="toDate" type="HEADER"/>
+      <prgs:param name="inpDept" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_mobileDev" path="/mobileDev" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-test-devsamplebl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-test-devsamplebl" produces="application/json" verb="POST">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_FoodAndBeverages_prepareFBSalesCostAnalysis" path="/FoodAndBeverages/prepareFBSalesCostAnalysis" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-prepare-fb-cost-sales-analysbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-prepare-fb-cost-sales-analysbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="fromDept" type="HEADER"/>
+      <prgs:param name="toDept" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_FrontOffice_pjDepartList" path="/FrontOffice/BanquetEventList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-bqtevent-list-btn-gobl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-bqtevent-list-btn-gobl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="fromDate" type="HEADER"/>
+      <prgs:param name="toDate" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_FrontOffice_PrepareBanquetEventList" path="/FrontOffice/PrepareBanquetEventList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-prepare-bqtevent-listbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-prepare-bqtevent-listbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_FrontOffice_SalesForecastList" path="/FrontOffice/BqtSalesForecastList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-banquet-sales-forecastbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-banquet-sales-forecastbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="checklist" type="HEADER"/>
+      <prgs:param name="sorttype" type="HEADER"/>
+      <prgs:param name="fdate" type="HEADER"/>
+      <prgs:param name="tdate" type="HEADER"/>
+      <prgs:param name="dispFlag" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_FrontOffice_PrepareBqtSalesForecastList" path="/FrontOffice/PrepareBqtSalesForecastList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-prepare-bk-sakesfcastbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-prepare-bk-sakesfcastbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_FrontOffice_ArrivalGuestList" path="/FrontOffice/ArrivalGuestList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-arrival-guestlistbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-arrival-guestlistbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="fromDate" type="HEADER"/>
+      <prgs:param name="toDate" type="HEADER"/>
+      <prgs:param name="ciDate" type="HEADER"/>
+      <prgs:param name="disptype" type="HEADER"/>
+      <prgs:param name="inclTentative" type="HEADER"/>
+      <prgs:param name="sorttype" type="HEADER"/>
+      <prgs:param name="commentType" type="HEADER"/>
+      <prgs:param name="inclAccompany" type="HEADER"/>
+      <prgs:param name="summRsvName" type="HEADER"/>
+      <prgs:param name="summResStatus" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_FrontOffice_PrepareArrivalGuestList" path="/FrontOffice/PrepareArrivalGuestList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-prepare-pj-select-sortingbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-prepare-pj-select-sortingbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_FrontOffice_GuestDepartureList" path="/FrontOffice/GuestDepartureList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-departure-guestlistbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-departure-guestlistbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="languageCode" type="HEADER"/>
+      <prgs:param name="caseType" type="HEADER"/>
+      <prgs:param name="disptype" type="HEADER"/>
+      <prgs:param name="fdate" type="HEADER"/>
+      <prgs:param name="tdate" type="HEADER"/>
+      <prgs:param name="froom" type="HEADER"/>
+      <prgs:param name="troom" type="HEADER"/>
+      <prgs:param name="dispAccompany" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_Banquet_ViewBanquetEventList" path="/Banquet/ViewBanquetEventList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-load-banquet-planbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-load-banquet-planbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="currView" type="HEADER"/>
+      <prgs:param name="fromDate" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_Banquet_ViewBanquetInfo" path="/Banquet/ViewBanquetInfo" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-get-banquet-plan-infobl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-get-banquet-plan-infobl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="currView" type="HEADER"/>
+      <prgs:param name="rmlBezeich" type="HEADER"/>
+      <prgs:param name="rmlRaum" type="HEADER"/>
+      <prgs:param name="rmlNr" type="HEADER"/>
+      <prgs:param name="rmlBlocked" type="HEADER"/>
+      <prgs:param name="rmlResnr" type="HEADER"/>
+      <prgs:param name="rmlReslinnr" type="HEADER"/>
+      <prgs:param name="currI" type="HEADER"/>
+      <prgs:param name="fromDate" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_Purchasing_PRListPrepare" path="/Purchasing/PRListPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-cstm-prepare-pr-list_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-cstm-prepare-pr-list_1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_Purchasing_PRListRefresh" path="/Purchasing/PRListRefresh" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-cstm-pr-list-disp-list_2bl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-cstm-pr-list-disp-list_2bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_Purchasing_ModifyPRPrepare" path="/Purchasing/ModifyPRPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-cstm-prepare-chg-prbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-cstm-prepare-chg-prbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_Purchasing_ModifyPRSave" path="/Purchasing/ModifyPRSave" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-cstm-chg-pr-save-s-listbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-cstm-chg-pr-save-s-listbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_FrontOffice_RoomProductionReportCustom" path="/FrontOffice/RoomProductionReportCustom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-cr-rmproduct_3-custombl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-cr-rmproduct_3-custombl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="pvILanguage" type="HEADER"/>
+      <prgs:param name="opType" type="HEADER"/>
+      <prgs:param name="printerNr" type="HEADER"/>
+      <prgs:param name="callFrom" type="HEADER"/>
+      <prgs:param name="txtFile" type="HEADER"/>
+      <prgs:param name="disptype1" type="HEADER"/>
+      <prgs:param name="cardtype1" type="HEADER"/>
+      <prgs:param name="currencyType" type="HEADER"/>
+      <prgs:param name="YTDFlag" type="HEADER"/>
+      <prgs:param name="exclComp" type="HEADER"/>
+      <prgs:param name="lastSort" type="HEADER"/>
+      <prgs:param name="fDate" type="HEADER"/>
+      <prgs:param name="tDate" type="HEADER"/>
+      <prgs:param name="toDate" type="HEADER"/>
+      <prgs:param name="argtCode" type="HEADER"/>
+      <prgs:param name="dispopt" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_FrontOffice_PrepareRoomProductionReportCustom" path="/FrontOffice/PrepareRoomProductionReportCustom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-prepare-rm-productbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-prepare-rm-productbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_GeneralCashier_gcCashSummaryList" path="/GeneralCashier/GCCashSummaryList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-gc-cashsummary-custombl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-gc-cashsummary-custombl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="pvILanguage" type="HEADER"/>
+      <prgs:param name="fromDate" type="HEADER"/>
+      <prgs:param name="toDate" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_GeneralCashier_PrepareGCCashSummaryList" path="/GeneralCashier/PrepareGCCashSummaryList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-prepare-gc-cashsummary-custombl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-prepare-gc-cashsummary-custombl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_dashboard_GuarantedReservation1" path="/dashboard/GuarantedReservation1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-guaranted-reservation_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-guaranted-reservation_1bl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="rsvType" type="HEADER"/>
+      <prgs:param name="fromDate" type="HEADER"/>
+      <prgs:param name="toDate" type="HEADER"/>
+      <prgs:param name="showVipGuest" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+</prgs:model>

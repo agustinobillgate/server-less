@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<prgs:model xmlns:prgs="http://www.progress.com/caf/camel/component/prgrs" id="resourceModel">
+  <prgs:resource consumes="application/json" name="_getRoomStatus" path="/getRoomCount" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-hk-countbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-hk-countbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getRoomStatus_1" path="/getRoomStatus" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-hk-get-statusbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-hk-get-statusbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_changeRoomStatus" path="/changeRoomStatus" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-hk-change-room-statusbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-hk-change-room-statusbl" produces="application/json" verb="POST">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="pvILanguage" type="HEADER"/>
+      <prgs:param name="chgsort" type="HEADER"/>
+      <prgs:param name="userInit" type="HEADER"/>
+      <prgs:param name="roomList" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getStoreRoomDiscrepancyList" path="/getStoreRoomDiscrepancyList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-hk-discrepancybl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-hk-discrepancybl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="pvILanguage" type="HEADER"/>
+      <prgs:param name="caseType" type="HEADER"/>
+      <prgs:param name="zinNo" type="HEADER"/>
+      <prgs:param name="housestat" type="HEADER"/>
+      <prgs:param name="feat" type="HEADER"/>
+      <prgs:param name="foStat1" type="HEADER"/>
+      <prgs:param name="hkStat1" type="HEADER"/>
+      <prgs:param name="userInit" type="HEADER"/>
+      <prgs:param name="hkStr" type="HEADER"/>
+      <prgs:param name="hkPax" type="HEADER"/>
+      <prgs:param name="hkCh1" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getRoomingList" path="/getRoomingList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-hk-roomlistbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-hk-roomlistbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="casetype" type="HEADER"/>
+      <prgs:param name="pvILanguage" type="HEADER"/>
+      <prgs:param name="currDate" type="HEADER"/>
+      <prgs:param name="progName" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getOutOfOrderAndOffMarket" path="/getOutOfOrderAndOffMarket" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-hk-ooo-ombl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-hk-ooo-ombl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="fdate" type="HEADER"/>
+      <prgs:param name="tdate" type="HEADER"/>
+      <prgs:param name="disptype" type="HEADER"/>
+      <prgs:param name="sorttype" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_deactivateOOO" path="/deactivateOutOfOrderAndOffMarket" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-hk-deactivate-ooobl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-hk-deactivate-ooobl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="userinit" type="HEADER"/>
+      <prgs:param name="recId" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_updateOutOfOrder" path="/updateOutOfOrderAndOffMarket" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-hk-update-ooo-ombl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-hk-update-ooo-ombl" produces="application/json" verb="POST">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="caseType" type="HEADER"/>
+      <prgs:param name="userInit" type="HEADER"/>
+      <prgs:param name="recId" type="HEADER"/>
+      <prgs:param name="fromDate" type="HEADER"/>
+      <prgs:param name="toDate" type="HEADER"/>
+      <prgs:param name="serviceFlag" type="HEADER"/>
+      <prgs:param name="dept" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getLostAndFound" path="/getLostAndFound" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-hk-get-lostfoundbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-hk-get-lostfoundbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="comments" type="HEADER"/>
+      <prgs:param name="sorttype" type="HEADER"/>
+      <prgs:param name="frDate" type="HEADER"/>
+      <prgs:param name="toDate" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_deleteLostAndFound" path="/deleteLostAndFound" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-hk-del-lostfoundbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-hk-del-lostfoundbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="userinit" type="HEADER"/>
+      <prgs:param name="recId" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_updateLostAndFound" path="/UpdateAddLostAndFound" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-hk-update-add-lostfoundbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-hk-update-add-lostfoundbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="recId" type="HEADER"/>
+      <prgs:param name="zinr" type="HEADER"/>
+      <prgs:param name="itemDescription" type="HEADER"/>
+      <prgs:param name="fromDate" type="HEADER"/>
+      <prgs:param name="zeit" type="HEADER"/>
+      <prgs:param name="dept" type="HEADER"/>
+      <prgs:param name="remark" type="HEADER"/>
+      <prgs:param name="claimBy" type="HEADER"/>
+      <prgs:param name="claimDate" type="HEADER"/>
+      <prgs:param name="expiredDate" type="HEADER"/>
+      <prgs:param name="reportedBy" type="HEADER"/>
+      <prgs:param name="reportDate" type="HEADER"/>
+      <prgs:param name="phoneNo" type="HEADER"/>
+      <prgs:param name="refNo" type="HEADER"/>
+      <prgs:param name="foundby" type="HEADER"/>
+      <prgs:param name="location" type="HEADER"/>
+      <prgs:param name="submitted" type="HEADER"/>
+      <prgs:param name="userInit" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getQueueingRoom" path="/getQueueingRoom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-hk-get-queue-roombl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-hk-get-queue-roombl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_addOffMarketRooms" path="/addOffMarketRooms" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-hk-change-room-status-ombl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-hk-change-room-status-ombl" produces="application/json" verb="POST">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="pvILanguage" type="HEADER"/>
+      <prgs:param name="userInit" type="HEADER"/>
+      <prgs:param name="fromDate" type="HEADER"/>
+      <prgs:param name="toDate" type="HEADER"/>
+      <prgs:param name="reason" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_addOutOfOrderRooms" path="/addOutOfOrderRooms" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-hk-change-room-status-ooobl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-hk-change-room-status-ooobl" produces="application/json" verb="POST">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="pvILanguage" type="HEADER"/>
+      <prgs:param name="userInit" type="HEADER"/>
+      <prgs:param name="fromDate" type="HEADER"/>
+      <prgs:param name="toDate" type="HEADER"/>
+      <prgs:param name="dept" type="HEADER"/>
+      <prgs:param name="reason" type="HEADER"/>
+      <prgs:param name="serviceFlag" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getMinibarList" path="/getMinibarList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-hk-get-minibar-listbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-hk-get-minibar-listbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_postMinibar" path="/postMinibar" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-hk-post-minibarbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-hk-post-minibarbl" produces="application/json" verb="POST">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="zinr" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_setDuration" path="/setDuration" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-hk-rmboy-set-durationbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-hk-rmboy-set-durationbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="userinit" type="HEADER"/>
+      <prgs:param name="zinr" type="HEADER"/>
+      <prgs:param name="duration" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_setStartCleaningTime" path="/setStartCleaningTime" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-hk-rmboy-starttimebl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-hk-rmboy-starttimebl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="userinit" type="HEADER"/>
+      <prgs:param name="zinr" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_maidTaskList" path="/maidTaskList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-maid-tasklistbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-maid-tasklistbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="fromDate" type="HEADER"/>
+      <prgs:param name="toDate" type="HEADER"/>
+      <prgs:param name="rptFlag" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_autoRoomMaidCheckLocation" path="/autoRoomMaidCheckLocation" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-check-locationbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-check-locationbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_autoRoomMaidSendMobile" path="/autoRoomMaidSendMobile" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-hk-rmboy-send-to-mobilebl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-hk-rmboy-send-to-mobilebl" produces="application/json" verb="POST">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_autoRoomMaidList" path="/autoRoomMaidList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-hk-rmboy-rmlist_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-hk-rmboy-rmlist_1bl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="locCombo" type="HEADER"/>
+      <prgs:param name="stat8" type="HEADER"/>
+      <prgs:param name="stat2" type="HEADER"/>
+      <prgs:param name="stat3" type="HEADER"/>
+      <prgs:param name="stat4" type="HEADER"/>
+      <prgs:param name="frFloor" type="HEADER"/>
+      <prgs:param name="toFloor" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_autoRoomMaidSelectUser" path="/autoRoomMaidSelectUser" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-hk-rmboy-select-userbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-hk-rmboy-select-userbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getRoomCount2" path="/getRoomCount2" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-hk-count-mobbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-hk-count-mobbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getOverview" path="/getHKOverview" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-hk-get-overviewbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-hk-get-overviewbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getRoomingList2" path="/getRoomingList2" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-hk-roomlist_2bl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-hk-roomlist_2bl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="casetype" type="HEADER"/>
+      <prgs:param name="pvILanguage" type="HEADER"/>
+      <prgs:param name="currDate" type="HEADER"/>
+      <prgs:param name="progName" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+</prgs:model>

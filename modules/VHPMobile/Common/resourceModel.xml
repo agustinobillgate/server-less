@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<prgs:model xmlns:prgs="http://www.progress.com/caf/camel/component/prgrs" id="resourceModel">
+  <prgs:resource consumes="application/json" name="_getDepartmentList" path="/getDepartmentList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-load-hoteldptbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-load-hoteldptbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getArticleList" path="/getArticleList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-load-artikelbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-load-artikelbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="caseType" type="HEADER"/>
+      <prgs:param name="deptNo" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getSegmArgtRoomCatList" path="/getSegmArgtRoomCatList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-prepare-select-sortingbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-prepare-select-sortingbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getGuestList" path="/getGuestList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-get-guest-list.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-get-guest-list" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="inputStr" type="HEADER"/>
+      <prgs:param name="caseType" type="HEADER"/>
+      <prgs:param name="sorttype" type="HEADER"/>
+      <prgs:param name="currCounter" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getCheckInDate" path="/getCheckInDate" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-get-check-in-datebl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-get-check-in-datebl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_checkRoomExist" path="/checkRoomExist" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-room-existbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-room-existbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="rmNo" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getImage" path="/getImage" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-get-imagebl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-get-imagebl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="caseType" type="HEADER"/>
+      <prgs:param name="recordKey" type="HEADER"/>
+      <prgs:param name="imageNr" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_deleteImage" path="/deleteImage" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-delete-imagebl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-delete-imagebl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="caseType" type="HEADER"/>
+      <prgs:param name="recordKey" type="HEADER"/>
+      <prgs:param name="imageNr" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_uploadImage" path="/uploadImage" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-upload-imagebl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-upload-imagebl" produces="application/json" verb="POST">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="caseType" type="HEADER"/>
+      <prgs:param name="recordKey" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_updateImageDescription" path="/updateImageDescription" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-update-image-descriptionbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-update-image-descriptionbl" produces="application/json" verb="POST">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="caseType" type="HEADER"/>
+      <prgs:param name="recordKey" type="HEADER"/>
+      <prgs:param name="imageNr" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getParamtext" path="/getParamtext" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-read-paramtextbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-read-paramtextbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="caseType" type="HEADER"/>
+      <prgs:param name="pTxtNo" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getFBArticleList" path="/getFBArticleList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-fb-load-h-artikelbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-fb-load-h-artikelbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="caseType" type="HEADER"/>
+      <prgs:param name="dept" type="HEADER"/>
+      <prgs:param name="artType" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getWaiterList" path="/getWaiterList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-fb-getwaiter-listbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-fb-getwaiter-listbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="currDept" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getHTParam" path="/getHTParam" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-get-htpbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-get-htpbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="casetype" type="HEADER"/>
+      <prgs:param name="paramNumber" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_sendemail" path="/sendemailbill" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-fo-invoice-sendmail-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-fo-invoice-sendmail-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_checkPermission" path="/checkPermission" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-cstm-zugriff-testbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-cstm-zugriff-testbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_loadDateTimeServer" path="/getDateTimeServer" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-cstm-load-datetime-serverbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-cstm-load-datetime-serverbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_checkSignature" path="/checkSignature" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-cstm-check-esignature_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-cstm-check-esignature_1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_confirmSignature" path="/confirmSignature" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-cstm-confirm-signature_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-cstm-confirm-signature_1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+</prgs:model>

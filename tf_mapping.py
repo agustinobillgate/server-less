@@ -12,8 +12,8 @@ from functions.additional_functions import *
 
 all_operations = []
 
-gitlab_xml = f"D:/VHP-Projects/vhp-master-source/VHPWebBased/.services/Expose/rest"
-vhp_projects_xml = f"D:/VHP-Projects/vhp-serverless/modules"
+gitlab_xml = f"C:/Users/Dev-Bill.G/Downloads/VHPMobile-Webservice/VHPMobile/webservice/.services/Expose/rest"
+vhp_projects_xml = f"C:/Users/Dev-Bill.G/api-python/vhp-serverless/modules/VHPMobile"
 
 def createMapping(path):
     global all_operations
@@ -46,7 +46,7 @@ def createMapping(path):
 
 # In progress, check the workspace of developer studio and go to the project
 # Go to <Openedge Workspace>\<Project Name>\.services\Expose\rest\
-subfolders = [ f.path for f in os.scandir(os.getcwd() + "/modules") if f.is_dir() ]
+subfolders = [ f.path for f in os.scandir(os.getcwd() + "/modules/VHPMobile") if f.is_dir() ]
 all_operation_path = os.getcwd() + "/modules/all_operation.txt"
 
 for subfolder in subfolders:
@@ -54,18 +54,17 @@ for subfolder in subfolders:
     curr_module = os.path.basename(subfolder)
     xml_gitlab1 = f"{gitlab_xml}/{curr_module}/resourceModel.xml"
     xml_module = f"{subfolder}/resourceModel.xml"
-    # print(xml_gitlab1, Path(xml_gitlab1).exists())
-    # print(xml_module, Path(xml_module).exists())
-    if os.path.isfile(xml_gitlab1) and Path(xml_gitlab1).exists() and Path(xml_module).exists():  # Check source file exists
-        os.makedirs(os.path.dirname(xml_module), exist_ok=True)  # Ensure target dir exists
-        shutil.copyfile(xml_gitlab1, xml_module)  # Copy file
+    
+    if os.path.isfile(xml_gitlab1) and Path(xml_gitlab1).exists():
+        os.makedirs(os.path.dirname(xml_module), exist_ok=True)
+        shutil.copyfile(xml_gitlab1, xml_module)
         print(f"Copied: {xml_gitlab1} → {xml_module}")
+        print("-----------------------------------------------")
+        createMapping(subfolder)  # Move this inside the if
     else:
         print(f"Source file not found: {xml_gitlab1}")
-    print("-----------------------------------------------")
-    shutil.copyfile(xml_gitlab1, xml_module)
-
-    createMapping(subfolder)
+        print("-----------------------------------------------")
+        # Don't copy or create mapping if file doesn't exist
 
 with open(all_operation_path, 'w') as output_file_all:
     all_operations_str = "\n".join(all_operations)

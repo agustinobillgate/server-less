@@ -4825,8 +4825,8 @@ def convert_files(read_table_usage_info=False):
     # target_file_path = file_path + "converted2/"
 
     file_path = os.path.join(".", "")
-    source_file_path = file_path + "check-p-files2/"
-    target_file_path = file_path + "converted2/"
+    source_file_path = file_path + "check-p-files2/VHPMobile/"
+    target_file_path = file_path + "converted2/VHPMobile/"
 
     temp_table_and_db_loop_list = []
 

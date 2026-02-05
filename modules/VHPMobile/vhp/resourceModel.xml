@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<prgs:model xmlns:prgs="http://www.progress.com/caf/camel/component/prgrs" id="resourceModel">
+  <prgs:resource consumes="application/json" name="_getInhouseGuestByRoom" path="/frontOffice/GetInhouseGuestByRoom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-get-reservation-listbyroombl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-get-reservation-listbyroombl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getOutletList" path="/common/GetOutletList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-load-outletbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-load-outletbl" produces="application/json" verb="POST">
+      <prgs:param name="inputUsername" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getOutletArticles" path="/restaurant/GetMenuList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-load-restaurant-artikelbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-load-restaurant-artikelbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_postOrder" path="/restaurant/PostOrderDineIn" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-ts-post-orderbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-ts-post-orderbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getBillInfo" path="/frontOffice/GetBillInfoByRoom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-get-bill-infobl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-get-bill-infobl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_checkOut" path="/frontOffice/CheckOut" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-checkoutbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-checkoutbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getArrangementCode" path="/frontOffice/GetArrangementCode" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-get-arrangementbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-get-arrangementbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_storeReservation" path="/frontOffice/CreateReservation" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-create-reservationbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-create-reservationbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getRoomTypeCategory" path="/frontOffice/GetRoomTypeCategory" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-get-roomtypecategorybl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-get-roomtypecategorybl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getAvailability" path="/frontOffice/GetAvailability" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-get-availabilitybl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-get-availabilitybl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_createReservationOutlet" path="/restaurant/CreateReservation" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-pos-create-table-reservationbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-pos-create-table-reservationbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getOutletTables" path="/restaurant/GetTables" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-load-tables-outletbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-load-tables-outletbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_frontOfficeGetInhouseGuestList" path="/frontOffice/GetInhouseGuestList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-get-reservation-listbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-get-reservation-listbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restaurant_ViewOrderList" path="/restaurant/ViewOrder" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-load-orderlistbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-load-orderlistbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restaurant_SettlePayment" path="/restaurant/SettlePayment" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-ts-post-paymentbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-ts-post-paymentbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_common_GetPaymentList" path="/frontOffice/GetPaymentList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-loadartpayment.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-loadartpayment" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_frontOffice_CheckIn" path="/frontOffice/CheckIn" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-res-checkin.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-res-checkin" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_frontOffice_GetBillInfoByReservation" path="/frontOffice/GetBillInfoByReservation" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-fetch-billbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-fetch-billbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_frontOffice_SearchReservation" path="/frontOffice/SearchReservation" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-findbookingbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-findbookingbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restaurant_GetTransactionList" path="/restaurant/GetTransactionList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-load-pos-transactionbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-load-pos-transactionbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_common_MaintainRateCode" path="/common/MaintainRateCode" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-if-rms-ratecodebl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-if-rms-ratecodebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_frontOffice_CancelReservation" path="/frontOffice/CancelReservation" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-cancel-reservationbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-cancel-reservationbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_frontOffice_PostPaymentBill" path="/frontOffice/PostPaymentBill" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-post-pay-bill.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-post-pay-bill" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_frontOffice_PostPaymentDeposit" path="/frontOffice/PostPaymentDeposit" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-post-pay-depositbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-post-pay-depositbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_frontOffice_PostPaymentAdvanceBill" path="/frontOffice/PostPaymentAdvanceBill" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-post-pay-advancebl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-post-pay-advancebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_frontOffice_FindRoomForCheckout" path="/frontOffice/FindRoomForCheckout" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-findroom-forcheckoutbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-findroom-forcheckoutbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_report_TrialBalance" path="/report/TrialBalance" produces="application/json"/>
+  <prgs:resource consumes="application/json" name="_report_ARPaymentList" path="/report/ARPaymentList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-ar-payment-listbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-ar-payment-listbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_report_ARAgingList" path="/report/ARAgingList" produces="application/json"/>
+  <prgs:resource consumes="application/json" name="_report_TrialBalanceViewDetail" path="/report/TrialBalanceDetail" produces="application/json"/>
+  <prgs:resource consumes="application/json" name="_common_GetChartOffAccount" path="/report/ChartOfAccount" produces="application/json"/>
+  <prgs:resource consumes="application/json" name="_report_BalanceSheet" path="/report/MacroPNLBalancesheet" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-pnlbalancesheetbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-pnlbalancesheetbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_report_ReceivingReport" path="/report/FixAssetReceiving" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-receiving-fa-reportbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-receiving-fa-reportbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_report_RoomRevenueBreakdown" path="/report/RoomRevenueBreakdown" produces="application/json"/>
+  <prgs:resource consumes="application/json" name="_report_ReservationByCreationDate" path="/report/ReservationByCreationDate" produces="application/json"/>
+  <prgs:resource consumes="application/json" name="_report_MonthlyForecastOfOccupancy" path="/report/MonthlyForecastOfOccupancy" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-monthly-forecast_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-monthly-forecast_1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_report_RoomStatisticByGuestSegment" path="/report/RoomStatisticByGuestSegment" produces="application/json"/>
+  <prgs:resource consumes="application/json" name="_report_ForecastRoomProduction" path="/report/ForecastRoomProduction" produces="application/json"/>
+  <prgs:resource consumes="application/json" name="_frontOffice_GetRoomServiceItem" path="/frontOffice/GetAdditionalCharge" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-load-sales-artikelfobl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-load-sales-artikelfobl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_frontOffice_CheckOutByRoomVoucher" path="/frontOffice/CheckOutByRoomVoucher" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-checkout-byroomvoucherbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-checkout-byroomvoucherbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_frontOffice_GetRoomCategory" path="/frontOffice/GetRoomCategory" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-get-room-categorybl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-get-room-categorybl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_report_InhouseGuestList" path="/report/InhouseGuestList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-inhouse-guestlistbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-inhouse-guestlistbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_report_FOTurnoverByDepartment" path="/report/FOTurnoverByDepartment" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-foturnover-listbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-foturnover-listbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_report_JournalList" path="/report/JournalList" produces="application/json"/>
+  <prgs:resource consumes="application/json" name="_report_JournalListDetail" path="/report/JournalListDetail" produces="application/json"/>
+  <prgs:resource consumes="application/json" name="_frontOffice_PostRoomService" path="/frontOffice/PostRoomService" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-post-roomservicebl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-post-roomservicebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_frontOffice_PostAddBill" path="/frontOffice/PostAdditionalBill" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-post-add-billbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-post-add-billbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_report_ExpectedDeparture" path="/report/ExpectedDeparture" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-expected-departurebl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-expected-departurebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_report_ExpectedArrival" path="/report/ExpectedArrival" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-expected-arrivalbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-expected-arrivalbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_report_HotelInformation" path="/report/HotelInformation" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-get-hotel-informationbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-get-hotel-informationbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_report_CurrencyList" path="/report/CurrencyList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-get-currency-listbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-get-currency-listbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_report_SegmentList" path="/report/SegmentList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-get-segment-listbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-get-segment-listbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_report_SourceReservation" path="/report/SourceReservation" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-get-reservation-source-listbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-get-reservation-source-listbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_report_RoomList" path="/report/RoomList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-get-room-listbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-get-room-listbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_report_GuestList" path="/report/GuestList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-get-guestlistbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-get-guestlistbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_others_salesInvoice" path="/others/salesInvoice-" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-if-paperid-pos-create-table-reservationbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-if-paperid-pos-create-table-reservationbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_others_salesInvoice_1" path="/others/salesInvoice" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-if-create-sales-invoicebl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-if-create-sales-invoicebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restaurant_GetReservationId" path="/restaurant/GetReservationId" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-if-get-rsvid-listbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-if-get-rsvid-listbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_others_paymentInvoice" path="/others/paymentInvoice" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-if-clearence-agingbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-if-clearence-agingbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restaurant_GetReservationStatus" path="/restaurant/GetReservationStatus" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-if-get-status-rsv-outletbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-if-get-status-rsv-outletbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restaurant_PaymentDeposit" path="/frontOffice/PaymentDeposit" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-if-paper-payment-depositbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-if-paper-payment-depositbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_frontOffice_PostRoomTransfer" path="/frontOffice/PostRoomTransfer" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-post-fobill-roomstransferbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-post-fobill-roomstransferbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_frontOffice_PostNonStayGuestBill" path="/frontOffice/PostNonStayGuestBill" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-post-nsbillbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-post-nsbillbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_frontOffice_master_viewRates" path="/frontOffice/master/viewRates" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-view-ratecode_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-view-ratecode_1bl" produces="application/json" verb="POST">
+      <prgs:param name="vhpAuthCode" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_frontOffice_master_roomOutlook" path="/frontOffice/master/roomOutlook" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-get-room-view_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-get-room-view_1bl" produces="application/json" verb="POST">
+      <prgs:param name="vhpAuthCode" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_frontOffice_master_roomType" path="/frontOffice/master/roomType" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-get-room-type_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-get-room-type_1bl" produces="application/json" verb="POST">
+      <prgs:param name="vhpAuthCode" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_frontOffice_master_roomCategory" path="/frontOffice/master/roomCategory" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-get-room-category_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-get-room-category_1bl" produces="application/json" verb="POST">
+      <prgs:param name="vhpAuthCode" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_frontOffice_master_roomList" path="/frontOffice/master/roomList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-get-room-list_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-get-room-list_1bl" produces="application/json" verb="POST">
+      <prgs:param name="vhpAuthCode" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_common_hotelInformation" path="/common/hotelInformation" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-get-hotel-information_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-get-hotel-information_1bl" produces="application/json" verb="POST">
+      <prgs:param name="vhpAuthCode" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_frontOffice_report_getReservationList" path="/frontOffice/report/getReservationList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-get-reservation-list_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-get-reservation-list_1bl" produces="application/json" verb="POST">
+      <prgs:param name="vhpAuthCode" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_frontOffice_master_currencyList" path="/frontOffice/master/currencyList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-get-currency-list_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-get-currency-list_1bl" produces="application/json" verb="POST">
+      <prgs:param name="vhpAuthCode" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_frontOffice_master_bedSetup" path="/frontOffice/master/bedSetup" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-get-bed-setup_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-get-bed-setup_1bl" produces="application/json" verb="POST">
+      <prgs:param name="vhpAuthCode" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_frontOffice_rsv_retrieveAvailability" path="/frontOffice/rsv/retrieveAvailability" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-get-availability_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-get-availability_1bl" produces="application/json" verb="POST">
+      <prgs:param name="vhpAuthCode" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_frontOffice_master_viewArrangement" path="/frontOffice/master/arrangement" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-get-arrangement_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-get-arrangement_1bl" produces="application/json" verb="POST">
+      <prgs:param name="vhpAuthCode" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_frontOffice_rsv_createReservation" path="/frontOffice/rsv/createReservation" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-create-reservation_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-create-reservation_1bl" produces="application/json" verb="POST">
+      <prgs:param name="vhpAuthCode" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_frontOffice_rsv_cancelReservation" path="/frontOffice/rsv/cancelReservation" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-cancel-reservation_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-cancel-reservation_1bl" produces="application/json" verb="POST">
+      <prgs:param name="vhpAuthCode" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_frontOffice_report_futureBooking" path="/frontOffice/report/futureReservation" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-future-bokingbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-future-bokingbl" produces="application/json" verb="POST">
+      <prgs:param name="vhpAuthCode" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_frontOffice_master_contractRateList" path="/frontOffice/master/contractRateList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-contract-ratebl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-contract-ratebl" produces="application/json" verb="POST">
+      <prgs:param name="vhpAuthCode" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_report_GuestListByLastModify" path="/report/GuestListByLastModify" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-get-guestlist-by-last-modif-datebl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-get-guestlist-by-last-modif-datebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_report_ReservationByCheckoutDate" path="/report/ReservationByCheckoutDate" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-rms-chkout-rsv-by-datebl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-rms-chkout-rsv-by-datebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_IF_ChangeRoomType" path="/IF/ChangeRoomType" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-upsell-change-room-type.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-upsell-change-room-type" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_IF_CreateFixCost" path="/IF/CreateFixCost" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-upsell-create-fixed-cost.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-upsell-create-fixed-cost" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_frontOffice_CM_createReservation" path="/frontOffice/CM/createReservation" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-vhp-cm-create-reservationbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-vhp-cm-create-reservationbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+</prgs:model>

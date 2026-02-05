@@ -1,0 +1,716 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<prgs:model xmlns:prgs="http://www.progress.com/caf/camel/component/prgrs" id="resourceModel">
+  <prgs:resource consumes="application/json" name="_prepareTablePlan" path="/prepareTablePlan" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-prepare-ts-tbplanbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-prepare-ts-tbplanbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="dept" type="HEADER"/>
+      <prgs:param name="currWaiter" type="HEADER"/>
+      <prgs:param name="inpChecksum" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_prepareBillLine" path="/prepareBillLine" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-prepare-ts-hblinebl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-prepare-ts-hblinebl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="userInit" type="HEADER"/>
+      <prgs:param name="dept" type="HEADER"/>
+      <prgs:param name="currRechnr" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_updateBillLine" path="/updateBill" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-ts-tbplan-update-hbillbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-ts-tbplan-update-hbillbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="recId" type="HEADER"/>
+      <prgs:param name="hostnr" type="HEADER"/>
+      <prgs:param name="pax" type="HEADER"/>
+      <prgs:param name="gname" type="HEADER"/>
+      <prgs:param name="hogaResnr" type="HEADER"/>
+      <prgs:param name="hogaReslinnr" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getRestaurantArticles" path="/getRestaurantArticles" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-load-h-artikel1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-load-h-artikel1bl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="caseType" type="HEADER"/>
+      <prgs:param name="dept" type="HEADER"/>
+      <prgs:param name="artType" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_openTable" path="/openTable" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-ts-restinv-open-tablebl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-ts-restinv-open-tablebl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="balance" type="HEADER"/>
+      <prgs:param name="currDept" type="HEADER"/>
+      <prgs:param name="tischnr" type="HEADER"/>
+      <prgs:param name="curedeptFlag" type="HEADER"/>
+      <prgs:param name="userInit" type="HEADER"/>
+      <prgs:param name="userName" type="HEADER"/>
+      <prgs:param name="fromAcct" type="HEADER"/>
+      <prgs:param name="room" type="HEADER"/>
+      <prgs:param name="gname" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getBill" path="/getBill" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-ts-restinv-disp-bill-linebl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-ts-restinv-disp-bill-linebl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="doubleCurrency" type="HEADER"/>
+      <prgs:param name="rechnr" type="HEADER"/>
+      <prgs:param name="currDept" type="HEADER"/>
+      <prgs:param name="availTHBill" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getOutletList" path="/getOutletList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-load-outletbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-load-outletbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="userinit" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_selectOutlet" path="/selectOutlet" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-ts-restinv-new-posbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-ts-restinv-new-posbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="pvILanguage" type="HEADER"/>
+      <prgs:param name="currWaiter" type="HEADER"/>
+      <prgs:param name="newDept" type="HEADER"/>
+      <prgs:param name="zugriff" type="HEADER"/>
+      <prgs:param name="exchgRate" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_splitItem" path="/splitItem" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-ts-split-itembl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-ts-split-itembl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="recId" type="HEADER"/>
+      <prgs:param name="splitQty" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_prepareSplitBill" path="/prepareSplitBill" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-prepare-ts-splitbillbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-prepare-ts-splitbillbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="dept" type="HEADER"/>
+      <prgs:param name="tischnr" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_splitBill" path="/splitBill" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-ts-splitbillbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-ts-splitbillbl" produces="application/json" verb="POST">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_postItem" path="/postItem" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-ts-post-menubl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-ts-post-menubl" produces="application/json" verb="POST">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="languageCode" type="HEADER"/>
+      <prgs:param name="recId" type="HEADER"/>
+      <prgs:param name="tischnr" type="HEADER"/>
+      <prgs:param name="currDept" type="HEADER"/>
+      <prgs:param name="userInit" type="HEADER"/>
+      <prgs:param name="gname" type="HEADER"/>
+      <prgs:param name="pax" type="HEADER"/>
+      <prgs:param name="guestnr" type="HEADER"/>
+      <prgs:param name="currRoom" type="HEADER"/>
+      <prgs:param name="resnr" type="HEADER"/>
+      <prgs:param name="reslinnr" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_transferTable" path="/transferTable" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-ts-restinv-move-tablebl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-ts-restinv-move-tablebl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="pax" type="HEADER"/>
+      <prgs:param name="currTischnr" type="HEADER"/>
+      <prgs:param name="recId" type="HEADER"/>
+      <prgs:param name="currDept" type="HEADER"/>
+      <prgs:param name="tischnr" type="HEADER"/>
+      <prgs:param name="bilrecid" type="HEADER"/>
+      <prgs:param name="rechnr" type="HEADER"/>
+      <prgs:param name="currWaiter" type="HEADER"/>
+      <prgs:param name="newWaiter" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_cancelItem" path="/cancelItem" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-ts-cancel-itembl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-ts-cancel-itembl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="languageCode" type="HEADER"/>
+      <prgs:param name="billRecId" type="HEADER"/>
+      <prgs:param name="billLineRecId" type="HEADER"/>
+      <prgs:param name="cancelStr" type="HEADER"/>
+      <prgs:param name="itemQty" type="HEADER"/>
+      <prgs:param name="userInit" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_prepareDiscount" path="/prepareDiscount" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-prepare-ts-discbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-prepare-ts-discbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="dept" type="HEADER"/>
+      <prgs:param name="tischnr" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_postDiscount" path="/calculateDiscount" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-ts-calc-discountbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-ts-calc-discountbl" produces="application/json" verb="POST">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="dept" type="HEADER"/>
+      <prgs:param name="tischnr" type="HEADER"/>
+      <prgs:param name="procent" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_postDiscount_1" path="/postDiscount" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-ts-post-discountbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-ts-post-discountbl" produces="application/json" verb="POST">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="dept" type="HEADER"/>
+      <prgs:param name="recId" type="HEADER"/>
+      <prgs:param name="tischnr" type="HEADER"/>
+      <prgs:param name="currSelect" type="HEADER"/>
+      <prgs:param name="procent" type="HEADER"/>
+      <prgs:param name="userInit" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_selectOrderTaker" path="/selectOrderTaker" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-select-ordertakerbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-select-ordertakerbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_updateOrderTaker" path="/updateOrderTaker" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-ts-restinv-update-hbill-betriebsnrbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-ts-restinv-update-hbill-betriebsnrbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="recId" type="HEADER"/>
+      <prgs:param name="orderTaker" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_checkKitchenPrinter" path="/checkKitchenPrinter" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-ts-kitchenprinter-statusbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-ts-kitchenprinter-statusbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="pvILanguage" type="HEADER"/>
+      <prgs:param name="billno" type="HEADER"/>
+      <prgs:param name="depart" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_askForBill" path="/askForBill" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-ask-for-billbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-ask-for-billbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="hbrecid" type="HEADER"/>
+      <prgs:param name="userInit" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_checkMoveTable" path="/checkMoveTable" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-pos-check-move-tablebl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-pos-check-move-tablebl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="recId" type="HEADER"/>
+      <prgs:param name="billNo" type="HEADER"/>
+      <prgs:param name="currTableno" type="HEADER"/>
+      <prgs:param name="deptNo" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_printCaptainOrder" path="/printCaptainOrder" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-print-orderticketbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-print-orderticketbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="closeIt" type="HEADER"/>
+      <prgs:param name="reprintIt" type="HEADER"/>
+      <prgs:param name="hBillRechnr" type="HEADER"/>
+      <prgs:param name="currDept" type="HEADER"/>
+      <prgs:param name="prOrder" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_verifyBfastKey" path="/verifyBfastKey" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-breakfastcard-verifyroombl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-breakfastcard-verifyroombl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="roomNumber" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_updateBfastKey" path="/updateBfastKey" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-breakfastcard-updateconsumebl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-breakfastcard-updateconsumebl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="resNr" type="HEADER"/>
+      <prgs:param name="failReadFlag" type="HEADER"/>
+      <prgs:param name="userInit" type="HEADER"/>
+      <prgs:param name="roomNr" type="HEADER"/>
+      <prgs:param name="consumeUse" type="HEADER"/>
+      <prgs:param name="mealTime" type="HEADER"/>
+      <prgs:param name="ciDate" type="HEADER"/>
+      <prgs:param name="coDate" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_checkSaldoCashless" path="/checkSaldoCashless" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-check-cashless-saldobl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-check-cashless-saldobl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="cashlessCode" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getLicenseCashless" path="/getLicenseCashless" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-prepare-get-license-cashlessbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-prepare-get-license-cashlessbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_checkCashlessPayment" path="/checkCashlessPayment" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-check-cashless-paymentbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-check-cashless-paymentbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="hbillNo" type="HEADER"/>
+      <prgs:param name="deptNo" type="HEADER"/>
+      <prgs:param name="hbillRecid" type="HEADER"/>
+      <prgs:param name="balance" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_prepareNonStay" path="/prepareNonStay" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-prepare-ts-rnonstay_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-prepare-ts-rnonstay_1bl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="dept" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_postPaymentNonStay" path="/postPaymentNonStay" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-ts-post-payment-rnonstaybl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-ts-post-payment-rnonstaybl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="languageCode" type="HEADER"/>
+      <prgs:param name="payType" type="HEADER"/>
+      <prgs:param name="bilrecid" type="HEADER"/>
+      <prgs:param name="recId" type="HEADER"/>
+      <prgs:param name="balance" type="HEADER"/>
+      <prgs:param name="tischnr" type="HEADER"/>
+      <prgs:param name="currDept" type="HEADER"/>
+      <prgs:param name="userInit" type="HEADER"/>
+      <prgs:param name="gname" type="HEADER"/>
+      <prgs:param name="pax" type="HEADER"/>
+      <prgs:param name="guestnr" type="HEADER"/>
+      <prgs:param name="currRoom" type="HEADER"/>
+      <prgs:param name="resnr" type="HEADER"/>
+      <prgs:param name="reslinnr" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_postPaymentRoomtransfer" path="/postPaymentRoomtransfer" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-ts-post-payment-roomtransferbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-ts-post-payment-roomtransferbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="languageCode" type="HEADER"/>
+      <prgs:param name="vKey" type="HEADER"/>
+      <prgs:param name="payType" type="HEADER"/>
+      <prgs:param name="deptNo" type="HEADER"/>
+      <prgs:param name="tischnr" type="HEADER"/>
+      <prgs:param name="deptMbar" type="HEADER"/>
+      <prgs:param name="deptLdry" type="HEADER"/>
+      <prgs:param name="hbillRecid" type="HEADER"/>
+      <prgs:param name="pax" type="HEADER"/>
+      <prgs:param name="guestnr" type="HEADER"/>
+      <prgs:param name="currRoom" type="HEADER"/>
+      <prgs:param name="userInit" type="HEADER"/>
+      <prgs:param name="rmtflistCode" type="HEADER"/>
+      <prgs:param name="rmtflistResnr" type="HEADER"/>
+      <prgs:param name="rmtflistRelinnr" type="HEADER"/>
+      <prgs:param name="balance" type="HEADER"/>
+      <prgs:param name="bilrecid" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_checkActivebill" path="/checkActivebill" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-check-activebill-all-paymentbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-check-activebill-all-paymentbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="vKey" type="HEADER"/>
+      <prgs:param name="userInit" type="HEADER"/>
+      <prgs:param name="billNo" type="HEADER"/>
+      <prgs:param name="tableNo" type="HEADER"/>
+      <prgs:param name="currDept" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_preparePaymentCash" path="/preparePaymentCash" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-prepare-payment-cashbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-prepare-payment-cashbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="languageCode" type="HEADER"/>
+      <prgs:param name="billNo" type="HEADER"/>
+      <prgs:param name="deptNo" type="HEADER"/>
+      <prgs:param name="hbillRecid" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_preparePaymentCreditCard" path="/preparePaymentCreditCard" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-prepare-payment-creditcardbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-prepare-payment-creditcardbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="billNo" type="HEADER"/>
+      <prgs:param name="deptNo" type="HEADER"/>
+      <prgs:param name="hbillRecid" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_preparePaymentRoomtransfer" path="/preparePaymentRoomtransfer" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-prepare-payment-room-transferbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-prepare-payment-room-transferbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="languageCode" type="HEADER"/>
+      <prgs:param name="billNo" type="HEADER"/>
+      <prgs:param name="deptNo" type="HEADER"/>
+      <prgs:param name="hbillRecid" type="HEADER"/>
+      <prgs:param name="room" type="HEADER"/>
+      <prgs:param name="hResnr" type="HEADER"/>
+      <prgs:param name="hReslinnr" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_postPaymentCash" path="/postPaymentCash" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-ts-post-payment-cashbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-ts-post-payment-cashbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="languageCode" type="HEADER"/>
+      <prgs:param name="currDept" type="HEADER"/>
+      <prgs:param name="userInit" type="HEADER"/>
+      <prgs:param name="recId" type="HEADER"/>
+      <prgs:param name="payType" type="HEADER"/>
+      <prgs:param name="tischnr" type="HEADER"/>
+      <prgs:param name="gname" type="HEADER"/>
+      <prgs:param name="pax" type="HEADER"/>
+      <prgs:param name="guestnr" type="HEADER"/>
+      <prgs:param name="currRoom" type="HEADER"/>
+      <prgs:param name="resnr" type="HEADER"/>
+      <prgs:param name="reslinnr" type="HEADER"/>
+      <prgs:param name="billNo" type="HEADER"/>
+      <prgs:param name="cashType" type="HEADER"/>
+      <prgs:param name="currType" type="HEADER"/>
+      <prgs:param name="balance" type="HEADER"/>
+      <prgs:param name="payment" type="HEADER"/>
+      <prgs:param name="balanceForeign" type="HEADER"/>
+      <prgs:param name="voucherNr" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_postPaymentCreditCard" path="/postPaymentCreditCard" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-ts-post-payment-creditcardbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-ts-post-payment-creditcardbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="languageCode" type="HEADER"/>
+      <prgs:param name="currDept" type="HEADER"/>
+      <prgs:param name="userInit" type="HEADER"/>
+      <prgs:param name="recId" type="HEADER"/>
+      <prgs:param name="payType" type="HEADER"/>
+      <prgs:param name="tischnr" type="HEADER"/>
+      <prgs:param name="gname" type="HEADER"/>
+      <prgs:param name="pax" type="HEADER"/>
+      <prgs:param name="guestnr" type="HEADER"/>
+      <prgs:param name="currRoom" type="HEADER"/>
+      <prgs:param name="resnr" type="HEADER"/>
+      <prgs:param name="reslinnr" type="HEADER"/>
+      <prgs:param name="billart" type="HEADER"/>
+      <prgs:param name="balance" type="HEADER"/>
+      <prgs:param name="payment" type="HEADER"/>
+      <prgs:param name="balanceForeign" type="HEADER"/>
+      <prgs:param name="ccComment" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_preparePaymentCityLedger" path="/preparePaymentCityLedger" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-prepare-payment-city-ledgerbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-prepare-payment-city-ledgerbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="billNo" type="HEADER"/>
+      <prgs:param name="deptNo" type="HEADER"/>
+      <prgs:param name="hbillRecid" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_postPaymentCityLedger" path="/postPaymentCityLedger2" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-ts-post-payment-cityledgerbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-ts-post-payment-cityledgerbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="languageCode" type="HEADER"/>
+      <prgs:param name="billNo" type="HEADER"/>
+      <prgs:param name="deptNo" type="HEADER"/>
+      <prgs:param name="balance" type="HEADER"/>
+      <prgs:param name="recId" type="HEADER"/>
+      <prgs:param name="payType" type="HEADER"/>
+      <prgs:param name="tischnr" type="HEADER"/>
+      <prgs:param name="gname" type="HEADER"/>
+      <prgs:param name="pax" type="HEADER"/>
+      <prgs:param name="gastnr" type="HEADER"/>
+      <prgs:param name="payment" type="HEADER"/>
+      <prgs:param name="resno" type="HEADER"/>
+      <prgs:param name="reslinno" type="HEADER"/>
+      <prgs:param name="currRoom" type="HEADER"/>
+      <prgs:param name="userInit" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_postPaymentMasterBill" path="/postPaymentMasterBill" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-ts-post-payment-masterbillbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-ts-post-payment-masterbillbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="languageCode" type="HEADER"/>
+      <prgs:param name="payType" type="HEADER"/>
+      <prgs:param name="billNo" type="HEADER"/>
+      <prgs:param name="deptNo" type="HEADER"/>
+      <prgs:param name="tischnr" type="HEADER"/>
+      <prgs:param name="recId" type="HEADER"/>
+      <prgs:param name="pax" type="HEADER"/>
+      <prgs:param name="guestnr" type="HEADER"/>
+      <prgs:param name="resno" type="HEADER"/>
+      <prgs:param name="reslinno" type="HEADER"/>
+      <prgs:param name="currRoom" type="HEADER"/>
+      <prgs:param name="userInit" type="HEADER"/>
+      <prgs:param name="balance" type="HEADER"/>
+      <prgs:param name="bilrecid" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_preparePaymentMasterBill" path="/preparePaymentMasterBill" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-prepare-payment-masterbillbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-prepare-payment-masterbillbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="billNo" type="HEADER"/>
+      <prgs:param name="deptNo" type="HEADER"/>
+      <prgs:param name="hbillRecid" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getMasterBillMember" path="/getMasterBillMember" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-prepare-ts-masterbill-memberbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-prepare-ts-masterbill-memberbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="billno" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_postPaymentMealcoupon" path="/postPaymentMealcoupon" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-ts-post-payment-mealcouponbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-ts-post-payment-mealcouponbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="languageCode" type="HEADER"/>
+      <prgs:param name="billNo" type="HEADER"/>
+      <prgs:param name="deptNo" type="HEADER"/>
+      <prgs:param name="balance" type="HEADER"/>
+      <prgs:param name="recId" type="HEADER"/>
+      <prgs:param name="payType" type="HEADER"/>
+      <prgs:param name="tischnr" type="HEADER"/>
+      <prgs:param name="gname" type="HEADER"/>
+      <prgs:param name="pax" type="HEADER"/>
+      <prgs:param name="gastnr" type="HEADER"/>
+      <prgs:param name="resno" type="HEADER"/>
+      <prgs:param name="reslinno" type="HEADER"/>
+      <prgs:param name="currRoom" type="HEADER"/>
+      <prgs:param name="userInit" type="HEADER"/>
+      <prgs:param name="couponArt" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_preparePaymentMealcoupon" path="/preparePaymentMealcoupon" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-prepare-payment-mealcouponbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-prepare-payment-mealcouponbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="billNo" type="HEADER"/>
+      <prgs:param name="deptNo" type="HEADER"/>
+      <prgs:param name="hbillRecid" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_printSplitBill" path="/printSplitBill" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-print-splitbillbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-print-splitbillbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="hbrecid" type="HEADER"/>
+      <prgs:param name="billnr" type="HEADER"/>
+      <prgs:param name="userInit" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_splitBillCheckMoveTable" path="/splitBillCheckMoveTable" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-ts-splitbill-check-move-tablebl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-ts-splitbill-check-move-tablebl" produces="application/json" verb="POST">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="billNo" type="HEADER"/>
+      <prgs:param name="deptNo" type="HEADER"/>
+      <prgs:param name="splitNo" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_splitBillPostMoveTable" path="/splitBillPostMoveTable" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-ts-splitbill-post-move-tablebl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-ts-splitbill-post-move-tablebl" produces="application/json" verb="POST">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="tableno" type="HEADER"/>
+      <prgs:param name="bilrecid" type="HEADER"/>
+      <prgs:param name="newWaiter" type="HEADER"/>
+      <prgs:param name="recId" type="HEADER"/>
+      <prgs:param name="currWaiter" type="HEADER"/>
+      <prgs:param name="dept" type="HEADER"/>
+      <prgs:param name="tischnr" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_postPaymentCityLedger_1" path="/postPaymentCityLedger" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-ts-post-paymentcityledgerbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-ts-post-paymentcityledgerbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="languageCode" type="HEADER"/>
+      <prgs:param name="billNo" type="HEADER"/>
+      <prgs:param name="deptNo" type="HEADER"/>
+      <prgs:param name="balance" type="HEADER"/>
+      <prgs:param name="recId" type="HEADER"/>
+      <prgs:param name="payType" type="HEADER"/>
+      <prgs:param name="tischnr" type="HEADER"/>
+      <prgs:param name="gname" type="HEADER"/>
+      <prgs:param name="pax" type="HEADER"/>
+      <prgs:param name="gastnr" type="HEADER"/>
+      <prgs:param name="payment" type="HEADER"/>
+      <prgs:param name="resno" type="HEADER"/>
+      <prgs:param name="reslinno" type="HEADER"/>
+      <prgs:param name="currRoom" type="HEADER"/>
+      <prgs:param name="userInit" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_preparePaymentCompliment" path="/preparePaymentCompliment" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-prepare-payment-complimentbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-prepare-payment-complimentbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="billNo" type="HEADER"/>
+      <prgs:param name="deptNo" type="HEADER"/>
+      <prgs:param name="hbillRecid" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_preparePaymentCheckOfficerCard" path="/preparePaymentCheckOfficerCard" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-prepare-payment-check-officer-cardbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-prepare-payment-check-officer-cardbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="deptNo" type="HEADER"/>
+      <prgs:param name="balance" type="HEADER"/>
+      <prgs:param name="cardOfficer" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_postPaymentCompliment" path="/postPaymentCompliment" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-ts-post-payment-complimentbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-ts-post-payment-complimentbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="languageCode" type="HEADER"/>
+      <prgs:param name="billNo" type="HEADER"/>
+      <prgs:param name="deptNo" type="HEADER"/>
+      <prgs:param name="balance" type="HEADER"/>
+      <prgs:param name="recId" type="HEADER"/>
+      <prgs:param name="payType" type="HEADER"/>
+      <prgs:param name="tischnr" type="HEADER"/>
+      <prgs:param name="gname" type="HEADER"/>
+      <prgs:param name="pax" type="HEADER"/>
+      <prgs:param name="gastnr" type="HEADER"/>
+      <prgs:param name="resno" type="HEADER"/>
+      <prgs:param name="reslinno" type="HEADER"/>
+      <prgs:param name="currRoom" type="HEADER"/>
+      <prgs:param name="userInit" type="HEADER"/>
+      <prgs:param name="complimentArt" type="HEADER"/>
+      <prgs:param name="cardOfficer" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_prepareCloseBill" path="/prepareCloseBill" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-prepare-rest-closeinvbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-prepare-rest-closeinvbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="languageCode" type="HEADER"/>
+      <prgs:param name="inpRechnr" type="HEADER"/>
+      <prgs:param name="currDept" type="HEADER"/>
+      <prgs:param name="userInit" type="HEADER"/>
+      <prgs:param name="userName" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_checkCancelPayment" path="/checkCancelPayment" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-rest-closeinv-check-cancel-paymentbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-rest-closeinv-check-cancel-paymentbl" produces="application/json" verb="POST">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="currDept" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_checkTempCancelPayment" path="/checkTempCancelPayment" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-rest-closeinv-tmp-cancel-paymentbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-rest-closeinv-tmp-cancel-paymentbl" produces="application/json" verb="POST">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="balance" type="HEADER"/>
+      <prgs:param name="balanceForeign" type="HEADER"/>
+      <prgs:param name="bListRecid" type="HEADER"/>
+      <prgs:param name="cancelStr" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_cancelPaymentCash" path="/cancelPaymentCash" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-rest-closeinv-cancel-payment-cashbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-rest-closeinv-cancel-payment-cashbl" produces="application/json" verb="POST">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="balance" type="HEADER"/>
+      <prgs:param name="balanceForeign" type="HEADER"/>
+      <prgs:param name="billNo" type="HEADER"/>
+      <prgs:param name="hbillRecid" type="HEADER"/>
+      <prgs:param name="tableNo" type="HEADER"/>
+      <prgs:param name="currDept" type="HEADER"/>
+      <prgs:param name="pax" type="HEADER"/>
+      <prgs:param name="userInit" type="HEADER"/>
+      <prgs:param name="deptname" type="HEADER"/>
+      <prgs:param name="voucherNr" type="HEADER"/>
+      <prgs:param name="payment" type="HEADER"/>
+      <prgs:param name="exchgRate" type="HEADER"/>
+      <prgs:param name="kreditlimit" type="HEADER"/>
+      <prgs:param name="doubleCurrency" type="HEADER"/>
+      <prgs:param name="foreignRate" type="HEADER"/>
+      <prgs:param name="billDate" type="HEADER"/>
+      <prgs:param name="cashType" type="HEADER"/>
+      <prgs:param name="currType" type="HEADER"/>
+      <prgs:param name="currWaiter" type="HEADER"/>
+      <prgs:param name="recBillGuest" type="HEADER"/>
+      <prgs:param name="priceDecimal" type="HEADER"/>
+      <prgs:param name="payType" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_cancelPaymentCredit" path="/cancelPaymentCredit" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-rest-closeinv-cancel-payment-creditcardbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-rest-closeinv-cancel-payment-creditcardbl" produces="application/json" verb="POST">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="balance" type="HEADER"/>
+      <prgs:param name="balanceForeign" type="HEADER"/>
+      <prgs:param name="billNo" type="HEADER"/>
+      <prgs:param name="hbillRecid" type="HEADER"/>
+      <prgs:param name="tableNo" type="HEADER"/>
+      <prgs:param name="currDept" type="HEADER"/>
+      <prgs:param name="payArt" type="HEADER"/>
+      <prgs:param name="pax" type="HEADER"/>
+      <prgs:param name="paid" type="HEADER"/>
+      <prgs:param name="ccComment" type="HEADER"/>
+      <prgs:param name="userInit" type="HEADER"/>
+      <prgs:param name="deptname" type="HEADER"/>
+      <prgs:param name="exchgRate" type="HEADER"/>
+      <prgs:param name="kreditlimit" type="HEADER"/>
+      <prgs:param name="doubleCurrency" type="HEADER"/>
+      <prgs:param name="foreignRate" type="HEADER"/>
+      <prgs:param name="billDate" type="HEADER"/>
+      <prgs:param name="currWaiter" type="HEADER"/>
+      <prgs:param name="recBillGuest" type="HEADER"/>
+      <prgs:param name="priceDecimal" type="HEADER"/>
+      <prgs:param name="payType" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_closeBill" path="/getLastCloseBill" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-prepare-ts-oldhbillbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-prepare-ts-oldhbillbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="rechnr" type="HEADER"/>
+      <prgs:param name="knr" type="HEADER"/>
+      <prgs:param name="currDept" type="HEADER"/>
+      <prgs:param name="incomeAudit" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getLastCloseBillConfirm" path="/getLastCloseBillConfirm" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-oldhbill-checkbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-oldhbill-checkbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="pvILanguage" type="HEADER"/>
+      <prgs:param name="rechnr" type="HEADER"/>
+      <prgs:param name="currDept" type="HEADER"/>
+      <prgs:param name="supervise" type="HEADER"/>
+      <prgs:param name="billDate" type="HEADER"/>
+      <prgs:param name="knr" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_generalCheckMenu" path="/generalCheckMenu" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-ts-general-check-menubl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-ts-general-check-menubl" produces="application/json" verb="POST">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+</prgs:model>

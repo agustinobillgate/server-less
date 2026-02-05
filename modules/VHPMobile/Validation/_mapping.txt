@@ -1,0 +1,5 @@
+service,function
+getUserList,read_bediener_paramlistbl
+getUserListParameter,read_bediener_lic_paramlistbl
+getHotelList,load_hotel_listbl
+checkUserKey,check_user_credentialbl

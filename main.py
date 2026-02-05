@@ -1133,7 +1133,7 @@ def reload_mapping():
                 mtime_update_field_by_function_mapping = mtime
 
 
-def handle_dynamic_data_v1(url:str, headers: Dict[str, Any], input_data: Dict[str, Any] = {}, body_str:str = ""):
+def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, Any] = {}, body_str:str = ""):
 
     #updated 1.0.0.18
     initialize_local_storage()
@@ -1210,20 +1210,20 @@ def handle_dynamic_data_v1(url:str, headers: Dict[str, Any], input_data: Dict[st
     #         input_data[key] = headers.get(key.lower())
 
     """ """
-    if timestamp and abs(to_int(timestamp) - int(datetime.now().strftime('%s'))) > 600:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid timestamp")                
+    # if timestamp and abs(to_int(timestamp) - int(datetime.now().strftime('%s'))) > 600:
+    #     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid timestamp")                
 
-    if not signature:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Missing signature")                
+    # if not signature:
+    #     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Missing signature")                
 
-    if not nonce:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Missing Nonce")                
+    # if not nonce:
+    #     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Missing Nonce")                
 
-    if not timestamp:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Missing timestamp")                
+    # if not timestamp:
+    #     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Missing timestamp")                
 
-    if  signature and nonce and timestamp and body_str and signature != sha1_hex(body_str + "|" + nonce + "|" + timestamp):
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid value")                
+    # if  signature and nonce and timestamp and body_str and signature != sha1_hex(body_str + "|" + nonce + "|" + timestamp):
+    #     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid value")                
     
     ui_request_id = input_data.get("ui_request_id", "None")
     is_existing_json = False
@@ -1244,6 +1244,7 @@ def handle_dynamic_data_v1(url:str, headers: Dict[str, Any], input_data: Dict[st
             module_mapping = {
                 "vhpPOS": "vhpOU"
             }
+            vhp_war = entry(1,path,"/")
             vhp_module = entry(2,path,"/")
             if vhp_module in module_mapping:
                 vhp_module = module_mapping[vhp_module]
@@ -1258,7 +1259,7 @@ def handle_dynamic_data_v1(url:str, headers: Dict[str, Any], input_data: Dict[st
             if num_entries(path,"/") == 5:
                 service_name += entry(4,path,"/")
             
-            print("Schema/Module/Service:", hotel_schema, vhp_module, service_name)
+            print("Schema/Module/Service/War:", hotel_schema, vhp_module, service_name, vhp_war)
             endpoint = vhp_module + "/" + service_name
             log_id = log_activity(endpoint, inputUsername, hotel_schema)
 
@@ -1267,7 +1268,7 @@ def handle_dynamic_data_v1(url:str, headers: Dict[str, Any], input_data: Dict[st
             # print("db_session:", db_session)
 
             try:
-                with open('modules/' + vhp_module + '/_mapping.txt', mode ='r') as file:   
+                with open('modules/' + vhp_war + '/' + vhp_module + '/_mapping.txt', mode ='r') as file:   
                     mapping_service = csv.DictReader(file)
                     function_name = ""
 
@@ -1511,226 +1512,226 @@ def handle_dynamic_data_v1(url:str, headers: Dict[str, Any], input_data: Dict[st
 
 # Oscar - enchance speed
 # handle_dynamic_data new version for increase speed
-def handle_dynamic_data(url: str, headers: dict, input_data: dict = {}, body_str: str = ""):
-    initialize_local_storage()
+# def handle_dynamic_data_v1(url: str, headers: dict, input_data: dict = {}, body_str: str = ""):
+#     initialize_local_storage()
 
-    global curr_module, curr_service
+#     global curr_module, curr_service
 
-    output_data = {}
-    ServerInfo = {}
-    db_session = None
-    error_message = ""
-    ok_flag = "false"
+#     output_data = {}
+#     ServerInfo = {}
+#     db_session = None
+#     error_message = ""
+#     ok_flag = "false"
 
-    module_name = ""
+#     module_name = ""
 
-    mobile_version = False
-
-
-    def get_service_function(vhp_module: str, service_name: str) -> str:
-        nonlocal mobile_version
-
-        if mobile_version:
-            if vhp_module not in ANDROID_SERVICE_MAP_CACHE:
-                mapping_path = Path(f"modules/VHPMobile/{vhp_module}/_mapping.txt")
-                if not mapping_path.exists():
-                    raise FileNotFoundError(f"Mapping file not found for module {vhp_module}")
-
-                with open(mapping_path, "r") as f:
-                    ANDROID_SERVICE_MAP_CACHE[vhp_module] = {
-                        row["service"]: row["function"]
-                        for row in csv.DictReader(f)
-                    }
-
-            service_map = ANDROID_SERVICE_MAP_CACHE[vhp_module]
-            if service_name not in service_map:
-                raise KeyError(f"Service not found: {vhp_module}/{service_name}")
-        else:
-            if vhp_module not in SERVICE_MAP_CACHE:
-                mapping_path = Path(f"modules/VHPWebBased/{vhp_module}/_mapping.txt")
-                if not mapping_path.exists():
-                    raise FileNotFoundError(f"Mapping file not found for module {vhp_module}")
-
-                with open(mapping_path, "r") as f:
-                    SERVICE_MAP_CACHE[vhp_module] = {
-                        row["service"]: row["function"]
-                        for row in csv.DictReader(f)
-                    }
-
-            service_map = SERVICE_MAP_CACHE[vhp_module]
-            if service_name not in service_map:
-                raise KeyError(f"Service not found: {vhp_module}/{service_name}")
-
-        return service_map[service_name]
+#     mobile_version = False
 
 
-    def load_function(function_name: str):
-        nonlocal module_name, mobile_version
+#     def get_service_function(vhp_module: str, service_name: str) -> str:
+#         nonlocal mobile_version
+
+#         if mobile_version:
+#             if vhp_module not in ANDROID_SERVICE_MAP_CACHE:
+#                 mapping_path = Path(f"modules/VHPMobile/{vhp_module}/_mapping.txt")
+#                 if not mapping_path.exists():
+#                     raise FileNotFoundError(f"Mapping file not found for module {vhp_module}")
+
+#                 with open(mapping_path, "r") as f:
+#                     ANDROID_SERVICE_MAP_CACHE[vhp_module] = {
+#                         row["service"]: row["function"]
+#                         for row in csv.DictReader(f)
+#                     }
+
+#             service_map = ANDROID_SERVICE_MAP_CACHE[vhp_module]
+#             if service_name not in service_map:
+#                 raise KeyError(f"Service not found: {vhp_module}/{service_name}")
+#         else:
+#             if vhp_module not in SERVICE_MAP_CACHE:
+#                 mapping_path = Path(f"modules/VHPWebBased/{vhp_module}/_mapping.txt")
+#                 if not mapping_path.exists():
+#                     raise FileNotFoundError(f"Mapping file not found for module {vhp_module}")
+
+#                 with open(mapping_path, "r") as f:
+#                     SERVICE_MAP_CACHE[vhp_module] = {
+#                         row["service"]: row["function"]
+#                         for row in csv.DictReader(f)
+#                     }
+
+#             service_map = SERVICE_MAP_CACHE[vhp_module]
+#             if service_name not in service_map:
+#                 raise KeyError(f"Service not found: {vhp_module}/{service_name}")
+
+#         return service_map[service_name]
+
+
+#     def load_function(function_name: str):
+#         nonlocal module_name, mobile_version
         
-        cache_key = f"{module_name}.{function_name}"
+#         cache_key = f"{module_name}.{function_name}"
 
-        if not IS_DEV and cache_key in FUNCTION_CACHE:
-            if mobile_version:
-                return ANDROID_FUNCTION_CACHE[cache_key]
-            else:
-                return FUNCTION_CACHE[cache_key]
+#         if not IS_DEV and cache_key in FUNCTION_CACHE:
+#             if mobile_version:
+#                 return ANDROID_FUNCTION_CACHE[cache_key]
+#             else:
+#                 return FUNCTION_CACHE[cache_key]
 
-        if mobile_version:
-            module = ANDROID_MODULE_CACHE.get(module_name)
-        else:
-            module = MODULE_CACHE.get(module_name)
+#         if mobile_version:
+#             module = ANDROID_MODULE_CACHE.get(module_name)
+#         else:
+#             module = MODULE_CACHE.get(module_name)
 
-        if not module or IS_DEV:
-            module = importlib.import_module(module_name)
-            if IS_DEV:
-                module = importlib.reload(module)
+#         if not module or IS_DEV:
+#             module = importlib.import_module(module_name)
+#             if IS_DEV:
+#                 module = importlib.reload(module)
 
-            if mobile_version:
-                ANDROID_MODULE_CACHE[module_name] = module
-            else:
-                MODULE_CACHE[module_name] = module
+#             if mobile_version:
+#                 ANDROID_MODULE_CACHE[module_name] = module
+#             else:
+#                 MODULE_CACHE[module_name] = module
 
-        if not hasattr(module, function_name):
-            raise AttributeError(f"Function {function_name} not found in {module_name}")
+#         if not hasattr(module, function_name):
+#             raise AttributeError(f"Function {function_name} not found in {module_name}")
 
-        func = getattr(module, function_name)
+#         func = getattr(module, function_name)
 
-        if mobile_version:
-            ANDROID_FUNCTION_CACHE[cache_key] = func
-        else:
-            FUNCTION_CACHE[cache_key] = func
+#         if mobile_version:
+#             ANDROID_FUNCTION_CACHE[cache_key] = func
+#         else:
+#             FUNCTION_CACHE[cache_key] = func
             
-        return func
+#         return func
 
 
-    def validate_request(headers: dict, body_str: str):
-        signature = headers.get("x-signature")
-        nonce = headers.get("x-nonce")
-        timestamp = headers.get("x-timestamp")
+#     def validate_request(headers: dict, body_str: str):
+#         signature = headers.get("x-signature")
+#         nonce = headers.get("x-nonce")
+#         timestamp = headers.get("x-timestamp")
 
-        if not signature:
-            raise HTTPException(400, "Missing signature")
-        if not nonce:
-            raise HTTPException(400, "Missing nonce")
-        if not timestamp:
-            raise HTTPException(400, "Missing timestamp")
+#         # if not signature:
+#         #     raise HTTPException(400, "Missing signature")
+#         # if not nonce:
+#         #     raise HTTPException(400, "Missing nonce")
+#         # if not timestamp:
+#         #     raise HTTPException(400, "Missing timestamp")
 
-        if abs(to_int(timestamp) - int(datetime.now().timestamp())) > 600:
-            raise HTTPException(400, "Invalid timestamp")
+#         # if abs(to_int(timestamp) - int(datetime.now().timestamp())) > 600:
+#         #     raise HTTPException(400, "Invalid timestamp")
 
-        if signature != sha1_hex(body_str + "|" + nonce + "|" + timestamp):
-            raise HTTPException(400, "Invalid signature")
-
-
-    def execute_service_function(
-        vhp_module: str,
-        service_name: str,
-        input_data: dict
-    ):
-        nonlocal module_name, mobile_version
-
-        function_name = get_service_function(vhp_module, service_name)
-
-        if mobile_version:
-            module_name = f"functions.vhp_mobile.{function_name}"
-        else:
-            module_name = f"functions.{function_name}"
-
-        func = load_function(function_name)
-
-        update_input_format(func, input_data)
-        return func(**input_data)
-
-    try:        
-        validate_request(headers, body_str)
-
-        if "request" in input_data:
-            input_data = input_data["request"]
-
-        hotel_schema = (input_data.get("hotel_schema") or "").lower()
-        if not hotel_schema:
-            raise HTTPException(400, "Missing hotel_schema")
-
-        # python.staging.e1-vhp.com:10443/dev/vhpINV/getInvSubGroup
-        # -------------------0-------------1-----2---------3-------
-
-        # ws1.e1-vhp.com:8443/VHPWebBased1/rest/Common/checkPermission2
-        # -----------0-------------1--------2------3--------4----------
-
-        # ws1.e1-vhp.com:8443/VHPMobile1/rest/FrontOffice/storeSignatureBill
-        # ---------0--------------1-------2--------3-------------4----------
-
-        path = url.replace("http://", "").replace("https://", "")
-        path_split = path.split("/")
-
-        if re.match(r'^VHPMobile\d$', path_split[1]):
-            mobile_version = True
+#         # if signature != sha1_hex(body_str + "|" + nonce + "|" + timestamp):
+#         #     raise HTTPException(400, "Invalid signature")
 
 
-        if mobile_version:
-            vhp_module = entry(3, path, "/")
+#     def execute_service_function(
+#         vhp_module: str,
+#         service_name: str,
+#         input_data: dict
+#     ):
+#         nonlocal module_name, mobile_version
 
-            path_list_service = path_split[4:]
-            service_name = "".join(path_list_service)
-        else:
-            vhp_module = entry(2, path, "/")
+#         function_name = get_service_function(vhp_module, service_name)
 
-            path_list_service = path_split[3:]
-            service_name = "".join(path_list_service)
+#         if mobile_version:
+#             module_name = f"functions.vhp_mobile.{function_name}"
+#         else:
+#             module_name = f"functions.{function_name}"
+
+#         func = load_function(function_name)
+
+#         update_input_format(func, input_data)
+#         return func(**input_data)
+
+#     try:        
+#         validate_request(headers, body_str)
+
+#         if "request" in input_data:
+#             input_data = input_data["request"]
+
+#         hotel_schema = (input_data.get("hotel_schema") or "").lower()
+#         if not hotel_schema:
+#             raise HTTPException(400, "Missing hotel_schema")
+
+#         # python.staging.e1-vhp.com:10443/dev/vhpINV/getInvSubGroup
+#         # -------------------0-------------1-----2---------3-------
+
+#         # ws1.e1-vhp.com:8443/VHPWebBased1/rest/Common/checkPermission2
+#         # -----------0-------------1--------2------3--------4----------
+
+#         # ws1.e1-vhp.com:8443/VHPMobile1/rest/FrontOffice/storeSignatureBill
+#         # ---------0--------------1-------2--------3-------------4----------
+
+#         path = url.replace("http://", "").replace("https://", "")
+#         path_split = path.split("/")
+
+#         if re.match(r'^VHPMobile\d$', path_split[1]):
+#             mobile_version = True
 
 
-        curr_module = vhp_module
-        curr_service = service_name
+#         if mobile_version:
+#             vhp_module = entry(3, path, "/")
 
-        print("Schema/Module/Service:", hotel_schema, vhp_module, service_name)
+#             path_list_service = path_split[4:]
+#             service_name = "".join(path_list_service)
+#         else:
+#             vhp_module = entry(2, path, "/")
 
-        set_db_and_schema(hotel_schema)
-        db_session = local_storage.db_session
+#             path_list_service = path_split[3:]
+#             service_name = "".join(path_list_service)
 
-        input_data.pop("hotel_schema", None)
-        input_data.pop("inputUserkey", None)
-        input_data.pop("inputUsername", None)
 
-        result = execute_service_function(vhp_module, service_name, input_data)
+#         curr_module = vhp_module
+#         curr_service = service_name
 
-        output_data = result or {}
-        output_data["output_Ok_Flag"] = "true"
-        ok_flag = "true"
+#         print("Schema/Module/Service:", hotel_schema, vhp_module, service_name)
 
-        update_output_format(output_data)
+#         set_db_and_schema(hotel_schema)
+#         db_session = local_storage.db_session
 
-        db_session.commit()
+#         input_data.pop("hotel_schema", None)
+#         input_data.pop("inputUserkey", None)
+#         input_data.pop("inputUsername", None)
 
-    except Exception as e:
-        error_message = traceback.format_exc()
-        output_data = {"error": "Internal server error"}
-        print(f"Error: {str(e)}")
+#         result = execute_service_function(vhp_module, service_name, input_data)
 
-        lp.write_log("error", f"{error_message}", "error.txt", "f")
+#         output_data = result or {}
+#         output_data["output_Ok_Flag"] = "true"
+#         ok_flag = "true"
 
-        if db_session:
-            db_session.rollback()
+#         update_output_format(output_data)
 
-    finally:
-        if db_session:
-            close_session()
+#         db_session.commit()
 
-        if IS_DEV:
-            ServerInfo["mode"] = "DEV" if IS_DEV else "PROD"
-            ServerInfo["error"] = error_message
-            ServerInfo["modfunc"] = module_name
-            ServerInfo["ok"] = ok_flag
-            ServerInfo["path"] = vhp_module  + "/" + service_name
+#     except Exception as e:
+#         error_message = traceback.format_exc()
+#         output_data = {"error": "Internal server error"}
+#         print(f"Error: {str(e)}")
 
-            return {
-                "response": output_data,
-                "serverinfo": ServerInfo
-            }
+#         lp.write_log("error", f"{error_message}", "error.txt", "f")
+
+#         if db_session:
+#             db_session.rollback()
+
+#     finally:
+#         if db_session:
+#             close_session()
+
+#         if IS_DEV:
+#             ServerInfo["mode"] = "DEV" if IS_DEV else "PROD"
+#             ServerInfo["error"] = error_message
+#             ServerInfo["modfunc"] = module_name
+#             ServerInfo["ok"] = ok_flag
+#             ServerInfo["path"] = vhp_module  + "/" + service_name
+
+#             return {
+#                 "response": output_data,
+#                 "serverinfo": ServerInfo
+#             }
         
-        else:
-            return {
-                "response": output_data
-            }
+#         else:
+#             return {
+#                 "response": output_data
+#             }
 
 
 # infostr -> request Id

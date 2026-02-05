@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<prgs:model xmlns:prgs="http://www.progress.com/caf/camel/component/prgrs" id="resourceModel">
+  <prgs:resource consumes="application/json" name="_getUserList" path="/getUserList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-read-bediener-paramlistbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-read-bediener-paramlistbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="caseType" type="HEADER"/>
+      <prgs:param name="uname" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getUserListParameter" path="/getUserListParameter" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-read-bediener-lic-paramlistbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-read-bediener-lic-paramlistbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+      <prgs:param name="caseType" type="HEADER"/>
+      <prgs:param name="uname" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getHotelList" path="/getHotelList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-load-hotel-listbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-load-hotel-listbl" produces="application/json" verb="GET">
+      <prgs:param name="inputUsername" type="HEADER"/>
+      <prgs:param name="inputUserkey" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_checkUserKey" path="/checkUserKey" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-check-user-credentialbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-check-user-credentialbl" produces="application/json" verb="GET">
+      <prgs:param name="userInit" type="HEADER"/>
+      <prgs:param name="licenseNumber" type="HEADER"/>
+      <prgs:param name="oldUserKey" type="HEADER"/>
+    </prgs:operation>
+  </prgs:resource>
+</prgs:model>

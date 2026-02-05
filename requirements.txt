@@ -70,3 +70,4 @@ uritemplate==4.2.0
 urllib3==2.3.0
 uvicorn==0.34.0
 watchtower==3.4.0
+openpyxl==3.1.2

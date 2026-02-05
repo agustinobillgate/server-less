@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<prgs:model xmlns:prgs="http://www.progress.com/caf/camel/component/prgrs" id="resourceModel">
+  <prgs:resource consumes="application/json" name="_api_pms_v2_check" path="/api/pms/v2/check" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-lg-v2-checkbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-lg-v2-checkbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_api_pms_v2_status" path="/api/pms/v2/statuses" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-lg-v2-get-statusbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-lg-v2-get-statusbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_api_pms_v2_postSubscriptions" path="/api/pms/v2/postSubscriptions" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-lg-v2-post-subbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-lg-v2-post-subbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_api_pms_v2_putSubscriptions" path="/api/pms/v2/putSubscriptions" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-lg-v2-put-subbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-lg-v2-put-subbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_api_pms_v2_deleteSubscriptions" path="/api/pms/v2/deleteSubscriptions" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-lg-v2-del-subbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-lg-v2-del-subbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_api_pms_v2_getHotelDetails" path="/api/pms/v2/getHotelDetails" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-lg-v2-detailbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-lg-v2-detailbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_api_pms_v2_getGuestDetails" path="/api/pms/v2/getGuestDetails" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-lg-v2-get-roombl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-lg-v2-get-roombl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_api_pms_v2_getSubscriptions" path="/api/pms/v2/getSubscriptions" produces="application/json">
+    <prgs:operation consumes="application/json" idls="GuestList/.services/mobile-lg-v2-get-subbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobile-lg-v2-get-subbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+</prgs:model>
